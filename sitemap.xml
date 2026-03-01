@@ -31,6 +31,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://auditoriaxml.mx/articulos/auditoria-uuid-cancelacion-cfdi.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://auditoriaxml.mx/privacidad.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
