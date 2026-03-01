@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dictamen Preventivo Art. 30-B CFF: Protección Corporativa | AuditorIA</title>
@@ -30,82 +37,43 @@
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="https://auditoriaxml.mx/">AuditorIA</a>
-</nav>
+<nav class="header-nav"><a href="https://auditoriaxml.mx/">AuditorIA</a></nav>
 
 <div class="article-container">
     <h1>Dictamen Preventivo Artículo 30-B del CFF: Protección Corporativa y Auditoría de CFDI 4.0</h1>
-
     <p>La fiscalización en México transicionó de auditorías físicas a revisiones electrónicas ejecutadas por algoritmos de minería de datos. El Servicio de Administración Tributaria (SAT) no requiere visitar las instalaciones de una empresa para determinar créditos fiscales; le basta con procesar el Document Object Model (DOM) de los archivos XML timbrados. El Artículo 30-B del Código Fiscal de la Federación (CFF) establece las directrices documentales para la defensa del contribuyente ante este escrutinio digital automatizado.</p>
-
     <h2>Marco Jurídico del Artículo 30-B del CFF</h2>
-
-    <p>El Artículo 30-B obliga a los contribuyentes a integrar, conservar y poner a disposición de la autoridad fiscal la información y documentación que ampare la determinación de las contribuciones. Esto exige una trazabilidad absoluta entre el cálculo de los impuestos pagados y los metadatos de facturación (CFDI).</p>
-
+    <p>El Artículo 30-B obliga a los contribuyentes a integrar, conservar y poner a disposición de la autoridad fiscal la información y documentación que ampare la determinación de las contribuciones.</p>
     <h3>Obligación de la Cuadratura Matemática</h3>
-
-    <p>Presentar declaraciones de pagos provisionales o definitivos sin un amarre exacto a nivel de nodo XML constituye una vulnerabilidad corporativa. El SAT valida que el impuesto trasladado y retenido declarado coincida a nivel centavo con la sumatoria de los atributos <code>Importe</code> dentro de los bloques <code>cfdi:Impuestos</code> de los comprobantes emitidos y recibidos por el RFC de la empresa.</p>
-
-    <p>Un dictamen preventivo es el mecanismo técnico mediante el cual una empresa certifica esta cuadratura antes de enviar la declaración. Garantiza la materialidad de las operaciones y previene la tipificación de discrepancia fiscal.</p>
-
+    <p>Presentar declaraciones de pagos provisionales o definitivos sin un amarre exacto a nivel de nodo XML constituye una vulnerabilidad corporativa. El SAT valida que el impuesto trasladado y retenido declarado coincida a nivel centavo con la sumatoria de los atributos <code>Importe</code> dentro de los bloques <code>cfdi:Impuestos</code>.</p>
+    <p>Un dictamen preventivo es el mecanismo técnico mediante el cual una empresa certifica esta cuadratura antes de enviar la declaración.</p>
     <h2>Análisis de Riesgo en el Nodo cfdi:Retenciones</h2>
-
-    <p>El principal detonador de requerimientos a través del Buzón Tributario radica en los errores de cálculo de retenciones de ISR e IVA. Los sistemas ERP empresariales, operados manualmente, generan inconsistencias constantes al aplicar cuotas o tasas incorrectas sobre la base gravable de servicios profesionales, arrendamiento o fletes.</p>
-
-    <h3>Estructura Fiscal Sujeta a Revisión</h3>
-
-    <p>La autoridad extrae la información leyendo específicamente los atributos del esquema CFDI 4.0:</p>
-
+    <p>El principal detonador de requerimientos a través del Buzón Tributario radica en los errores de cálculo de retenciones de ISR e IVA.</p>
     <div class="code-block">
 &lt;cfdi:Retencion Base="50000.00" Impuesto="001" TipoFactor="Tasa" TasaOCuota="0.100000" Importe="5000.00"/&gt;
-&lt;cfdi:Retencion Base="50000.00" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.106666" Importe="5333.30"/&gt;
     </div>
-
-    <p>Si el sistema de facturación registra un <code>Importe</code> que difiere del producto matemático de la <code>Base</code> por la <code>TasaOCuota</code> aplicable según el régimen de los contribuyentes involucrados, el SAT clasifica el UUID (Folio Fiscal) como irregular.</p>
-
-    <p>Para mitigar este riesgo de forma sistemática, la Dirección de Finanzas debe <a href="https://auditoriaxml.mx/" class="cta-textual">auditar los repositorios XML corporativos mediante la herramienta de AuditorIA</a>. Esto permite recalcular masivamente las retenciones y detectar diferencias previo al cierre contable.</p>
-
+    <p>Si el sistema de facturación registra un <code>Importe</code> que difiere del producto matemático de la <code>Base</code> por la <code>TasaOCuota</code> aplicable, el SAT clasifica el UUID como irregular. Para mitigar este riesgo de forma sistemática, la Dirección de Finanzas debe <a href="https://auditoriaxml.mx/" class="cta-textual">auditar los repositorios XML corporativos mediante la herramienta de AuditorIA</a>.</p>
     <h2>Metodología para la Auditoría Preventiva XML</h2>
-
-    <p>La protección corporativa exige superar las hojas de cálculo. Excel y los visores de PDF no procesan atributos anidados ni complementos de pago de forma fiable cuando el volumen supera los cientos de archivos. La revisión debe ejecutarse a nivel de código fuente (XML).</p>
-
+    <p>La protección corporativa exige superar las hojas de cálculo. Excel y los visores de PDF no procesan atributos anidados de forma fiable cuando el volumen supera los cientos de archivos.</p>
     <h3>Fases de Validación Algorítmica</h3>
-
     <ol>
-        <li><strong>Certificación de Timbrado (tfd:TimbreFiscalDigital):</strong> Validación de que el documento no es un borrador y cuenta con el sello criptográfico del SAT.</li>
-        <li><strong>Análisis de EFOS (Art. 69-B):</strong> Cruce automático del RFC emisor contra las listas negras publicadas en el Diario Oficial de la Federación.</li>
-        <li><strong>Recálculo de Impuestos:</strong> Multiplicación de la base gravable por las tasas vigentes, discriminando entre retenciones de IVA (dos terceras partes, 4%, etc.) y retenciones de ISR (1.25% RESICO, 10% Honorarios).</li>
-        <li><strong>Detección de Omisiones Estructurales:</strong> Identificación de XMLs timbrados sin el nodo de impuestos cuando la clave de producto (<code>ClaveProdServ</code>) indica que la operación es objeto de gravamen (<code>ObjetoImp="02"</code>).</li>
+        <li><strong>Certificación de Timbrado:</strong> Validación de que el documento no es un borrador y cuenta con el sello criptográfico.</li>
+        <li><strong>Análisis de EFOS:</strong> Cruce automático del RFC emisor contra las listas del Artículo 69-B.</li>
+        <li><strong>Recálculo de Impuestos:</strong> Multiplicación de la base gravable por las tasas vigentes.</li>
+        <li><strong>Detección de Omisiones Estructurales:</strong> Identificación de XMLs timbrados sin el nodo de impuestos cuando la operación es objeto de gravamen.</li>
     </ol>
-
     <div class="cta-visual">
         <h3>Blinda tu Contabilidad contra Revisiones Electrónicas</h3>
         <p>Procesa miles de facturas emitidas y recibidas en un solo paso. Obtén un dictamen ejecutivo con semáforo de riesgo para tu próxima junta de consejo.</p>
         <a href="https://auditoriaxml.mx/" class="cta-button">Generar Dictamen Preventivo Corporativo</a>
     </div>
-
     <h2>Defensa Fiscal: Trazabilidad y Nulidad de Resoluciones</h2>
-
-    <p>La integración de un dictamen preventivo bajo el marco del Artículo 30-B del CFF proporciona evidencia documental sólida ante procedimientos de comprobación. Cuando el SAT emite una pre-liquidación basada en el cruce de sus bases de datos, la carga de la prueba recae sobre el contribuyente.</p>
-
+    <p>La integración de un dictamen preventivo bajo el marco del Artículo 30-B del CFF proporciona evidencia documental sólida ante procedimientos de comprobación.</p>
     <h3>Respuesta a Cartas Invitación</h3>
-
-    <p>Las diferencias determinadas por el SAT suelen derivar de duplicidades de UUID o errores en la emisión de notas de crédito (CFDI de Egreso) que no disminuyeron correctamente la base. Un dictamen generado por software especializado aísla el UUID exacto responsable del diferencial.</p>
-
-    <p>Presentar un informe tabular con la trazabilidad matemática de cada factura refuta las presunciones de la autoridad, facilitando recursos de revocación o juicios de nulidad ante el Tribunal Federal de Justicia Administrativa.</p>
-
-    <h3>Cancelación y Refacturación</h3>
-
-    <p>El margen de maniobra de la empresa se reduce drásticamente al finalizar el ejercicio fiscal. Detectar un error en el nodo <code>cfdi:Retenciones</code> en el mes en curso permite la cancelación del CFDI y su sustitución relacionando el UUID original (Tipo de Relación 04), sin incurrir en las multas estipuladas en el Artículo 84 del CFF.</p>
-
-    <p>La adopción de tecnología de validación es una medida fiduciaria básica. <a href="https://auditoriaxml.mx/" class="cta-textual">Ejecuta el escrutinio de tu facturación comercial y genera reportes de discrepancia fiscal</a> para garantizar la continuidad operativa de la empresa y evitar el congelamiento de certificados de sello digital (CSD).</p>
-
+    <p>Las diferencias determinadas por el SAT suelen derivar de duplicidades de UUID o errores en la emisión de notas de crédito. Presentar un informe tabular con la trazabilidad matemática de cada factura refuta las presunciones de la autoridad.</p>
+    <p>La adopción de tecnología de validación es una medida fiduciaria básica. <a href="https://auditoriaxml.mx/" class="cta-textual">Ejecuta el escrutinio de tu facturación comercial y genera reportes de discrepancia fiscal</a> para garantizar la continuidad operativa de la empresa.</p>
 </div>
 
-<footer class="site-footer">
-    <p>&copy; 2026 AuditorIA. Plataforma tecnológica para la automatización fiscal corporativa.</p>
-</footer>
-
+<footer class="site-footer"><p>&copy; 2026 AuditorIA. Plataforma tecnológica para la automatización fiscal corporativa.</p></footer>
 </body>
 </html>
