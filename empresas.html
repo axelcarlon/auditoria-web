@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protege tu Empresa de Multas Fiscales | AuditorIA</title>
+    <meta name="description" content="Evita multas del SAT por errores en facturación. Valida las retenciones de tu empresa automáticamente sin depender de revisiones manuales.">
+    <meta name="robots" content="index, follow">
+    <style>
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        .split-layout { display: flex; width: 100vw; min-height: 100vh; }
+        .left-panel { flex: 1; background-image: url('https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; color: white; position: relative; }
+        .left-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(20, 20, 20, 0.90); z-index: 1; }
+        .left-content { position: relative; z-index: 2; width: 100%; max-width: 500px; text-align: center; }
+        .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background-color: #ffffff; }
+        .upload-card { width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; }
+        #dropZone { background-color: #F3F4F6; border: 2px dashed #D1D5DB; border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; }
+        #dropZone:hover { border-color: #2563EB; background-color: #EFF6FF; }
+        .lock-img { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; background-color: white; padding: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); margin: 0 auto; display: block; }
+        .sample-link { display: block; text-align: center; margin-top: 16px; color: #4B5563; font-size: 14px; text-decoration: underline; cursor: pointer; font-weight: 500; }
+        .trust-banner { background-color: #111827; color: #D1D5DB; text-align: center; padding: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
+        .site-footer { text-align: center; padding: 40px 20px; background-color: #111827; color: #6B7280; font-size: 14px; border-top: 1px solid #374151; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+        .footer-links a { color: #9CA3AF; text-decoration: none; transition: 0.2s; }
+        @media (max-width: 768px) { .split-layout { flex-direction: column; } .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } }
+    </style>
+</head>
+<body>
+
+<div class="split-layout">
+    <div class="left-panel">
+        <div class="left-content">
+            <h1 style="font-size: 36px; font-weight: 800; margin-bottom: 16px; line-height: 1.2;">Protege tu Empresa de Multas y Requerimientos del SAT</h1>
+            <p style="font-size: 18px; color: #E2E8F0; margin-bottom: 40px; font-weight: 300;">Audita las retenciones de IVA e ISR de tu facturación antes del cierre de mes. Asegura el cumplimiento corporativo en segundos.</p>
+            <img src="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg" alt="Software de auditoría fiscal para empresas" class="lock-img">
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="upload-card">
+            <div style="text-align: left; margin-bottom: 24px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 12px;">
+                    Cargar Facturación (XML)
+                </label>
+                <div id="dropZone">
+                    <p id="fileNameDisplay" style="font-size: 15px; color: #4B5563; margin: 0; font-weight: 500;">Arrastra tus XML para validación preventiva</p>
+                    <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+                </div>
+            </div>
+            <button id="uploadBtn" style="width: 100%; background: #2563EB; color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: pointer;">VALIDAR FACTURACIÓN</button>
+            <a href="/ejemplo.xlsx" download class="sample-link">📄 Ver reporte para Dirección General</a>
+            <div id="statusContainer" style="margin-top: 20px; display: none; text-align: center;">
+                <p id="statusText" style="font-size: 14px; font-weight: 600; color: #059669;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="trust-banner">🔒 AUDITORÍA PRIVADA. LOS DATOS SE ELIMINAN AL TERMINAR EL CÁLCULO.</div>
+
+<footer class="site-footer">
+    <p>&copy; 2026 AuditorIA.</p>
+    <div class="footer-links">
+        <a href="/">Inicio</a>
+        <a href="/privacidad.html">Aviso de Privacidad</a>
+        <a href="/terminos.html">Términos de Servicio</a>
+    </div>
+</footer>
+
+<script>
+    const input = document.getElementById('xmlInput');
+    const btn = document.getElementById('uploadBtn');
+    const statusText = document.getElementById('statusText');
+    const statusContainer = document.getElementById('statusContainer');
+    const display = document.getElementById('fileNameDisplay');
+    document.getElementById('dropZone').onclick = () => input.click();
+    input.onchange = (e) => {
+        const count = e.target.files.length;
+        if (count > 0) {
+            display.innerText = count > 1 ? `${count} archivos cargados listos para procesar` : e.target.files[0].name;
+            display.style.color = "#2563EB";
+        }
+    };
+    btn.onclick = async () => {
+        if (input.files.length === 0) return alert("Sube archivos XML primero");
+        statusContainer.style.display = "block";
+        statusText.innerText = "Analizando base de datos fiscal...";
+        btn.disabled = true;
+        btn.style.opacity = "0.6";
+        const formData = new FormData();
+        for (let file of input.files) { formData.append('files', file); }
+        try {
+            const res = await fetch('https://auditoria-backend-crar.onrender.com/api/analizar', { method: 'POST', body: formData });
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Reporte_Corporativo.xlsx`;
+                a.click();
+                statusText.innerText = "¡Dictamen Completado!";
+            } else {
+                statusText.innerText = "Error en los archivos XML.";
+                statusText.style.color = "#EF4444";
+            }
+        } catch (err) {
+            statusText.innerText = "Error de servidor.";
+            statusText.style.color = "#EF4444";
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        }
+    };
+</script>
+</body>
+</html>
