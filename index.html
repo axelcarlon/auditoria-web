@@ -13,6 +13,7 @@
             box-sizing: border-box;
             background-color: #ffffff;
             font-family: system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
         }
 
         .split-layout {
@@ -99,6 +100,69 @@
             margin: 0 auto;
             display: block;
         }
+
+        .seo-section {
+            max-width: 1000px;
+            margin: 80px auto;
+            padding: 0 40px;
+            color: #374151;
+            line-height: 1.7;
+        }
+
+        .seo-section h2 {
+            color: #111827;
+            font-size: 28px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #E5E7EB;
+            padding-bottom: 10px;
+        }
+
+        .seo-section h3 {
+            color: #2563EB;
+            font-size: 20px;
+            margin-top: 32px;
+            margin-bottom: 12px;
+        }
+
+        .seo-section p {
+            margin-bottom: 16px;
+        }
+
+        .seo-section ul {
+            margin-bottom: 24px;
+            padding-left: 20px;
+        }
+
+        .seo-section li {
+            margin-bottom: 8px;
+        }
+
+        .site-footer {
+            text-align: center;
+            padding: 24px;
+            background-color: #111827;
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+
+        /* Optimización Móvil */
+        @media (max-width: 768px) {
+            .split-layout {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                min-height: 50vh;
+                padding: 30px 20px;
+            }
+            .seo-section {
+                margin: 40px auto;
+                padding: 0 20px;
+            }
+            .lock-img {
+                width: 150px;
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -108,7 +172,7 @@
         <div class="left-content">
             <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 16px;">Auditoría Masiva de XML y Validación de Retenciones ISR e IVA</h1>
             <p style="font-size: 16px; color: #E2E8F0; margin-bottom: 40px;">Dictamen Fiscal Preventivo Art. 30-B para CFDI 4.0. Procesa facturas y detecta discrepancias fiscales al instante.</p>
-            <img src="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg" alt="Seguridad" class="lock-img">
+            <img src="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg" alt="Software validador de retenciones y auditoría masiva de XML CFDI 4.0" class="lock-img">
         </div>
     </div>
 
@@ -133,6 +197,33 @@
         </div>
     </div>
 </div>
+
+<section class="seo-section">
+    <h2>La Importancia de Automatizar la Validación de Retenciones Fiscales</h2>
+    <p>El escrutinio del SAT sobre el correcto cálculo y entero de impuestos es cada vez más riguroso, especialmente tras la implementación obligatoria del <strong>CFDI 4.0</strong>. Uno de los mayores riesgos para despachos contables y empresas radica en la <strong>discrepancia fiscal</strong> generada por errores en las retenciones de IVA e ISR.</p>
+    <p>La revisión manual de cientos o miles de facturas es un proceso ineficiente y propenso a errores humanos. Una auditoría masiva de XML permite cruzar la información declarada contra las fórmulas matemáticas estrictas requeridas por la autoridad, detectando anomalías estructurales y diferencias monetarias antes de que se emita un requerimiento oficial o una multa. El uso de validadores tecnológicos es la única forma viable de garantizar un cumplimiento preventivo eficaz y proteger el patrimonio de la empresa.</p>
+
+    <h2>Preguntas Frecuentes sobre la Auditoría de CFDI 4.0</h2>
+    
+    <h3>¿Qué es el dictamen preventivo del Artículo 30-B del CFF?</h3>
+    <p>El Artículo 30-B del Código Fiscal de la Federación obliga a los contribuyentes a integrar y conservar información sobre la determinación de sus impuestos. Un dictamen preventivo es un análisis interno de las facturas (XML) que demuestra que las retenciones y traslados de impuestos cuadran exactamente con la ley, previniendo contingencias y facilitando la defensa legal en caso de auditorías del SAT.</p>
+
+    <h3>¿Cuáles son las multas por discrepancia fiscal en retenciones de IVA e ISR?</h3>
+    <p>El SAT sanciona severamente la omisión, el cálculo erróneo o el entero extemporáneo de retenciones. Las multas pueden ir del 55% al 75% de las contribuciones omitidas, además del cobro de recargos y actualizaciones. En casos graves de discrepancia fiscal donde se determine dolo, la autoridad puede suspender sellos digitales, inmovilizar cuentas bancarias o incluso tipificarlo como defraudación fiscal.</p>
+
+    <h3>¿Cómo auditar masivamente facturas CFDI 4.0?</h3>
+    <p>Para realizar una descarga y revisión masiva sin colapsar el sistema manual, se requiere un software que extraiga directamente los nodos del XML. El proceso correcto es:</p>
+    <ul>
+        <li>Recolectar todos los archivos XML emitidos y recibidos en un periodo.</li>
+        <li>Procesarlos mediante un algoritmo que lea atributos ocultos y complementos de pago.</li>
+        <li>Recalcular los impuestos (IVA e ISR) basados en el subtotal y la clave de producto/servicio.</li>
+        <li>Generar un reporte ejecutivo que aísle exclusivamente los CFDI que presentan diferencias matemáticas o errores estructurales en el RFC.</li>
+    </ul>
+</section>
+
+<footer class="site-footer">
+    <p>&copy; 2026 AuditorIA. Procesamiento seguro en memoria volátil. No almacenamos datos fiscales.</p>
+</footer>
 
 <script>
     const input = document.getElementById('xmlInput');
