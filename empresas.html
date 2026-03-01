@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protege tu Empresa de Multas Fiscales | AuditorIA</title>
@@ -47,7 +54,7 @@
                     <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
                 </div>
             </div>
-            <button id="uploadBtn" style="width: 100%; background: #2563EB; color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: pointer;">VALIDAR FACTURACIÓN</button>
+            <button id="uploadBtn" onclick="gtag('event', 'generar_dictamen', {'event_category': 'auditoria', 'event_label': 'boton_empresas'});" style="width: 100%; background: #2563EB; color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: pointer;">VALIDAR FACTURACIÓN</button>
             <a href="/ejemplo.xlsx" download class="sample-link">📄 Ver reporte para Dirección General</a>
             <div id="statusContainer" style="margin-top: 20px; display: none; text-align: center;">
                 <p id="statusText" style="font-size: 14px; font-weight: 600; color: #059669;"></p>
