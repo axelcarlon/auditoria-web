@@ -52,11 +52,17 @@
     </script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; }
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; --error: #EF4444; }
         @media (prefers-color-scheme: dark) { :root { --bg-primary: #111827; --bg-secondary: #1F2937; --text-main: #F9FAFB; --text-muted: #D1D5DB; --border: #374151; --brand: #3B82F6; --drop-bg: #374151; } }
         
         body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
+        /* Toast Notifications */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--text-main); color: var(--bg-secondary); padding: 16px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.1); opacity: 0; transform: translateX(100%); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; }
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.error { background: var(--error); color: white; }
+
         .top-nav { position: absolute; top: 0; right: 0; padding: 20px 40px; display: flex; gap: 20px; z-index: 10; align-items: center; }
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; transition: color 0.2s; }
         .nav-link:hover { color: var(--brand); }
@@ -88,13 +94,12 @@
         .btn-fb { background-color: #1877F2; }
         
         .resource-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; text-align: left; }
-        .resource-links a { display: block; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; transition: border-color 0.2s; }
+        .resource-links a { display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; transition: border-color 0.2s; }
         .resource-links a:hover { border-color: var(--brand); }
 
         .trust-banner { background-color: #0F172A; color: #D1D5DB; text-align: center; padding: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
         .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         
-        /* How it works section */
         .steps-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin: 40px 0 80px; text-align: center; }
         .step-box { padding: 30px; }
         .step-number { width: 40px; height: 40px; background: var(--brand); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; margin: 0 auto 15px; }
@@ -105,7 +110,6 @@
         .feature-card { background: var(--bg-secondary); padding: 30px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
         .feature-card h3 { color: var(--text-main); font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
         
-        /* Accordion FAQ */
         .faq-section { background: var(--bg-secondary); padding: 40px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 60px; }
         .faq-section h2 { color: var(--text-main); font-size: 24px; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
         details { border-bottom: 1px solid var(--border); margin-bottom: 10px; }
@@ -136,6 +140,8 @@
 </head>
 <body>
 
+<div id="toast-container"></div>
+
 <main class="split-layout">
     <section class="left-panel">
         <div class="left-content">
@@ -147,8 +153,8 @@
 
     <section class="right-panel">
         <nav class="top-nav">
-            <a href="#" onclick="alert('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
-            <a href="#" onclick="alert('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
+            <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
+            <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
         </nav>
 
         <div class="upload-card">
@@ -192,19 +198,19 @@
                 <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px;">Tu archivo Excel ha sido descargado. Por cumplimiento legal, los archivos XML han sido destruidos del servidor.</p>
                 
                 <div class="share-container">
-                    <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0;">¡Gracias por usar AuditorIA! Ayúdanos compartiendo esta herramienta con más personas:</p>
+                    <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0;">¡Gracias por utilizar AuditorIA! Ayúdanos a llegar a más personas compartiendo la herramienta:</p>
                     <a href="https://twitter.com/intent/tweet?text=Estoy%20automatizando%20la%20auditoría%20de%20mis%20CFDI%204.0%20y%20validando%20retenciones%20con%20AuditorIA.%20Herramienta%20gratuita:&url=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-x">𝕏 Postear</a>
                     <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-in">in Compartir</a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-fb">f Compartir</a>
                 </div>
 
                 <div style="text-align: left;">
-                    <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 10px;">Recursos Diarios Contables:</p>
+                    <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 10px;">Herramientas de Utilería:</p>
                     <div class="resource-links">
-                        <a href="https://www.banxico.org.mx/tipos-de-cambio/" target="_blank" rel="noopener">→ Tipos de Cambio (Banxico)</a>
-                        <a href="https://www.prodecon.gob.mx/" target="_blank" rel="noopener">→ Portal PRODECON</a>
-                        <a href="https://www.dof.gob.mx/" target="_blank" rel="noopener">→ Diario Oficial de la Federación</a>
-                        <a href="http://omawww.sat.gob.mx/tramitesyservicios/Paginas/anexo_20.htm" target="_blank" rel="noopener">→ Estándar Anexo 20 (SAT)</a>
+                        <a href="https://drive.google.com/" target="_blank" rel="noopener"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M7.71 3.5L1.15 15l3.43 6 6.55-11.5M9.73 15L13.17 21h10.3l-3.43-6M15.42 2.5l-3.42 6h11.4l3.43-6"/></svg> Google Drive</a>
+                        <a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg> Google Sheets</a>
+                        <a href="https://www.microsoft365.com/launch/excel" target="_blank" rel="noopener"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14h-2V7h2v10zm4 0h-2V7h2v10z"/></svg> Excel Online</a>
+                        <a href="https://www.ilovepdf.com/es" target="_blank" rel="noopener"><svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM14 11h1V8.5h-1V11zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"/></svg> iLovePDF</a>
                     </div>
                 </div>
 
@@ -318,11 +324,47 @@
     const dropZone = document.getElementById('dropZone');
     const uploadSection = document.getElementById('uploadSection');
     const successSection = document.getElementById('successSection');
+    const toastContainer = document.getElementById('toast-container');
+
+    // Función Toast
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${isError ? 'error' : ''}`;
+        toast.innerHTML = isError 
+            ? `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${message}`
+            : `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${message}`;
+        toastContainer.appendChild(toast);
+        
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+        });
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    // Comprobar LocalStorage al inicio
+    if (localStorage.getItem('auditoriaLegalAccepted') === 'true') {
+        legalCheck.checked = true;
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+    }
 
     legalCheck.addEventListener('change', (e) => {
         btn.disabled = !e.target.checked;
         btn.style.opacity = e.target.checked ? "1" : "0.5";
         btn.style.cursor = e.target.checked ? "pointer" : "not-allowed";
+        
+        if(e.target.checked) {
+            localStorage.setItem('auditoriaLegalAccepted', 'true');
+        } else {
+            localStorage.removeItem('auditoriaLegalAccepted');
+        }
     });
 
     dropZone.onclick = () => input.click();
@@ -369,17 +411,21 @@
         successSection.style.display = "none";
         uploadSection.style.display = "block";
         input.value = "";
-        legalCheck.checked = false;
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "not-allowed";
         display.innerText = "Arrastra tus archivos o haz clic para explorar";
         display.style.color = "var(--text-muted)";
         statusContainer.style.display = "none";
+        
+        // Mantener estado del botón si el check sigue activo en LocalStorage
+        if (localStorage.getItem('auditoriaLegalAccepted') !== 'true') {
+            legalCheck.checked = false;
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+        }
     }
 
     btn.onclick = async () => {
-        if (input.files.length === 0) return alert("Sube archivos XML primero");
+        if (input.files.length === 0) return showToast("Por favor, sube archivos XML antes de iniciar.", true);
         
         const MAX_SIZE_MB = 50;
         let totalSize = 0;
@@ -387,7 +433,7 @@
         
         for (let file of input.files) {
             if (!file.name.toLowerCase().endsWith('.xml')) {
-                alert(`Archivo rechazado. Solo se permiten archivos .xml: ${file.name}`);
+                showToast(`Archivo rechazado. Solo se permiten .xml: ${file.name}`, true);
                 return;
             }
             totalSize += file.size;
@@ -395,7 +441,7 @@
         }
 
         if (totalSize > MAX_SIZE_MB * 1024 * 1024) {
-            alert(`Límite excedido. El peso total es ${(totalSize / (1024 * 1024)).toFixed(2)}MB. El máximo es 50MB por lote.`);
+            showToast(`Límite excedido. El peso total es ${(totalSize / (1024 * 1024)).toFixed(2)}MB. El máximo es 50MB por lote.`, true);
             return;
         }
         
@@ -425,11 +471,13 @@
                 successSection.style.display = "block";
             } else {
                 statusText.innerText = "Error: Verifica que todos los archivos sean XML válidos.";
-                statusText.style.color = "#EF4444";
+                statusText.style.color = "var(--error)";
+                showToast("Error de validación en los archivos subidos.", true);
             }
         } catch (err) {
             statusText.innerText = "Error de servidor. Intenta de nuevo.";
-            statusText.style.color = "#EF4444";
+            statusText.style.color = "var(--error)";
+            showToast("Error de conexión con el servidor. Intenta nuevamente.", true);
         } finally {
             spinner.style.display = "none";
             if (!successSection.style.display || successSection.style.display === "none") {
