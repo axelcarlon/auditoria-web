@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auditoría Técnica del UUID y Control de Cancelaciones en CFDI 4.0 | AuditorIA</title>
@@ -29,71 +36,39 @@
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="/">AuditorIA</a>
-</nav>
+<nav class="header-nav"><a href="/">AuditorIA</a></nav>
 
 <div class="article-container">
     <h1>Auditoría Técnica del UUID y Control de Cancelaciones en CFDI 4.0</h1>
-
-    <p>La base de datos del Servicio de Administración Tributaria (SAT) no procesa facturas en formato PDF; procesa identificadores únicos universales (UUID). Un error en el control del estatus de este identificador de 36 caracteres desencadena multas por deducción de operaciones inexistentes o requerimientos por omisión de ingresos. La fiscalización algorítmica exige que las empresas y despachos contables implementen sistemas de rastreo automatizado para cada UUID emitido y recibido.</p>
-
+    <p>La base de datos del Servicio de Administración Tributaria (SAT) no procesa facturas en formato PDF; procesa identificadores únicos universales (UUID). Un error en el control del estatus de este identificador de 36 caracteres desencadena multas por deducción de operaciones inexistentes o requerimientos por omisión de ingresos.</p>
     <h2>El UUID como Llave Criptográfica de la Fiscalización</h2>
-
-    <p>El Folio Fiscal o UUID no es un simple número de control interno. Es una llave generada por el Proveedor Autorizado de Certificación (PAC) que asegura la unicidad del documento en los servidores gubernamentales. La auditoría técnica de este elemento es obligatoria para garantizar la integridad de la contabilidad electrónica.</p>
-
+    <p>El Folio Fiscal o UUID no es un simple número de control interno. Es una llave generada por el Proveedor Autorizado de Certificación (PAC) que asegura la unicidad del documento en los servidores gubernamentales.</p>
     <h3>Análisis del Nodo tfd:TimbreFiscalDigital</h3>
-
-    <p>La validez legal de un XML recae exclusivamente en el complemento de timbrado. Un archivo XML generado por un ERP (Enterprise Resource Planning) carece de valor si no contiene el nodo <code>tfd:TimbreFiscalDigital</code>. La extracción algorítmica debe localizar y validar los siguientes atributos:</p>
-
+    <p>La validez legal de un XML recae exclusivamente en el complemento de timbrado. Un archivo XML generado por un ERP carece de valor si no contiene el nodo <code>tfd:TimbreFiscalDigital</code>.</p>
     <div class="code-block">
 &lt;tfd:TimbreFiscalDigital 
   xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" 
   UUID="A1B2C3D4-1234-5678-90AB-CDEF12345678" 
   FechaTimbrado="2026-02-28T10:30:00" 
-  NoCertificadoSAT="00001000000504465028" 
-  SelloCFD="aB3dE..."/&gt;
+  NoCertificadoSAT="00001000000504465028" /&gt;
     </div>
-
-    <p>Contabilizar un documento sin este nodo infla los gastos declarados, constituyendo una infracción sancionada por el Artículo 83 del Código Fiscal de la Federación (CFF). Para aislar documentos inválidos antes del cálculo de impuestos, <a href="/" class="cta-textual">procesa todo tu repositorio XML en AuditorIA para detectar fallas en el timbrado</a> de forma inmediata.</p>
-
+    <p>Contabilizar un documento sin este nodo infla los gastos declarados, constituyendo una infracción sancionada por el Artículo 83 del CFF. Para aislar documentos inválidos antes del cálculo de impuestos, <a href="/" class="cta-textual">procesa todo tu repositorio XML en AuditorIA para detectar fallas en el timbrado</a>.</p>
     <h2>Riesgos Fiscales por CFDI Cancelados y Duplicados</h2>
-
     <p>El esquema de cancelación del CFDI 4.0 introdujo la obligación de justificar el motivo de cancelación (claves 01, 02, 03, 04) y relacionar el UUID sustituto. Las empresas operan asumiendo que un documento entregado por un proveedor mantiene su estatus de "Vigente" indefinidamente. Esto es falso.</p>
-
     <h3>Facturas Emitidas PUE Canceladas sin Sustitución</h3>
-
-    <p>Si un proveedor cancela un CFDI de método de pago PUE (Pago en una sola exhibición) después de que la empresa receptora lo deduce y acredita el IVA, el SAT detecta una discrepancia frontal. La autoridad asume que la empresa receptor dedujo una operación inexistente. El sistema de inteligencia tributaria cruza el UUID cancelado contra el UUID reportado en la Declaración Informativa de Operaciones con Terceros (DIOT) o en el pago referenciado.</p>
-
-    <p>El resultado directo es el rechazo del acreditamiento del IVA y la imposición de multas equivalentes al 55% del impuesto omitido por asimetría fiscal.</p>
-
+    <p>Si un proveedor cancela un CFDI de método de pago PUE después de que la empresa receptora lo deduce y acredita el IVA, el SAT detecta una discrepancia frontal y rechaza el acreditamiento del IVA.</p>
     <div class="cta-visual">
         <h3>Garantiza la Existencia de tus Deducciones</h3>
         <p>No deduzcas comprobantes apócrifos o cancelados. Extrae el UUID y recalcula las bases gravables de todo tu volumen de facturación en un solo clic.</p>
         <a href="/" class="cta-button">Auditar UUIDs Masivamente</a>
     </div>
-
     <h2>Trazabilidad de la Sustitución (Clave 01 y 04)</h2>
-
-    <p>El esquema 4.0 penaliza la ruptura de la cadena de comprobación. Cuando se cancela un comprobante con errores con relación (Clave 01), el sistema del SAT exige la existencia simultánea del UUID original y el UUID sustituto. El nodo <code>cfdi:CfdiRelacionados</code> debe contener el <code>TipoRelacion="04"</code> (Sustitución de los CFDI previos).</p>
-
-    <div class="code-block">
-&lt;cfdi:CfdiRelacionados TipoRelacion="04"&gt;
-  &lt;cfdi:CfdiRelacionado UUID="A1B2C3D4-1234-5678-90AB-CDEF12345678"/&gt;
-&lt;/cfdi:CfdiRelacionados&gt;
-    </div>
-
-    <p>Si el departamento de facturación cancela el documento pero falla al insertar el nodo de relación en el nuevo XML, el SAT duplica el ingreso del emisor. La autoridad considerará ambos UUIDs como ingresos acumulables independientes, detonando el pago indebido de Impuesto Sobre la Renta (ISR) en pagos provisionales.</p>
-
+    <p>Cuando se cancela un comprobante con errores con relación (Clave 01), el sistema del SAT exige la existencia simultánea del UUID original y el UUID sustituto en el nodo <code>cfdi:CfdiRelacionados</code> con el <code>TipoRelacion="04"</code>.</p>
+    <p>Si el departamento de facturación cancela el documento pero falla al insertar el nodo de relación en el nuevo XML, el SAT duplica el ingreso del emisor.</p>
     <h3>Verificación de Duplicidad</h3>
-
-    <p>La revisión masiva debe identificar UUIDs repetidos en los registros contables y asegurar que ninguna factura sustituida se compute en el cálculo de impuestos. Para ejecutar esta depuración sin colapsar macros de Excel, <a href="/" class="cta-textual">utiliza nuestro motor de análisis XML para asegurar la unicidad de tu base gravable</a> y blindar la contabilidad de tu empresa.</p>
-
+    <p>La revisión masiva debe identificar UUIDs repetidos en los registros contables y asegurar que ninguna factura sustituida se compute en el cálculo de impuestos. <a href="/" class="cta-textual">Utiliza nuestro motor de análisis XML para asegurar la unicidad de tu base gravable</a>.</p>
 </div>
 
-<footer class="site-footer">
-    <p>&copy; 2026 AuditorIA. Plataforma tecnológica para la automatización fiscal corporativa.</p>
-</footer>
-
+<footer class="site-footer"><p>&copy; 2026 AuditorIA. Plataforma tecnológica para la automatización fiscal corporativa.</p></footer>
 </body>
 </html>
