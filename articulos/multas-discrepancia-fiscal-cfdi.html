@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multas por Discrepancia Fiscal en CFDI 4.0 | AuditorIA</title>
@@ -30,23 +37,15 @@
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="https://auditoriaxml.mx/">AuditorIA</a>
-</nav>
+<nav class="header-nav"><a href="https://auditoriaxml.mx/">AuditorIA</a></nav>
 
 <div class="article-container">
     <h1>Multas por Discrepancia Fiscal en CFDI 4.0: Guía Técnica y Prevención Art. 30-B</h1>
-
     <p>La implementación de la versión 4.0 del Comprobante Fiscal Digital por Internet (CFDI) dotó al Servicio de Administración Tributaria (SAT) de herramientas de validación algorítmica implacables. La fiscalización ya no depende de auditorías presenciales ni de la revisión manual de la contabilidad electrónica. El modelo actual se basa en el cruce de datos extraídos directamente de los nodos XML timbrados por los Proveedores Autorizados de Certificación (PACs). Un error matemático en las retenciones de Impuesto Sobre la Renta (ISR) o del Impuesto al Valor Agregado (IVA) genera alertas automatizadas en los sistemas de la autoridad.</p>
-
     <h2>Origen de la Discrepancia Fiscal en el Anexo 20</h2>
-
     <p>La discrepancia fiscal ocurre cuando los importes declarados en las declaraciones de pagos provisionales o definitivos no coinciden matemáticamente con la suma de los nodos de retención extraídos de los CFDI emitidos y recibidos. El Anexo 20 de la Resolución Miscelánea Fiscal define reglas de validación estrictas para la conformación del XML.</p>
-
     <h3>Nodos y Atributos Críticos de Retención</h3>
-
     <p>El error humano en los sistemas de facturación ERP (Enterprise Resource Planning) ocurre frecuentemente en el bloque <code>cfdi:Impuestos</code>. Las empresas registran subtotales correctos, pero configuran mal las tasas de retención. El SAT extrae los datos mediante la siguiente estructura técnica:</p>
-
     <div class="code-block">
 &lt;cfdi:Impuestos&gt;
   &lt;cfdi:Retenciones&gt;
@@ -55,79 +54,42 @@
   &lt;/cfdi:Retenciones&gt;
 &lt;/cfdi:Impuestos&gt;
     </div>
-
-    <p>Si el nodo <code>Importe</code> no corresponde exactamente al cálculo derivado de la base multiplicada por la tasa establecida para el régimen correspondiente (ejemplo: retención del 1.25% de ISR para RESICO, o retención de dos terceras partes del IVA por prestación de servicios profesionales), el sistema del SAT marca el UUID como atípico.</p>
-
+    <p>Si el nodo <code>Importe</code> no corresponde exactamente al cálculo derivado de la base multiplicada por la tasa establecida para el régimen correspondiente, el sistema del SAT marca el UUID como atípico.</p>
     <p>Evitar estas discrepancias exige procesos de escrutinio técnico a nivel de código. Puedes cruzar estos datos en segundos y <a href="https://auditoriaxml.mx/" class="cta-textual">auditar masivamente tus XML para detectar diferencias en retenciones usando AuditorIA</a>, antes de que el SAT notifique la anomalía.</p>
-
     <h2>Sanciones Económicas y Penales (Código Fiscal de la Federación)</h2>
-
-    <p>El Código Fiscal de la Federación (CFF) tipifica las infracciones derivadas de la mala emisión de comprobantes y la omisión de enteros de retenciones. La autoridad tributaria no asume el error humano como excusa legal; un cálculo incorrecto en el XML se persigue como evasión u omisión.</p>
-
+    <p>El Código Fiscal de la Federación (CFF) tipifica las infracciones derivadas de la mala emisión de comprobantes y la omisión de enteros de retenciones. La autoridad tributaria no asume el error humano como excusa legal.</p>
     <h3>Multas por Errores en el Nodo cfdi:Impuestos</h3>
-
-    <p>El Artículo 83, fracción VII del CFF establece como infracción no expedir, no entregar o no poner a disposición de los clientes los CFDI, o expedirlos sin que cumplan los requisitos señalados en el Artículo 29-A del mismo código. Las sanciones son progresivas:</p>
-
     <ul>
-        <li><strong>Multas por comprobante:</strong> La sanción pecuniaria oscila entre $400 y $600 pesos por cada CFDI emitido con errores de estructura o cálculo, según el Artículo 84 del CFF. En un volumen de 10,000 facturas mensuales, un error de configuración en el ERP representa una contingencia millonaria.</li>
-        <li><strong>Multas por omisión de contribuciones:</strong> Si la retención calculada en el XML es menor a la estipulada por ley, el SAT aplica el Artículo 76 del CFF. La multa será del 55% al 75% de las contribuciones omitidas, independientes del pago del impuesto actualizado y los recargos correspondientes.</li>
-        <li><strong>Delitos fiscales:</strong> La omisión reiterada de retenciones o el entero deficiente de las mismas, derivado de manipulaciones en los sistemas de facturación para alterar la base gravable, se equipara a defraudación fiscal bajo el Artículo 109 del CFF.</li>
+        <li><strong>Multas por comprobante:</strong> La sanción pecuniaria oscila entre $400 y $600 pesos por cada CFDI emitido con errores de estructura o cálculo, según el Artículo 84 del CFF.</li>
+        <li><strong>Multas por omisión de contribuciones:</strong> Si la retención calculada en el XML es menor a la estipulada por ley, el SAT aplica el Artículo 76 del CFF. La multa será del 55% al 75% de las contribuciones omitidas.</li>
+        <li><strong>Delitos fiscales:</strong> La omisión reiterada de retenciones o el entero deficiente de las mismas se equipara a defraudación fiscal bajo el Artículo 109 del CFF.</li>
     </ul>
-
     <h3>Suspensión de Certificados de Sello Digital (CSD)</h3>
-
-    <p>El daño más letal para la operatividad de una empresa no es la multa económica, sino la paralización de sus ingresos. El Artículo 17-H Bis del CFF faculta al SAT para restringir temporalmente el uso del Certificado de Sello Digital (CSD). La fracción VII de este artículo estipula que la restricción procede cuando la autoridad detecta que el ingreso declarado, el valor de los actos o el impuesto retenido por el contribuyente no concuerda con los ingresos o valor de actos señalados en los CFDI, sus complementos de pago o estados de cuenta bancarios.</p>
-
-    <p>Sin CSD, la empresa no puede facturar, deteniendo por completo su flujo de efectivo hasta solventar las aclaraciones, un proceso que demora semanas.</p>
-
+    <p>El Artículo 17-H Bis del CFF faculta al SAT para restringir temporalmente el uso del Certificado de Sello Digital (CSD). La fracción VII estipula que la restricción procede cuando el impuesto retenido no concuerda con los ingresos señalados en los CFDI. Sin CSD, la empresa no puede facturar.</p>
     <div class="cta-visual">
         <h3>Protege tu Sello Digital Hoy Mismo</h3>
         <p>No esperes una carta invitación del Buzón Tributario. Procesa tu repositorio de facturas y detecta discrepancias de ISR e IVA en tiempo real.</p>
         <a href="https://auditoriaxml.mx/" class="cta-button">Ejecutar Auditoría Preventiva XML</a>
     </div>
-
     <h2>Mecanismos de Fiscalización del SAT</h2>
-
-    <p>Comprender cómo operan los servidores del SAT permite a los despachos contables y a las empresas anticiparse a los requerimientos. La validación ya no es estática.</p>
-
+    <p>Comprender cómo operan los servidores del SAT permite a los despachos contables y a las empresas anticiparse a los requerimientos.</p>
     <h3>Cruce de Información mediante PACs y Buzón Tributario</h3>
-
-    <p>En el momento en que un PAC timbra un UUID, el archivo XML entra a la base de datos de la Administración General de Comunicaciones y Tecnologías de la Información del SAT. Algoritmos de minería de datos agrupan los comprobantes por RFC receptor y emisor, totalizan las retenciones declaradas (atributos 001 y 002) y comparan ese total con el pago referenciado procesado por las instituciones bancarias.</p>
-    
-    <p>Si la matriz matemática arroja un diferencial, el sistema detona automáticamente una carta invitación o un requerimiento formal a través del Buzón Tributario. Responder a estas notificaciones requiere una trazabilidad absoluta de cada UUID involucrado, tarea logísticamente imposible de realizar mediante aperturas manuales de archivos XML o conversiones de formato plano.</p>
-
+    <p>En el momento en que un PAC timbra un UUID, el archivo XML entra a la base de datos de la Administración General de Comunicaciones y Tecnologías de la Información del SAT. Algoritmos de minería de datos totalizan las retenciones declaradas (atributos 001 y 002) y comparan ese total con el pago referenciado procesado por las instituciones bancarias.</p>
     <h2>Cómo Ejecutar una Auditoría Preventiva Masiva</h2>
-
-    <p>La defensa fiscal eficaz es preventiva. El departamento de contabilidad debe replicar el modelo de validación algorítmica del SAT internamente, antes del cierre de cada mes. Esto requiere herramientas capaces de leer el Document Object Model (DOM) de miles de archivos simultáneamente.</p>
-
+    <p>La defensa fiscal eficaz es preventiva. El departamento de contabilidad debe replicar el modelo de validación algorítmica del SAT internamente, antes del cierre de cada mes.</p>
     <h3>Extracción de Datos y Recálculo de ISR e IVA</h3>
-
-    <p>Una auditoría técnica extrae cinco puntos críticos de cada archivo:</p>
     <ol>
         <li><strong>RFC Emisor y Receptor:</strong> Validando la existencia en las listas del Artículo 69-B (EFOS).</li>
-        <li><strong>UUID (Folio Fiscal):</strong> Garantizando la existencia del nodo <code>tfd:TimbreFiscalDigital</code> para asegurar que el documento es legalmente válido y no un borrador.</li>
-        <li><strong>Subtotal Base:</strong> Identificando el importe antes de descuentos e impuestos trasladados.</li>
+        <li><strong>UUID (Folio Fiscal):</strong> Garantizando la existencia del nodo <code>tfd:TimbreFiscalDigital</code>.</li>
+        <li><strong>Subtotal Base:</strong> Identificando el importe antes de descuentos e impuestos.</li>
         <li><strong>Retenciones Declaradas:</strong> Leyendo los importes capturados por el usuario del ERP.</li>
-        <li><strong>Retenciones Esperadas:</strong> El motor de auditoría multiplica el subtotal por la tasa aplicable exigida por la ley para ese régimen y servicio específico.</li>
+        <li><strong>Retenciones Esperadas:</strong> El motor multiplica el subtotal por la tasa aplicable exigida por la ley.</li>
     </ol>
-
-    <p>Al identificar un delta entre lo "Declarado" y lo "Esperado", el auditor clasifica el CFDI como Riesgo Fiscal o Error Estructural. Para automatizar este recálculo estricto sin invertir horas en macros de Excel inestables, <a href="https://auditoriaxml.mx/" class="cta-textual">sube tus carpetas de XML a nuestra plataforma para obtener un dictamen ejecutivo automático</a>.</p>
-
+    <p>Al identificar un delta, el auditor clasifica el CFDI como Riesgo Fiscal o Error Estructural. Para automatizar este recálculo estricto sin invertir horas en macros de Excel inestables, <a href="https://auditoriaxml.mx/" class="cta-textual">sube tus carpetas de XML a nuestra plataforma para obtener un dictamen ejecutivo automático</a>.</p>
     <h2>Implementación del Dictamen Preventivo (Art. 30-B CFF)</h2>
-
-    <p>El Artículo 30-B del CFF obliga a los contribuyentes a integrar la contabilidad con información detallada sobre la determinación de contribuciones y su entero. Presentar estados financieros sin un respaldo de cuadratura a nivel XML debilita cualquier defensa ante un crédito fiscal.</p>
-
-    <h3>Elementos del Dictamen de Retenciones</h3>
-
-    <p>Un dictamen preventivo profesional no es un simple listado de facturas. Debe categorizar el nivel de riesgo financiero de la corporación. El documento resultante de la auditoría debe proveer una vista ejecutiva con el total de facturas analizadas, la cuantificación monetaria exacta del riesgo fiscal por retenciones mal calculadas, y un desglose tabular de los UUID específicos que requieren refacturación mediante nota de crédito o sustitución.</p>
-
-    <p>Este nivel de control interno asegura que el pago de impuestos provisionales concuerde de forma simétrica con la metadata almacenada en los servidores gubernamentales, blindando a la empresa contra actos de molestia, auditorías electrónicas y la parálisis operativa derivada de la cancelación de sellos digitales.</p>
-
+    <p>El Artículo 30-B del CFF obliga a los contribuyentes a integrar la contabilidad con información detallada sobre la determinación de contribuciones. Presentar estados financieros sin un respaldo de cuadratura a nivel XML debilita cualquier defensa ante un crédito fiscal. El documento resultante de la auditoría debe proveer una vista ejecutiva con la cuantificación monetaria exacta del riesgo fiscal.</p>
 </div>
 
-<footer class="site-footer">
-    <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-</footer>
-
+<footer class="site-footer"><p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p></footer>
 </body>
 </html>
