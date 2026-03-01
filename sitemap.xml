@@ -26,6 +26,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://auditoriaxml.mx/articulos/proteccion-empresas-art-30-b-cff.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://auditoriaxml.mx/privacidad.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
