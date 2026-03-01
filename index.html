@@ -25,9 +25,21 @@
         .feature-card { background: white; padding: 30px; border-radius: 10px; border: 1px solid #E5E7EB; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
         .feature-card h3 { color: #111827; font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
         .feature-card p { color: #4B5563; font-size: 14px; line-height: 1.6; }
-        .seo-section { color: #374151; line-height: 1.7; background: white; padding: 40px; border-radius: 10px; border: 1px solid #E5E7EB; }
+        .seo-section { color: #374151; line-height: 1.7; background: white; padding: 40px; border-radius: 10px; border: 1px solid #E5E7EB; margin-bottom: 60px; }
         .seo-section h2 { color: #111827; font-size: 24px; margin-bottom: 24px; border-bottom: 2px solid #F3F4F6; padding-bottom: 10px; }
         .seo-section h3 { color: #2563EB; font-size: 18px; margin-top: 32px; margin-bottom: 12px; }
+        
+        /* Sección Blog/Recursos */
+        .resources-section { max-width: 1200px; margin: 0 auto 60px; padding: 0 20px; }
+        .resources-section h2 { color: #111827; font-size: 24px; margin-bottom: 30px; border-bottom: 2px solid #F3F4F6; padding-bottom: 10px; }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .article-card { background: white; padding: 25px; border-radius: 10px; border: 1px solid #E5E7EB; text-decoration: none; display: block; transition: box-shadow 0.2s; }
+        .article-card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .article-date { font-size: 12px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .article-card h4 { color: #111827; font-size: 18px; margin: 10px 0; }
+        .article-card p { color: #4B5563; font-size: 14px; line-height: 1.5; margin-bottom: 15px; }
+        .read-more { color: #2563EB; font-size: 14px; font-weight: 600; }
+
         .site-footer { text-align: center; padding: 40px 20px; background-color: #111827; color: #6B7280; font-size: 14px; border-top: 1px solid #374151; }
         .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
         .footer-links a { color: #9CA3AF; text-decoration: none; transition: 0.2s; }
@@ -106,6 +118,18 @@
         <p>Extraemos directamente los nodos del XML y recalculamos los impuestos basados en el subtotal y la clave de producto. Generamos un reporte que aísla exclusivamente los CFDI que presentan diferencias matemáticas o errores estructurales en el RFC.</p>
     </section>
 </div>
+
+<section class="resources-section">
+    <h2>Recursos Fiscales y Artículos Técnicos</h2>
+    <div class="articles-grid">
+        <a href="/articulos/multas-discrepancia-fiscal-cfdi.html" class="article-card">
+            <span class="article-date">Febrero 2026</span>
+            <h4>Multas por Discrepancia Fiscal en CFDI 4.0</h4>
+            <p>Análisis técnico de las multas del SAT por errores en nodos de retención y métodos de auditoría preventiva según el Art. 30-B.</p>
+            <span class="read-more">Leer artículo →</span>
+        </a>
+        </div>
+</section>
 
 <footer class="site-footer">
     <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
