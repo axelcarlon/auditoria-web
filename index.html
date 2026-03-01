@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #ffffff;
+            background-color: #F9FAFB;
             font-family: system-ui, -apple-system, sans-serif;
             overflow-x: hidden;
         }
@@ -43,7 +43,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(15, 36, 62, 0.85); /* Azul institucional más corporativo */
             z-index: 1;
         }
 
@@ -68,15 +68,15 @@
             width: 100%;
             max-width: 600px;
             background-color: #ffffff;
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 40px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid #D1D5DB;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E5E7EB;
         }
 
         #dropZone {
             background-color: #F3F4F6;
-            border: 1px dashed #D1D5DB;
+            border: 2px dashed #D1D5DB;
             border-radius: 8px;
             padding: 60px 20px;
             text-align: center;
@@ -90,62 +90,97 @@
         }
 
         .lock-img {
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             object-fit: cover;
             border-radius: 50%;
             background-color: white;
             padding: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             margin: 0 auto;
             display: block;
         }
 
+        /* Nuevas Secciones Profesionales */
+        .trust-banner {
+            background-color: #111827;
+            color: #D1D5DB;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .feature-card h3 {
+            color: #111827;
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card p {
+            color: #4B5563;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
         .seo-section {
-            max-width: 1000px;
-            margin: 80px auto;
-            padding: 0 40px;
             color: #374151;
             line-height: 1.7;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
         }
 
         .seo-section h2 {
             color: #111827;
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 24px;
-            border-bottom: 2px solid #E5E7EB;
+            border-bottom: 2px solid #F3F4F6;
             padding-bottom: 10px;
         }
 
         .seo-section h3 {
             color: #2563EB;
-            font-size: 20px;
+            font-size: 18px;
             margin-top: 32px;
             margin-bottom: 12px;
         }
 
-        .seo-section p {
-            margin-bottom: 16px;
-        }
-
-        .seo-section ul {
-            margin-bottom: 24px;
-            padding-left: 20px;
-        }
-
-        .seo-section li {
-            margin-bottom: 8px;
-        }
-
         .site-footer {
             text-align: center;
-            padding: 24px;
+            padding: 30px;
             background-color: #111827;
-            color: #9CA3AF;
+            color: #6B7280;
             font-size: 14px;
+            border-top: 1px solid #374151;
         }
 
-        /* Optimización Móvil */
         @media (max-width: 768px) {
             .split-layout {
                 flex-direction: column;
@@ -153,14 +188,6 @@
             .left-panel, .right-panel {
                 min-height: 50vh;
                 padding: 30px 20px;
-            }
-            .seo-section {
-                margin: 40px auto;
-                padding: 0 20px;
-            }
-            .lock-img {
-                width: 150px;
-                height: 150px;
             }
         }
     </style>
@@ -170,8 +197,8 @@
 <div class="split-layout">
     <div class="left-panel">
         <div class="left-content">
-            <h1 style="font-size: 32px; font-weight: 700; margin-bottom: 16px;">Auditoría Masiva de XML y Validación de Retenciones ISR e IVA</h1>
-            <p style="font-size: 16px; color: #E2E8F0; margin-bottom: 40px;">Dictamen Fiscal Preventivo Art. 30-B para CFDI 4.0. Procesa facturas y detecta discrepancias fiscales al instante.</p>
+            <h1 style="font-size: 36px; font-weight: 800; margin-bottom: 16px; line-height: 1.2;">Auditoría Fiscal Automatizada para CFDI 4.0</h1>
+            <p style="font-size: 18px; color: #E2E8F0; margin-bottom: 40px; font-weight: 300;">Detecta discrepancias en retenciones de ISR e IVA en segundos. Genera tu dictamen preventivo del Art. 30-B del CFF sin procesos manuales.</p>
             <img src="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg" alt="Software validador de retenciones y auditoría masiva de XML CFDI 4.0" class="lock-img">
         </div>
     </div>
@@ -179,50 +206,66 @@
     <div class="right-panel">
         <div class="upload-card">
             <div style="text-align: left; margin-bottom: 24px;">
-                <label style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #4B5563; margin-bottom: 12px;">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Repositorio de CFDI (XML)
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 12px;">
+                    <svg width="20" height="20" fill="none" stroke="#2563EB" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Cargar Repositorio XML
                 </label>
                 <div id="dropZone">
-                    <svg width="32" height="32" color="#6B7280" style="margin-bottom: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
-                    <p id="fileNameDisplay" style="font-size: 14px; color: #6B7280; margin: 0;">Arrastra tus archivos o selecciona la carpeta XML</p>
+                    <svg width="40" height="40" color="#9CA3AF" style="margin-bottom: 12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <p id="fileNameDisplay" style="font-size: 15px; color: #4B5563; margin: 0; font-weight: 500;">Arrastra tus archivos o haz clic para explorar</p>
+                    <p style="font-size: 12px; color: #9CA3AF; margin-top: 8px;">Soporta carga masiva sin límite de archivos</p>
                     <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
                 </div>
             </div>
-            <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
-            <button id="uploadBtn" style="width: 100%; background: #2563EB; color: white; padding: 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center;">INICIAR AUDITORÍA</button>
+            <button id="uploadBtn" style="width: 100%; background: #2563EB; color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.3s;">INICIAR AUDITORÍA AHORA</button>
             <div id="statusContainer" style="margin-top: 20px; display: none; text-align: center;">
-                <p id="statusText" style="font-size: 14px; font-weight: 500; color: #10B981;"></p>
+                <p id="statusText" style="font-size: 14px; font-weight: 600; color: #059669;"></p>
             </div>
         </div>
     </div>
 </div>
 
-<section class="seo-section">
-    <h2>La Importancia de Automatizar la Validación de Retenciones Fiscales</h2>
-    <p>El escrutinio del SAT sobre el correcto cálculo y entero de impuestos es cada vez más riguroso, especialmente tras la implementación obligatoria del <strong>CFDI 4.0</strong>. Uno de los mayores riesgos para despachos contables y empresas radica en la <strong>discrepancia fiscal</strong> generada por errores en las retenciones de IVA e ISR.</p>
-    <p>La revisión manual de cientos o miles de facturas es un proceso ineficiente y propenso a errores humanos. Una auditoría masiva de XML permite cruzar la información declarada contra las fórmulas matemáticas estrictas requeridas por la autoridad, detectando anomalías estructurales y diferencias monetarias antes de que se emita un requerimiento oficial o una multa. El uso de validadores tecnológicos es la única forma viable de garantizar un cumplimiento preventivo eficaz y proteger el patrimonio de la empresa.</p>
+<div class="trust-banner">
+    🔒 PRIVACIDAD GARANTIZADA: PROCESAMIENTO EN MEMORIA VOLÁTIL. CERO ALMACENAMIENTO DE DATOS FISCALES.
+</div>
 
-    <h2>Preguntas Frecuentes sobre la Auditoría de CFDI 4.0</h2>
-    
-    <h3>¿Qué es el dictamen preventivo del Artículo 30-B del CFF?</h3>
-    <p>El Artículo 30-B del Código Fiscal de la Federación obliga a los contribuyentes a integrar y conservar información sobre la determinación de sus impuestos. Un dictamen preventivo es un análisis interno de las facturas (XML) que demuestra que las retenciones y traslados de impuestos cuadran exactamente con la ley, previniendo contingencias y facilitando la defensa legal en caso de auditorías del SAT.</p>
+<div class="content-wrapper">
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3><svg width="24" height="24" fill="none" stroke="#2563EB" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg> Cálculo Matemático Preciso</h3>
+            <p>El algoritmo lee los atributos XML y recalcula las retenciones esperadas de IVA e ISR contra lo declarado, identificando discrepancias centavo a centavo.</p>
+        </div>
+        <div class="feature-card">
+            <h3><svg width="24" height="24" fill="none" stroke="#2563EB" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Velocidad de Procesamiento</h3>
+            <p>Analiza cientos de facturas emitidas y recibidas en cuestión de segundos, eliminando horas de revisión manual en Excel y mitigando el error humano.</p>
+        </div>
+        <div class="feature-card">
+            <h3><svg width="24" height="24" fill="none" stroke="#2563EB" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Reporte Ejecutivo</h3>
+            <p>Exporta automáticamente un dictamen en formato .xlsx con gráficas 3D, semáforo de riesgo y clasificación de errores estructurales listo para presentar a dirección.</p>
+        </div>
+    </div>
 
-    <h3>¿Cuáles son las multas por discrepancia fiscal en retenciones de IVA e ISR?</h3>
-    <p>El SAT sanciona severamente la omisión, el cálculo erróneo o el entero extemporáneo de retenciones. Las multas pueden ir del 55% al 75% de las contribuciones omitidas, además del cobro de recargos y actualizaciones. En casos graves de discrepancia fiscal donde se determine dolo, la autoridad puede suspender sellos digitales, inmovilizar cuentas bancarias o incluso tipificarlo como defraudación fiscal.</p>
+    <section class="seo-section">
+        <h2>La Importancia de Automatizar la Validación de Retenciones Fiscales</h2>
+        <p>El escrutinio del SAT sobre el correcto cálculo y entero de impuestos es cada vez más riguroso, especialmente tras la implementación obligatoria del <strong>CFDI 4.0</strong>. Uno de los mayores riesgos para despachos contables y empresas radica en la <strong>discrepancia fiscal</strong> generada por errores en las retenciones de IVA e ISR.</p>
+        <p>La revisión manual de cientos o miles de facturas es un proceso ineficiente. Una auditoría masiva de XML permite cruzar la información declarada contra las fórmulas matemáticas estrictas requeridas por la autoridad, detectando anomalías antes de que se emita un requerimiento oficial. El uso de validadores tecnológicos es la única forma viable de garantizar un cumplimiento preventivo eficaz.</p>
 
-    <h3>¿Cómo auditar masivamente facturas CFDI 4.0?</h3>
-    <p>Para realizar una descarga y revisión masiva sin colapsar el sistema manual, se requiere un software que extraiga directamente los nodos del XML. El proceso correcto es:</p>
-    <ul>
-        <li>Recolectar todos los archivos XML emitidos y recibidos en un periodo.</li>
-        <li>Procesarlos mediante un algoritmo que lea atributos ocultos y complementos de pago.</li>
-        <li>Recalcular los impuestos (IVA e ISR) basados en el subtotal y la clave de producto/servicio.</li>
-        <li>Generar un reporte ejecutivo que aísle exclusivamente los CFDI que presentan diferencias matemáticas o errores estructurales en el RFC.</li>
-    </ul>
-</section>
+        <h2>Preguntas Frecuentes sobre la Auditoría de CFDI 4.0</h2>
+        
+        <h3>¿Qué es el dictamen preventivo del Artículo 30-B del CFF?</h3>
+        <p>El Artículo 30-B del Código Fiscal de la Federación obliga a los contribuyentes a integrar y conservar información sobre la determinación de sus impuestos. Un dictamen preventivo es un análisis interno de las facturas (XML) que demuestra que las retenciones y traslados de impuestos cuadran exactamente con la ley.</p>
+
+        <h3>¿Cuáles son las multas por discrepancia fiscal en retenciones?</h3>
+        <p>El SAT sanciona severamente la omisión o el cálculo erróneo. Las multas pueden ir del 55% al 75% de las contribuciones omitidas, además del cobro de recargos y actualizaciones. En casos graves de discrepancia fiscal, la autoridad puede suspender sellos digitales.</p>
+
+        <h3>¿Cómo funciona el análisis de AuditorIA?</h3>
+        <p>Extraemos directamente los nodos del XML y recalculamos los impuestos basados en el subtotal y la clave de producto. Generamos un reporte que aísla exclusivamente los CFDI que presentan diferencias matemáticas o errores estructurales en el RFC.</p>
+    </section>
+</div>
 
 <footer class="site-footer">
-    <p>&copy; 2026 AuditorIA. Procesamiento seguro en memoria volátil. No almacenamos datos fiscales.</p>
+    <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+    <p style="margin-top: 10px; font-size: 12px;">No somos una entidad gubernamental ni estamos afiliados al SAT.</p>
 </footer>
 
 <script>
