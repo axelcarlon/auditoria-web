@@ -8,6 +8,7 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://auditoriaxml.mx/" />
     
+    <link rel="preconnect" href="https://auditoria-backend-crar.onrender.com">
     <link rel="preload" as="image" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg">
     <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
     
@@ -63,8 +64,8 @@
         .left-content { position: relative; z-index: 2; width: 100%; max-width: 500px; text-align: center; }
         .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background-color: var(--bg-secondary); }
         .upload-card { width: 100%; max-width: 600px; background-color: var(--bg-secondary); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); }
-        #dropZone { background-color: var(--drop-bg); border: 2px dashed var(--border); border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; }
-        #dropZone:hover { border-color: var(--brand); }
+        #dropZone { background-color: var(--drop-bg); border: 2px dashed var(--border); border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        #dropZone:hover, #dropZone.dragover { border-color: var(--brand); background-color: rgba(37, 99, 235, 0.05); }
         .lock-img { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; background-color: white; padding: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); margin: 0 auto; display: block; }
         .sample-link { display: block; text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 14px; text-decoration: underline; cursor: pointer; font-weight: 500; }
         .sample-link:hover { color: var(--brand); }
@@ -91,7 +92,6 @@
         .footer-links a { color: #CBD5E1; text-decoration: none; transition: 0.2s; font-weight: 500; }
         .footer-links a:hover { color: #ffffff; }
         
-        /* Spinner CSS */
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -212,7 +212,6 @@
     <p style="margin-top: 10px; font-size: 12px;">No somos una entidad gubernamental ni estamos afiliados al SAT.</p>
     <div class="footer-links">
         <a href="mailto:contacto@auditoriaxml.mx">contacto@auditoriaxml.mx</a>
-        <a href="https://wa.me/5211234567890" target="_blank" rel="noopener noreferrer">WhatsApp Corporativo</a>
         <a href="/privacidad.html">Aviso de Privacidad</a>
         <a href="/terminos.html">Términos de Servicio</a>
         <a href="/despachos-contables.html">Para Despachos Contables</a>
@@ -227,21 +226,44 @@
     const statusContainer = document.getElementById('statusContainer');
     const display = document.getElementById('fileNameDisplay');
     const spinner = document.getElementById('loadingSpinner');
+    const dropZone = document.getElementById('dropZone');
 
-    document.getElementById('dropZone').onclick = () => input.click();
+    dropZone.onclick = () => input.click();
 
-    input.onchange = (e) => {
-        const count = e.target.files.length;
+    // Eventos Drag & Drop
+    ['dragover', 'dragenter'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        input.files = dt.files;
+        updateDisplay(input.files);
+    });
+
+    input.onchange = (e) => updateDisplay(e.target.files);
+
+    function updateDisplay(files) {
+        const count = files.length;
         if (count > 0) {
-            display.innerText = count > 1 ? `${count} archivos cargados listos para procesar` : e.target.files[0].name;
+            display.innerText = count > 1 ? `${count} archivos cargados listos para procesar` : files[0].name;
             display.style.color = "var(--brand)";
         }
-    };
+    }
 
     btn.onclick = async () => {
         if (input.files.length === 0) return alert("Sube archivos XML primero");
         
-        // Validación estricta Frontend (Extensión y Tamaño Máximo 50MB)
         const MAX_SIZE_MB = 50;
         let totalSize = 0;
         const formData = new FormData();
@@ -256,7 +278,7 @@
         }
 
         if (totalSize > MAX_SIZE_MB * 1024 * 1024) {
-            alert(`Límite excedido. El peso total de los archivos es ${(totalSize / (1024 * 1024)).toFixed(2)}MB. El máximo es 50MB por lote.`);
+            alert(`Límite excedido. El peso total es ${(totalSize / (1024 * 1024)).toFixed(2)}MB. El máximo es 50MB por lote.`);
             return;
         }
         
