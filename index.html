@@ -7,189 +7,32 @@
     <meta name="description" content="Analiza miles de XMLs en segundos. Detecta discrepancias en retenciones de IVA e ISR y genera dictámenes preventivos automatizados para CFDI 4.0.">
     <meta name="robots" content="index, follow">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            background-color: #F9FAFB;
-            font-family: system-ui, -apple-system, sans-serif;
-            overflow-x: hidden;
-        }
-
-        .split-layout {
-            display: flex;
-            width: 100vw;
-            min-height: 100vh;
-        }
-
-        .left-panel {
-            flex: 1;
-            background-image: url('https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            color: white;
-            position: relative;
-        }
-
-        .left-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 36, 62, 0.85); /* Azul institucional más corporativo */
-            z-index: 1;
-        }
-
-        .left-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .right-panel {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            background-color: #ffffff;
-        }
-
-        .upload-card {
-            width: 100%;
-            max-width: 600px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            border: 1px solid #E5E7EB;
-        }
-
-        #dropZone {
-            background-color: #F3F4F6;
-            border: 2px dashed #D1D5DB;
-            border-radius: 8px;
-            padding: 60px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        #dropZone:hover {
-            border-color: #2563EB;
-            background-color: #EFF6FF;
-        }
-
-        .lock-img {
-            width: 180px;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 50%;
-            background-color: white;
-            padding: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            margin: 0 auto;
-            display: block;
-        }
-
-        /* Nuevas Secciones Profesionales */
-        .trust-banner {
-            background-color: #111827;
-            color: #D1D5DB;
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .content-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            border: 1px solid #E5E7EB;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-        }
-
-        .feature-card h3 {
-            color: #111827;
-            font-size: 18px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .feature-card p {
-            color: #4B5563;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .seo-section {
-            color: #374151;
-            line-height: 1.7;
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            border: 1px solid #E5E7EB;
-        }
-
-        .seo-section h2 {
-            color: #111827;
-            font-size: 24px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #F3F4F6;
-            padding-bottom: 10px;
-        }
-
-        .seo-section h3 {
-            color: #2563EB;
-            font-size: 18px;
-            margin-top: 32px;
-            margin-bottom: 12px;
-        }
-
-        .site-footer {
-            text-align: center;
-            padding: 30px;
-            background-color: #111827;
-            color: #6B7280;
-            font-size: 14px;
-            border-top: 1px solid #374151;
-        }
-
-        @media (max-width: 768px) {
-            .split-layout {
-                flex-direction: column;
-            }
-            .left-panel, .right-panel {
-                min-height: 50vh;
-                padding: 30px 20px;
-            }
-        }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        .split-layout { display: flex; width: 100vw; min-height: 100vh; }
+        .left-panel { flex: 1; background-image: url('https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; color: white; position: relative; }
+        .left-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 36, 62, 0.85); z-index: 1; }
+        .left-content { position: relative; z-index: 2; width: 100%; max-width: 500px; text-align: center; }
+        .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background-color: #ffffff; }
+        .upload-card { width: 100%; max-width: 600px; background-color: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #E5E7EB; }
+        #dropZone { background-color: #F3F4F6; border: 2px dashed #D1D5DB; border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; }
+        #dropZone:hover { border-color: #2563EB; background-color: #EFF6FF; }
+        .lock-img { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; background-color: white; padding: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); margin: 0 auto; display: block; }
+        .sample-link { display: block; text-align: center; margin-top: 16px; color: #4B5563; font-size: 14px; text-decoration: underline; cursor: pointer; font-weight: 500; }
+        .sample-link:hover { color: #2563EB; }
+        .trust-banner { background-color: #111827; color: #D1D5DB; text-align: center; padding: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
+        .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px; }
+        .feature-card { background: white; padding: 30px; border-radius: 10px; border: 1px solid #E5E7EB; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
+        .feature-card h3 { color: #111827; font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .feature-card p { color: #4B5563; font-size: 14px; line-height: 1.6; }
+        .seo-section { color: #374151; line-height: 1.7; background: white; padding: 40px; border-radius: 10px; border: 1px solid #E5E7EB; }
+        .seo-section h2 { color: #111827; font-size: 24px; margin-bottom: 24px; border-bottom: 2px solid #F3F4F6; padding-bottom: 10px; }
+        .seo-section h3 { color: #2563EB; font-size: 18px; margin-top: 32px; margin-bottom: 12px; }
+        .site-footer { text-align: center; padding: 40px 20px; background-color: #111827; color: #6B7280; font-size: 14px; border-top: 1px solid #374151; }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
+        .footer-links a { color: #9CA3AF; text-decoration: none; transition: 0.2s; }
+        .footer-links a:hover { color: #ffffff; }
+        @media (max-width: 768px) { .split-layout { flex-direction: column; } .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } }
     </style>
 </head>
 <body>
@@ -218,6 +61,7 @@
                 </div>
             </div>
             <button id="uploadBtn" style="width: 100%; background: #2563EB; color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.3s;">INICIAR AUDITORÍA AHORA</button>
+            <a href="/ejemplo.xlsx" download class="sample-link">📄 Ver un ejemplo del dictamen (Excel)</a>
             <div id="statusContainer" style="margin-top: 20px; display: none; text-align: center;">
                 <p id="statusText" style="font-size: 14px; font-weight: 600; color: #059669;"></p>
             </div>
@@ -266,6 +110,12 @@
 <footer class="site-footer">
     <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
     <p style="margin-top: 10px; font-size: 12px;">No somos una entidad gubernamental ni estamos afiliados al SAT.</p>
+    <div class="footer-links">
+        <a href="/privacidad.html">Aviso de Privacidad</a>
+        <a href="/terminos.html">Términos de Servicio</a>
+        <a href="/despachos-contables.html">Para Despachos Contables</a>
+        <a href="/empresas.html">Para Empresas</a>
+    </div>
 </footer>
 
 <script>
