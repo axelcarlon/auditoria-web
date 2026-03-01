@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conciliación Automatizada de Complementos de Pago en CFDI 4.0 | AuditorIA</title>
@@ -29,64 +36,35 @@
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="/">AuditorIA</a>
-</nav>
+<nav class="header-nav"><a href="/">AuditorIA</a></nav>
 
 <div class="article-container">
     <h1>Conciliación Automatizada de Complementos de Pago (CRP) en CFDI 4.0</h1>
-
-    <p>La gestión del flujo de efectivo fiscal se fragmentó con la obligatoriedad del Complemento de Recepción de Pagos (CRP) versión 2.0. El Servicio de Administración Tributaria (SAT) utiliza este documento para determinar el momento exacto de causación del Impuesto al Valor Agregado (IVA) y la retención del Impuesto Sobre la Renta (ISR). La falta de conciliación matemática entre el documento de ingreso (Factura PPD) y su respectivo CRP detona el rechazo automático de acreditamientos fiscales.</p>
-
+    <p>La gestión del flujo de efectivo fiscal se fragmentó con la obligatoriedad del Complemento de Recepción de Pagos (CRP) versión 2.0. El Servicio de Administración Tributaria (SAT) utiliza este documento para determinar el momento exacto de causación del Impuesto al Valor Agregado (IVA) y la retención del Impuesto Sobre la Renta (ISR).</p>
     <h2>La Estructura Técnica del Complemento de Recepción de Pagos</h2>
-
-    <p>A diferencia del CFDI de Ingreso, el CRP contiene atributos diseñados exclusivamente para la trazabilidad financiera. El análisis algorítmico debe extraer la relación exacta entre los pagos recibidos y los saldos insolutos de las facturas de origen.</p>
-
+    <p>A diferencia del CFDI de Ingreso, el CRP contiene atributos diseñados exclusivamente para la trazabilidad financiera.</p>
     <h3>Nodos cfdi:Pagos y cfdi:DoctoRelacionado</h3>
-
-    <p>El SAT cruza el importe bancario depositado contra el nodo <code>pago20:Pago</code>. Dentro de este, el bloque <code>pago20:DoctoRelacionado</code> debe contener el UUID de la factura origen y la desintegración exacta de los impuestos proporcionales pagados en esa exhibición. La complejidad radica en la versión 2.0 del complemento, la cual obliga a incluir el bloque <code>pago20:ImpuestosDR</code>.</p>
-
+    <p>El SAT cruza el importe bancario depositado contra el nodo <code>pago20:Pago</code>. Dentro de este, el bloque <code>pago20:DoctoRelacionado</code> debe contener el UUID de la factura origen y la desintegración exacta de los impuestos proporcionales pagados.</p>
     <div class="code-block">
-&lt;pago20:DoctoRelacionado IdDocumento="F3C2B1A0-1234-5678-90AB-CDEF12345678" MonedaDR="MXN" NumParcialidad="1" ImpSaldoAnt="11600.00" ImpPagado="5800.00" ImpSaldoInsoluto="5800.00" ObjetoImpDR="02"&gt;
-  &lt;pago20:ImpuestosDR&gt;
-    &lt;pago20:TrasladosDR&gt;
-      &lt;pago20:TrasladoDR BaseDR="5000.00" ImpuestoDR="002" TipoFactorDR="Tasa" TasaOCuotaDR="0.160000" ImporteDR="800.00"/&gt;
-    &lt;/pago20:TrasladosDR&gt;
-  &lt;/pago20:ImpuestosDR&gt;
-&lt;/pago20:DoctoRelacionado&gt;
+&lt;pago20:DoctoRelacionado IdDocumento="F3C2B1A0-1234-5678-90AB-CDEF12345678" MonedaDR="MXN" NumParcialidad="1" ImpSaldoAnt="11600.00" ImpPagado="5800.00" ImpSaldoInsoluto="5800.00"&gt;
     </div>
-
-    <p>Si la suma de los atributos <code>ImporteDR</code> de todos los complementos asociados a una factura no cuadra con el impuesto trasladado en el CFDI origen, la plataforma del SAT bloquea la pre-carga en la declaración de IVA. Para evitar la reconstrucción manual de estos nodos, <a href="/" class="cta-textual">automatiza la conciliación y el recálculo de impuestos con el validador de AuditorIA</a>.</p>
-
-    <h2>El Problema Matemático de los PPD (Pago en Parcialidades o Diferido)</h2>
-
-    <p>La emisión de facturas con Método de Pago PPD (Pago en Parcialidades o Diferido) y Forma de Pago 99 (Por definir) exige la emisión obligatoria de un CRP a más tardar el quinto día natural del mes inmediato siguiente al que se recibió el pago.</p>
-
+    <p>Si la suma de los atributos <code>ImporteDR</code> de todos los complementos asociados a una factura no cuadra con el impuesto trasladado en el CFDI origen, la plataforma del SAT bloquea la pre-carga en la declaración. <a href="/" class="cta-textual">Automatiza la conciliación y el recálculo de impuestos con el validador de AuditorIA</a>.</p>
+    <h2>El Problema Matemático de los PPD</h2>
+    <p>La emisión de facturas con Método de Pago PPD (Pago en Parcialidades o Diferido) exige la emisión obligatoria de un CRP a más tardar el quinto día natural del mes inmediato siguiente.</p>
     <h3>Diferencias Cambiarias en el Complemento</h3>
-
-    <p>El riesgo de discrepancia se agrava en operaciones con moneda extranjera (USD, EUR). El CRP exige definir el atributo <code>EquivalenciaDR</code> cuando la moneda del pago difiere de la moneda del documento relacionado. Los sistemas contables que redondean a dos decimales en lugar de truncar a seis (como exige el estándar técnico del Anexo 20) generan diferencias de centavos. El SAT detecta esta disparidad y exige el pago del impuesto faltante mediante requerimiento formal.</p>
-
+    <p>El riesgo de discrepancia se agrava en operaciones con moneda extranjera (USD, EUR). Los sistemas contables que redondean a dos decimales en lugar de truncar a seis generan diferencias de centavos. El SAT detecta esta disparidad y exige el pago del impuesto faltante mediante requerimiento formal.</p>
     <div class="cta-visual">
         <h3>Cuadra tus CRPs antes del Cierre de Mes</h3>
         <p>Extrae todos los UUIDs relacionados y valida matemáticamente los saldos insolutos de tus complementos de pago en segundos.</p>
         <a href="/" class="cta-button">Ejecutar Conciliación de Pagos</a>
     </div>
-
     <h2>Multas por Omisión o Emisión Extemporánea del CRP</h2>
-
-    <p>El Artículo 83, fracción VII del Código Fiscal de la Federación tipifica la no emisión o emisión extemporánea de complementos como una infracción grave. La multa aplicable oscila entre $400 y $600 pesos por cada CRP no emitido en tiempo y forma. Adicionalmente, el receptor pierde el derecho de acreditar el IVA correspondiente a esa operación, lo que deteriora las relaciones comerciales de la empresa.</p>
-
+    <p>El Artículo 83, fracción VII del Código Fiscal de la Federación tipifica la no emisión o emisión extemporánea de complementos como una infracción grave. La multa aplicable oscila entre $400 y $600 pesos por cada CRP no emitido en tiempo y forma.</p>
     <h3>Automatización de la Cuadratura PPD vs CRP</h3>
-
-    <p>La única defensa efectiva para corporativos con alto volumen transaccional es auditar masivamente las carpetas XML al finalizar el mes. El motor de extracción debe aislar todas las facturas PPD, buscar los CRPs que contengan su UUID en el nodo <code>IdDocumento</code> y restar matemáticamente el atributo <code>ImpPagado</code> del total de la factura original para verificar que el <code>ImpSaldoInsoluto</code> coincida con la contabilidad.</p>
-
-    <p>Erradica los cálculos en hojas de cálculo propensas a errores de fórmula. <a href="/" class="cta-textual">Sube el repositorio XML de tu empresa a nuestra herramienta y obtén un dictamen preciso</a> que señale facturas PPD huérfanas o CRPs con cálculos de impuestos discrepantes.</p>
-
+    <p>La única defensa efectiva para corporativos con alto volumen transaccional es auditar masivamente las carpetas XML al finalizar el mes. El motor de extracción debe aislar todas las facturas PPD, buscar los CRPs que contengan su UUID en el nodo <code>IdDocumento</code> y restar matemáticamente el atributo <code>ImpPagado</code> del total de la factura original.</p>
+    <p><a href="/" class="cta-textual">Sube el repositorio XML de tu empresa a nuestra herramienta y obtén un dictamen preciso</a> que señale facturas PPD huérfanas o CRPs con cálculos de impuestos discrepantes.</p>
 </div>
 
-<footer class="site-footer">
-    <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal corporativo en México.</p>
-</footer>
-
+<footer class="site-footer"><p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal corporativo en México.</p></footer>
 </body>
 </html>
