@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor Masivo de XML a PDF | AuditorIA</title>
+    <meta name="description" content="Genera la representación impresa (PDF) de cientos de facturas XML simultáneamente sin usar software externo.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/conversor-xml-pdf.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        
+        /* Dropdown Menu CSS */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 250px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 20; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+        .dropdown-content a { color: var(--text-main); padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+        .dropdown-content a:last-child { border-bottom: none; }
+        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); }
+        .dropdown:hover .dropdown-content { display: block; }
+        .menu-category { padding: 12px 16px 4px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; background: var(--bg-primary); letter-spacing: 0.5px; }
+
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+        
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+
+        .file-list { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .file-item:last-child { border-bottom: none; }
+        .btn-print { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-print:hover { opacity: 0.9; }
+        .btn-print-all { background: #111827; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 20px; display: none; }
+        .btn-print-all:hover { opacity: 0.9; }
+
+        /* Plantilla de Impresión Oculta */
+        #printTemplate { display: none; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/" class="logo">AuditorIA</a>
+    <div class="nav-right">
+        <a href="/" class="nav-link">Auditoría Masiva</a>
+        <div class="dropdown">
+            <div class="dropdown-toggle">Más Herramientas ▾</div>
+            <div class="dropdown-content">
+                <a href="/generador-polizas.html">Generador de Pólizas</a>
+                <a href="/visor-xml.html">Visor XML</a>
+                <a href="/dashboard-xml.html">Dashboard Financiero</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 32px; margin-bottom: 10px;">Conversor Masivo XML a PDF</h1>
+        <p style="color: var(--text-muted);">Genera facturas legibles a partir de tus archivos XML. Selecciona "Guardar como PDF" en la ventana de impresión.</p>
+    </div>
+
+    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
+        <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        <p style="font-weight: 600; margin: 0; font-size: 18px;">Cargar Facturas (XML)</p>
+        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+    </div>
+
+    <button id="btnImprimirTodos" class="btn-print-all" onclick="imprimirTodos()">Generar PDF de todos los archivos</button>
+
+    <div class="file-list" id="fileList"></div>
+</div>
+
+<script>
+    const input = document.getElementById('xmlInput');
+    const dropZone = document.getElementById('dropZone');
+    const fileList = document.getElementById('fileList');
+    const btnTodos = document.getElementById('btnImprimirTodos');
+    let xmlDataArray = [];
+
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
+    dropZone.addEventListener('drop', (e) => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', (e) => processFiles(e.target.files));
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+
+    async function processFiles(files) {
+        if (files.length === 0) return;
+        xmlDataArray = [];
+        fileList.innerHTML = '';
+
+        const promises = Array.from(files).map((file, index) => {
+            return new Promise((resolve) => {
+                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const rawXML = e.target.result;
+                    try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(rawXML, "text/xml");
+                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                        if (cfdi) {
+                            const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
+                            const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
+                            const nombreReceptor = receptor ? receptor.getAttribute('Nombre') : 'Desconocido';
+                            const total = cfdi.getAttribute('Total');
+                            const fecha = (cfdi.getAttribute('Fecha') || '').split('T')[0];
+                            
+                            xmlDataArray.push({ index, rawXML, nombreReceptor, total, fecha, fileName: file.name });
+
+                            const item = document.createElement('div');
+                            item.className = 'file-item';
+                            item.innerHTML = `
+                                <div>
+                                    <div style="font-weight: 600;">${file.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">Receptor: ${nombreReceptor} | Total: ${formatMoney(total)}</div>
+                                </div>
+                                <button class="btn-print" onclick="imprimirIndividual(${index})">Ver / PDF</button>
+                            `;
+                            fileList.appendChild(item);
+                        }
+                    } catch (err) {}
+                    resolve();
+                };
+                reader.readAsText(file);
+            });
+        });
+
+        await Promise.all(promises);
+        
+        if (xmlDataArray.length > 0) {
+            fileList.style.display = 'block';
+            btnTodos.style.display = 'block';
+        }
+    }
+
+    function generarHTMLFactura(rawXML) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(rawXML, "text/xml");
+        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+        const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
+        const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
+        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
+        const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+
+        let tbodyHTML = '';
+        for(let i=0; i<conceptos.length; i++) {
+            tbodyHTML += `
+                <tr>
+                    <td style="border-bottom: 1px solid #ccc; padding: 8px;">${conceptos[i].getAttribute('Cantidad')}</td>
+                    <td style="border-bottom: 1px solid #ccc; padding: 8px;">${conceptos[i].getAttribute('ClaveProdServ')}</td>
+                    <td style="border-bottom: 1px solid #ccc; padding: 8px;">${conceptos[i].getAttribute('Descripcion')}</td>
+                    <td style="border-bottom: 1px solid #ccc; padding: 8px; text-align: right;">${formatMoney(conceptos[i].getAttribute('ValorUnitario'))}</td>
+                    <td style="border-bottom: 1px solid #ccc; padding: 8px; text-align: right;">${formatMoney(conceptos[i].getAttribute('Importe'))}</td>
+                </tr>
+            `;
+        }
+
+        return `
+            <div style="font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; margin-bottom: 40px; page-break-after: always;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 18px;">${emisor ? emisor.getAttribute('Nombre') : ''}</h2>
+                        <p style="margin: 5px 0 0; font-size: 12px;">RFC: ${emisor ? emisor.getAttribute('Rfc') : ''}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h1 style="margin: 0; font-size: 24px;">FACTURA</h1>
+                        <p style="margin: 5px 0 0; font-size: 12px;">Folio: ${cfdi.getAttribute('Serie') || ''}${cfdi.getAttribute('Folio') || 'S/N'}</p>
+                        <p style="margin: 5px 0 0; font-size: 12px;">Fecha: ${cfdi.getAttribute('Fecha')}</p>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px; background: #f9f9f9; padding: 10px; font-size: 12px;">
+                    <strong style="display: block; margin-bottom: 5px;">Receptor:</strong>
+                    Nombre: ${receptor ? receptor.getAttribute('Nombre') : ''}<br>
+                    RFC: ${receptor ? receptor.getAttribute('Rfc') : ''}<br>
+                    Uso CFDI: ${receptor ? receptor.getAttribute('UsoCFDI') : ''}
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px;">
+                    <thead style="background: #eee;">
+                        <tr>
+                            <th style="padding: 8px; text-align: left;">Cant.</th>
+                            <th style="padding: 8px; text-align: left;">Clave</th>
+                            <th style="padding: 8px; text-align: left;">Descripción</th>
+                            <th style="padding: 8px; text-align: right;">V. Unitario</th>
+                            <th style="padding: 8px; text-align: right;">Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tbodyHTML}</tbody>
+                </table>
+
+                <div style="display: flex; justify-content: flex-end; font-size: 14px; margin-bottom: 30px;">
+                    <div style="width: 250px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Subtotal:</span> <span>${formatMoney(cfdi.getAttribute('SubTotal'))}</span></div>
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; border-top: 1px solid #000; padding-top: 5px;"><span>Total:</span> <span>${formatMoney(cfdi.getAttribute('Total'))}</span></div>
+                    </div>
+                </div>
+
+                <div style="font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 10px; word-break: break-all;">
+                    <strong>UUID:</strong> ${timbre ? timbre.getAttribute('UUID') : 'No timbrado'}<br>
+                    Este documento es una representación impresa de un CFDI.
+                </div>
+            </div>
+        `;
+    }
+
+    function imprimirWindow(htmlContent) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html><head><title>Imprimir Facturas</title></head>
+            <body onload="window.print(); window.close();">${htmlContent}</body></html>
+        `);
+        printWindow.document.close();
+        gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'conversor_pdf'});
+    }
+
+    function imprimirIndividual(index) {
+        const data = xmlDataArray.find(x => x.index === index);
+        if (data) {
+            const html = generarHTMLFactura(data.rawXML);
+            imprimirWindow(html);
+        }
+    }
+
+    function imprimirTodos() {
+        let fullHTML = '';
+        xmlDataArray.forEach(data => {
+            fullHTML += generarHTMLFactura(data.rawXML);
+        });
+        imprimirWindow(fullHTML);
+    }
+</script>
+</body>
+</html>
