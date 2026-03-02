@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conciliador de Complementos de Pago (REP) | AuditorIA</title>
+    <meta name="description" content="Cruza masivamente facturas PPD contra Complementos de Pago. Detecta saldos pendientes y facturas no cobradas automáticamente.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/conciliador-pagos.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+        .results-container { display: none; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: var(--bg-secondary); padding: 20px; border-radius: 10px; border: 1px solid var(--border); }
+        .metric-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+        .metric-value { font-size: 24px; font-weight: 800; color: var(--text-main); }
+        .table-container { background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border); overflow-x: auto; padding: 20px; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .amount { text-align: right; font-family: monospace; font-size: 14px; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+        .status-pagado { background: #D1FAE5; color: #065F46; }
+        .status-pendiente { background: #FEE2E2; color: #991B1B; }
+        .status-parcial { background: #FEF3C7; color: #92400E; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/">AuditorIA</a>
+    <div class="nav-links">
+        <a href="/">Auditoría Masiva</a>
+        <a href="/dashboard-xml.html">Dashboard</a>
+    </div>
+</header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 32px; margin-bottom: 10px;">Conciliador de Complementos de Pago (REP)</h1>
+        <p style="color: var(--text-muted);">Sube todas las facturas y complementos del ejercicio. El sistema vinculará matemáticamente los UUIDs para detectar saldos pendientes.</p>
+    </div>
+
+    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
+        <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+        <p style="font-weight: 600; margin: 0; font-size: 18px;">Cargar Facturas PPD y Complementos REP</p>
+        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+    </div>
+
+    <div class="results-container" id="results">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Facturas PPD Detectadas</div>
+                <div class="metric-value" id="valPpdCount">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Monto Total PPD</div>
+                <div class="metric-value" id="valTotalPpd">$0.00</div>
+            </div>
+            <div class="metric-card" style="border-color: var(--success);">
+                <div class="metric-title">Cobrado (Vía REP)</div>
+                <div class="metric-value" style="color: var(--success);" id="valCobrado">$0.00</div>
+            </div>
+            <div class="metric-card" style="border-color: var(--danger);">
+                <div class="metric-title">Saldo Pendiente Real</div>
+                <div class="metric-value" style="color: var(--danger);" id="valPendiente">$0.00</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3 style="margin-top: 0; margin-bottom: 20px;">Estado de Cuenta PPD</h3>
+            <table id="conciliacionTable">
+                <thead>
+                    <tr>
+                        <th>Folio / Serie</th>
+                        <th>UUID (Factura Origen)</th>
+                        <th>Receptor</th>
+                        <th class="amount">Total Factura</th>
+                        <th class="amount">Monto Pagado</th>
+                        <th class="amount">Saldo Pendiente</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('xmlInput');
+    const dropZone = document.getElementById('dropZone');
+    const resultsContainer = document.getElementById('results');
+
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
+    dropZone.addEventListener('drop', (e) => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', (e) => processFiles(e.target.files));
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+
+    async function processFiles(files) {
+        if (files.length === 0) return;
+        
+        let ppds = {}; 
+        let complementos = [];
+
+        // Fase 1: Lectura e indexación
+        const promises = Array.from(files).map(file => {
+            return new Promise((resolve) => {
+                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                        if (!cfdi) { resolve(); return; }
+
+                        const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
+                        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0] || xmlDoc.getElementsByTagName('TimbreFiscalDigital')[0];
+                        const uuid = timbre ? timbre.getAttribute('UUID').toUpperCase() : null;
+                        
+                        if (!uuid) { resolve(); return; }
+
+                        if (tipo === 'I' || tipo === 'E') {
+                            const metodo = (cfdi.getAttribute('MetodoPago') || '').toUpperCase();
+                            if (metodo === 'PPD') {
+                                const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0] || xmlDoc.getElementsByTagName('Receptor')[0];
+                                ppds[uuid] = {
+                                    folio: (cfdi.getAttribute('Serie') || '') + (cfdi.getAttribute('Folio') || ''),
+                                    receptor: receptor ? receptor.getAttribute('Nombre') : 'N/A',
+                                    total: parseFloat(cfdi.getAttribute('Total') || 0),
+                                    pagado: 0
+                                };
+                            }
+                        } else if (tipo === 'P') {
+                            const doctosRelacionados = xmlDoc.getElementsByTagName('pago20:DoctoRelacionado') || xmlDoc.getElementsByTagName('pago10:DoctoRelacionado');
+                            for (let i = 0; i < doctosRelacionados.length; i++) {
+                                const doc = doctosRelacionados[i];
+                                complementos.push({
+                                    idDoc: (doc.getAttribute('IdDocumento') || doc.getAttribute('IdDocumento') || '').toUpperCase(),
+                                    impPagado: parseFloat(doc.getAttribute('ImpPagado') || doc.getAttribute('ImpPagado') || 0)
+                                });
+                            }
+                        }
+                    } catch (err) {}
+                    resolve();
+                };
+                reader.readAsText(file);
+            });
+        });
+
+        await Promise.all(promises);
+
+        // Fase 2: Conciliación Matemática
+        complementos.forEach(pago => {
+            if (ppds[pago.idDoc]) {
+                ppds[pago.idDoc].pagado += pago.impPagado;
+            }
+        });
+
+        renderConciliacion(ppds);
+    }
+
+    function renderConciliacion(ppds) {
+        const uuids = Object.keys(ppds);
+        if (uuids.length === 0) return alert("No se encontraron facturas con Método de Pago PPD.");
+
+        let totalPpd = 0;
+        let totalCobrado = 0;
+        const tbody = document.querySelector('#conciliacionTable tbody');
+        tbody.innerHTML = '';
+
+        uuids.forEach(uuid => {
+            const data = ppds[uuid];
+            totalPpd += data.total;
+            totalCobrado += data.pagado;
+            const saldo = data.total - data.pagado;
+
+            let statusHTML = '';
+            if (saldo <= 0.05) statusHTML = '<span class="status-badge status-pagado">PAGADO TOTAL</span>';
+            else if (data.pagado > 0) statusHTML = '<span class="status-badge status-parcial">PAGO PARCIAL</span>';
+            else statusHTML = '<span class="status-badge status-pendiente">PENDIENTE</span>';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${data.folio}</td>
+                <td style="font-family: monospace;">${uuid}</td>
+                <td>${data.receptor.substring(0, 30)}</td>
+                <td class="amount">${formatMoney(data.total)}</td>
+                <td class="amount" style="color: var(--success);">${formatMoney(data.pagado)}</td>
+                <td class="amount" style="color: var(--danger);">${formatMoney(Math.max(0, saldo))}</td>
+                <td>${statusHTML}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('valPpdCount').innerText = uuids.length;
+        document.getElementById('valTotalPpd').innerText = formatMoney(totalPpd);
+        document.getElementById('valCobrado').innerText = formatMoney(totalCobrado);
+        document.getElementById('valPendiente').innerText = formatMoney(Math.max(0, totalPpd - totalCobrado));
+
+        resultsContainer.style.display = 'block';
+        dropZone.style.display = 'none';
+        gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'conciliador_pagos'});
+    }
+</script>
+</body>
+</html>
