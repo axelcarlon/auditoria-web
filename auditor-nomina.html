@@ -20,9 +20,24 @@
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; }
         body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        
+        /* Mega Dropdown Header Herramientas */
         .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
-        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+        
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 50; border-radius: 12px; border: 1px solid var(--border); margin-top: 5px; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; text-align: left; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
         .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
@@ -42,10 +57,33 @@
 <body>
 
 <header class="header">
-    <a href="/">AuditorIA</a>
-    <div class="nav-links">
-        <a href="/">Auditoría Masiva</a>
-        <a href="/dashboard-xml.html">Dashboard</a>
+    <a href="/" class="logo">AuditorIA</a>
+    <div class="nav-right">
+        <a href="/" class="nav-link">Auditoría Masiva</a>
+        <div class="dropdown">
+            <div class="dropdown-toggle">Suite de Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+            <div class="dropdown-content">
+                <div class="dropdown-column">
+                    <div class="menu-category">Auditoría y Riesgo</div>
+                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
+                    
+                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
+                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
+                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Diaria</div>
+                    <a href="/visor-xml.html">Visor y Decodificador XML</a>
+                    <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
+                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
+                    <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -248,5 +286,4 @@
     </div>
 </footer>
 </body>
-
 </html>
