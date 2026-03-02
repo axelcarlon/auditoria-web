@@ -7,96 +7,54 @@
     <meta name="description" content="Automatiza la validación de retenciones de ISR e IVA para todos tus clientes. Reduce horas facturables y entrega dictámenes fiscales precisos.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://auditoriaxml.mx/despachos-contables.html" />
-    
-    <link rel="preconnect" href="https://auditoria-backend-crar.onrender.com" crossorigin>
-    <link rel="dns-prefetch" href="https://auditoria-backend-crar.onrender.com">
     <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
-    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KJW30G9ETZ');
-    </script>
-
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; }
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; --error: #EF4444;}
         @media (prefers-color-scheme: dark) { :root { --bg-primary: #111827; --bg-secondary: #1F2937; --text-main: #F9FAFB; --text-muted: #D1D5DB; --border: #374151; --brand: #3B82F6; --drop-bg: #374151; } }
-        
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
-        
         .top-nav { position: absolute; top: 0; right: 0; padding: 20px 40px; display: flex; gap: 20px; z-index: 10; align-items: center; }
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; transition: color 0.2s; }
         .nav-link:hover { color: var(--brand); }
         .nav-btn { background: var(--text-main); color: var(--bg-secondary); padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: background 0.2s; }
         .nav-btn:hover { background: var(--text-muted); }
-
         .split-layout { display: flex; width: 100vw; min-height: 100vh; }
         .left-panel { flex: 1; background-image: url('https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; color: white; position: relative; }
         .left-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 36, 62, 0.90); z-index: 1; }
         .left-content { position: relative; z-index: 2; width: 100%; max-width: 500px; text-align: center; }
         .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background-color: var(--bg-secondary); position: relative; }
-        
         .upload-card { width: 100%; max-width: 600px; background-color: var(--bg-secondary); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); }
-        
         #dropZone { background-color: var(--drop-bg); border: 2px dashed var(--border); border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
         #dropZone.dragover { border-color: var(--brand); background-color: rgba(37, 99, 235, 0.05); transform: scale(1.02); }
         .lock-img { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; background-color: white; padding: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); margin: 0 auto; display: block; }
-        
         .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         .trust-badges div { display: flex; align-items: center; gap: 4px; }
-        
-        #successSection { display: none; text-align: center; }
-        .success-icon { width: 64px; height: 64px; color: #059669; margin-bottom: 20px; }
-        .share-container { margin: 30px 0; padding: 20px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); }
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .resource-links { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; text-align: left; }
-        .resource-links a { display: block; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-main); text-decoration: none; font-size: 14px; font-weight: 500; transition: border-color 0.2s; }
-        .resource-links a:hover { border-color: var(--brand); }
-
-        .trust-banner { background-color: #0F172A; color: #D1D5DB; text-align: center; padding: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
-        .site-footer { text-align: center; padding: 40px 20px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; }
-        .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
-        .footer-links a { color: #CBD5E1; text-decoration: none; transition: 0.2s; font-weight: 500; }
-        .footer-links a:hover { color: #ffffff; }
-        .sample-link { display: block; text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 14px; text-decoration: underline; cursor: pointer; font-weight: 500; }
-        .sample-link:hover { color: var(--brand); }
-        
+        #resultsWrapper { display: none; text-align: left; }
+        .success-icon { width: 48px; height: 48px; color: #059669; margin-bottom: 15px; }
+        .error-icon { width: 48px; height: 48px; color: var(--error); margin-bottom: 15px; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Dropdown Unificado y Estabilizado */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
-        .dropdown-toggle:hover { color: var(--brand); }
         .dropdown-content { display: none; position: absolute; right: -50px; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
         .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
         .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
-
-        /* MÓVIL RESPONSIVE FIXES */
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 20px; margin-top: 20px; border-radius: 4px; display: none; text-align: left; }
+        .ia-advisor-title { font-weight: 700; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
+        .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
         @media (max-width: 768px) { 
             .split-layout { flex-direction: column; display: block; width: 100%; } 
             .left-panel { min-height: 400px; padding: 40px 20px; }
             .right-panel { padding: 20px; display: block; } 
-            
             .top-nav { position: relative; top: auto; right: auto; padding: 20px; background: var(--bg-secondary); display: flex; flex-direction: column; gap: 15px; border-bottom: 1px solid var(--border); margin-bottom: 20px; width: 100%; justify-content: center; } 
-            .nav-link, .dropdown-toggle { width: 100%; text-align: center; justify-content: center; }
-            .nav-btn { width: 100%; text-align: center; }
-            
             .upload-card { max-width: 100%; margin: 0 auto; padding: 20px; box-shadow: none; }
-            .left-content h1 { font-size: 28px !important; }
-            .resource-links { grid-template-columns: 1fr; } 
-            
             .dropdown-content { position: fixed; top: 80px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
             .dropdown:hover .dropdown-content { transform: none; }
         }
@@ -115,9 +73,9 @@
 
     <div class="right-panel">
         <nav class="top-nav">
+            <a href="/como-funciona.html" class="nav-link" style="color: var(--brand); font-weight: bold;">Cómo Funciona</a>
             <a href="/visor-xml.html" class="nav-link">Visor XML</a>
             <a href="/dashboard-xml.html" class="nav-link">Dashboard</a>
-            
             <div class="dropdown">
                 <div class="dropdown-toggle">Suite de Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                 <div class="dropdown-content">
@@ -126,7 +84,6 @@
                         <a href="/">Auditoría Masiva (Art. 30-B)</a>
                         <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
                         <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                        
                         <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
                         <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
                         <a href="/proyector-iva.html">Proyector IVA Mensual</a>
@@ -141,9 +98,7 @@
                     </div>
                 </div>
             </div>
-
             <div style="width: 1px; height: 24px; background: var(--border); margin: 0 10px;"></div>
-
             <a href="#" onclick="alert('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
             <a href="#" onclick="alert('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
         </nav>
@@ -155,7 +110,7 @@
                         <svg width="20" height="20" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         Cargar Repositorio XML de Clientes
                     </label>
-                    <div id="dropZone" aria-label="Área para arrastrar y soltar archivos XML">
+                    <div id="dropZone">
                         <svg width="40" height="40" color="var(--text-muted)" style="margin-bottom: 12px; pointer-events: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                         <p id="fileNameDisplay" style="font-size: 15px; color: var(--text-muted); margin: 0; font-weight: 500; pointer-events: none;">Arrastra la carpeta con los XML del cliente</p>
                         <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px; pointer-events: none;">Soporta carga masiva (Máx. 50MB por lote)</p>
@@ -166,42 +121,50 @@
                 <div style="margin: 15px 0; text-align: left; display: flex; align-items: flex-start; gap: 10px;">
                     <input type="checkbox" id="legalCheck" style="margin-top: 4px; cursor: pointer; width: 16px; height: 16px;">
                     <label for="legalCheck" style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
-                        He leído y acepto el <a href="/privacidad.html" target="_blank" style="color: var(--brand);">Aviso de Privacidad</a> y los <a href="/terminos.html" target="_blank" style="color: var(--brand);">Términos de Servicio</a>. Entiendo que los datos de mis clientes se procesan en memoria volátil.
+                        He leído y acepto el <a href="/privacidad.html" target="_blank" style="color: var(--brand);">Aviso de Privacidad</a> y <a href="/terminos.html" target="_blank" style="color: var(--brand);">Términos</a>. Entiendo que los datos se procesan en memoria volátil.
                     </label>
                 </div>
                 
-                <button id="uploadBtn" disabled aria-label="Iniciar auditoría" style="width: 100%; background: var(--brand); color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: not-allowed; opacity: 0.5; transition: all 0.3s;">INICIAR AUDITORÍA AHORA</button>
-                <a href="/ejemplo.xlsx" download class="sample-link">📄 Ver ejemplo del dictamen para clientes</a>
+                <button id="uploadBtn" disabled style="width: 100%; background: var(--brand); color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: not-allowed; opacity: 0.5; transition: all 0.3s;">INICIAR AUDITORÍA AHORA</button>
+                <a href="/ejemplo.xlsx" download style="display: block; text-align: center; margin-top: 16px; color: var(--text-muted); font-size: 14px; text-decoration: underline; font-weight: 500;">📄 Ver ejemplo del dictamen para clientes</a>
                 
                 <div class="trust-badges">
                     <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
                     <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
+                    <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Zero-Trust</div>
                 </div>
 
-                <div id="statusContainer" aria-live="polite" style="margin-top: 20px; display: none; text-align: center;">
+                <div id="statusContainer" style="margin-top: 20px; display: none; text-align: center;">
                     <div id="loadingSpinner" class="spinner" style="display:none;"></div>
                     <p id="statusText" style="font-size: 14px; font-weight: 600; color: #059669;"></p>
                 </div>
             </div>
 
-            <div id="successSection">
-                <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 24px;">Dictamen de Cliente Generado</h2>
-                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px;">Tu archivo Excel ha sido descargado. Por seguridad de tu despacho y tus clientes, los archivos XML han sido eliminados del servidor.</p>
-                
-                <div class="share-container">
-                    <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0;">Recomienda la herramienta a colegas:</p>
-                    <a href="https://twitter.com/intent/tweet?text=Estoy%20automatizando%20la%20auditoría%20de%20CFDI%20para%20mis%20clientes%20con%20AuditorIA.%20Herramienta%20gratuita%20para%20despachos:&url=https://auditoriaxml.mx/despachos-contables.html" target="_blank" class="social-btn btn-x">𝕏 Postear</a>
-                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/despachos-contables.html" target="_blank" class="social-btn btn-in">in Compartir</a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/despachos-contables.html" target="_blank" class="social-btn btn-fb">f Compartir</a>
+            <div id="resultsWrapper">
+                <div style="text-align: center;">
+                    <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 24px;">Dictamen de Cliente Generado</h2>
+                    <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px;">Tu archivo Excel ha sido descargado. Las discrepancias detectadas han sido enviadas al Asesor de IA.</p>
                 </div>
 
-                <div style="text-align: left;">
-                    <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 10px;">Recursos Institucionales Útiles:</p>
-                    <div class="resource-links">
-                        <a href="https://www.sat.gob.mx/declaracion/login/43376/presenta-tus-pagos-provisionales-o-definitivos-de-personas-morales" target="_blank" rel="noopener">→ Plataforma SAT: Pagos Provisionales</a>
-                        <a href="https://www.sat.gob.mx/consultas/login/44083/consulta-el-visor-de-comprobantes-de-nomina-para-el-patron" target="_blank" rel="noopener">→ Visor de Comprobantes de Nómina</a>
+                <div id="errorSection" style="display: none; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--error); font-weight: bold; font-size: 16px;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Anomalías en la Cartera del Cliente
                     </div>
+                    <p id="mathErrorText" style="font-size: 13px; color: var(--text-main); margin: 0; line-height: 1.5;"></p>
+                </div>
+
+                <div id="iaLoading" class="ia-loading">
+                    <div class="spinner" style="width: 24px; height: 24px; border-width: 3px; display: inline-block; vertical-align: middle; margin: 0 10px 0 0;"></div>
+                    Consultando Asesor Legal de IA (Cerebro 2)...
+                </div>
+                <div id="iaAdvisorContainer" class="ia-advisor-box">
+                    <div class="ia-advisor-title">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        AuditorIA Legal Insight
+                    </div>
+                    <p id="iaAdvisorText" class="ia-advisor-content"></p>
                 </div>
 
                 <button onclick="resetUI()" style="width: 100%; background: var(--bg-primary); color: var(--text-main); padding: 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 30px; transition: background 0.3s;">← Auditar cliente nuevo</button>
@@ -210,186 +173,126 @@
     </div>
 </div>
 
-<div class="trust-banner">🔒 TUS CLIENTES ESTÁN PROTEGIDOS: CERO ALMACENAMIENTO DE DATOS FISCALES.</div>
-
-<footer class="site-footer">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
-            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
-            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Herramientas Gratuitas</h4>
-            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
-            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
-            <a href="/dashboard-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Dashboard Financiero</a>
-            <a href="/auditor-nomina.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditor Masivo de Nómina</a>
-            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador de Pagos (REP)</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
-            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas (Layout)</a>
-            <a href="/conversor-xml-pdf.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conversor XML a PDF</a>
-            <a href="/proyector-iva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Proyector de IVA Mensual</a>
-            <a href="/buscador-conceptos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Buscador Forense XML</a>
-            <a href="/calculadora-recargos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Calculadora de Recargos</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
-            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
-            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
-    </div>
+<footer style="text-align: center; padding: 40px 20px; background-color: #0F172A; color: #9CA3AF; font-size: 12px; margin-top: 60px;">
+    <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
 </footer>
 
 <script>
     const input = document.getElementById('xmlInput');
     const btn = document.getElementById('uploadBtn');
     const legalCheck = document.getElementById('legalCheck');
-    const statusText = document.getElementById('statusText');
-    const statusContainer = document.getElementById('statusContainer');
     const display = document.getElementById('fileNameDisplay');
-    const spinner = document.getElementById('loadingSpinner');
     const dropZone = document.getElementById('dropZone');
-    const uploadSection = document.getElementById('uploadSection');
-    const successSection = document.getElementById('successSection');
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') {
+            legalCheck.checked = true; btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer";
+        }
+    });
 
     legalCheck.addEventListener('change', (e) => {
-        btn.disabled = !e.target.checked;
-        btn.style.opacity = e.target.checked ? "1" : "0.5";
-        btn.style.cursor = e.target.checked ? "pointer" : "not-allowed";
+        btn.disabled = !e.target.checked; btn.style.opacity = e.target.checked ? "1" : "0.5"; btn.style.cursor = e.target.checked ? "pointer" : "not-allowed";
+        if(e.target.checked) localStorage.setItem('auditoriaLegalAccepted', 'true'); else localStorage.removeItem('auditoriaLegalAccepted');
     });
 
     dropZone.onclick = () => input.click();
-
-    ['dragover', 'dragenter'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-            display.innerText = "Suelta los archivos aquí...";
-            display.style.color = "var(--brand)";
-        });
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (input.files.length === 0) {
-                display.innerText = "Arrastra la carpeta con los XML del cliente";
-                display.style.color = "var(--text-muted)";
-            }
-        });
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-        input.files = e.dataTransfer.files;
-        updateDisplay(input.files);
-    });
-
-    input.onchange = (e) => updateDisplay(e.target.files);
-
-    function updateDisplay(files) {
-        const count = files.length;
-        if (count > 0) {
-            display.innerText = count > 1 ? `${count} archivos cargados listos para procesar` : files[0].name;
-            display.style.color = "var(--brand)";
-        } else {
-            display.innerText = "Arrastra la carpeta con los XML del cliente";
-            display.style.color = "var(--text-muted)";
-        }
-    }
+    ['dragover', 'dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
+    dropZone.addEventListener('drop', e => { input.files = e.dataTransfer.files; display.innerText = `${input.files.length} archivos listos`; display.style.color = "var(--brand)"; });
+    input.onchange = e => { display.innerText = `${e.target.files.length} archivos listos`; display.style.color = "var(--brand)"; };
 
     function resetUI() {
-        successSection.style.display = "none";
-        uploadSection.style.display = "block";
-        input.value = "";
-        legalCheck.checked = false;
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "not-allowed";
-        display.innerText = "Arrastra la carpeta con los XML del cliente";
-        display.style.color = "var(--text-muted)";
-        statusContainer.style.display = "none";
+        document.getElementById('resultsWrapper').style.display = "none";
+        document.getElementById('errorSection').style.display = "none";
+        document.getElementById('iaAdvisorContainer').style.display = "none";
+        document.getElementById('uploadSection').style.display = "block";
+        document.getElementById('statusContainer').style.display = "none";
+        input.value = ""; display.innerText = "Arrastra la carpeta con los XML del cliente"; display.style.color = "var(--text-muted)";
+        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') { legalCheck.checked = true; btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; } 
+        else { legalCheck.checked = false; btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed"; }
     }
 
     btn.onclick = async () => {
         if (input.files.length === 0) return alert("Sube archivos XML primero");
-        
-        const MAX_SIZE_MB = 50;
-        let totalSize = 0;
-        const formData = new FormData();
-        
+        document.getElementById('statusContainer').style.display = "block";
+        document.getElementById('loadingSpinner').style.display = "block";
+        document.getElementById('statusText').innerText = "Escaneando Lote del Cliente...";
+        btn.disabled = true;
+
+        let erroresDetectados = [];
+        let conceptosMuestra = new Set();
+
         for (let file of input.files) {
-            if (!file.name.toLowerCase().endsWith('.xml')) {
-                alert(`Archivo rechazado. Solo se permiten archivos .xml: ${file.name}`);
-                return;
-            }
-            totalSize += file.size;
-            formData.append('files', file);
+            if (!file.name.toLowerCase().endsWith('.xml')) continue;
+            try {
+                const text = await file.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto') || xmlDoc.getElementsByTagName('Concepto');
+                
+                for (let i = 0; i < conceptos.length; i++) {
+                    const desc = conceptos[i].getAttribute('Descripcion') || "Concepto";
+                    const retenciones = conceptos[i].getElementsByTagName('cfdi:Retencion') || conceptos[i].getElementsByTagName('Retencion');
+                    for (let j = 0; j < retenciones.length; j++) {
+                        const base = parseFloat(retenciones[j].getAttribute('Base') || 0);
+                        const tasa = parseFloat(retenciones[j].getAttribute('TasaOCuota') || 0);
+                        const importe = parseFloat(retenciones[j].getAttribute('Importe') || 0);
+                        if (base > 0 && tasa > 0) {
+                            const calc = base * tasa;
+                            if (Math.abs(calc - importe) > 0.10) {
+                                erroresDetectados.push(`Base: $${base} | Tasa: ${tasa} | Calculado: $${calc.toFixed(2)} | Declarado: $${importe}`);
+                                conceptosMuestra.add(desc);
+                            }
+                        }
+                    }
+                }
+            } catch(e) {}
         }
 
-        if (totalSize > MAX_SIZE_MB * 1024 * 1024) {
-            alert(`Límite excedido. El peso total es ${(totalSize / (1024 * 1024)).toFixed(2)}MB. El máximo es 50MB por lote.`);
-            return;
-        }
-        
-        statusContainer.style.display = "block";
-        spinner.style.display = "block";
-        statusText.innerText = "Analizando base de datos fiscal...";
-        statusText.style.color = "var(--text-muted)";
-        btn.disabled = true;
-        btn.style.opacity = "0.6";
+        const formData = new FormData();
+        for (let file of input.files) formData.append('files', file);
 
         try {
-            gtag('event', 'generar_dictamen', {'event_category': 'auditoria', 'event_label': 'boton_despachos'});
-
             const res = await fetch('https://auditoria-backend-crar.onrender.com/api/analizar', { method: 'POST', body: formData });
             if (res.ok) {
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
-                const now = new Date();
-                const timestamp = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}hrs`;
-                
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = `Dictamen_Auditoria_${timestamp}.xlsx`;
-                a.click();
-                
-                uploadSection.style.display = "none";
-                successSection.style.display = "block";
-            } else {
-                statusText.innerText = "Error: Verifica que todos los archivos sean XML válidos.";
-                statusText.style.color = "#EF4444";
+                a.href = url; a.download = `Dictamen_Cliente_${Date.now()}.xlsx`; a.click();
             }
-        } catch (err) {
-            statusText.innerText = "Error de servidor. Intenta de nuevo.";
-            statusText.style.color = "#EF4444";
-        } finally {
-            spinner.style.display = "none";
-            if (!successSection.style.display || successSection.style.display === "none") {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            }
+        } catch (err) { alert("Error al generar Excel."); }
+
+        document.getElementById('uploadSection').style.display = "none";
+        document.getElementById('resultsWrapper').style.display = "block";
+
+        if (erroresDetectados.length > 0) {
+            document.getElementById('errorSection').style.display = "block";
+            let descString = Array.from(conceptosMuestra).slice(0, 3).join(", ");
+            let errorMsg = `Se hallaron ${erroresDetectados.length} discrepancias. Ejemplo: ${erroresDetectados[0]}`;
+            document.getElementById('mathErrorText').innerText = errorMsg;
+            consultarAsesorIA("Lote Cliente", descString, errorMsg);
         }
     };
 
-    // Prevención de click fantasma en móviles
-    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-        toggle.addEventListener('touchstart', function(e) {
-            const content = this.nextElementSibling;
-            if (getComputedStyle(content).display === 'none') {
-                // Previene click accidental al abrir
-            }
-        }, {passive: true});
-    });
+    async function consultarAsesorIA(tipo, concepto, errorDesc) {
+        document.getElementById('iaLoading').style.display = 'block';
+        try {
+            const response = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
+            });
+            const data = await response.json();
+            document.getElementById('iaLoading').style.display = 'none';
+            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+        } catch (err) {
+            document.getElementById('iaLoading').style.display = 'none';
+            document.getElementById('iaAdvisorText').innerText = "Falla de conexión al Asesor IA.";
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+        }
+    }
+
+    document.querySelectorAll('.dropdown-toggle').forEach(t => t.addEventListener('touchstart', e => {}, {passive: true}));
 </script>
 </body>
 </html>
