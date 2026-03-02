@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de EFOS Art. 69-B SAT | AuditorIA</title>
+    <meta name="description" content="Verifica si un RFC se encuentra en la lista negra del SAT (Artículo 69-B) por simulación de operaciones. Consulta gratuita e inmediata.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/validador-efos.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706; }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-input { flex: 1; padding: 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; text-transform: uppercase; font-family: monospace; }
+        .search-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-btn { background: var(--text-main); color: white; border: none; padding: 0 24px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .search-btn:hover { background: var(--brand); }
+
+        .or-divider { text-align: center; margin: 20px 0; color: var(--text-muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+
+        .result-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-top: 30px; display: none; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .result-icon { width: 64px; height: 64px; margin: 0 auto 15px; }
+        .result-title { font-size: 24px; font-weight: 800; margin: 0 0 10px; }
+        .result-rfc { font-family: monospace; font-size: 20px; background: var(--bg-primary); padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--border); }
+        .result-desc { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 600px; }
+
+        .status-safe .result-icon { color: var(--success); }
+        .status-safe .result-title { color: var(--success); }
+        
+        .status-danger .result-icon { color: var(--danger); }
+        .status-danger .result-title { color: var(--danger); }
+        .status-danger { border-color: #FCA5A5; background: #FEF2F2; }
+
+        .status-invalid .result-icon { color: var(--warning); }
+        .status-invalid .result-title { color: var(--warning); }
+
+        .cta-banner { border-top: 1px solid var(--border); padding-top: 30px; margin-top: 30px; }
+        .cta-button { background: var(--bg-primary); color: var(--brand); padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; border: 1px solid var(--border); transition: 0.2s; }
+        .cta-button:hover { border-color: var(--brand); }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/">AuditorIA</a>
+    <div class="nav-links">
+        <a href="/">Auditoría Masiva</a>
+        <a href="/visor-xml.html">Visor XML</a>
+    </div>
+</header>
+
+<div class="container">
+    <h1 style="font-size: 32px; margin-bottom: 10px; text-align: center;">Validador EFOS (Art. 69-B CFF)</h1>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Evita deducir facturas de Empresas que Facturan Operaciones Simuladas. Consulta el estado de tus proveedores en la lista negra del SAT.</p>
+
+    <div class="search-box">
+        <input type="text" id="rfcInput" class="search-input" placeholder="INGRESA EL RFC A CONSULTAR (EJ. AAA010101AAA)" maxlength="13">
+        <button class="search-btn" onclick="validarRFCManual()">Consultar RFC</button>
+    </div>
+
+    <div class="or-divider">O EXTRAER DESDE FACTURA</div>
+
+    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
+        <svg width="32" height="32" color="var(--brand)" style="margin-bottom: 10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+        <p style="font-weight: 600; margin: 0;">Cargar XML para extraer RFC emisor</p>
+        <input type="file" id="xmlInput" accept=".xml" style="display: none;">
+    </div>
+
+    <div class="result-card" id="resultCard">
+        <svg class="result-icon" id="iconSafe" style="display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <svg class="result-icon" id="iconDanger" style="display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        
+        <h2 class="result-title" id="resultTitle">Resultado</h2>
+        <div class="result-rfc" id="resultRfc"></div>
+        <p class="result-desc" id="resultDesc"></p>
+
+        <div class="cta-banner">
+            <p style="font-size: 14px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">¿Necesitas revisar toda tu contabilidad?</p>
+            <a href="/" class="cta-button" onclick="gtag('event', 'clic_cross_sell', {'event_category': 'herramientas', 'event_label': 'validador_efos'});">Auditar Base de Datos Completa</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('xmlInput');
+    const dropZone = document.getElementById('dropZone');
+    const rfcInput = document.getElementById('rfcInput');
+    const resultCard = document.getElementById('resultCard');
+    
+    // Regex estricto para RFC Mexicano (Personas Físicas y Morales)
+    const regexRFC = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+
+    // MOCK DATA: Aquí se inyectará el JSON oficial del SAT en el futuro.
+    // Para prueba de la herramienta, se han agregado RFCs ficticios en estado "Definitivo".
+    const listaNegraEFOS = [
+        "EFO120101XXX",
+        "SIM890523ZZZ",
+        "FAL761201ABC"
+    ];
+
+    rfcInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    rfcInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') validarRFCManual();
+    });
+
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
+
+    dropZone.addEventListener('drop', (e) => extraerXML(e.dataTransfer.files[0]));
+    input.addEventListener('change', (e) => extraerXML(e.target.files[0]));
+
+    function extraerXML(file) {
+        if (!file || !file.name.toLowerCase().endsWith('.xml')) return alert('Sube un XML válido.');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+            try {
+                const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
+                const rfc = emisor.getAttribute('Rfc');
+                rfcInput.value = rfc;
+                ejecutarValidacion(rfc);
+            } catch(err) {
+                mostrarResultado('INVALID', 'Error de Lectura', 'No se pudo extraer el RFC emisor. Verifica que sea un CFDI válido.');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function validarRFCManual() {
+        const rfc = rfcInput.value.trim();
+        ejecutarValidacion(rfc);
+    }
+
+    function ejecutarValidacion(rfc) {
+        document.getElementById('resultRfc').innerText = rfc || "SIN RFC";
+        resultCard.style.display = 'block';
+        
+        // Reset styles
+        resultCard.className = 'result-card';
+        document.getElementById('iconSafe').style.display = 'none';
+        document.getElementById('iconDanger').style.display = 'none';
+
+        if (!rfc || !regexRFC.test(rfc)) {
+            mostrarResultado('INVALID', 'Formato de RFC Inválido', 'El identificador ingresado no cumple con la estructura oficial estipulada por el SAT para Personas Físicas o Morales.');
+            return;
+        }
+
+        gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'consulta_efos'});
+
+        // Búsqueda en la lista negra
+        if (listaNegraEFOS.includes(rfc)) {
+            mostrarResultado('DANGER', '¡ALERTA DE RIESGO FISCAL!', 'Este RFC está clasificado como Empresa que Factura Operaciones Simuladas (EFO) definitivo en los términos del Artículo 69-B del CFF. Deducir estos comprobantes constituye un delito de defraudación fiscal.');
+        } else {
+            mostrarResultado('SAFE', 'RFC Sin Alertas (Art. 69-B)', 'Este contribuyente NO se encuentra actualmente listado como EFO definitivo en la base de datos pública de operaciones simuladas del SAT.');
+        }
+    }
+
+    function mostrarResultado(tipo, titulo, descripcion) {
+        document.getElementById('resultTitle').innerText = titulo;
+        document.getElementById('resultDesc').innerText = descripcion;
+        
+        if (tipo === 'SAFE') {
+            resultCard.classList.add('status-safe');
+            document.getElementById('iconSafe').style.display = 'block';
+        } else if (tipo === 'DANGER') {
+            resultCard.classList.add('status-danger');
+            document.getElementById('iconDanger').style.display = 'block';
+        } else {
+            resultCard.classList.add('status-invalid');
+            document.getElementById('iconDanger').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>
