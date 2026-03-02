@@ -33,13 +33,58 @@
         .cta-button { display: inline-block; background-color: #ffffff; color: #1E3A8A; padding: 16px 32px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 18px; margin-top: 20px; transition: transform 0.2s; }
         .cta-button:hover { transform: translateY(-2px); }
         .site-footer { text-align: center; padding: 40px 20px; background-color: #111827; color: #6B7280; font-size: 14px; margin-top: 60px; }
+        /* Mega Dropdown Dark Theme & CTA Article */
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 4px; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #ffffff; min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 50; border-radius: 12px; border: 1px solid #E5E7EB; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: #111827; padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
+        .dropdown-content a:hover { background-color: #F3F4F6; color: #2563EB; transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: #2563EB; font-weight: 800; border-bottom: 1px solid #E5E7EB; margin-bottom: 5px; }
+        
+        /* Banner Conversión Artículos */
+        .article-cta { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 12px; padding: 40px; text-align: center; margin: 60px 0; }
+        .article-cta h3 { color: #1E3A8A; font-size: 24px; margin-top: 0; margin-bottom: 15px; }
+        .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
+        .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
+        .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
     </style>
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="/" style="margin-right: 20px;">AuditorIA</a>
-    <a href="/visor-xml.html" style="font-size: 15px; color: #9CA3AF;">Visor XML</a>
+<nav class="header-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #111827;">
+    <a href="/" style="color: white; text-decoration: none; font-weight: bold; font-size: 20px;">AuditorIA</a>
+    
+    <div class="nav-right">
+        <a href="/visor-xml.html" class="nav-link">Visor XML</a>
+        <div class="dropdown">
+            <div class="dropdown-toggle">Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+            <div class="dropdown-content">
+                <div class="dropdown-column">
+                    <div class="menu-category">Auditoría y Riesgo</div>
+                    <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                    <a href="/validador-efos.html">Validador EFOS</a>
+                    <a href="/auditor-nomina.html">Auditor de Nómina</a>
+                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
+                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operativas</div>
+                    <a href="/generador-polizas.html">Generador de Pólizas</a>
+                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
+                    <a href="/buscador-conceptos.html">Buscador Forense XML</a>
+                    <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </nav>
 
 <div class="article-container">
@@ -91,8 +136,48 @@
     <p>Al identificar un delta, el auditor clasifica el CFDI como Riesgo Fiscal o Error Estructural. Para automatizar este recálculo estricto sin invertir horas en macros de Excel inestables, <a href="https://auditoriaxml.mx/" class="cta-textual">sube tus carpetas de XML a nuestra plataforma para obtener un dictamen ejecutivo automático</a>.</p>
     <h2>Implementación del Dictamen Preventivo (Art. 30-B CFF)</h2>
     <p>El Artículo 30-B del CFF obliga a los contribuyentes a integrar la contabilidad con información detallada sobre la determinación de contribuciones. Presentar estados financieros sin un respaldo de cuadratura a nivel XML debilita cualquier defensa ante un crédito fiscal. El documento resultante de la auditoría debe proveer una vista ejecutiva con la cuantificación monetaria exacta del riesgo fiscal.</p>
-</div>
 
-<footer class="site-footer"><p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p></footer>
+    <div class="article-cta">
+        <h3>Pasa de la teoría a la práctica</h3>
+        <p>No dejes que los errores matemáticos en tus CFDI 4.0 se conviertan en multas. Automatiza la validación de retenciones de ISR e IVA en segundos, sin instalar programas y de forma 100% gratuita.</p>
+        <a href="/" class="article-cta-btn">Ejecutar Auditoría Gratuita Ahora</a>
+    </div>
+
+<footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
+            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
+            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
+            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Herramientas Gratuitas</h4>
+            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
+            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
+            <a href="/dashboard-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Dashboard Financiero</a>
+            <a href="/auditor-nomina.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditor Masivo de Nómina</a>
+            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador de Pagos (REP)</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
+            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas (Layout)</a>
+            <a href="/conversor-xml-pdf.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conversor XML a PDF</a>
+            <a href="/proyector-iva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Proyector de IVA Mensual</a>
+            <a href="/buscador-conceptos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Buscador Forense XML</a>
+            <a href="/calculadora-recargos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Calculadora de Recargos</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
+            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
+            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
+        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
+    </div>
+</footer>
 </body>
 </html>
