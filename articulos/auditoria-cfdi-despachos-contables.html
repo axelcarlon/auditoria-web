@@ -14,10 +14,37 @@
     <meta name="description" content="Estrategias técnicas para despachos contables: automatización de la validación masiva de XML, recálculo de retenciones y generación de dictámenes preventivos.">
     <meta name="robots" content="index, follow">
     <style>
-        body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; }
-        .header-nav { background-color: #111827; padding: 20px 40px; }
-        .header-nav a { color: #ffffff; text-decoration: none; font-weight: 600; font-size: 18px; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; overflow-x: hidden; }
+        
+        .header-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: #111827; flex-wrap: wrap; gap: 20px; }
+        .header-nav a.logo { color: #ffffff; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+        
+        /* Dropdown Unificado y Estabilizado */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 4px; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #ffffff; min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 100; border-radius: 12px; border: 1px solid #E5E7EB; margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: #111827; padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
+        .dropdown-content a:hover { background-color: #F3F4F6; color: #2563EB; transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: #2563EB; font-weight: 800; border-bottom: 1px solid #E5E7EB; margin-bottom: 5px; }
+
+        @media (max-width: 768px) {
+            .header-nav { padding: 15px 20px; justify-content: center; text-align: center; }
+            .nav-right { justify-content: center; width: 100%; }
+            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
+            .dropdown:hover .dropdown-content { transform: none; }
+        }
+        
         .article-container { max-width: 800px; margin: 60px auto; background: #ffffff; padding: 50px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
+        @media (max-width: 768px) { .article-container { padding: 30px 20px; margin: 30px auto; } }
+        
         h1 { color: #111827; font-size: 36px; line-height: 1.2; margin-bottom: 24px; border-bottom: 3px solid #2563EB; padding-bottom: 15px; }
         h2 { color: #1F2937; font-size: 28px; margin-top: 48px; margin-bottom: 20px; }
         h3 { color: #2563EB; font-size: 22px; margin-top: 32px; margin-bottom: 16px; }
@@ -27,39 +54,26 @@
         strong { color: #111827; }
         .code-block { background-color: #F3F4F6; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 14px; border-left: 4px solid #4B5563; margin-bottom: 24px; overflow-x: auto; }
         .cta-textual { font-weight: bold; color: #2563EB; text-decoration: underline; }
+        
         .cta-visual { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 40px; border-radius: 12px; text-align: center; color: white; margin: 50px 0; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); }
         .cta-visual h3 { color: white; margin-top: 0; font-size: 26px; }
         .cta-visual p { color: #E0E7FF; font-size: 16px; }
         .cta-button { display: inline-block; background-color: #ffffff; color: #1E3A8A; padding: 16px 32px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 18px; margin-top: 20px; transition: transform 0.2s; }
         .cta-button:hover { transform: translateY(-2px); }
-        .site-footer { text-align: center; padding: 40px 20px; background-color: #111827; color: #6B7280; font-size: 14px; margin-top: 60px; }
-        /* Mega Dropdown Dark Theme & CTA Article */
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-link:hover { color: #ffffff; }
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 4px; }
-        .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #ffffff; min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 50; border-radius: 12px; border: 1px solid #E5E7EB; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: #111827; padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
-        .dropdown-content a:hover { background-color: #F3F4F6; color: #2563EB; transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: #2563EB; font-weight: 800; border-bottom: 1px solid #E5E7EB; margin-bottom: 5px; }
         
-        /* Banner Conversión Artículos */
         .article-cta { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 12px; padding: 40px; text-align: center; margin: 60px 0; }
         .article-cta h3 { color: #1E3A8A; font-size: 24px; margin-top: 0; margin-bottom: 15px; }
         .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
         .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
         .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
+        
+        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #111827; color: #6B7280; font-size: 14px; margin-top: 60px; }
     </style>
 </head>
 <body>
 
-<nav class="header-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #111827;">
-    <a href="/" style="color: white; text-decoration: none; font-weight: bold; font-size: 20px;">AuditorIA</a>
-    
+<nav class="header-nav">
+    <a href="/" class="logo">AuditorIA</a>
     <div class="nav-right">
         <a href="/visor-xml.html" class="nav-link">Visor XML</a>
         <div class="dropdown">
@@ -90,13 +104,17 @@
 <div class="article-container">
     <h1>Automatización de Auditoría de CFDI 4.0 para Despachos Contables: Reducción de Riesgo Fiscal</h1>
     <p>La carga operativa de un despacho contable en México aumenta de manera proporcional a las actualizaciones técnicas del Anexo 20 de la Resolución Miscelánea Fiscal. La gestión de múltiples RFCs exige procesar decenas de miles de Comprobantes Fiscales Digitales por Internet (CFDI) cada mes. El modelo tradicional de captura manual y revisión de PDFs está obsoleto; la fiscalización del Servicio de Administración Tributaria (SAT) se ejecuta mediante la lectura automatizada del Document Object Model (DOM) de los archivos XML.</p>
+    
     <h2>El Riesgo Operativo del Procesamiento Manual de XML</h2>
     <p>El margen de rentabilidad de una firma contable disminuye cuando el personal invierte horas facturables en la validación unitaria de comprobantes. El riesgo aumenta exponencialmente debido al factor del error humano al interpretar las reglas de validación del CFDI 4.0.</p>
+    
     <h3>Limitaciones de las Macros en Excel y Sistemas de Descarga Masiva</h3>
     <p>La mayoría de los despachos resuelve la obtención de facturas utilizando software de conexión a los servicios web del SAT. Sin embargo, obtener el archivo es únicamente el primer paso de la cadena de cumplimiento. Las soluciones basadas en macros de VBA fallan al intentar parsear la estructura anidada de un CFDI complejo. Un XML con múltiples complementos de pago desborda la memoria de la hoja de cálculo.</p>
     <p>Para anular este margen de error y procesar volúmenes ilimitados sin colapsos de software, <a href="https://auditoriaxml.mx/" class="cta-textual">audita el repositorio XML de tus clientes directamente en AuditorIA</a>, delegando la extracción a un algoritmo de Python.</p>
+    
     <h2>Arquitectura Técnica de la Validación Fiscal</h2>
     <p>El valor de un despacho contable contemporáneo no reside en la captura de pólizas, sino en la identificación preventiva de discrepancias fiscales. El SAT cruza los datos bancarios contra las declaraciones y los XML emitidos por los Proveedores Autorizados de Certificación (PACs).</p>
+    
     <h3>Cruce del Subtotal contra Tasas de Ley (IVA e ISR)</h3>
     <div class="code-block">
 &lt;cfdi:Concepto ClaveProdServ="84111500" Cantidad="1" ValorUnitario="20000.00" Importe="20000.00" ObjetoImp="02"&gt;
@@ -111,18 +129,23 @@
 &lt;/cfdi:Concepto&gt;
     </div>
     <p>Una auditoría técnica requiere extraer la <code>Base</code> de cada concepto, aplicar la <code>TasaOCuota</code> correspondiente y comparar el resultado contra el atributo <code>Importe</code> declarado.</p>
+    
     <h3>Validación del Nodo cfdi:Complemento y tfd:TimbreFiscalDigital</h3>
     <p>El timbrado dota de validez legal al documento. Un XML sin el nodo <code>tfd:TimbreFiscalDigital</code> no tiene efectos fiscales, operando como un simple pre-CFDI. Procesar archivos sin timbrar infla las bases gravables o las deducciones.</p>
+    
     <div class="cta-visual">
         <h3>Estandariza la Revisión de Toda tu Cartera</h3>
         <p>Procesa carpetas enteras de XML por cliente. Detecta errores matemáticos y estructurales en segundos y exporta dictámenes en Excel listos para revisión.</p>
         <a href="https://auditoriaxml.mx/" class="cta-button">Iniciar Auditoría Masiva para Clientes</a>
     </div>
+    
     <h2>Rentabilidad del Despacho: De la Captura al Análisis</h2>
     <p>La adopción de herramientas de lectura de XML modifica la estructura de costos del despacho contable. El tiempo invertido en conciliaciones manuales se redirige hacia la asesoría fiscal y la planeación estratégica.</p>
+    
     <h3>Generación de Dictámenes Preventivos (Art. 30-B CFF)</h3>
     <p>El cumplimiento de la materialidad y la integración de la contabilidad exige respaldos documentales comprobables. El Artículo 30-B del CFF establece la obligación de conservar la información sobre la determinación de los impuestos. Entregar a los clientes un reporte mensual que certifique la validación matemática de sus XML demuestra diligencia profesional.</p>
     <p>Si buscas implementar este nivel de servicio sin desarrollar software interno, <a href="https://auditoriaxml.mx/" class="cta-textual">genera dictámenes ejecutivos automáticos con nuestro motor de análisis de CFDI 4.0</a>.</p>
+    
     <h2>Protocolos de Privacidad de Datos en el Manejo de RFCs</h2>
     <p>Las plataformas SaaS enfocadas en el sector contable deben operar bajo principios de <em>Zero Retention</em>. El archivo XML debe cargarse en memoria RAM, ser procesado para extraer exclusivamente los nodos numéricos de validación y destruirse inmediatamente tras la generación del reporte en Excel.</p>
 
@@ -131,8 +154,9 @@
         <p>No dejes que los errores matemáticos en tus CFDI 4.0 se conviertan en multas. Automatiza la validación de retenciones de ISR e IVA en segundos, sin instalar programas y de forma 100% gratuita.</p>
         <a href="/" class="article-cta-btn">Ejecutar Auditoría Gratuita Ahora</a>
     </div>
+</div>
 
-<footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
+<footer class="site-footer">
     <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
@@ -168,7 +192,15 @@
         <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
 </footer>
+
+<script>
+    // Prevención de click fantasma en móviles
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('touchstart', function(e) {
+            const content = this.nextElementSibling;
+            if (getComputedStyle(content).display === 'none') {}
+        }, {passive: true});
+    });
+</script>
 </body>
 </html>
-
-
