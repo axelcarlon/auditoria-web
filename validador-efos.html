@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor de XML CFDI 4.0 Gratis | AuditorIA</title>
-    <meta name="description" content="Lee y decodifica cualquier archivo XML del SAT en segundos. Visor de facturas CFDI en formato amigable sin necesidad de descargar programas.">
+    <title>Validador de EFOS Art. 69-B SAT | AuditorIA</title>
+    <meta name="description" content="Verifica si un RFC se encuentra en la lista negra del SAT (Artículo 69-B) por simulación de operaciones. Consulta gratuita e inmediata.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://auditoriaxml.mx/visor-xml.html" />
+    <link rel="canonical" href="https://auditoriaxml.mx/validador-efos.html" />
     <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
@@ -18,52 +18,68 @@
     </script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; }
-        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        /* Mega Dropdown Header Herramientas */
-        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
+        /* Header Herramientas */
+        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
         .nav-link:hover { color: #ffffff; }
-        
+
+        /* Dropdown Unificado y Estabilizado */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 50; border-radius: 12px; border: 1px solid var(--border); margin-top: 5px; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
         .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
         .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
         .dropdown:hover .dropdown-content { display: grid; }
         .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; justify-content: center; text-align: center; }
+            .nav-right { justify-content: center; width: 100%; }
+            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
+            .dropdown:hover .dropdown-content { transform: none; }
+        }
+
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
         
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 250px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; text-transform: uppercase; font-family: monospace; }
+        .search-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .search-btn { background: var(--text-main); color: white; border: none; padding: 16px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .search-btn:hover { background: var(--brand); }
+
+        .or-divider { text-align: center; margin: 20px 0; color: var(--text-muted); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: 0.2s; }
         .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+
+        .result-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-top: 30px; display: none; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .result-icon { width: 64px; height: 64px; margin: 0 auto 15px; }
+        .result-title { font-size: 24px; font-weight: 800; margin: 0 0 10px; }
+        .result-rfc { font-family: monospace; font-size: 20px; background: var(--bg-primary); padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--border); }
+        .result-desc { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin: 0 auto; max-width: 600px; }
+
+        .status-safe .result-icon { color: var(--success); }
+        .status-safe .result-title { color: var(--success); }
         
-        .invoice-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; overflow: hidden; }
-        .invoice-header { background: var(--brand); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .invoice-body { padding: 30px; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .data-group h3 { font-size: 14px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-        .data-label { font-weight: 600; color: var(--text-main); }
-        .data-value { color: var(--text-muted); text-align: right; word-break: break-all; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 12px; }
-        
-        .totals { margin-top: 30px; width: 300px; margin-left: auto; }
-        .totals .data-row.grand-total { font-size: 18px; font-weight: 700; color: var(--brand); border-top: 2px solid var(--border); padding-top: 10px; margin-top: 10px; }
-        
-        .cta-banner { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 20px; text-align: center; margin-top: 40px; }
-        .cta-banner h4 { color: #1E3A8A; margin: 0 0 10px 0; font-size: 18px; }
-        .cta-banner p { color: #1E40AF; font-size: 14px; margin-bottom: 15px; }
-        .cta-button { background: var(--brand); color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; }
+        .status-danger .result-icon { color: var(--danger); }
+        .status-danger .result-title { color: var(--danger); }
+        .status-danger { border-color: #FCA5A5; background: #FEF2F2; }
+
+        .status-invalid .result-icon { color: var(--warning); }
+        .status-invalid .result-title { color: var(--warning); }
+
+        .cta-banner { border-top: 1px solid var(--border); padding-top: 30px; margin-top: 30px; }
+        .cta-button { background: var(--bg-primary); color: var(--brand); padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; border: 1px solid var(--border); transition: 0.2s; }
+        .cta-button:hover { border-color: var(--brand); }
     </style>
 </head>
 <body>
@@ -79,7 +95,6 @@
                     <div class="menu-category">Auditoría y Riesgo</div>
                     <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
                     <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                    
                     <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
                     <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
                     <a href="/proyector-iva.html">Proyector IVA Mensual</a>
@@ -100,171 +115,141 @@
 </header>
 
 <div class="container">
-    <h1 style="font-size: 28px; margin-bottom: 10px; text-align: center;">Visor de XML (CFDI 4.0)</h1>
-    <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Decodifica cualquier factura del SAT en segundos. Procesamiento 100% local en tu navegador.</p>
+    <h1 style="font-size: 32px; margin-bottom: 10px; text-align: center;">Validador EFOS (Art. 69-B CFF)</h1>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Evita deducir facturas de Empresas que Facturan Operaciones Simuladas. Consulta el estado de tus proveedores en la lista negra del SAT.</p>
+
+    <div class="search-box">
+        <input type="text" id="rfcInput" class="search-input" placeholder="INGRESA EL RFC (EJ. AAA010101AAA)" maxlength="13">
+        <button class="search-btn" onclick="validarRFCManual()">Consultar RFC</button>
+    </div>
+
+    <div class="or-divider">O EXTRAER DESDE FACTURA</div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
-        <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p style="font-weight: 600; margin: 0;">Haz clic o arrastra un archivo XML aquí</p>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Los datos no se suben a ningún servidor.</p>
+        <svg width="32" height="32" color="var(--brand)" style="margin-bottom: 10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+        <p style="font-weight: 600; margin: 0;">Cargar XML para extraer RFC emisor</p>
         <input type="file" id="xmlInput" accept=".xml" style="display: none;">
     </div>
 
-    <div class="invoice-card" id="invoiceCard">
-        <div class="invoice-header">
-            <div>
-                <h2 style="margin: 0; font-size: 20px;">Comprobante Fiscal Digital</h2>
-                <span style="font-size: 12px; opacity: 0.8;" id="uuidDisplay">UUID: </span>
-            </div>
-            <div style="text-align: right;">
-                <div style="font-size: 24px; font-weight: bold;" id="tipoComprobante">I</div>
-                <div style="font-size: 12px;">Tipo CFDI</div>
-            </div>
-        </div>
+    <div class="result-card" id="resultCard">
+        <svg class="result-icon" id="iconSafe" style="display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <svg class="result-icon" id="iconDanger" style="display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
         
-        <div class="invoice-body">
-            <div class="grid-2">
-                <div class="data-group">
-                    <h3>Emisor</h3>
-                    <div class="data-row"><span class="data-label">Nombre:</span> <span class="data-value" id="emisorNombre"></span></div>
-                    <div class="data-row"><span class="data-label">RFC:</span> <span class="data-value" id="emisorRfc"></span></div>
-                    <div class="data-row"><span class="data-label">Régimen:</span> <span class="data-value" id="emisorRegimen"></span></div>
-                </div>
-                <div class="data-group">
-                    <h3>Receptor</h3>
-                    <div class="data-row"><span class="data-label">Nombre:</span> <span class="data-value" id="receptorNombre"></span></div>
-                    <div class="data-row"><span class="data-label">RFC:</span> <span class="data-value" id="receptorRfc"></span></div>
-                    <div class="data-row"><span class="data-label">Uso CFDI:</span> <span class="data-value" id="receptorUso"></span></div>
-                </div>
-            </div>
+        <h2 class="result-title" id="resultTitle">Resultado</h2>
+        <div class="result-rfc" id="resultRfc"></div>
+        <p class="result-desc" id="resultDesc"></p>
 
-            <div class="data-group">
-                <h3>Conceptos</h3>
-                <div style="overflow-x: auto;">
-                    <table id="conceptosTable">
-                        <thead>
-                            <tr>
-                                <th>Clave</th>
-                                <th>Descripción</th>
-                                <th>Cant.</th>
-                                <th>V. Unitario</th>
-                                <th>Importe</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="totals">
-                <div class="data-row"><span class="data-label">Subtotal:</span> <span class="data-value" id="subtotalVal"></span></div>
-                <div class="data-row"><span class="data-label">Total Traslados:</span> <span class="data-value" id="trasladosVal"></span></div>
-                <div class="data-row"><span class="data-label">Total Retenciones:</span> <span class="data-value" id="retencionesVal"></span></div>
-                <div class="data-row grand-total"><span class="data-label">Total:</span> <span class="data-value" id="totalVal"></span></div>
-            </div>
-            
-            <div style="margin-top: 30px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px;">
-                Fecha de Emisión: <span id="fechaEmision"></span> | Moneda: <span id="moneda"></span>
-            </div>
+        <div class="cta-banner">
+            <p style="font-size: 14px; color: var(--text-main); font-weight: 600; margin-bottom: 15px;">¿Necesitas revisar toda tu contabilidad?</p>
+            <a href="/" class="cta-button" onclick="gtag('event', 'clic_cross_sell', {'event_category': 'herramientas', 'event_label': 'validador_efos'});">Auditar Base de Datos Completa</a>
         </div>
-    </div>
-
-    <div class="cta-banner" id="ctaBanner" style="display: none;">
-        <h4>¿Tienes cientos de facturas como esta?</h4>
-        <p>Revisarlas una por una es ineficiente. Detecta errores matemáticos en retenciones y traslados de forma masiva.</p>
-        <a href="/" class="cta-button" onclick="gtag('event', 'clic_cross_sell', {'event_category': 'herramientas', 'event_label': 'visor_xml'});">Ir a Auditoría Masiva</a>
     </div>
 </div>
 
 <script>
     const input = document.getElementById('xmlInput');
     const dropZone = document.getElementById('dropZone');
-    const invoiceCard = document.getElementById('invoiceCard');
-    const ctaBanner = document.getElementById('ctaBanner');
+    const rfcInput = document.getElementById('rfcInput');
+    const resultCard = document.getElementById('resultCard');
+    
+    // Regex estricto para RFC Mexicano (Personas Físicas y Morales)
+    const regexRFC = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+
+    rfcInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    rfcInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') validarRFCManual();
+    });
 
     ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
     ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
 
-    dropZone.addEventListener('drop', (e) => processFile(e.dataTransfer.files[0]));
-    input.addEventListener('change', (e) => processFile(e.target.files[0]));
+    dropZone.addEventListener('drop', (e) => extraerXML(e.dataTransfer.files[0]));
+    input.addEventListener('change', (e) => extraerXML(e.target.files[0]));
 
-    function processFile(file) {
-        if (!file || !file.name.toLowerCase().endsWith('.xml')) {
-            alert('Por favor, selecciona un archivo XML válido.');
-            return;
-        }
-
+    function extraerXML(file) {
+        if (!file || !file.name.toLowerCase().endsWith('.xml')) return alert('Sube un XML válido.');
+        
         const reader = new FileReader();
         reader.onload = function(e) {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
-            
-            // Función auxiliar para obtener atributos manejando namespaces
-            const getAttr = (element, attrName) => element ? (element.getAttribute(attrName) || "") : "";
-            const formatMoney = (val) => val ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val)) : '$0.00';
-
             try {
-                const comprobante = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
                 const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
-                const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0] || xmlDoc.getElementsByTagName('Receptor')[0];
-                const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0] || xmlDoc.getElementsByTagName('TimbreFiscalDigital')[0];
-                const impuestos = xmlDoc.getElementsByTagName('cfdi:Impuestos');
-                
-                // Nodo principal Impuestos (para totales)
-                let nodoImpuestosGlobal = null;
-                for(let i=0; i<impuestos.length; i++) {
-                    if(impuestos[i].parentNode === comprobante) {
-                        nodoImpuestosGlobal = impuestos[i]; break;
-                    }
-                }
-
-                document.getElementById('uuidDisplay').innerText = `UUID: ${getAttr(timbre, 'UUID') || 'No timbrado'}`;
-                document.getElementById('tipoComprobante').innerText = getAttr(comprobante, 'TipoDeComprobante').toUpperCase() || '-';
-                document.getElementById('fechaEmision').innerText = getAttr(comprobante, 'Fecha');
-                document.getElementById('moneda').innerText = getAttr(comprobante, 'Moneda');
-
-                document.getElementById('emisorNombre').innerText = getAttr(emisor, 'Nombre');
-                document.getElementById('emisorRfc').innerText = getAttr(emisor, 'Rfc');
-                document.getElementById('emisorRegimen').innerText = getAttr(emisor, 'RegimenFiscal');
-
-                document.getElementById('receptorNombre').innerText = getAttr(receptor, 'Nombre');
-                document.getElementById('receptorRfc').innerText = getAttr(receptor, 'Rfc');
-                document.getElementById('receptorUso').innerText = getAttr(receptor, 'UsoCFDI');
-
-                document.getElementById('subtotalVal').innerText = formatMoney(getAttr(comprobante, 'SubTotal'));
-                document.getElementById('totalVal').innerText = formatMoney(getAttr(comprobante, 'Total'));
-                
-                document.getElementById('trasladosVal').innerText = nodoImpuestosGlobal ? formatMoney(getAttr(nodoImpuestosGlobal, 'TotalImpuestosTrasladados')) : '$0.00';
-                document.getElementById('retencionesVal').innerText = nodoImpuestosGlobal ? formatMoney(getAttr(nodoImpuestosGlobal, 'TotalImpuestosRetenidos')) : '$0.00';
-
-                const tbody = document.querySelector('#conceptosTable tbody');
-                tbody.innerHTML = '';
-                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
-                
-                for(let i = 0; i < conceptos.length; i++) {
-                    const c = conceptos[i];
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${getAttr(c, 'ClaveProdServ')}</td>
-                        <td>${getAttr(c, 'Descripcion')}</td>
-                        <td>${getAttr(c, 'Cantidad')}</td>
-                        <td>${formatMoney(getAttr(c, 'ValorUnitario'))}</td>
-                        <td>${formatMoney(getAttr(c, 'Importe'))}</td>
-                    `;
-                    tbody.appendChild(tr);
-                }
-
-                invoiceCard.style.display = 'block';
-                ctaBanner.style.display = 'block';
-                
-                gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'visor_xml_exito'});
-
-            } catch(error) {
-                alert("Error al leer la estructura del XML. Asegúrate de que sea un CFDI válido del SAT.");
+                const rfc = emisor.getAttribute('Rfc');
+                rfcInput.value = rfc;
+                ejecutarValidacion(rfc);
+            } catch(err) {
+                mostrarResultado('INVALID', 'Error de Lectura', 'No se pudo extraer el RFC emisor. Verifica que sea un CFDI válido.');
             }
         };
         reader.readAsText(file);
     }
+
+    function validarRFCManual() {
+        const rfc = rfcInput.value.trim();
+        ejecutarValidacion(rfc);
+    }
+
+    async function ejecutarValidacion(rfc) {
+        document.getElementById('resultRfc').innerText = rfc || "SIN RFC";
+        resultCard.style.display = 'block';
+        resultCard.className = 'result-card';
+        document.getElementById('iconSafe').style.display = 'none';
+        document.getElementById('iconDanger').style.display = 'none';
+
+        if (!rfc || !regexRFC.test(rfc)) {
+            mostrarResultado('INVALID', 'Formato de RFC Inválido', 'El identificador ingresado no cumple con la estructura oficial estipulada por el SAT.');
+            return;
+        }
+
+        document.getElementById('resultTitle').innerText = "Consultando base de datos...";
+        document.getElementById('resultDesc').innerText = "Verificando registros oficiales...";
+
+        try {
+            // Lee el archivo efos.json directamente desde Vercel
+            const response = await fetch('/efos.json');
+            if (!response.ok) throw new Error('Error al cargar la lista');
+            
+            const listaNegraEFOS = await response.json();
+            
+            gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'consulta_efos'});
+
+            if (listaNegraEFOS.includes(rfc)) {
+                mostrarResultado('DANGER', '¡ALERTA DE RIESGO FISCAL!', 'Este RFC está clasificado como EFO definitivo. Deducir estos comprobantes constituye un delito de defraudación fiscal.');
+            } else {
+                mostrarResultado('SAFE', 'RFC Sin Alertas (Art. 69-B)', 'Este contribuyente NO se encuentra listado como EFO definitivo en la base de datos del SAT.');
+            }
+        } catch (error) {
+            mostrarResultado('INVALID', 'Error de Sistema', 'No se pudo cargar la base de datos de EFOS. Verifica que el archivo efos.json exista en el servidor.');
+        }
+    }
+
+    function mostrarResultado(tipo, titulo, descripcion) {
+        document.getElementById('resultTitle').innerText = titulo;
+        document.getElementById('resultDesc').innerText = descripcion;
+        
+        if (tipo === 'SAFE') {
+            resultCard.classList.add('status-safe');
+            document.getElementById('iconSafe').style.display = 'block';
+        } else if (tipo === 'DANGER') {
+            resultCard.classList.add('status-danger');
+            document.getElementById('iconDanger').style.display = 'block';
+        } else {
+            resultCard.classList.add('status-invalid');
+            document.getElementById('iconDanger').style.display = 'block';
+        }
+    }
+
+    // Prevención de click fantasma en móviles
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('touchstart', function(e) {
+            const content = this.nextElementSibling;
+            if (getComputedStyle(content).display === 'none') {}
+        }, {passive: true});
+    });
 </script>
 
 <footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
@@ -303,5 +288,6 @@
         <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
 </footer>
+
 </body>
 </html>
