@@ -24,7 +24,8 @@
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; }
         @media (prefers-color-scheme: dark) { :root { --bg-primary: #111827; --bg-secondary: #1F2937; --text-main: #F9FAFB; --text-muted: #D1D5DB; --border: #374151; --brand: #3B82F6; --drop-bg: #374151; } }
         
-        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
         .top-nav { position: absolute; top: 0; right: 0; padding: 20px 40px; display: flex; gap: 20px; z-index: 10; align-items: center; }
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; transition: color 0.2s; }
@@ -44,7 +45,7 @@
         #dropZone.dragover { border-color: var(--brand); background-color: rgba(37, 99, 235, 0.05); transform: scale(1.02); }
         .lock-img { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; background-color: white; padding: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); margin: 0 auto; display: block; }
         
-        .trust-badges { display: flex; justify-content: center; gap: 16px; margin-top: 16px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         .trust-badges div { display: flex; align-items: center; gap: 4px; }
         
         #successSection { display: none; text-align: center; }
@@ -70,7 +71,6 @@
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @media (max-width: 768px) { .split-layout { flex-direction: column; } .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } .top-nav { position: relative; justify-content: center; padding: 20px; background: var(--bg-secondary); } }
         /* Mega Dropdown CSS */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
@@ -81,6 +81,17 @@
         .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
         .dropdown:hover .dropdown-content { display: grid; }
         .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+
+        /* MÓVIL RESPONSIVE FIXES */
+        @media (max-width: 768px) { 
+            .split-layout { flex-direction: column; } 
+            .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } 
+            .top-nav { position: relative; justify-content: center; padding: 20px; background: var(--bg-secondary); flex-wrap: wrap; gap: 15px; } 
+            .left-content h1 { font-size: 28px !important; }
+            .upload-card { padding: 25px 20px; }
+            .dropdown-content { position: fixed; top: 80px; left: 5%; right: 5%; min-width: 90%; width: 90%; grid-template-columns: 1fr; max-height: 80vh; overflow-y: auto; }
+            .dropdown:hover .dropdown-content { transform: none; }
+        }
     </style>
 </head>
 <body>
@@ -125,8 +136,8 @@
 
             <div style="width: 1px; height: 24px; background: var(--border); margin: 0 10px;"></div>
 
-            <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
-            <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
+            <a href="#" onclick="alert('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
+            <a href="#" onclick="alert('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
         </nav>
 
         <div class="upload-card">
@@ -193,7 +204,7 @@
 
 <div class="trust-banner">🔒 TUS CLIENTES ESTÁN PROTEGIDOS: CERO ALMACENAMIENTO DE DATOS FISCALES.</div>
 
-<footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
+<footer class="site-footer">
     <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
@@ -364,7 +375,3 @@
 </script>
 </body>
 </html>
-
-
-
-
