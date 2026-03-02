@@ -52,6 +52,22 @@
         .cta-banner h4 { color: #1E3A8A; margin: 0 0 10px 0; font-size: 18px; }
         .cta-banner p { color: #1E40AF; font-size: 14px; margin-bottom: 15px; }
         .cta-button { background: var(--brand); color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; }
+        /* Mega Dropdown Header Herramientas */
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+        
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 50; border-radius: 12px; border: 1px solid var(--border); margin-top: 5px; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; text-align: left; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -270,3 +286,4 @@
 </body>
 
 </html>
+
