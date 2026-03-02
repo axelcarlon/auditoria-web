@@ -23,8 +23,19 @@
         
         .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
         .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
-        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
-        .nav-links a:hover { color: white; }
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: white; }
+
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 50; border-radius: 12px; border: 1px solid var(--border); margin-top: 5px; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
         .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
         
@@ -65,8 +76,29 @@
 <header class="header">
     <a href="/">AuditorIA</a>
     <div class="nav-links">
-        <a href="/">Auditoría Masiva</a>
-        <a href="/visor-xml.html">Visor XML</a>
+        <a href="/" class="nav-link">Auditoría Masiva</a>
+        <div class="dropdown">
+            <div class="dropdown-toggle">Suite de Herramientas ▾</div>
+            <div class="dropdown-content">
+                <div class="dropdown-column">
+                    <div class="menu-category">Auditoría y Riesgo</div>
+                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
+                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
+                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Diaria</div>
+                    <a href="/visor-xml.html">Visor y Decodificador XML</a>
+                    <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
+                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
+                    <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -111,14 +143,6 @@
     // Regex estricto para RFC Mexicano (Personas Físicas y Morales)
     const regexRFC = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
 
-    // MOCK DATA: Aquí se inyectará el JSON oficial del SAT en el futuro.
-    // Para prueba de la herramienta, se han agregado RFCs ficticios en estado "Definitivo".
-    const listaNegraEFOS = [
-        "EFO120101XXX",
-        "SIM890523ZZZ",
-        "FAL761201ABC"
-    ];
-
     rfcInput.addEventListener('input', function() {
         this.value = this.value.toUpperCase();
     });
@@ -157,27 +181,37 @@
         ejecutarValidacion(rfc);
     }
 
-    function ejecutarValidacion(rfc) {
+    async function ejecutarValidacion(rfc) {
         document.getElementById('resultRfc').innerText = rfc || "SIN RFC";
         resultCard.style.display = 'block';
-        
-        // Reset styles
         resultCard.className = 'result-card';
         document.getElementById('iconSafe').style.display = 'none';
         document.getElementById('iconDanger').style.display = 'none';
 
         if (!rfc || !regexRFC.test(rfc)) {
-            mostrarResultado('INVALID', 'Formato de RFC Inválido', 'El identificador ingresado no cumple con la estructura oficial estipulada por el SAT para Personas Físicas o Morales.');
+            mostrarResultado('INVALID', 'Formato de RFC Inválido', 'El identificador ingresado no cumple con la estructura oficial estipulada por el SAT.');
             return;
         }
 
-        gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'consulta_efos'});
+        document.getElementById('resultTitle').innerText = "Consultando base de datos...";
+        document.getElementById('resultDesc').innerText = "Verificando registros oficiales...";
 
-        // Búsqueda en la lista negra
-        if (listaNegraEFOS.includes(rfc)) {
-            mostrarResultado('DANGER', '¡ALERTA DE RIESGO FISCAL!', 'Este RFC está clasificado como Empresa que Factura Operaciones Simuladas (EFO) definitivo en los términos del Artículo 69-B del CFF. Deducir estos comprobantes constituye un delito de defraudación fiscal.');
-        } else {
-            mostrarResultado('SAFE', 'RFC Sin Alertas (Art. 69-B)', 'Este contribuyente NO se encuentra actualmente listado como EFO definitivo en la base de datos pública de operaciones simuladas del SAT.');
+        try {
+            // Lee el archivo efos.json directamente desde Vercel
+            const response = await fetch('/efos.json');
+            if (!response.ok) throw new Error('Error al cargar la lista');
+            
+            const listaNegraEFOS = await response.json();
+            
+            gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'consulta_efos'});
+
+            if (listaNegraEFOS.includes(rfc)) {
+                mostrarResultado('DANGER', '¡ALERTA DE RIESGO FISCAL!', 'Este RFC está clasificado como EFO definitivo. Deducir estos comprobantes constituye un delito de defraudación fiscal.');
+            } else {
+                mostrarResultado('SAFE', 'RFC Sin Alertas (Art. 69-B)', 'Este contribuyente NO se encuentra listado como EFO definitivo en la base de datos del SAT.');
+            }
+        } catch (error) {
+            mostrarResultado('INVALID', 'Error de Sistema', 'No se pudo cargar la base de datos de EFOS. Verifica que el archivo efos.json exista en el servidor.');
         }
     }
 
@@ -197,6 +231,7 @@
         }
     }
 </script>
+
 <footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
     <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
         <div>
@@ -233,6 +268,6 @@
         <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
 </footer>
-</body>
 
+</body>
 </html>
