@@ -147,16 +147,44 @@
         .dropdown:hover .dropdown-content { display: grid; }
         .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
-        /* MÓVIL RESPONSIVE FIXES */
+        /* MÓVIL RESPONSIVE FIXES ACTUALIZADOS */
         @media (max-width: 768px) { 
-            .split-layout { flex-direction: column; } 
-            .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } 
-            .top-nav { position: relative; justify-content: center; padding: 20px; background: var(--bg-secondary); flex-wrap: wrap; gap: 15px; } 
-            .left-content h1 { font-size: 28px !important; }
-            .upload-card { padding: 25px 20px; }
-            .resource-links { grid-template-columns: 1fr; } 
-            .dropdown-content { position: fixed; top: 80px; left: 5%; right: 5%; min-width: 90%; width: 90%; grid-template-columns: 1fr; max-height: 80vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
+            .split-layout { flex-direction: column; display: block; width: 100%; } 
+            .left-panel { min-height: 400px; padding: 60px 20px; }
+            .right-panel { padding: 20px; display: block; } 
+            
+            .top-nav { 
+                position: relative; 
+                top: 0; 
+                right: 0; 
+                padding: 20px 10px; 
+                background: var(--bg-secondary); 
+                flex-direction: column; 
+                gap: 15px; 
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 20px;
+            } 
+            
+            .upload-card { 
+                max-width: 100%; 
+                margin: 0 auto; 
+                padding: 20px;
+                box-shadow: none;
+            }
+
+            .dropdown-content { 
+                position: fixed; 
+                top: 20px; 
+                left: 5%; 
+                right: 5%; 
+                min-width: 90%; 
+                grid-template-columns: 1fr; 
+                max-height: 80vh; 
+                overflow-y: auto; 
+            }
+            
+            .nav-btn { width: 100%; text-align: center; }
+            .left-content h1 { font-size: 26px !important; }
         }
     </style>
 </head>
@@ -564,3 +592,4 @@
 </script>
 </body>
 </html>
+
