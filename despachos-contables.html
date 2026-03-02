@@ -71,6 +71,16 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 768px) { .split-layout { flex-direction: column; } .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } .top-nav { position: relative; justify-content: center; padding: 20px; background: var(--bg-secondary); } }
+        /* Mega Dropdown CSS */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
+        .dropdown-toggle:hover { color: var(--brand); }
+        .dropdown-content { display: none; position: absolute; right: -50px; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 50; border-radius: 12px; border: 1px solid var(--border); margin-top: 5px; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -86,16 +96,35 @@
 
     <div class="right-panel">
         <nav class="top-nav">
+            <a href="/visor-xml.html" class="nav-link">Visor XML</a>
+            <a href="/dashboard-xml.html" class="nav-link">Dashboard</a>
+            
             <div class="dropdown">
-                <div class="dropdown-toggle">Herramientas Gratis ▾</div>
+                <div class="dropdown-toggle">Suite de Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                 <div class="dropdown-content">
-                    <a href="/visor-xml.html">Visor XML</a>
-                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    <div class="dropdown-column">
+                        <div class="menu-category">Auditoría y Riesgo</div>
+                        <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                        <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                        <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
+                        
+                        <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
+                        <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                        <a href="/proyector-iva.html">Proyector IVA Mensual</a>
+                        <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
+                    </div>
+                    <div class="dropdown-column">
+                        <div class="menu-category">Operación Diaria</div>
+                        <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
+                        <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                        <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
+                        <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                    </div>
                 </div>
             </div>
+
+            <div style="width: 1px; height: 24px; background: var(--border); margin: 0 10px;"></div>
+
             <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
             <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
         </nav>
@@ -164,29 +193,40 @@
 
 <div class="trust-banner">🔒 TUS CLIENTES ESTÁN PROTEGIDOS: CERO ALMACENAMIENTO DE DATOS FISCALES.</div>
 
-<footer class="site-footer">
-    <p>&copy; 2026 AuditorIA.</p>
-    <div class="footer-links" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: left; max-width: 800px; margin: 30px auto 0;">
+<footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
         <div>
-            <h4 style="color: var(--text-main); margin-bottom: 15px; font-size: 15px;">Soluciones</h4>
-            <a href="/" style="display: block; margin-bottom: 10px;">Auditoría Masiva</a>
-            <a href="/despachos-contables.html" style="display: block; margin-bottom: 10px;">Para Despachos</a>
-            <a href="/empresas.html" style="display: block; margin-bottom: 10px;">Para Empresas</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
+            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
+            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
+            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
         </div>
         <div>
-            <h4 style="color: var(--text-main); margin-bottom: 15px; font-size: 15px;">Herramientas Gratuitas</h4>
-            <a href="/visor-xml.html" style="display: block; margin-bottom: 10px;">Visor y Decodificador XML</a>
-            <a href="/validador-efos.html" style="display: block; margin-bottom: 10px;">Validador EFOS (Art. 69-B)</a>
-            <a href="/calculadora-recargos.html" style="display: block; margin-bottom: 10px;">Calculadora de Recargos</a>
-            <a href="/dashboard-xml.html" style="display: block; margin-bottom: 10px;">Dashboard Financiero</a>
-            <a href="/analisis-proveedores.html" style="display: block; margin-bottom: 10px;">Análisis de Proveedores</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Herramientas Gratuitas</h4>
+            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
+            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
+            <a href="/dashboard-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Dashboard Financiero</a>
+            <a href="/auditor-nomina.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditor Masivo de Nómina</a>
+            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador de Pagos (REP)</a>
         </div>
         <div>
-            <h4 style="color: var(--text-main); margin-bottom: 15px; font-size: 15px;">Legal y Contacto</h4>
-            <a href="/privacidad.html" style="display: block; margin-bottom: 10px;">Aviso de Privacidad</a>
-            <a href="/terminos.html" style="display: block; margin-bottom: 10px;">Términos de Servicio</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 10px;">Soporte (Gmail)</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
+            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas (Layout)</a>
+            <a href="/conversor-xml-pdf.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conversor XML a PDF</a>
+            <a href="/proyector-iva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Proyector de IVA Mensual</a>
+            <a href="/buscador-conceptos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Buscador Forense XML</a>
+            <a href="/calculadora-recargos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Calculadora de Recargos</a>
         </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
+            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
+            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
+        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
 </footer>
 
@@ -324,6 +364,7 @@
 </script>
 </body>
 </html>
+
 
 
 
