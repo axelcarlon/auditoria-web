@@ -19,30 +19,40 @@
 
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; }
-        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        /* Mega Dropdown Header Herramientas */
-        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
+        /* Header Herramientas */
+        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
         .nav-link:hover { color: #ffffff; }
-        
+
+        /* Dropdown Unificado y Estabilizado */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 50; border-radius: 12px; border: 1px solid var(--border); margin-top: 5px; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
         .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
         .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
         .dropdown:hover .dropdown-content { display: grid; }
         .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; justify-content: center; text-align: center; }
+            .nav-right { justify-content: center; width: 100%; }
+            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
+            .dropdown:hover .dropdown-content { transform: none; }
+        }
+
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         
         .search-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        .search-input { flex: 1; padding: 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 200px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
         .search-input:focus { outline: none; border-color: var(--brand); }
         
         .upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg-primary); }
@@ -56,7 +66,7 @@
         .highlight-text { background-color: #FEF08A; font-weight: bold; padding: 0 2px; border-radius: 2px; }
         .amount { font-family: monospace; text-align: right; }
         
-        .summary { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #EFF6FF; border-radius: 8px; border: 1px solid #BFDBFE; color: #1E3A8A; font-weight: 600; }
+        .summary { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #EFF6FF; border-radius: 8px; border: 1px solid #BFDBFE; color: #1E3A8A; font-weight: 600; flex-wrap: wrap; gap: 10px; }
     </style>
 </head>
 <body>
@@ -101,7 +111,7 @@
     <div class="search-container">
         <div class="search-box">
             <input type="text" id="keyword" class="search-input" placeholder="Ej. Computadora, Viáticos, Mantenimiento...">
-            <button onclick="ejecutarBusqueda()" style="background: var(--brand); color: white; border: none; padding: 0 32px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer;">BUSCAR EN XML</button>
+            <button onclick="ejecutarBusqueda()" style="background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer;">BUSCAR EN XML</button>
         </div>
         
         <div class="upload-area" id="dropZone" onclick="document.getElementById('xmlInput').click()">
@@ -220,6 +230,14 @@
         document.getElementById('results').style.display = 'block';
         gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'buscador_forense'});
     }
+
+    // Prevención de click fantasma en móviles
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('touchstart', function(e) {
+            const content = this.nextElementSibling;
+            if (getComputedStyle(content).display === 'none') {}
+        }, {passive: true});
+    });
 </script>
 
 <footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
