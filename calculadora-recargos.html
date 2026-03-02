@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Recargos y Actualización SAT | AuditorIA</title>
+    <meta name="description" content="Calcula la actualización por INPC y los recargos por mora de impuestos omitidos según el Art. 17-A y 21 del CFF.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/calculadora-recargos.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+        
+        .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card-title { font-size: 18px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+        input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; box-sizing: border-box; background: var(--bg-primary); color: var(--text-main); }
+        input:focus, select:focus { outline: none; border-color: var(--brand); }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        .calc-btn { width: 100%; background: var(--brand); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .calc-btn:hover { background: #1E3A8A; }
+
+        .result-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .result-label { font-size: 15px; color: var(--text-muted); }
+        .result-val { font-size: 16px; font-weight: 600; font-family: monospace; }
+        .total-row { border-top: 2px solid var(--text-main); margin-top: 10px; padding-top: 20px; border-bottom: none; }
+        .total-row .result-label { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .total-row .result-val { font-size: 24px; font-weight: 800; color: var(--danger); }
+
+        .info-box { background: #EFF6FF; border: 1px solid #BFDBFE; padding: 15px; border-radius: 6px; font-size: 12px; color: #1E40AF; line-height: 1.5; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/">AuditorIA</a>
+    <div class="nav-links">
+        <a href="/">Auditoría Masiva</a>
+        <a href="/visor-xml.html">Visor XML</a>
+        <a href="/validador-efos.html">Validador EFOS</a>
+    </div>
+</header>
+
+<div style="max-width: 900px; margin: 40px auto 0; padding: 0 20px;">
+    <h1 style="font-size: 32px; margin-bottom: 10px;">Calculadora de Recargos y Actualización</h1>
+    <p style="color: var(--text-muted);">Cuantifica el impacto económico de las discrepancias fiscales. Cálculo basado en INPC y tasa de recargos por mora (Art. 17-A y 21 CFF).</p>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2 class="card-title">Datos de la Omisión</h2>
+        
+        <div class="form-group">
+            <label>Importe Histórico Omitido ($)</label>
+            <input type="number" id="importeOmitido" placeholder="Ej. 15000" min="1" step="0.01">
+        </div>
+
+        <div class="form-group">
+            <label>Periodo de Vencimiento (Cuándo debió pagarse)</label>
+            <div class="grid-2">
+                <select id="mesVencimiento">
+                    <option value="1">Enero</option><option value="2">Febrero</option>
+                    <option value="3">Marzo</option><option value="4">Abril</option>
+                    <option value="5">Mayo</option><option value="6">Junio</option>
+                    <option value="7">Julio</option><option value="8">Agosto</option>
+                    <option value="9">Septiembre</option><option value="10">Octubre</option>
+                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                </select>
+                <select id="anioVencimiento">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Periodo de Pago (Cuándo se va a pagar)</label>
+            <div class="grid-2">
+                <select id="mesPago">
+                    <option value="1">Enero</option><option value="2">Febrero</option>
+                    <option value="3">Marzo</option><option value="4">Abril</option>
+                    <option value="5">Mayo</option><option value="6">Junio</option>
+                    <option value="7">Julio</option><option value="8">Agosto</option>
+                    <option value="9">Septiembre</option><option value="10">Octubre</option>
+                    <option value="11">Noviembre</option><option value="12">Diciembre</option>
+                </select>
+                <select id="anioPago">
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="calc-btn" onclick="calcularAdeudo()">Ejecutar Cálculo</button>
+    </div>
+
+    <div class="card">
+        <h2 class="card-title">Resultado Financiero</h2>
+        
+        <div class="result-row">
+            <span class="result-label">Importe Histórico:</span>
+            <span class="result-val" id="resHistorico">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Factor de Actualización:</span>
+            <span class="result-val" id="resFactor">0.0000</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Importe Actualizado:</span>
+            <span class="result-val" id="resActualizado">$0.00</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Meses de Mora:</span>
+            <span class="result-val" id="resMeses">0</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Recargos (1.47% mensual):</span>
+            <span class="result-val" id="resRecargos">$0.00</span>
+        </div>
+        <div class="result-row total-row">
+            <span class="result-label">Total a Pagar SAT:</span>
+            <span class="result-val" id="resTotal">$0.00</span>
+        </div>
+
+        <div class="info-box">
+            <strong>Nota Técnica (INPC):</strong> El motor de cálculo utiliza un diccionario estático de INPC de los últimos ejercicios. Para auditorías oficiales de dictamen, se requiere cruzar el factor contra la publicación del DOF. Tasa de recargos por prórroga establecida en la Ley de Ingresos de la Federación.
+        </div>
+    </div>
+</div>
+
+<script>
+    // Diccionario INPC (Mock data 2024-2026 para operatividad del front-end)
+    // En producción esto debe consumir una API o actualizarse manualmente cada mes.
+    const inpcData = {
+        "2023": { "12": 132.506 },
+        "2024": { "1": 133.555, "2": 134.111, "3": 134.500, "4": 135.000, "5": 135.200, "6": 135.800, "7": 136.100, "8": 136.500, "9": 136.800, "10": 137.200, "11": 137.900, "12": 138.500 },
+        "2025": { "1": 139.100, "2": 139.500, "3": 139.900, "4": 140.200, "5": 140.500, "6": 140.900, "7": 141.200, "8": 141.500, "9": 141.800, "10": 142.100, "11": 142.500, "12": 143.000 },
+        "2026": { "1": 143.500, "2": 143.900, "3": 144.200, "4": 144.500, "5": 144.800, "6": 145.100, "7": 145.400, "8": 145.700, "9": 146.000, "10": 146.300, "11": 146.600, "12": 147.000 }
+    };
+
+    const TASA_RECARGOS = 0.0147; // 1.47% mensual vigente
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+
+    function obtenerINPC(anio, mes) {
+        // Regla fiscal: Se usa el INPC del mes inmediato anterior al más reciente.
+        let m = parseInt(mes) - 1;
+        let a = parseInt(anio);
+        if (m === 0) { m = 12; a -= 1; }
+        
+        try {
+            return inpcData[a.toString()][m.toString()];
+        } catch (e) {
+            return null; // Si el INPC no está capturado
+        }
+    }
+
+    function calcularAdeudo() {
+        const importe = parseFloat(document.getElementById('importeOmitido').value);
+        if (isNaN(importe) || importe <= 0) {
+            alert("Ingresa un importe válido mayor a 0.");
+            return;
+        }
+
+        const mVen = parseInt(document.getElementById('mesVencimiento').value);
+        const aVen = parseInt(document.getElementById('anioVencimiento').value);
+        const mPag = parseInt(document.getElementById('mesPago').value);
+        const aPag = parseInt(document.getElementById('anioPago').value);
+
+        // Validar temporalidad
+        const fechaVen = new Date(aVen, mVen - 1);
+        const fechaPag = new Date(aPag, mPag - 1);
+        
+        if (fechaPag < fechaVen) {
+            alert("El mes de pago no puede ser anterior al mes de vencimiento.");
+            return;
+        }
+
+        const inpcAntVencimiento = obtenerINPC(aVen, mVen);
+        const inpcAntPago = obtenerINPC(aPag, mPag);
+
+        if (!inpcAntVencimiento || !inpcAntPago) {
+            alert("No hay datos de INPC capturados para los meses seleccionados. Actualiza la tabla del código fuente.");
+            return;
+        }
+
+        // 1. Factor de Actualización
+        let factor = inpcAntPago / inpcAntVencimiento;
+        // Se trunca a 4 decimales según CFF Art. 17-A
+        factor = Math.trunc(factor * 10000) / 10000;
+        if (factor < 1) factor = 1;
+
+        // 2. Importe Actualizado
+        const importeActualizado = importe * factor;
+
+        // 3. Meses de mora
+        let mesesMora = (aPag - aVen) * 12 + (mPag - mVen);
+        if (mesesMora < 0) mesesMora = 0;
+
+        // 4. Recargos
+        const totalTasaRecargos = mesesMora * TASA_RECARGOS;
+        const recargos = importeActualizado * totalTasaRecargos;
+
+        // 5. Total
+        const totalPagar = importeActualizado + recargos;
+
+        // Render en UI
+        document.getElementById('resHistorico').innerText = formatMoney(importe);
+        document.getElementById('resFactor').innerText = factor.toFixed(4);
+        document.getElementById('resActualizado').innerText = formatMoney(importeActualizado);
+        document.getElementById('resMeses').innerText = mesesMora;
+        document.getElementById('resRecargos').innerText = formatMoney(recargos);
+        document.getElementById('resTotal').innerText = formatMoney(totalPagar);
+
+        gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'calculadora_recargos'});
+    }
+</script>
+</body>
+</html>
