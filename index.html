@@ -84,9 +84,11 @@
         .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         .trust-badges div { display: flex; align-items: center; gap: 4px; }
         
-        #successSection { display: none; text-align: center; }
+        #resultsWrapper { display: none; text-align: left; }
         .success-icon { width: 64px; height: 64px; color: #059669; margin-bottom: 20px; }
-        .share-container { margin: 30px 0; padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); }
+        .error-icon { width: 48px; height: 48px; color: var(--error); margin-bottom: 15px; }
+        
+        .share-container { margin: 30px 0; padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; }
         .social-btn:hover { opacity: 0.9; }
         .btn-x { background-color: #000000; }
@@ -147,6 +149,12 @@
         .dropdown:hover .dropdown-content { display: grid; }
         .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
+        /* Estilos Inteligencia Artificial */
+        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 20px; margin-top: 20px; border-radius: 4px; display: none; text-align: left; }
+        .ia-advisor-title { font-weight: 700; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
+        .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
+
         /* MÓVIL RESPONSIVE FIXES */
         @media (max-width: 768px) { 
             .split-layout { flex-direction: column; display: block; width: 100%; } 
@@ -181,6 +189,7 @@
 
     <section class="right-panel">
         <nav class="top-nav">
+            <a href="/como-funciona.html" class="nav-link" style="color: var(--brand); font-weight: bold;">Cómo Funciona</a>
             <a href="/visor-xml.html" class="nav-link">Visor XML</a>
             <a href="/dashboard-xml.html" class="nav-link">Dashboard</a>
             
@@ -241,6 +250,7 @@
                 <div class="trust-badges">
                     <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
                     <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
+                    <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Zero-Trust</div>
                 </div>
 
                 <div id="statusContainer" aria-live="polite" style="margin-top: 20px; display: none; text-align: center;">
@@ -249,13 +259,35 @@
                 </div>
             </div>
 
-            <div id="successSection">
-                <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 24px;">Dictamen Generado</h2>
-                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px;">Tu archivo Excel ha sido descargado. Por cumplimiento legal, los archivos XML han sido destruidos del servidor.</p>
-                
+            <div id="resultsWrapper">
+                <div style="text-align: center;">
+                    <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 24px;">Dictamen Generado</h2>
+                    <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px;">Tu archivo Excel ha sido descargado exitosamente.</p>
+                </div>
+
+                <div id="errorSection" style="display: none; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--error); font-weight: bold; font-size: 16px;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Anomalías Matemáticas en el Lote
+                    </div>
+                    <p id="mathErrorText" style="font-size: 13px; color: var(--text-main); margin: 0; line-height: 1.5;"></p>
+                </div>
+
+                <div id="iaLoading" class="ia-loading">
+                    <div class="spinner" style="width: 24px; height: 24px; border-width: 3px; display: inline-block; vertical-align: middle; margin: 0 10px 0 0;"></div>
+                    Consultando Asesor Legal de IA (Cerebro 2)...
+                </div>
+                <div id="iaAdvisorContainer" class="ia-advisor-box">
+                    <div class="ia-advisor-title">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        AuditorIA Legal Insight
+                    </div>
+                    <p id="iaAdvisorText" class="ia-advisor-content"></p>
+                </div>
+
                 <div class="share-container">
-                    <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0;">¡Gracias por utilizar AuditorIA! Ayúdanos a llegar a más personas compartiendo la herramienta:</p>
+                    <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0;">Ayúdanos a llegar a más personas compartiendo la herramienta:</p>
                     <a href="https://twitter.com/intent/tweet?text=Estoy%20automatizando%20la%20auditoría%20de%20mis%20CFDI%204.0%20y%20validando%20retenciones%20con%20AuditorIA.%20Herramienta%20gratuita:&url=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-x">𝕏 Postear</a>
                     <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-in">in Compartir</a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-fb">f Compartir</a>
@@ -357,7 +389,7 @@
     </div>
 </section>
 
-<footer class="site-footer">
+<footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
     <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
@@ -404,10 +436,16 @@
     const spinner = document.getElementById('loadingSpinner');
     const dropZone = document.getElementById('dropZone');
     const uploadSection = document.getElementById('uploadSection');
-    const successSection = document.getElementById('successSection');
+    const resultsWrapper = document.getElementById('resultsWrapper');
+    const errorSection = document.getElementById('errorSection');
     const toastContainer = document.getElementById('toast-container');
 
-    // Función Toast
+    document.addEventListener("DOMContentLoaded", () => {
+        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') {
+            legalCheck.checked = true; btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer";
+        }
+    });
+
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
         toast.className = `toast ${isError ? 'error' : ''}`;
@@ -415,168 +453,129 @@
             ? `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${message}`
             : `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${message}`;
         toastContainer.appendChild(toast);
-        
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                toast.classList.add('show');
-            });
-        });
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 4000);
-    }
-
-    // Comprobar LocalStorage al inicio
-    if (localStorage.getItem('auditoriaLegalAccepted') === 'true') {
-        legalCheck.checked = true;
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
+        requestAnimationFrame(() => { requestAnimationFrame(() => { toast.classList.add('show'); }); });
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
     }
 
     legalCheck.addEventListener('change', (e) => {
-        btn.disabled = !e.target.checked;
-        btn.style.opacity = e.target.checked ? "1" : "0.5";
-        btn.style.cursor = e.target.checked ? "pointer" : "not-allowed";
-        
-        if(e.target.checked) {
-            localStorage.setItem('auditoriaLegalAccepted', 'true');
-        } else {
-            localStorage.removeItem('auditoriaLegalAccepted');
-        }
+        btn.disabled = !e.target.checked; btn.style.opacity = e.target.checked ? "1" : "0.5"; btn.style.cursor = e.target.checked ? "pointer" : "not-allowed";
+        if(e.target.checked) localStorage.setItem('auditoriaLegalAccepted', 'true'); else localStorage.removeItem('auditoriaLegalAccepted');
     });
 
     dropZone.onclick = () => input.click();
-
-    ['dragover', 'dragenter'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-            display.innerText = "Suelta los archivos aquí...";
-            display.style.color = "var(--brand)";
-        });
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (input.files.length === 0) {
-                display.innerText = "Arrastra tus archivos o haz clic para explorar";
-                display.style.color = "var(--text-muted)";
-            }
-        });
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-        input.files = e.dataTransfer.files;
-        updateDisplay(input.files);
-    });
-
-    input.onchange = (e) => updateDisplay(e.target.files);
+    ['dragover', 'dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('dragover'); display.style.color = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('dragover'); if (input.files.length === 0) { display.innerText = "Arrastra tus archivos o haz clic para explorar"; display.style.color = "var(--text-muted)"; } }));
+    dropZone.addEventListener('drop', e => { input.files = e.dataTransfer.files; updateDisplay(input.files); });
+    input.onchange = e => { updateDisplay(e.target.files); };
 
     function updateDisplay(files) {
-        const count = files.length;
-        if (count > 0) {
-            display.innerText = count > 1 ? `${count} archivos cargados listos para procesar` : files[0].name;
-            display.style.color = "var(--brand)";
-        } else {
-            display.innerText = "Arrastra tus archivos o haz clic para explorar";
-            display.style.color = "var(--text-muted)";
-        }
+        if (files.length > 0) { display.innerText = files.length > 1 ? `${files.length} archivos listos` : files[0].name; display.style.color = "var(--brand)"; } 
+        else { display.innerText = "Arrastra tus archivos o haz clic para explorar"; display.style.color = "var(--text-muted)"; }
     }
 
     function resetUI() {
-        successSection.style.display = "none";
+        resultsWrapper.style.display = "none";
+        errorSection.style.display = "none";
+        document.getElementById('iaAdvisorContainer').style.display = "none";
         uploadSection.style.display = "block";
         input.value = "";
         display.innerText = "Arrastra tus archivos o haz clic para explorar";
         display.style.color = "var(--text-muted)";
         statusContainer.style.display = "none";
         
-        // Mantener estado del botón si el check sigue activo en LocalStorage
-        if (localStorage.getItem('auditoriaLegalAccepted') !== 'true') {
-            legalCheck.checked = false;
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            btn.style.cursor = "not-allowed";
-        }
+        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') { legalCheck.checked = true; btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; } 
+        else { legalCheck.checked = false; btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed"; }
     }
 
     btn.onclick = async () => {
         if (input.files.length === 0) return showToast("Por favor, sube archivos XML antes de iniciar.", true);
         
-        const MAX_SIZE_MB = 50;
-        let totalSize = 0;
-        const formData = new FormData();
-        
-        for (let file of input.files) {
-            if (!file.name.toLowerCase().endsWith('.xml')) {
-                showToast(`Archivo rechazado. Solo se permiten .xml: ${file.name}`, true);
-                return;
-            }
-            totalSize += file.size;
-            formData.append('files', file);
-        }
-
-        if (totalSize > MAX_SIZE_MB * 1024 * 1024) {
-            showToast(`Límite excedido. El peso total es ${(totalSize / (1024 * 1024)).toFixed(2)}MB. El máximo es 50MB por lote.`, true);
-            return;
-        }
-        
         statusContainer.style.display = "block";
         spinner.style.display = "block";
-        statusText.innerText = "Analizando base de datos fiscal...";
-        statusText.style.color = "var(--text-muted)";
+        statusText.innerText = "Escaneando Lote (Cerebro 1)...";
         btn.disabled = true;
         btn.style.opacity = "0.6";
 
-        try {
-            gtag('event', 'generar_dictamen', {'event_category': 'auditoria', 'event_label': 'boton_principal'});
+        let erroresDetectados = [];
+        let conceptosMuestra = new Set();
 
+        for (let file of input.files) {
+            if (!file.name.toLowerCase().endsWith('.xml')) continue;
+            try {
+                const text = await file.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto') || xmlDoc.getElementsByTagName('Concepto');
+                
+                for (let i = 0; i < conceptos.length; i++) {
+                    const desc = conceptos[i].getAttribute('Descripcion') || "Concepto";
+                    const retenciones = conceptos[i].getElementsByTagName('cfdi:Retencion') || conceptos[i].getElementsByTagName('Retencion');
+                    for (let j = 0; j < retenciones.length; j++) {
+                        const base = parseFloat(retenciones[j].getAttribute('Base') || 0);
+                        const tasa = parseFloat(retenciones[j].getAttribute('TasaOCuota') || 0);
+                        const importe = parseFloat(retenciones[j].getAttribute('Importe') || 0);
+                        if (base > 0 && tasa > 0) {
+                            const calc = base * tasa;
+                            if (Math.abs(calc - importe) > 0.10) {
+                                erroresDetectados.push(`Base: $${base} | Tasa: ${tasa} | Calculado: $${calc.toFixed(2)} | Declarado: $${importe}`);
+                                conceptosMuestra.add(desc);
+                            }
+                        }
+                    }
+                }
+            } catch(e) {}
+        }
+
+        const formData = new FormData();
+        for (let file of input.files) formData.append('files', file);
+
+        try {
             const res = await fetch('https://auditoria-backend-crar.onrender.com/api/analizar', { method: 'POST', body: formData });
             if (res.ok) {
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
-                const now = new Date();
-                const timestamp = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}hrs`;
-                
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Dictamen_Ejecutivo_Art30B_${timestamp}.xlsx`;
+                a.download = `Dictamen_${Date.now()}.xlsx`;
                 a.click();
-                
-                uploadSection.style.display = "none";
-                successSection.style.display = "block";
-            } else {
-                statusText.innerText = "Error: Verifica que todos los archivos sean XML válidos.";
-                statusText.style.color = "var(--error)";
-                showToast("Error de validación en los archivos subidos.", true);
-            }
-        } catch (err) {
-            statusText.innerText = "Error de servidor. Intenta de nuevo.";
-            statusText.style.color = "var(--error)";
-            showToast("Error de conexión con el servidor. Intenta nuevamente.", true);
-        } finally {
-            spinner.style.display = "none";
-            if (!successSection.style.display || successSection.style.display === "none") {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            }
+            } else { showToast("Error en servidor al generar Excel.", true); }
+        } catch (err) { showToast("Error de red al conectar con API Excel.", true); }
+
+        uploadSection.style.display = "none";
+        resultsWrapper.style.display = "block";
+
+        if (erroresDetectados.length > 0) {
+            errorSection.style.display = "block";
+            let descString = Array.from(conceptosMuestra).slice(0, 3).join(", ") + (conceptosMuestra.size > 3 ? "..." : "");
+            let errorMsg = `Se hallaron ${erroresDetectados.length} discrepancias. Ejemplo: ${erroresDetectados[0]}`;
+            document.getElementById('mathErrorText').innerText = errorMsg;
+            consultarAsesorIA("Lote Facturas XML", descString, errorMsg);
+        } else {
+            document.getElementById('iaAdvisorContainer').style.display = "none";
         }
     };
 
-    // Prevención de click fantasma en móviles
-    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-        toggle.addEventListener('touchstart', function(e) {
-            const content = this.nextElementSibling;
-            if (getComputedStyle(content).display === 'none') {
-                // Previene click accidental al abrir
-            }
-        }, {passive: true});
-    });
+    async function consultarAsesorIA(tipo, concepto, errorDesc) {
+        document.getElementById('iaLoading').style.display = 'block';
+        try {
+            const response = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
+            });
+            if (!response.ok) throw new Error('API Error');
+            const data = await response.json();
+            document.getElementById('iaLoading').style.display = 'none';
+            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+        } catch (err) {
+            document.getElementById('iaLoading').style.display = 'none';
+            document.getElementById('iaAdvisorText').innerText = "Falla de conexión al Asesor IA. Revisar detalles en Excel descargado.";
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+        }
+    }
+
+    document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', function(e) { const c = this.nextElementSibling; if (getComputedStyle(c).display === 'none') {} }, {passive: true}); });
 </script>
 </body>
 </html>
