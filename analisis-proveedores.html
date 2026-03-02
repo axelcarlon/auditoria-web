@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Concentración de Proveedores CFDI | AuditorIA</title>
+    <meta name="description" content="Descubre a qué proveedores les compras más. Analiza tus XML de gastos para generar reportes de concentración de capital y dependencia operativa.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/analisis-proveedores.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+
+        .results-container { display: none; }
+        
+        .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-bottom: 40px; }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+        
+        .card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card h3 { margin-top: 0; font-size: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background: var(--bg-primary); }
+        
+        .amount { font-weight: 600; color: var(--text-main); text-align: right; }
+        th.text-right { text-align: right; }
+
+        .cta-banner { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 30px; text-align: center; margin-top: 20px; }
+        .cta-banner h4 { color: #1E3A8A; margin: 0 0 10px 0; font-size: 20px; }
+        .cta-banner p { color: #1E40AF; font-size: 15px; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-button { background: var(--brand); color: white; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px; transition: 0.2s; }
+        .cta-button:hover { background: #1E3A8A; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/">AuditorIA</a>
+    <div class="nav-links">
+        <a href="/">Auditoría Masiva</a>
+        <a href="/dashboard-xml.html">Dashboard</a>
+    </div>
+</header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 32px; margin-bottom: 10px;">Análisis de Concentración de Proveedores</h1>
+        <p style="color: var(--text-muted);">Identifica dependencia operativa. Sube tus facturas de egresos y descubre a qué RFCs se destina la mayor parte del capital.</p>
+    </div>
+
+    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
+        <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+        <p style="font-weight: 600; margin: 0; font-size: 18px;">Cargar Repositorio de XML (Gastos/Egresos)</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Se omitirán las facturas de ingresos automáticamente.</p>
+        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+    </div>
+
+    <div class="results-container" id="results">
+        <div class="grid-layout">
+            <div class="card">
+                <h3>Top 5 Proveedores (Volumen de Gasto)</h3>
+                <canvas id="supplierChart" height="300"></canvas>
+            </div>
+            
+            <div class="card" style="overflow-x: auto;">
+                <h3>Desglose de Operaciones por RFC</h3>
+                <table id="supplierTable">
+                    <thead>
+                        <tr>
+                            <th>RFC Proveedor</th>
+                            <th>Razón Social</th>
+                            <th>No. Facturas</th>
+                            <th class="text-right">Total Pagado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="cta-banner">
+            <h4>Valida las retenciones de todos tus proveedores</h4>
+            <p>Si un proveedor comete un error en el cálculo de impuestos de su factura, tu empresa asume el riesgo al deducirla. Ejecuta una auditoría matemática masiva de todos los XML recibidos.</p>
+            <a href="/empresas.html" class="cta-button" onclick="gtag('event', 'clic_cross_sell', {'event_category': 'herramientas', 'event_label': 'concentracion_proveedores'});">Validar Riesgo Fiscal</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('xmlInput');
+    const dropZone = document.getElementById('dropZone');
+    const resultsContainer = document.getElementById('results');
+    let chartInstance = null;
+
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
+
+    dropZone.addEventListener('drop', (e) => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', (e) => processFiles(e.target.files));
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+
+    async function processFiles(files) {
+        if (files.length === 0) return;
+
+        // Objeto para agrupar proveedores: { "RFC": { nombre, total, count } }
+        let proveedores = {};
+        let totalGlobal = 0;
+
+        const promises = Array.from(files).map(file => {
+            return new Promise((resolve) => {
+                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+                        const comprobante = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                        
+                        if (!comprobante) { resolve(); return; }
+
+                        const total = parseFloat(comprobante.getAttribute('Total') || 0);
+                        
+                        // Extraer datos del emisor (proveedor)
+                        const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
+                        if(emisor) {
+                            const rfc = emisor.getAttribute('Rfc');
+                            const nombre = emisor.getAttribute('Nombre') || 'SIN NOMBRE';
+
+                            if(!proveedores[rfc]) {
+                                proveedores[rfc] = { nombre: nombre, total: 0, count: 0 };
+                            }
+                            proveedores[rfc].total += total;
+                            proveedores[rfc].count += 1;
+                            totalGlobal += total;
+                        }
+
+                    } catch (err) {}
+                    resolve();
+                };
+                reader.readAsText(file);
+            });
+        });
+
+        await Promise.all(promises);
+        renderResults(proveedores);
+    }
+
+    function renderResults(proveedoresData) {
+        // Convertir objeto a Array y ordenar por Total Descendente
+        const proveedores = Object.keys(proveedoresData).map(rfc => ({
+            rfc: rfc,
+            nombre: proveedoresData[rfc].nombre,
+            total: proveedoresData[rfc].total,
+            count: proveedoresData[rfc].count
+        })).sort((a, b) => b.total - a.total);
+
+        if (proveedores.length === 0) return alert("No se extrajo información de proveedores en los XML proporcionados.");
+
+        const tbody = document.querySelector('#supplierTable tbody');
+        tbody.innerHTML = '';
+
+        proveedores.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-family: monospace;">${p.rfc}</td>
+                <td>${p.nombre}</td>
+                <td>${p.count}</td>
+                <td class="amount">${formatMoney(p.total)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        resultsContainer.style.display = 'block';
+        dropZone.style.display = 'none';
+
+        gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'analisis_proveedores'});
+
+        renderChart(proveedores);
+    }
+
+    function renderChart(proveedores) {
+        const top5 = proveedores.slice(0, 5);
+        const labels = top5.map(p => p.nombre.substring(0, 15) + (p.nombre.length > 15 ? '...' : ''));
+        const data = top5.map(p => p.total);
+
+        const ctx = document.getElementById('supplierChart').getContext('2d');
+        if(chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#DBEAFE'],
+                    borderWidth: 1,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
