@@ -84,13 +84,27 @@
 
         /* MÓVIL RESPONSIVE FIXES */
         @media (max-width: 768px) { 
-            .split-layout { flex-direction: column; } 
-            .left-panel, .right-panel { min-height: 50vh; padding: 30px 20px; } 
-            .top-nav { position: relative; justify-content: center; padding: 20px; background: var(--bg-secondary); flex-wrap: wrap; gap: 15px; } 
-            .left-content h1 { font-size: 28px !important; }
-            .upload-card { padding: 25px 20px; }
-            .dropdown-content { position: fixed; top: 80px; left: 5%; right: 5%; min-width: 90%; width: 90%; grid-template-columns: 1fr; max-height: 80vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
+            .split-layout { flex-direction: column; display: block; } 
+            .left-panel { min-height: 350px; padding: 40px 20px; }
+            .right-panel { padding: 10px; display: block; }
+            
+            .top-nav { 
+                position: relative; 
+                padding: 20px; 
+                background: var(--bg-secondary); 
+                display: flex;
+                flex-direction: column;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 20px;
+            } 
+            
+            .upload-card { 
+                max-width: 95%; 
+                margin: 0 auto; 
+                padding: 20px; 
+            }
+            
+            .nav-link, .dropdown-toggle { padding: 8px 0; width: 100%; text-align: center; justify-content: center; }
         }
     </style>
 </head>
@@ -375,3 +389,4 @@
 </script>
 </body>
 </html>
+
