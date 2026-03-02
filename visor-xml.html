@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor de XML CFDI 4.0 Gratis | AuditorIA</title>
+    <meta name="description" content="Lee y decodifica cualquier archivo XML del SAT en segundos. Visor de facturas CFDI en formato amigable sin necesidad de descargar programas.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/visor-xml.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; }
+        body { margin: 0; padding: 0; box-sizing: border-box; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; }
+        
+        .header { background: #111827; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; font-weight: bold; font-size: 20px; }
+        .nav-links a { color: #D1D5DB; margin-left: 20px; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+        
+        .invoice-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; overflow: hidden; }
+        .invoice-header { background: var(--brand); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .invoice-body { padding: 30px; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .data-group h3 { font-size: 14px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .data-label { font-weight: 600; color: var(--text-main); }
+        .data-value { color: var(--text-muted); text-align: right; word-break: break-all; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        
+        .totals { margin-top: 30px; width: 300px; margin-left: auto; }
+        .totals .data-row.grand-total { font-size: 18px; font-weight: 700; color: var(--brand); border-top: 2px solid var(--border); padding-top: 10px; margin-top: 10px; }
+        
+        .cta-banner { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; padding: 20px; text-align: center; margin-top: 40px; }
+        .cta-banner h4 { color: #1E3A8A; margin: 0 0 10px 0; font-size: 18px; }
+        .cta-banner p { color: #1E40AF; font-size: 14px; margin-bottom: 15px; }
+        .cta-button { background: var(--brand); color: white; padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/">AuditorIA</a>
+    <div class="nav-links">
+        <a href="/">Auditoría Masiva</a>
+        <a href="/despachos-contables.html">Para Despachos</a>
+    </div>
+</header>
+
+<div class="container">
+    <h1 style="font-size: 28px; margin-bottom: 10px; text-align: center;">Visor de XML (CFDI 4.0)</h1>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Decodifica cualquier factura del SAT en segundos. Procesamiento 100% local en tu navegador.</p>
+
+    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
+        <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <p style="font-weight: 600; margin: 0;">Haz clic o arrastra un archivo XML aquí</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Los datos no se suben a ningún servidor.</p>
+        <input type="file" id="xmlInput" accept=".xml" style="display: none;">
+    </div>
+
+    <div class="invoice-card" id="invoiceCard">
+        <div class="invoice-header">
+            <div>
+                <h2 style="margin: 0; font-size: 20px;">Comprobante Fiscal Digital</h2>
+                <span style="font-size: 12px; opacity: 0.8;" id="uuidDisplay">UUID: </span>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 24px; font-weight: bold;" id="tipoComprobante">I</div>
+                <div style="font-size: 12px;">Tipo CFDI</div>
+            </div>
+        </div>
+        
+        <div class="invoice-body">
+            <div class="grid-2">
+                <div class="data-group">
+                    <h3>Emisor</h3>
+                    <div class="data-row"><span class="data-label">Nombre:</span> <span class="data-value" id="emisorNombre"></span></div>
+                    <div class="data-row"><span class="data-label">RFC:</span> <span class="data-value" id="emisorRfc"></span></div>
+                    <div class="data-row"><span class="data-label">Régimen:</span> <span class="data-value" id="emisorRegimen"></span></div>
+                </div>
+                <div class="data-group">
+                    <h3>Receptor</h3>
+                    <div class="data-row"><span class="data-label">Nombre:</span> <span class="data-value" id="receptorNombre"></span></div>
+                    <div class="data-row"><span class="data-label">RFC:</span> <span class="data-value" id="receptorRfc"></span></div>
+                    <div class="data-row"><span class="data-label">Uso CFDI:</span> <span class="data-value" id="receptorUso"></span></div>
+                </div>
+            </div>
+
+            <div class="data-group">
+                <h3>Conceptos</h3>
+                <div style="overflow-x: auto;">
+                    <table id="conceptosTable">
+                        <thead>
+                            <tr>
+                                <th>Clave</th>
+                                <th>Descripción</th>
+                                <th>Cant.</th>
+                                <th>V. Unitario</th>
+                                <th>Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="totals">
+                <div class="data-row"><span class="data-label">Subtotal:</span> <span class="data-value" id="subtotalVal"></span></div>
+                <div class="data-row"><span class="data-label">Total Traslados:</span> <span class="data-value" id="trasladosVal"></span></div>
+                <div class="data-row"><span class="data-label">Total Retenciones:</span> <span class="data-value" id="retencionesVal"></span></div>
+                <div class="data-row grand-total"><span class="data-label">Total:</span> <span class="data-value" id="totalVal"></span></div>
+            </div>
+            
+            <div style="margin-top: 30px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px;">
+                Fecha de Emisión: <span id="fechaEmision"></span> | Moneda: <span id="moneda"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-banner" id="ctaBanner" style="display: none;">
+        <h4>¿Tienes cientos de facturas como esta?</h4>
+        <p>Revisarlas una por una es ineficiente. Detecta errores matemáticos en retenciones y traslados de forma masiva.</p>
+        <a href="/" class="cta-button" onclick="gtag('event', 'clic_cross_sell', {'event_category': 'herramientas', 'event_label': 'visor_xml'});">Ir a Auditoría Masiva</a>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('xmlInput');
+    const dropZone = document.getElementById('dropZone');
+    const invoiceCard = document.getElementById('invoiceCard');
+    const ctaBanner = document.getElementById('ctaBanner');
+
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
+
+    dropZone.addEventListener('drop', (e) => processFile(e.dataTransfer.files[0]));
+    input.addEventListener('change', (e) => processFile(e.target.files[0]));
+
+    function processFile(file) {
+        if (!file || !file.name.toLowerCase().endsWith('.xml')) {
+            alert('Por favor, selecciona un archivo XML válido.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+            
+            // Función auxiliar para obtener atributos manejando namespaces
+            const getAttr = (element, attrName) => element ? (element.getAttribute(attrName) || "") : "";
+            const formatMoney = (val) => val ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val)) : '$0.00';
+
+            try {
+                const comprobante = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
+                const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0] || xmlDoc.getElementsByTagName('Receptor')[0];
+                const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0] || xmlDoc.getElementsByTagName('TimbreFiscalDigital')[0];
+                const impuestos = xmlDoc.getElementsByTagName('cfdi:Impuestos');
+                
+                // Nodo principal Impuestos (para totales)
+                let nodoImpuestosGlobal = null;
+                for(let i=0; i<impuestos.length; i++) {
+                    if(impuestos[i].parentNode === comprobante) {
+                        nodoImpuestosGlobal = impuestos[i]; break;
+                    }
+                }
+
+                document.getElementById('uuidDisplay').innerText = `UUID: ${getAttr(timbre, 'UUID') || 'No timbrado'}`;
+                document.getElementById('tipoComprobante').innerText = getAttr(comprobante, 'TipoDeComprobante').toUpperCase() || '-';
+                document.getElementById('fechaEmision').innerText = getAttr(comprobante, 'Fecha');
+                document.getElementById('moneda').innerText = getAttr(comprobante, 'Moneda');
+
+                document.getElementById('emisorNombre').innerText = getAttr(emisor, 'Nombre');
+                document.getElementById('emisorRfc').innerText = getAttr(emisor, 'Rfc');
+                document.getElementById('emisorRegimen').innerText = getAttr(emisor, 'RegimenFiscal');
+
+                document.getElementById('receptorNombre').innerText = getAttr(receptor, 'Nombre');
+                document.getElementById('receptorRfc').innerText = getAttr(receptor, 'Rfc');
+                document.getElementById('receptorUso').innerText = getAttr(receptor, 'UsoCFDI');
+
+                document.getElementById('subtotalVal').innerText = formatMoney(getAttr(comprobante, 'SubTotal'));
+                document.getElementById('totalVal').innerText = formatMoney(getAttr(comprobante, 'Total'));
+                
+                document.getElementById('trasladosVal').innerText = nodoImpuestosGlobal ? formatMoney(getAttr(nodoImpuestosGlobal, 'TotalImpuestosTrasladados')) : '$0.00';
+                document.getElementById('retencionesVal').innerText = nodoImpuestosGlobal ? formatMoney(getAttr(nodoImpuestosGlobal, 'TotalImpuestosRetenidos')) : '$0.00';
+
+                const tbody = document.querySelector('#conceptosTable tbody');
+                tbody.innerHTML = '';
+                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+                
+                for(let i = 0; i < conceptos.length; i++) {
+                    const c = conceptos[i];
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${getAttr(c, 'ClaveProdServ')}</td>
+                        <td>${getAttr(c, 'Descripcion')}</td>
+                        <td>${getAttr(c, 'Cantidad')}</td>
+                        <td>${formatMoney(getAttr(c, 'ValorUnitario'))}</td>
+                        <td>${formatMoney(getAttr(c, 'Importe'))}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+
+                invoiceCard.style.display = 'block';
+                ctaBanner.style.display = 'block';
+                
+                gtag('event', 'uso_herramienta', {'event_category': 'herramientas', 'event_label': 'visor_xml_exito'});
+
+            } catch(error) {
+                alert("Error al leer la estructura del XML. Asegúrate de que sea un CFDI válido del SAT.");
+            }
+        };
+        reader.readAsText(file);
+    }
+</script>
+</body>
+</html>
