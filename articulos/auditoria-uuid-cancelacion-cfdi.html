@@ -14,10 +14,37 @@
     <meta name="description" content="Trazabilidad algorítmica del Folio Fiscal (UUID) en CFDI 4.0. Evita multas por deducción de facturas canceladas y domina el nodo tfd:TimbreFiscalDigital.">
     <meta name="robots" content="index, follow">
     <style>
-        body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; }
-        .header-nav { background-color: #111827; padding: 20px 40px; }
-        .header-nav a { color: #ffffff; text-decoration: none; font-weight: 600; font-size: 18px; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; overflow-x: hidden; }
+        
+        .header-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: #111827; flex-wrap: wrap; gap: 20px; }
+        .header-nav a.logo { color: #ffffff; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+        
+        /* Dropdown Unificado y Estabilizado */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 4px; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #ffffff; min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 100; border-radius: 12px; border: 1px solid #E5E7EB; margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: #111827; padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
+        .dropdown-content a:hover { background-color: #F3F4F6; color: #2563EB; transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: #2563EB; font-weight: 800; border-bottom: 1px solid #E5E7EB; margin-bottom: 5px; }
+
+        @media (max-width: 768px) {
+            .header-nav { padding: 15px 20px; justify-content: center; text-align: center; }
+            .nav-right { justify-content: center; width: 100%; }
+            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
+            .dropdown:hover .dropdown-content { transform: none; }
+        }
+        
         .article-container { max-width: 800px; margin: 60px auto; background: #ffffff; padding: 50px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
+        @media (max-width: 768px) { .article-container { padding: 30px 20px; margin: 30px auto; } }
+        
         h1 { color: #111827; font-size: 36px; line-height: 1.2; margin-bottom: 24px; border-bottom: 3px solid #2563EB; padding-bottom: 15px; }
         h2 { color: #1F2937; font-size: 28px; margin-top: 48px; margin-bottom: 20px; }
         h3 { color: #2563EB; font-size: 22px; margin-top: 32px; margin-bottom: 16px; }
@@ -26,39 +53,26 @@
         li { font-size: 17px; margin-bottom: 10px; }
         .code-block { background-color: #F3F4F6; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 14px; border-left: 4px solid #4B5563; margin-bottom: 24px; overflow-x: auto; }
         .cta-textual { font-weight: bold; color: #2563EB; text-decoration: underline; }
+        
         .cta-visual { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 40px; border-radius: 12px; text-align: center; color: white; margin: 50px 0; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); }
         .cta-visual h3 { color: white; margin-top: 0; font-size: 26px; }
         .cta-visual p { color: #E0E7FF; font-size: 16px; }
         .cta-button { display: inline-block; background-color: #ffffff; color: #1E3A8A; padding: 16px 32px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 18px; margin-top: 20px; transition: transform 0.2s; }
         .cta-button:hover { transform: translateY(-2px); }
-        .site-footer { text-align: center; padding: 40px 20px; background-color: #111827; color: #6B7280; font-size: 14px; margin-top: 60px; }
-        /* Mega Dropdown Dark Theme & CTA Article */
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-link:hover { color: #ffffff; }
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 4px; }
-        .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #ffffff; min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 50; border-radius: 12px; border: 1px solid #E5E7EB; grid-template-columns: 1fr 1fr; padding: 10px; gap: 10px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: #111827; padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
-        .dropdown-content a:hover { background-color: #F3F4F6; color: #2563EB; transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: #2563EB; font-weight: 800; border-bottom: 1px solid #E5E7EB; margin-bottom: 5px; }
         
-        /* Banner Conversión Artículos */
         .article-cta { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 12px; padding: 40px; text-align: center; margin: 60px 0; }
         .article-cta h3 { color: #1E3A8A; font-size: 24px; margin-top: 0; margin-bottom: 15px; }
         .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
         .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
         .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
+        
+        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #111827; color: #6B7280; font-size: 14px; margin-top: 60px; }
     </style>
 </head>
 <body>
 
-<nav class="header-nav" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #111827;">
-    <a href="/" style="color: white; text-decoration: none; font-weight: bold; font-size: 20px;">AuditorIA</a>
-    
+<nav class="header-nav">
+    <a href="/" class="logo">AuditorIA</a>
     <div class="nav-right">
         <a href="/visor-xml.html" class="nav-link">Visor XML</a>
         <div class="dropdown">
@@ -89,8 +103,10 @@
 <div class="article-container">
     <h1>Auditoría Técnica del UUID y Control de Cancelaciones en CFDI 4.0</h1>
     <p>La base de datos del Servicio de Administración Tributaria (SAT) no procesa facturas en formato PDF; procesa identificadores únicos universales (UUID). Un error en el control del estatus de este identificador de 36 caracteres desencadena multas por deducción de operaciones inexistentes o requerimientos por omisión de ingresos.</p>
+    
     <h2>El UUID como Llave Criptográfica de la Fiscalización</h2>
     <p>El Folio Fiscal o UUID no es un simple número de control interno. Es una llave generada por el Proveedor Autorizado de Certificación (PAC) que asegura la unicidad del documento en los servidores gubernamentales.</p>
+    
     <h3>Análisis del Nodo tfd:TimbreFiscalDigital</h3>
     <p>La validez legal de un XML recae exclusivamente en el complemento de timbrado. Un archivo XML generado por un ERP carece de valor si no contiene el nodo <code>tfd:TimbreFiscalDigital</code>.</p>
     <div class="code-block">
@@ -101,27 +117,34 @@
   NoCertificadoSAT="00001000000504465028" /&gt;
     </div>
     <p>Contabilizar un documento sin este nodo infla los gastos declarados, constituyendo una infracción sancionada por el Artículo 83 del CFF. Para aislar documentos inválidos antes del cálculo de impuestos, <a href="/" class="cta-textual">procesa todo tu repositorio XML en AuditorIA para detectar fallas en el timbrado</a>.</p>
+    
     <h2>Riesgos Fiscales por CFDI Cancelados y Duplicados</h2>
     <p>El esquema de cancelación del CFDI 4.0 introdujo la obligación de justificar el motivo de cancelación (claves 01, 02, 03, 04) y relacionar el UUID sustituto. Las empresas operan asumiendo que un documento entregado por un proveedor mantiene su estatus de "Vigente" indefinidamente. Esto es falso.</p>
+    
     <h3>Facturas Emitidas PUE Canceladas sin Sustitución</h3>
     <p>Si un proveedor cancela un CFDI de método de pago PUE después de que la empresa receptora lo deduce y acredita el IVA, el SAT detecta una discrepancia frontal y rechaza el acreditamiento del IVA.</p>
+    
     <div class="cta-visual">
         <h3>Garantiza la Existencia de tus Deducciones</h3>
         <p>No deduzcas comprobantes apócrifos o cancelados. Extrae el UUID y recalcula las bases gravables de todo tu volumen de facturación en un solo clic.</p>
         <a href="/" class="cta-button">Auditar UUIDs Masivamente</a>
     </div>
+    
     <h2>Trazabilidad de la Sustitución (Clave 01 y 04)</h2>
     <p>Cuando se cancela un comprobante con errores con relación (Clave 01), el sistema del SAT exige la existencia simultánea del UUID original y el UUID sustituto en el nodo <code>cfdi:CfdiRelacionados</code> con el <code>TipoRelacion="04"</code>.</p>
     <p>Si el departamento de facturación cancela el documento pero falla al insertar el nodo de relación en el nuevo XML, el SAT duplica el ingreso del emisor.</p>
+    
     <h3>Verificación de Duplicidad</h3>
     <p>La revisión masiva debe identificar UUIDs repetidos en los registros contables y asegurar que ninguna factura sustituida se compute en el cálculo de impuestos. <a href="/" class="cta-textual">Utiliza nuestro motor de análisis XML para asegurar la unicidad de tu base gravable</a>.</p>
+    
     <div class="article-cta">
         <h3>Pasa de la teoría a la práctica</h3>
         <p>No dejes que los errores matemáticos en tus CFDI 4.0 se conviertan en multas. Automatiza la validación de retenciones de ISR e IVA en segundos, sin instalar programas y de forma 100% gratuita.</p>
         <a href="/" class="article-cta-btn">Ejecutar Auditoría Gratuita Ahora</a>
     </div>
+</div>
 
-<footer class="site-footer" style="text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; margin-top: 60px;">
+<footer class="site-footer">
     <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
@@ -157,7 +180,15 @@
         <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
 </footer>
+
+<script>
+    // Prevención de click fantasma en móviles
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('touchstart', function(e) {
+            const content = this.nextElementSibling;
+            if (getComputedStyle(content).display === 'none') {}
+        }, {passive: true});
+    });
+</script>
 </body>
 </html>
-
-
