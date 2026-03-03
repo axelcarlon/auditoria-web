@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Servicio (Materialidad Intangibles) | AuditorIA</title>
+    <meta name="description" content="Evita que el SAT clasifique tus gastos como EFOS. Cruza la evidencia de tus servicios (reportes, correos) contra el XML de la factura.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/prueba-servicio.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669;}
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        
+        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+        .upload-section.active { border-color: var(--success); background: #ECFDF5; }
+
+        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 30px; }
+        .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .match-badge { display: inline-block; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; margin-bottom: 20px; }
+        .match-true { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
+        .match-false { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
+
+        .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .data-label { font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 5px; }
+        .data-value { font-size: 15px; color: var(--text-main); line-height: 1.6; }
+
+        @media (max-width: 768px) { .header { padding: 15px 20px; justify-content: center; } .grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<header class="header"><a href="/" class="logo">AuditorIA</a></header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ANÁLISIS EFOS (ART. 69-B)</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Prueba de Servicio (Intangibles)</h1>
+        <p style="color: var(--text-muted);">Blinda gastos de honorarios, marketing y asesorías. Sube tus entregables y la IA evaluará si son prueba suficiente de la prestación del servicio.</p>
+    </div>
+
+    <div class="grid-2" id="uploadZones">
+        <div class="upload-section" id="dropEvidencia" onclick="document.getElementById('evidenciaInput').click()">
+            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+            <p style="font-weight: 600; margin: 0; font-size: 18px;">1. Evidencia Documental</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="evidenciaText">Sube correos, reportes, capturas (PDF/Imagen)</p>
+            <input type="file" id="evidenciaInput" accept="image/*,.pdf" style="display: none;">
+        </div>
+
+        <div class="upload-section" id="dropXml" onclick="document.getElementById('xmlInput').click()">
+            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <p style="font-weight: 600; margin: 0; font-size: 18px;" id="xmlText">2. Factura Asociada (XML)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Comprobante de honorarios/servicios</p>
+            <input type="file" id="xmlInput" accept=".xml" style="display: none;">
+        </div>
+    </div>
+
+    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarAuditoria()">EVALUAR SUSTANCIA ECONÓMICA</button>
+
+    <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
+        <div class="spinner"></div>
+        <p style="font-weight: 600; color: var(--brand);">Analizando congruencia semántica (Evidencia vs XML)...</p>
+    </div>
+
+    <div class="results-container" id="results">
+        <div id="badgeCoincidencia" class="match-badge"></div>
+        
+        <div class="data-box">
+            <div class="data-label">Dictamen de EFOS y Materialidad</div>
+            <div class="data-value" id="resDictamen"></div>
+        </div>
+
+        <button onclick="window.location.reload()" style="background: #111827; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; width: 100%;">Escanear Nueva Operación</button>
+    </div>
+</div>
+
+<script>
+    let fileEvidencia = null;
+    let xmlDatos = null;
+
+    const inputEvidencia = document.getElementById('evidenciaInput');
+    const inputXml = document.getElementById('xmlInput');
+    const btnEjecutar = document.getElementById('btnEjecutar');
+
+    inputEvidencia.addEventListener('change', e => { 
+        fileEvidencia = e.target.files[0]; 
+        document.getElementById('evidenciaText').innerText = fileEvidencia.name;
+        document.getElementById('dropEvidencia').classList.add('active');
+        checkReady(); 
+    });
+
+    inputXml.addEventListener('change', e => { 
+        const file = e.target.files[0];
+        document.getElementById('xmlText').innerText = file.name;
+        document.getElementById('dropXml').classList.add('active');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
+                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+                let descripciones = [];
+                for (let i = 0; i < conceptos.length; i++) descripciones.push("Concepto: " + conceptos[i].getAttribute('Descripcion') + " | Monto: $" + conceptos[i].getAttribute('Importe'));
+                xmlDatos = JSON.stringify({ conceptos_facturados: descripciones });
+                checkReady();
+            } catch(err) { alert("Error extrayendo datos del XML."); }
+        };
+        reader.readAsText(file);
+    });
+
+    function checkReady() { if(fileEvidencia && xmlDatos) btnEjecutar.disabled = false; }
+
+    async function ejecutarAuditoria() {
+        document.getElementById('uploadZones').style.display = 'none';
+        btnEjecutar.style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+
+        const formData = new FormData();
+        formData.append("evidencia", fileEvidencia);
+        formData.append("datos_xml", xmlDatos);
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/prueba-servicio", { method: "POST", body: formData });
+            if(!res.ok) throw new Error("Falla en el servidor");
+            const data = await res.json();
+            
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+
+            const badge = document.getElementById('badgeCoincidencia');
+            if(data.sustancia_economica_comprobada) {
+                badge.className = "match-badge match-true"; badge.innerText = "MATERIALIDAD COMPROBADA";
+            } else {
+                badge.className = "match-badge match-false"; badge.innerText = `RIESGO DE SIMULACIÓN: ${data.nivel_riesgo_efos}`;
+            }
+
+            document.getElementById('resDictamen').innerText = data.dictamen_evidencia;
+
+        } catch (e) {
+            alert("Error procesando el análisis. Reintente.");
+            window.location.reload();
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría de Activos Fijos con Visión IA | AuditorIA</title>
+    <meta name="description" content="Comprueba la materialidad de tus activos fijos. Sube la foto de la placa o número de serie y crúzala contra el XML de adquisición automáticamente.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/auditoria-activos.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        
+        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+        .upload-section.active { border-color: var(--success); background: #ECFDF5; }
+
+        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 30px; }
+        .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .match-badge { display: inline-block; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; margin-bottom: 20px; }
+        .match-true { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
+        .match-false { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
+
+        .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .data-label { font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 5px; }
+        .data-value { font-size: 15px; color: var(--text-main); font-family: monospace; white-space: pre-wrap;}
+
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; justify-content: center; text-align: center; }
+            .nav-right { display: none; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/" class="logo">AuditorIA</a>
+</header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">VISIÓN COMPUTACIONAL (ART. 69-B)</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Auditoría de Activos Fijos</h1>
+        <p style="color: var(--text-muted);">Comprueba la existencia de maquinaria o equipo ante el SAT. La IA leerá la placa/serie de tu foto y la cruzará contra el CFDI.</p>
+    </div>
+
+    <div class="grid-2" id="uploadZones">
+        <div class="upload-section" id="dropFoto" onclick="document.getElementById('fotoInput').click()">
+            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <p style="font-weight: 600; margin: 0; font-size: 18px;">1. Foto de la Placa/Serie (JPG/PNG)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="fotoText">Evidencia visual del activo</p>
+            <input type="file" id="fotoInput" accept="image/*" style="display: none;">
+        </div>
+
+        <div class="upload-section" id="dropXml" onclick="document.getElementById('xmlInput').click()">
+            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <p style="font-weight: 600; margin: 0; font-size: 18px;" id="xmlText">2. Factura de Compra (XML)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Documento de propiedad</p>
+            <input type="file" id="xmlInput" accept=".xml" style="display: none;">
+        </div>
+    </div>
+
+    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarAuditoria()">EJECUTAR CRUCE FORENSE</button>
+
+    <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
+        <div class="spinner"></div>
+        <p style="font-weight: 600; color: var(--brand);">Extrayendo caracteres mediante Visión IA...</p>
+    </div>
+
+    <div class="results-container" id="results">
+        <div id="badgeCoincidencia" class="match-badge"></div>
+        
+        <div class="data-box">
+            <div class="data-label">Datos extraídos de la fotografía</div>
+            <div class="data-value" id="resFoto"></div>
+        </div>
+
+        <div class="data-box">
+            <div class="data-label">Dictamen de Materialidad (SAT)</div>
+            <div class="data-value" id="resDictamen" style="font-family: inherit;"></div>
+        </div>
+
+        <button onclick="window.location.reload()" style="background: #111827; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; width: 100%;">Escanear Nuevo Activo</button>
+    </div>
+</div>
+
+<script>
+    let imgFile = null;
+    let xmlDatos = null;
+
+    const inputFoto = document.getElementById('fotoInput');
+    const inputXml = document.getElementById('xmlInput');
+    const btnEjecutar = document.getElementById('btnEjecutar');
+
+    inputFoto.addEventListener('change', e => { 
+        imgFile = e.target.files[0]; 
+        document.getElementById('fotoText').innerText = imgFile.name;
+        document.getElementById('dropFoto').classList.add('active');
+        checkReady(); 
+    });
+
+    inputXml.addEventListener('change', e => { 
+        const file = e.target.files[0];
+        document.getElementById('xmlText').innerText = file.name;
+        document.getElementById('dropXml').classList.add('active');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
+                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+                let descripciones = [];
+                for (let i = 0; i < conceptos.length; i++) descripciones.push(conceptos[i].getAttribute('Descripcion') + " | Serie/NoId: " + (conceptos[i].getAttribute('NoIdentificacion') || ''));
+                xmlDatos = JSON.stringify({ conceptos_facturados: descripciones });
+                checkReady();
+            } catch(err) { alert("Error extrayendo datos del XML."); }
+        };
+        reader.readAsText(file);
+    });
+
+    function checkReady() { if(imgFile && xmlDatos) btnEjecutar.disabled = false; }
+
+    async function ejecutarAuditoria() {
+        document.getElementById('uploadZones').style.display = 'none';
+        btnEjecutar.style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+
+        const formData = new FormData();
+        formData.append("foto", imgFile);
+        formData.append("datos_xml", xmlDatos);
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/auditoria-activos", { method: "POST", body: formData });
+            if(!res.ok) throw new Error("Falla en el servidor");
+            const data = await res.json();
+            
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+
+            const badge = document.getElementById('badgeCoincidencia');
+            if(data.coincidencia) {
+                badge.className = "match-badge match-true"; badge.innerText = "COINCIDENCIA EXACTA: PRUEBA VÁLIDA";
+            } else {
+                badge.className = "match-badge match-false"; badge.innerText = "DISCREPANCIA VISUAL DETECTADA";
+            }
+
+            document.getElementById('resFoto').innerText = data.datos_extraidos_foto;
+            document.getElementById('resDictamen').innerText = data.dictamen_materialidad;
+
+        } catch (e) {
+            alert("Error procesando la imagen. Reintente.");
+            window.location.reload();
+        }
+    }
+</script>
+</body>
+</html>
