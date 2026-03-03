@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conversor Masivo de XML a PDF | AuditorIA</title>
-    <meta name="description" content="Genera la representación impresa (PDF) de cientos de facturas XML simultáneamente sin usar software externo.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://auditoriaxml.mx/conversor-xml-pdf.html" />
+    <title>Conversor Masivo de XML a PDF Nativo | AuditorIA</title>
+    <meta name="description" content="Genera representaciones impresas (PDF) perfectas y limpias de cientos de facturas XML sin software de escritorio.">
+    <link rel="canonical" href="https://auditoriaxml.mx/conversor-xml-pdf" />
     <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; }
@@ -16,7 +16,9 @@
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
         .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .header .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; }
+        .header .logo-container img { width: 30px; height: 30px; border-radius: 50%; }
+        .header .logo-text { font-weight: bold; font-size: 20px; }
         .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
         .nav-link:hover { color: #ffffff; }
@@ -24,52 +26,53 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 900px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(4, 1fr); padding: 20px; gap: 15px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a { color: var(--text-main); padding: 8px 10px; text-decoration: none; display: block; font-size: 12px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
         .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
         .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+        .menu-category { padding: 10px 10px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
         .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; }
         .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
 
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 15px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
-
         .file-list { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
         .file-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; flex-wrap: wrap; gap: 10px; }
-        .file-item:last-child { border-bottom: none; }
-        .btn-print { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-        .btn-print:hover { opacity: 0.9; }
-        .btn-print-all { background: #111827; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 20px; display: none; }
-        .btn-print-all:hover { opacity: 0.9; }
+        .btn-print { background: var(--brand); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-print-all { background: #111827; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        
+        /* Modal Exportando */
+        .loading-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; color:white; font-size:18px; z-index:9999; flex-direction: column; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 20px; margin-bottom: 20px; border-radius: 4px; display: none; text-align: left; }
-        .ia-advisor-title { font-weight: 700; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-bottom: 20px; text-align: center; }
+        /* Paywall Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
+        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; }
 
-        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
-        .site-footer a { transition: color 0.2s; }
-        .site-footer a:hover { color: #ffffff !important; }
+        .site-footer { text-align: left; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 13px; margin-top: 60px; border-top: 1px solid #1E293B; }
+        .site-footer a { color: #CBD5E1; text-decoration: none; transition: 0.2s; display: block; margin-bottom: 10px; }
+        .site-footer a:hover { color: #ffffff; }
 
-        @media (max-width: 768px) {
-            .header { padding: 15px 20px; justify-content: center; text-align: center; }
-            .nav-right { justify-content: center; width: 100%; }
-            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
-        }
+        /* Contenedor Oculto para renderizar el PDF */
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; }
     </style>
 </head>
 <body>
 
 <header class="header">
-    <a href="/" class="logo">AuditorIA</a>
+    <a href="/" class="logo-container">
+        <img src="Candado.jpg" alt="AuditorIA Logo">
+        <span class="logo-text">AuditorIA</span>
+    </a>
     <div class="nav-right">
-        <a href="/como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
+        <a href="/como-funciona" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
         <a href="/" class="nav-link">Auditoría Masiva</a>
         <div class="dropdown">
             <div class="dropdown-toggle">Suite de Herramientas ▾</div>
@@ -77,165 +80,144 @@
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría y Riesgo</div>
                     <a href="/">Auditoría Masiva (Art. 30-B)</a>
-                    <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
-                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
-                    <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
+                    <a href="/risk-score">RiskScore (Semáforo SAT)</a>
+                    <a href="/validador-efos">Validador EFOS (Art. 69-B)</a>
+                    <a href="/tasa-efectiva">Tasa Efectiva de ISR</a>
+                    <a href="/auditor-nomina">Auditor de Nómina (CFDI 1.2)</a>
+                    <a href="/calculadora-recargos">Calculadora de Recargos</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Materialidad y Defensa</div>
-                    <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
-                    <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
-                    <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
-                    <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    <a href="/auditor-materialidad">Materialidad (Contratos vs XML)</a>
+                    <a href="/prueba-servicio">Prueba de Servicio (Intangibles)</a>
+                    <a href="/auditoria-activos">Auditoría Visual de Activos Fijos</a>
+                    <a href="/precios-aduana">Riesgo Aduanero (Subvaluación)</a>
+                    <a href="/auditoria-viaticos">Auditoría Geoespacial Viáticos</a>
+                    <a href="/defensa-legal">Generador de Defensa Legal</a>
                 </div>
                 <div class="dropdown-column">
-                    <div class="menu-category">Operación Inteligente</div>
-                    <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
-                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="/visor-xml.html">Visor y Decodificador XML</a>
-                    <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
-                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
-                    <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
-                    <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
+                    <div class="menu-category">Inteligencia y Bancos</div>
+                    <a href="/analisis-proveedores">Análisis de Proveedores</a>
+                    <a href="/proyector-iva">Proyector IVA Mensual</a>
+                    <a href="/dashboard-xml">Dashboard Financiero</a>
+                    <a href="/conciliacion-ia">Conciliación Bancaria IA</a>
+                    <a href="/conversor-bancario">Conversor PDF a CSV Bancario</a>
+                    <a href="/validador-csf-32d">Analista Idoneidad (CSF/32-D)</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Diaria</div>
+                    <a href="/escaner-ocr-fiscal">Escáner OCR (Foto a Datos)</a>
+                    <a href="/visor-xml">Visor y Decodificador XML</a>
+                    <a href="/generador-polizas">Generador de Pólizas (Layout)</a>
+                    <a href="/conciliador-pagos">Conciliador PPD vs REP</a>
+                    <a href="/buscador-conceptos">Buscador Forense en XML</a>
+                    <a href="/conversor-xml-pdf">Conversor Masivo XML a PDF</a>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
+<div class="modal-overlay" id="paywallModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
+        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+        <h2 class="modal-title" style="color: black;">Límite Gratuito Alcanzado</h2>
+        <p class="modal-text">Has utilizado tus 3 descargas gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para remover marcas de agua y descargar masivamente sin límite.</p>
+        <button class="btn-upgrade" onclick="window.location.href='/planes'">Actualizar a Pro</button>
+    </div>
+</div>
+
+<div class="loading-modal" id="loadingModal">
+    <div class="spinner"></div>
+    <div>Generando PDF Nativo... Por favor espera.</div>
+</div>
+
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;">
-        <h1 style="font-size: 32px; margin-bottom: 10px;">Conversor Masivo XML a PDF</h1>
-        <p style="color: var(--text-muted);">Genera facturas legibles a partir de tus archivos XML. Selecciona "Guardar como PDF" en la ventana de impresión.</p>
+        <h1 style="font-size: 32px; margin-bottom: 10px;">Conversor Limpio XML a PDF</h1>
+        <p style="color: var(--text-muted);">Descarga directamente tus facturas en formato PDF sin ventanas en blanco.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
         <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-        <p style="font-weight: 600; margin: 0; font-size: 18px;" id="fileCountText">Cargar Facturas (XML)</p>
+        <p style="font-weight: 600; margin: 0; font-size: 18px;">Cargar Facturas (XML)</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
-        
-        <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Zero-Trust</div>
-        </div>
     </div>
 
-    <div id="iaLoading" class="ia-loading">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-        Analizando validez de documentos...
-    </div>
-    <div id="iaAdvisorContainer" class="ia-advisor-box">
-        <div class="ia-advisor-title">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            AuditorIA Legal Insight
+    <div class="file-list" id="fileListContainer">
+        <div class="toolbar">
+            <button onclick="window.location.reload()" style="background: var(--bg-primary); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Cargar Nuevo Lote</button>
+            <span style="font-size: 12px; color: var(--brand); font-weight: bold;">*Las descargas gratuitas incluyen marca de agua.</span>
         </div>
-        <p id="iaAdvisorText" class="ia-advisor-content"></p>
+        <div id="fileList"></div>
     </div>
-
-    <button id="btnImprimirTodos" class="btn-print-all" onclick="imprimirTodos()">Generar PDF de todos los archivos</button>
-    <div class="file-list" id="fileList"></div>
 </div>
 
+<div id="hiddenPdfRender"></div>
+
 <footer class="site-footer">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px;">
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
-            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
-            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
+            <a href="/">Auditoría Masiva XML</a>
+            <a href="/despachos-contables">Para Despachos Contables</a>
+            <a href="/empresas">Para Empresas corporativas</a>
         </div>
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
-            <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
-            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
-            <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
-            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
-            <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
+            <a href="/risk-score">RiskScore (Semáforo SAT)</a>
+            <a href="/validador-efos">Validador EFOS (Art. 69-B)</a>
+            <a href="/auditor-materialidad">Materialidad de Contratos</a>
+            <a href="/auditoria-activos">Auditoría Visual de Activos Fijos</a>
+            <a href="/tasa-efectiva">Tasa Efectiva de ISR</a>
+            <a href="/auditoria-viaticos">Auditoría Geoespacial Viáticos</a>
+            <a href="/defensa-legal">Generador de Defensa Legal</a>
         </div>
         <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
-            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
-            <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
-            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
-            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
-            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Bancos</h4>
+            <a href="/escaner-ocr-fiscal">Escáner OCR (Foto a Datos)</a>
+            <a href="/conciliacion-ia">Conciliación Bancaria IA</a>
+            <a href="/visor-xml">Visor y Decodificador XML</a>
+            <a href="/generador-polizas">Generador de Pólizas</a>
+            <a href="/conciliador-pagos">Conciliador PPD vs REP</a>
+            <a href="/conversor-bancario">Conversor PDF a CSV Bancario</a>
+            <a href="/validador-csf-32d">Analista Idoneidad (CSF/32-D)</a>
         </div>
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
-            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
-            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+            <a href="/privacidad">Aviso de Privacidad</a>
+            <a href="/terminos">Términos de Servicio</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" style="color: #3B82F6; font-weight: 600;">contacto@auditoriaxml.mx</a>
         </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
 </footer>
 
-<style>
-    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
-    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-    .advisor-btn:hover { transform: scale(1.05); }
-    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
-    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
-    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
-    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
-    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
-    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
-    .advisor-input:focus { border-color: var(--brand, #2563EB); }
-    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
-    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
-</style>
-<div id="advisorWidget" class="advisor-widget">
-    <button id="advisorBtn" class="advisor-btn">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-        Asesor Fiscal IA
-    </button>
-    <div id="advisorChat" class="advisor-chat">
-        <div class="advisor-header">
-            <span>Paula - AuditorIA Advisor</span>
-            <button id="closeAdvisor" class="advisor-close">×</button>
-        </div>
-        <div id="advisorBody" class="advisor-body">
-            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
-            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
-        </div>
-        <div class="advisor-footer">
-            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
-            <button id="sendAdvisor" class="advisor-send">Enviar</button>
-        </div>
-    </div>
-</div>
-
 <script>
+    function checkQuota() {
+        let usos = localStorage.getItem('auditoria_usos');
+        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
+        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
+        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
+        return true;
+    }
+
     const input = document.getElementById('xmlInput');
     const dropZone = document.getElementById('dropZone');
-    const fileList = document.getElementById('fileList');
-    const btnTodos = document.getElementById('btnImprimirTodos');
+    const fileListEl = document.getElementById('fileList');
     let xmlDataArray = [];
 
     ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
     ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
-    dropZone.addEventListener('drop', e => { input.files = e.dataTransfer.files; document.getElementById('fileCountText').innerText = `${input.files.length} archivos detectados`; processFiles(e.dataTransfer.files); });
-    input.addEventListener('change', e => { document.getElementById('fileCountText').innerText = `${e.target.files.length} archivos detectados`; processFiles(e.target.files); });
+    dropZone.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', e => processFiles(e.target.files));
 
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
 
     async function processFiles(files) {
         if (files.length === 0) return;
-        xmlDataArray = []; fileList.innerHTML = '';
-        let errorTimbreDetectado = false;
-
+        xmlDataArray = []; fileListEl.innerHTML = '';
+        
         const promises = Array.from(files).map((file, index) => {
             return new Promise((resolve) => {
                 if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
@@ -247,27 +229,22 @@
                         const xmlDoc = parser.parseFromString(rawXML, "text/xml");
                         const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
                         if (cfdi) {
-                            const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
-                            const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
-                            const nombreReceptor = receptor ? receptor.getAttribute('Nombre') : 'Desconocido';
-                            const total = cfdi.getAttribute('Total');
-                            const fecha = (cfdi.getAttribute('Fecha') || '').split('T')[0];
-                            
                             const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital');
-                            if (timbre.length === 0) errorTimbreDetectado = true;
+                            const uuid = timbre.length > 0 ? timbre[0].getAttribute('UUID') : 'SIN_TIMBRE';
+                            const invalido = uuid === 'SIN_TIMBRE';
                             
-                            xmlDataArray.push({ index, rawXML, nombreReceptor, total, fecha, fileName: file.name });
+                            xmlDataArray.push({ index, rawXML, fileName: file.name, xmlDoc, uuid, invalido });
 
                             const item = document.createElement('div');
                             item.className = 'file-item';
                             item.innerHTML = `
                                 <div>
-                                    <div style="font-weight: 600; word-break: break-all;">${file.name}</div>
-                                    <div style="font-size: 12px; color: var(--text-muted);">Receptor: ${nombreReceptor} | Total: ${formatMoney(total)}</div>
+                                    <div style="font-weight: 600;">${file.name}</div>
+                                    ${invalido ? '<div style="color: var(--error); font-size: 11px; font-weight:bold;">XML Sin Validez (Falta Timbre)</div>' : `<div style="font-size: 11px; color: var(--text-muted);">UUID: ${uuid}</div>`}
                                 </div>
-                                <button class="btn-print" onclick="imprimirIndividual(${index})">Ver / PDF</button>
+                                <button class="btn-print" onclick="descargarPDFNatvo(${index})">Descargar PDF</button>
                             `;
-                            fileList.appendChild(item);
+                            fileListEl.appendChild(item);
                         }
                     } catch (err) {}
                     resolve();
@@ -277,123 +254,95 @@
         });
 
         await Promise.all(promises);
-        
         if (xmlDataArray.length > 0) {
-            fileList.style.display = 'block'; btnTodos.style.display = 'block';
-        }
-
-        if (errorTimbreDetectado) {
-            consultarAlertaIA("Conversión PDF", "XML sin Timbre Fiscal", "Se detectó un archivo XML sin el nodo tfd:TimbreFiscalDigital. Explica por qué un PDF generado a partir de este documento no es deducible.");
-        } else {
-            document.getElementById('iaAdvisorContainer').style.display = 'none';
+            document.getElementById('fileListContainer').style.display = 'block';
+            dropZone.style.display = 'none';
         }
     }
 
-    async function consultarAlertaIA(tipo, concepto, errorDesc) {
-        document.getElementById('iaLoading').style.display = 'block';
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
-            });
-            const data = await res.json();
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
-        } catch (err) {
-            document.getElementById('iaLoading').style.display = 'none';
-        }
-    }
-
-    function generarHTMLFactura(rawXML) {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(rawXML, "text/xml");
-        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
-        const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
-        const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
-        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
-        const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+    function armarEstructuraImpresion(fac) {
+        const getAttr = (element, attrName) => element ? (element.getAttribute(attrName) || "") : "";
+        const cfdi = fac.xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || fac.xmlDoc.getElementsByTagName('Comprobante')[0];
+        const emisor = fac.xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
+        const receptor = fac.xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
+        const conceptos = fac.xmlDoc.getElementsByTagName('cfdi:Concepto');
 
         let tbodyHTML = '';
         for(let i=0; i<conceptos.length; i++) {
-            tbodyHTML += `<tr><td style="border-bottom: 1px solid #ccc; padding: 8px;">${conceptos[i].getAttribute('Cantidad')}</td><td style="border-bottom: 1px solid #ccc; padding: 8px;">${conceptos[i].getAttribute('ClaveProdServ')}</td><td style="border-bottom: 1px solid #ccc; padding: 8px;">${conceptos[i].getAttribute('Descripcion')}</td><td style="border-bottom: 1px solid #ccc; padding: 8px; text-align: right;">${formatMoney(conceptos[i].getAttribute('ValorUnitario'))}</td><td style="border-bottom: 1px solid #ccc; padding: 8px; text-align: right;">${formatMoney(conceptos[i].getAttribute('Importe'))}</td></tr>`;
+            tbodyHTML += `<tr><td style="padding: 8px; border-bottom: 1px solid #ddd;">${getAttr(conceptos[i], 'Cantidad')}</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${getAttr(conceptos[i], 'ClaveProdServ')}</td><td style="padding: 8px; border-bottom: 1px solid #ddd;">${getAttr(conceptos[i], 'Descripcion')}</td><td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">${formatMoney(getAttr(conceptos[i], 'ValorUnitario'))}</td><td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">${formatMoney(getAttr(conceptos[i], 'Importe'))}</td></tr>`;
         }
 
         return `
-            <div style="font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; margin-bottom: 40px; page-break-after: always;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-                    <div><h2 style="margin: 0; font-size: 18px;">${emisor ? emisor.getAttribute('Nombre') : ''}</h2><p style="margin: 5px 0 0; font-size: 12px;">RFC: ${emisor ? emisor.getAttribute('Rfc') : ''}</p></div>
-                    <div style="text-align: right;"><h1 style="margin: 0; font-size: 24px;">FACTURA</h1><p style="margin: 5px 0 0; font-size: 12px;">Folio: ${cfdi.getAttribute('Serie') || ''}${cfdi.getAttribute('Folio') || 'S/N'}</p><p style="margin: 5px 0 0; font-size: 12px;">Fecha: ${cfdi.getAttribute('Fecha')}</p></div>
+            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative;">
+                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+                
+                <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #111827; padding-bottom: 15px; margin-bottom: 20px; position: relative; z-index: 1;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 20px; color: #111827;">${emisor ? getAttr(emisor, 'Nombre') : ''}</h2>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #4B5563;">RFC: ${emisor ? getAttr(emisor, 'Rfc') : ''}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h1 style="margin: 0; font-size: 28px; color: #2563EB;">FACTURA</h1>
+                        <p style="margin: 5px 0 0; font-size: 13px;">Fecha: ${getAttr(cfdi, 'Fecha')}</p>
+                    </div>
                 </div>
-                <div style="margin-bottom: 20px; background: #f9f9f9; padding: 10px; font-size: 12px;"><strong style="display: block; margin-bottom: 5px;">Receptor:</strong>Nombre: ${receptor ? receptor.getAttribute('Nombre') : ''}<br>RFC: ${receptor ? receptor.getAttribute('Rfc') : ''}<br>Uso CFDI: ${receptor ? receptor.getAttribute('UsoCFDI') : ''}</div>
-                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px;"><thead style="background: #eee;"><tr><th style="padding: 8px; text-align: left;">Cant.</th><th style="padding: 8px; text-align: left;">Clave</th><th style="padding: 8px; text-align: left;">Descripción</th><th style="padding: 8px; text-align: right;">V. Unitario</th><th style="padding: 8px; text-align: right;">Importe</th></tr></thead><tbody>${tbodyHTML}</tbody></table>
-                <div style="display: flex; justify-content: flex-end; font-size: 14px; margin-bottom: 30px;"><div style="width: 250px;"><div style="display: flex; justify-content: space-between; margin-bottom: 5px;"><span>Subtotal:</span> <span>${formatMoney(cfdi.getAttribute('SubTotal'))}</span></div><div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; border-top: 1px solid #000; padding-top: 5px;"><span>Total:</span> <span>${formatMoney(cfdi.getAttribute('Total'))}</span></div></div></div>
-                <div style="font-size: 10px; color: #555; border-top: 1px solid #ccc; padding-top: 10px; word-break: break-all;"><strong>UUID:</strong> ${timbre ? timbre.getAttribute('UUID') : 'No timbrado (Documento sin Validez)'}<br>Este documento es una representación impresa de un CFDI.</div>
+                
+                <div style="background: #F9FAFB; padding: 15px; font-size: 13px; margin-bottom: 20px; border-radius: 6px; position: relative; z-index: 1;">
+                    <strong style="color: #111827;">Cliente (Receptor):</strong><br>
+                    Nombre: ${receptor ? getAttr(receptor, 'Nombre') : ''}<br>
+                    RFC: ${receptor ? getAttr(receptor, 'Rfc') : ''}<br>
+                    Uso CFDI: ${receptor ? getAttr(receptor, 'UsoCFDI') : ''}
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <thead style="background: #111827; color: white;">
+                        <tr><th style="padding: 10px; text-align: left;">Cant.</th><th style="padding: 10px; text-align: left;">Clave</th><th style="padding: 10px; text-align: left;">Descripción</th><th style="padding: 10px; text-align: right;">V. Unitario</th><th style="padding: 10px; text-align: right;">Importe</th></tr>
+                    </thead>
+                    <tbody>${tbodyHTML}</tbody>
+                </table>
+                
+                <div style="display: flex; justify-content: flex-end; font-size: 14px; position: relative; z-index: 1;">
+                    <div style="width: 250px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; border-top: 2px solid #111827; padding-top: 10px;">
+                            <span>Total:</span> <span style="color: #2563EB;">${formatMoney(getAttr(cfdi, 'Total'))}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; font-size: 10px; color: #6B7280; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    UUID: ${fac.uuid} <br>
+                    Este documento es una representación impresa de un CFDI. <br>
+                    AuditoriaXML.mx
+                </div>
             </div>
         `;
     }
 
-    function imprimirWindow(htmlContent) {
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`<html><head><title>Imprimir Facturas</title></head><body onload="window.print(); window.close();">${htmlContent}</body></html>`);
-        printWindow.document.close();
+    function descargarPDFNatvo(index) {
+        if (!checkQuota()) return;
+        const fac = xmlDataArray.find(x => x.index === index);
+        if (!fac) return;
+        
+        document.getElementById('loadingModal').style.display = 'flex';
+        
+        const renderContainer = document.getElementById('hiddenPdfRender');
+        renderContainer.innerHTML = armarEstructuraImpresion(fac);
+
+        const opt = {
+            margin:       10,
+            filename:     `${fac.uuid}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(renderContainer.firstElementChild).save().then(() => {
+            document.getElementById('loadingModal').style.display = 'none';
+        }).catch(err => {
+            alert("Error al generar PDF.");
+            document.getElementById('loadingModal').style.display = 'none';
+        });
     }
-
-    function imprimirIndividual(index) { const data = xmlDataArray.find(x => x.index === index); if (data) imprimirWindow(generarHTMLFactura(data.rawXML)); }
-    function imprimirTodos() { let fullHTML = ''; xmlDataArray.forEach(data => { fullHTML += generarHTMLFactura(data.rawXML); }); imprimirWindow(fullHTML); }
-
-    document.querySelectorAll('.dropdown-toggle').forEach(t => t.addEventListener('touchstart', e => {}, {passive: true}));
-
-    // Lógica del Chat General
-    const advisorBtn = document.getElementById('advisorBtn');
-    const advisorChat = document.getElementById('advisorChat');
-    const closeAdvisor = document.getElementById('closeAdvisor');
-    const sendAdvisor = document.getElementById('sendAdvisor');
-    const advisorInput = document.getElementById('advisorInput');
-    const advisorBody = document.getElementById('advisorBody');
-    const typingIndicator = document.getElementById('typingIndicator');
-    let chatHistory = [];
-
-    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
-    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
-
-    function renderMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
-        div.innerText = text;
-        advisorBody.insertBefore(div, typingIndicator);
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-    }
-
-    async function handleSend() {
-        const text = advisorInput.value.trim();
-        if (!text) return;
-        renderMessage(text, 'user');
-        advisorInput.value = '';
-        typingIndicator.style.display = 'block';
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-
-        const currentHistory = [...chatHistory];
-        chatHistory.push({ rol: "usuario", texto: text });
-
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mensaje: text, historial: currentHistory })
-            });
-            if (!res.ok) throw new Error('Error API');
-            const data = await res.json();
-            renderMessage(data.respuesta, 'bot');
-            chatHistory.push({ rol: "modelo", texto: data.respuesta });
-        } catch (err) {
-            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
-            chatHistory.pop();
-        } finally {
-            typingIndicator.style.display = 'none';
-        }
-    }
-    sendAdvisor.onclick = handleSend;
-    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
