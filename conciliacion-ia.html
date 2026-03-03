@@ -6,9 +6,9 @@
     <title>Conciliador Bancario IA (Fuzzy Matching) | AuditorIA</title>
     <meta name="description" content="Automatiza la conciliación bancaria. Nuestra IA agentica asocia pagos ambiguos con tus facturas XML mediante análisis semántico.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="[https://auditoriaxml.mx/conciliacion-ia.html](https://auditoriaxml.mx/conciliacion-ia.html)" />
-    <link rel="icon" type="image/svg+xml" href="[https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg](https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg)">
-    <script async src="[https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ](https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ)"></script>
+    <link rel="canonical" href="https://auditoriaxml.mx/conciliacion-ia.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
@@ -24,7 +24,7 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
         .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
@@ -60,6 +60,10 @@
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
+        .site-footer a { transition: color 0.2s; }
+        .site-footer a:hover { color: #ffffff !important; }
+
         @media (max-width: 768px) {
             .header { padding: 15px 20px; justify-content: center; text-align: center; }
             .nav-right { justify-content: center; width: 100%; }
@@ -82,24 +86,31 @@
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría y Riesgo</div>
                     <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                    <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
                     <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
                     <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                    <a href="/risk-score.html">RiskScore (Semáforo de Riesgo)</a>
-                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
-                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                     <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
                 </div>
                 <div class="dropdown-column">
-                    <div class="menu-category">Operación Diaria</div>
+                    <div class="menu-category">Materialidad y Defensa</div>
+                    <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
+                    <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
+                    <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
+                    <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Inteligente</div>
                     <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
+                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
                     <a href="/visor-xml.html">Visor y Decodificador XML</a>
                     <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
                     <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                     <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
-                    <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
-                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
+                    <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
                 </div>
             </div>
         </div>
@@ -158,6 +169,81 @@
                 </thead>
                 <tbody></tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<footer class="site-footer">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
+            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
+            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
+            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
+            <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
+            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
+            <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
+            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
+            <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
+            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
+            <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
+            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
+            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
+            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
+            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
+            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
+        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
+    </div>
+</footer>
+
+<style>
+    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
+    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+    .advisor-btn:hover { transform: scale(1.05); }
+    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
+    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
+    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
+    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
+    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
+    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
+    .advisor-input:focus { border-color: var(--brand, #2563EB); }
+    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
+    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
+</style>
+<div id="advisorWidget" class="advisor-widget">
+    <button id="advisorBtn" class="advisor-btn">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        Asesor Fiscal IA
+    </button>
+    <div id="advisorChat" class="advisor-chat">
+        <div class="advisor-header">
+            <span>Paula - AuditorIA Advisor</span>
+            <button id="closeAdvisor" class="advisor-close">×</button>
+        </div>
+        <div id="advisorBody" class="advisor-body">
+            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
+            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
+        </div>
+        <div class="advisor-footer">
+            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
+            <button id="sendAdvisor" class="advisor-send">Enviar</button>
         </div>
     </div>
 </div>
@@ -255,7 +341,7 @@
                 const payloadBancos = bancoHuerfanos.map(b => ({id: b.id, concepto: b.concepto, monto: Math.abs(b.monto)}));
                 const payloadXmls = xmlHuerfanos.map(x => ({uuid: x.uuid, nombre: x.nombreEmisor, total: x.total}));
 
-                const res = await fetch("[https://fastapi-susu.onrender.com/api/conciliacion-fuzzy](https://fastapi-susu.onrender.com/api/conciliacion-fuzzy)", {
+                const res = await fetch("https://fastapi-susu.onrender.com/api/conciliacion-fuzzy", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ bancos: payloadBancos, facturas: payloadXmls })
@@ -313,17 +399,63 @@
             tbody.appendChild(tr);
         });
     }
-</script>
 
-<style>.advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; } .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; } .advisor-btn:hover { transform: scale(1.05); } .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; } .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; } .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; } .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; } .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; } .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; } .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; } .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; } .advisor-input:focus { border-color: var(--brand, #2563EB); } .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; } .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; } @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }</style>
-<div id="advisorWidget" class="advisor-widget"><button id="advisorBtn" class="advisor-btn"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>Asesor Fiscal IA</button><div id="advisorChat" class="advisor-chat"><div class="advisor-header"><span>Paula - AuditorIA Advisor</span><button id="closeAdvisor" class="advisor-close">×</button></div><div id="advisorBody" class="advisor-body"><div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div><div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div></div><div class="advisor-footer"><input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off"><button id="sendAdvisor" class="advisor-send">Enviar</button></div></div></div>
-<script>
     document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', e => {}, {passive: true}); });
-    const advisorBtn = document.getElementById('advisorBtn'); const advisorChat = document.getElementById('advisorChat'); const closeAdvisor = document.getElementById('closeAdvisor'); const sendAdvisor = document.getElementById('sendAdvisor'); const advisorInput = document.getElementById('advisorInput'); const advisorBody = document.getElementById('advisorBody'); const typingIndicator = document.getElementById('typingIndicator'); let chatHistory = [];
-    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; }; closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
-    function renderMessage(text, type) { const div = document.createElement('div'); div.className = type === 'user' ? 'msg-user' : 'msg-bot'; div.innerText = text; advisorBody.insertBefore(div, typingIndicator); advisorBody.scrollTop = advisorBody.scrollHeight; }
-    async function handleSend() { const text = advisorInput.value.trim(); if (!text) return; renderMessage(text, 'user'); advisorInput.value = ''; typingIndicator.style.display = 'block'; advisorBody.scrollTop = advisorBody.scrollHeight; const currentHistory = [...chatHistory]; chatHistory.push({ rol: "usuario", texto: text }); try { const res = await fetch("[https://fastapi-susu.onrender.com/api/chat](https://fastapi-susu.onrender.com/api/chat)", { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mensaje: text, historial: currentHistory }) }); if (!res.ok) throw new Error('Error API'); const data = await res.json(); renderMessage(data.respuesta, 'bot'); chatHistory.push({ rol: "modelo", texto: data.respuesta }); } catch (err) { renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot'); chatHistory.pop(); } finally { typingIndicator.style.display = 'none'; } }
-    sendAdvisor.onclick = handleSend; advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
+
+    // Chat General
+    const advisorBtn = document.getElementById('advisorBtn');
+    const advisorChat = document.getElementById('advisorChat');
+    const closeAdvisor = document.getElementById('closeAdvisor');
+    const sendAdvisor = document.getElementById('sendAdvisor');
+    const advisorInput = document.getElementById('advisorInput');
+    const advisorBody = document.getElementById('advisorBody');
+    const typingIndicator = document.getElementById('typingIndicator');
+    let chatHistory = [];
+
+    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
+    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
+
+    function renderMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
+        div.innerText = text;
+        advisorBody.insertBefore(div, typingIndicator);
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = advisorInput.value.trim();
+        if (!text) return;
+        renderMessage(text, 'user');
+        advisorInput.value = '';
+        typingIndicator.style.display = 'block';
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+
+        const currentHistory = [...chatHistory];
+        chatHistory.push({ rol: "usuario", texto: text });
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: text, historial: currentHistory })
+            });
+            
+            if (!res.ok) throw new Error('Error API');
+            
+            const data = await res.json();
+            renderMessage(data.respuesta, 'bot');
+            chatHistory.push({ rol: "modelo", texto: data.respuesta });
+            
+        } catch (err) {
+            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
+            chatHistory.pop();
+        } finally {
+            typingIndicator.style.display = 'none';
+        }
+    }
+    sendAdvisor.onclick = handleSend;
+    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
