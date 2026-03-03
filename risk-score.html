@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskScore: Semáforo de Riesgo Fiscal CFDI | AuditorIA</title>
+    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Nuestro algoritmo procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://auditoriaxml.mx/risk-score.html" />
+    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <style>
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        
+        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: #ffffff; }
+
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
+        .dropdown-toggle:hover { color: #ffffff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
+        .dropdown-column { display: flex; flex-direction: column; }
+        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
+        .dropdown:hover .dropdown-content { display: grid; }
+        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
+        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+
+        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .trust-badges div { display: flex; align-items: center; gap: 4px; }
+
+        .results-container { display: none; margin-top: 40px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+        
+        .score-card { background: var(--bg-secondary); padding: 30px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .chart-wrapper { position: relative; width: 250px; height: 250px; margin: 0 auto; }
+        .score-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -30%); font-size: 48px; font-weight: 900; color: var(--text-main); }
+        .score-label { font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: -10px; }
+        
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .kpi-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
+        .kpi-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
+        .kpi-data { font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; }
+        .status-badge { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+        
+        .ia-advisor-box { background: #111827; color: white; padding: 25px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border: 1px solid #374151; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .ia-advisor-title { font-weight: 800; color: #60A5FA; font-size: 16px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .ia-advisor-content { font-size: 15px; color: #E5E7EB; margin: 0; line-height: 1.6; }
+        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
+
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; justify-content: center; text-align: center; }
+            .nav-right { justify-content: center; width: 100%; }
+            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
+            .dropdown:hover .dropdown-content { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="/" class="logo">AuditorIA</a>
+    <div class="nav-right">
+        <a href="/como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
+        <a href="/" class="nav-link">Auditoría Masiva</a>
+        <div class="dropdown">
+            <div class="dropdown-toggle">Suite de Herramientas ▾</div>
+            <div class="dropdown-content">
+                <div class="dropdown-column">
+                    <div class="menu-category">Auditoría y Riesgo</div>
+                    <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
+                    <a href="/risk-score.html">RiskScore (Semáforo de Riesgo)</a>
+                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
+                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
+                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Diaria</div>
+                    <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
+                    <a href="/visor-xml.html">Visor y Decodificador XML</a>
+                    <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
+                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
+                    <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">SISTEMA TADS</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">RiskScore: Semáforo de Riesgo Fiscal</h1>
+        <p style="color: var(--text-muted);">El mega-algoritmo procesa simultáneamente EFOS, errores matemáticos y complementos faltantes para emitir una calificación de riesgo corporativo.</p>
+    </div>
+
+    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
+        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Repositorio Completo (XML)</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesa todas las facturas y pagos del ejercicio fiscal.</p>
+        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+        
+        <div class="trust-badges">
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Procesamiento Local</div>
+        </div>
+    </div>
+
+    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
+        <div class="spinner"></div>
+        <p style="font-weight: 600; color: var(--brand);">Motor Forense Trabajando...</p>
+        <p style="font-size: 13px; color: var(--text-muted);">Cruzando contra listas negras, recalculando impuestos y conciliando pagos.</p>
+    </div>
+
+    <div class="results-container" id="results">
+        <div class="dashboard-grid">
+            <div class="score-card">
+                <div class="chart-wrapper">
+                    <canvas id="gaugeChart"></canvas>
+                    <div class="score-value" id="scoreText">100</div>
+                </div>
+                <div class="score-label" id="scoreStatus">Cumplimiento Perfecto</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px; text-align: center;">Basado en validación de Anexo 20, Art. 69-B y REP.</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-box">
+                    <div class="kpi-title">Archivos Procesados</div>
+                    <div class="kpi-data">
+                        <span id="kpiFiles" style="color: var(--text-main);">0</span>
+                    </div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-title">Proveedores EFOS (Art. 69-B)</div>
+                    <div class="kpi-data">
+                        <span id="kpiEfos" style="color: var(--text-main);">0</span>
+                        <span id="badgeEfos" class="status-badge" style="background: #ECFDF5; color: #065F46;">SEGURO</span>
+                    </div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-title">Errores Matemáticos (Retenciones)</div>
+                    <div class="kpi-data">
+                        <span id="kpiMath" style="color: var(--text-main);">0</span>
+                        <span id="badgeMath" class="status-badge" style="background: #ECFDF5; color: #065F46;">CUADRADO</span>
+                    </div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-title">Facturas PPD sin REP</div>
+                    <div class="kpi-data">
+                        <span id="kpiPpd" style="color: var(--text-main);">0</span>
+                        <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL CORRIENTE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="iaLoading" class="ia-loading">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Generando Dictamen Forense de la IA...
+        </div>
+        
+        <div id="iaAdvisorContainer" class="ia-advisor-box">
+            <div class="ia-advisor-title">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                Dictamen Final de Auditoría
+            </div>
+            <p id="iaAdvisorText" class="ia-advisor-content"></p>
+        </div>
+
+        <button onclick="window.location.reload()" style="width: 100%; background: var(--bg-primary); color: var(--text-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 30px;">Reiniciar Semáforo</button>
+    </div>
+</div>
+
+<style>
+    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
+    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+    .advisor-btn:hover { transform: scale(1.05); }
+    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
+    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
+    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
+    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
+    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
+    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
+    .advisor-input:focus { border-color: var(--brand, #2563EB); }
+    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
+    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
+</style>
+<div id="advisorWidget" class="advisor-widget">
+    <button id="advisorBtn" class="advisor-btn">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        Asesor Fiscal IA
+    </button>
+    <div id="advisorChat" class="advisor-chat">
+        <div class="advisor-header">
+            <span>Paula - AuditorIA Advisor</span>
+            <button id="closeAdvisor" class="advisor-close">×</button>
+        </div>
+        <div id="advisorBody" class="advisor-body">
+            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
+            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
+        </div>
+        <div class="advisor-footer">
+            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
+            <button id="sendAdvisor" class="advisor-send">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', e => {}, {passive: true}); });
+
+    const input = document.getElementById('xmlInput');
+    const dropZone = document.getElementById('dropZone');
+    let gaugeInstance = null;
+
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
+    dropZone.addEventListener('drop', e => processRiskScore(e.dataTransfer.files));
+    input.addEventListener('change', e => processRiskScore(e.target.files));
+
+    async function fetchEfosList() {
+        try { const res = await fetch('/efos.json'); return await res.json(); } 
+        catch (e) { return []; }
+    }
+
+    async function processRiskScore(files) {
+        if (files.length === 0) return;
+        
+        document.getElementById('dropZone').style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+
+        const listaEfos = await fetchEfosList();
+        
+        let score = 100;
+        let countEfos = 0;
+        let countMath = 0;
+        let ppds = {};
+        let complementos = [];
+
+        const promises = Array.from(files).map(file => {
+            return new Promise((resolve) => {
+                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
+                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                        if (!cfdi) { resolve(); return; }
+
+                        const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
+                        if (emisor) {
+                            const rfc = emisor.getAttribute('Rfc');
+                            if (listaEfos.includes(rfc)) countEfos++;
+                        }
+
+                        const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+                        for (let i = 0; i < conceptos.length; i++) {
+                            const retenciones = conceptos[i].getElementsByTagName('cfdi:Retencion');
+                            for (let j = 0; j < retenciones.length; j++) {
+                                const base = parseFloat(retenciones[j].getAttribute('Base') || 0);
+                                const tasa = parseFloat(retenciones[j].getAttribute('TasaOCuota') || 0);
+                                const importe = parseFloat(retenciones[j].getAttribute('Importe') || 0);
+                                if (base > 0 && tasa > 0 && Math.abs((base * tasa) - importe) > 0.10) {
+                                    countMath++;
+                                }
+                            }
+                        }
+
+                        const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
+                        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
+                        const uuid = timbre ? timbre.getAttribute('UUID').toUpperCase() : null;
+
+                        if (tipo === 'I' || tipo === 'E') {
+                            if ((cfdi.getAttribute('MetodoPago') || '').toUpperCase() === 'PPD' && uuid) {
+                                ppds[uuid] = { total: parseFloat(cfdi.getAttribute('Total') || 0), pagado: 0 };
+                            }
+                        } else if (tipo === 'P') {
+                            const doctos = xmlDoc.getElementsByTagName('pago20:DoctoRelacionado') || xmlDoc.getElementsByTagName('pago10:DoctoRelacionado');
+                            for (let i = 0; i < doctos.length; i++) {
+                                complementos.push({ idDoc: (doctos[i].getAttribute('IdDocumento') || '').toUpperCase(), impPagado: parseFloat(doctos[i].getAttribute('ImpPagado') || 0) });
+                            }
+                        }
+
+                    } catch (err) {}
+                    resolve();
+                };
+                reader.readAsText(file);
+            });
+        });
+
+        await Promise.all(promises);
+
+        complementos.forEach(pago => { if (ppds[pago.idDoc]) ppds[pago.idDoc].pagado += pago.impPagado; });
+
+        let countPpdOrphans = 0;
+        Object.keys(ppds).forEach(uuid => {
+            if ((ppds[uuid].total - ppds[uuid].pagado) > 0.05 && ppds[uuid].pagado === 0) countPpdOrphans++;
+        });
+
+        // ALGORITMO RISK SCORE
+        score -= (countEfos * 50);
+        score -= (countMath * 20);
+        score -= (countPpdOrphans * 10);
+        if (score < 0) score = 0;
+
+        renderDashboard(score, files.length, countEfos, countMath, countPpdOrphans);
+    }
+
+    function renderDashboard(score, totalFiles, efos, math, ppds) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+
+        document.getElementById('scoreText').innerText = score;
+        document.getElementById('kpiFiles').innerText = totalFiles;
+        
+        document.getElementById('kpiEfos').innerText = efos;
+        if (efos > 0) { document.getElementById('kpiEfos').style.color = "var(--danger)"; document.getElementById('badgeEfos').className = "status-badge alert-error"; document.getElementById('badgeEfos').innerText = "PELIGRO 69-B"; document.getElementById('badgeEfos').style.background = "#FEF2F2"; document.getElementById('badgeEfos').style.color = "#991B1B";}
+        
+        document.getElementById('kpiMath').innerText = math;
+        if (math > 0) { document.getElementById('kpiMath').style.color = "var(--danger)"; document.getElementById('badgeMath').className = "status-badge alert-error"; document.getElementById('badgeMath').innerText = "DISCREPANCIA"; document.getElementById('badgeMath').style.background = "#FEF2F2"; document.getElementById('badgeMath').style.color = "#991B1B";}
+        
+        document.getElementById('kpiPpd').innerText = ppds;
+        if (ppds > 0) { document.getElementById('kpiPpd').style.color = "var(--warning)"; document.getElementById('badgePpd').className = "status-badge"; document.getElementById('badgePpd').innerText = "ATENCIÓN"; document.getElementById('badgePpd').style.background = "#FEF3C7"; document.getElementById('badgePpd').style.color = "#92400E";}
+
+        let color = "#059669"; let status = "Riesgo Nulo / Cumplimiento Perfecto";
+        if (score < 90) { color = "#D97706"; status = "Riesgo Moderado / Errores Administrativos"; }
+        if (score < 70) { color = "#DC2626"; status = "Riesgo Crítico / Auditoría Inminente"; }
+        
+        document.getElementById('scoreText').style.color = color;
+        document.getElementById('scoreStatus').innerText = status;
+
+        drawGauge(score, color);
+
+        let factores = [];
+        if(efos > 0) factores.append(`${efos} facturas de EFOS detectadas.`);
+        if(math > 0) factores.append(`${math} errores en retenciones/impuestos.`);
+        if(ppds > 0) factores.append(`${ppds} facturas PPD sin REP asociado.`);
+        let factorString = factores.length > 0 ? factores.join(" ") : "Ninguno.";
+
+        consultarRiskIA(score, factorString);
+    }
+
+    function drawGauge(score, color) {
+        const ctx = document.getElementById('gaugeChart').getContext('2d');
+        if(gaugeInstance) gaugeInstance.destroy();
+        gaugeInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: { datasets: [{ data: [score, 100 - score], backgroundColor: [color, '#E5E7EB'], borderWidth: 0, borderRadius: [10, 0] }] },
+            options: { circumference: 180, rotation: 270, cutout: '80%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+        });
+    }
+
+    async function consultarRiskIA(score, factores) {
+        document.getElementById('iaLoading').style.display = 'block';
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/risk-score-ia", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ puntaje: score, factores: factores })
+            });
+            const data = await res.json();
+            document.getElementById('iaLoading').style.display = 'none';
+            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+        } catch (err) {
+            document.getElementById('iaLoading').style.display = 'none';
+        }
+    }
+
+    // Chat General
+    const advisorBtn = document.getElementById('advisorBtn');
+    const advisorChat = document.getElementById('advisorChat');
+    const closeAdvisor = document.getElementById('closeAdvisor');
+    const sendAdvisor = document.getElementById('sendAdvisor');
+    const advisorInput = document.getElementById('advisorInput');
+    const advisorBody = document.getElementById('advisorBody');
+    const typingIndicator = document.getElementById('typingIndicator');
+    let chatHistory = [];
+
+    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
+    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
+
+    function renderMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
+        div.innerText = text;
+        advisorBody.insertBefore(div, typingIndicator);
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = advisorInput.value.trim();
+        if (!text) return;
+        renderMessage(text, 'user');
+        advisorInput.value = '';
+        typingIndicator.style.display = 'block';
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+
+        const currentHistory = [...chatHistory];
+        chatHistory.push({ rol: "usuario", texto: text });
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: text, historial: currentHistory })
+            });
+            if (!res.ok) throw new Error('Error API');
+            const data = await res.json();
+            renderMessage(data.respuesta, 'bot');
+            chatHistory.push({ rol: "modelo", texto: data.respuesta });
+        } catch (err) {
+            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
+            chatHistory.pop();
+        } finally {
+            typingIndicator.style.display = 'none';
+        }
+    }
+    sendAdvisor.onclick = handleSend;
+    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
+</script>
+</body>
+</html>
