@@ -24,7 +24,7 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
         .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
@@ -60,6 +60,10 @@
         .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
         .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-bottom: 30px; text-align: center; }
 
+        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
+        .site-footer a { transition: color 0.2s; }
+        .site-footer a:hover { color: #ffffff !important; }
+
         @media (max-width: 768px) {
             .header { padding: 15px 20px; justify-content: center; text-align: center; }
             .nav-right { justify-content: center; width: 100%; }
@@ -80,21 +84,32 @@
             <div class="dropdown-content">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría y Riesgo</div>
+                    <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                    <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
                     <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
                     <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
-                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                     <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
                 </div>
                 <div class="dropdown-column">
-                    <div class="menu-category">Operación Diaria</div>
+                    <div class="menu-category">Materialidad y Defensa</div>
+                    <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
+                    <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
+                    <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
+                    <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Inteligente</div>
+                    <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
+                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
                     <a href="/visor-xml.html">Visor y Decodificador XML</a>
                     <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
                     <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                     <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
-                    <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                    <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
                 </div>
             </div>
         </div>
@@ -121,7 +136,7 @@
 
         <div class="trust-badges">
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Zero-Trust</div>
         </div>
     </div>
@@ -159,8 +174,41 @@
     </div>
 </div>
 
-<footer style="text-align: center; padding: 40px 20px; background-color: #0F172A; color: #9CA3AF; font-size: 12px; margin-top: 60px;">
-    <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+<footer class="site-footer">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
+            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
+            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
+            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
+            <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
+            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
+            <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
+            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
+            <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
+            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
+            <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
+            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
+            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
+            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
+            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
+            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
+        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
+    </div>
 </footer>
 
 <style>
@@ -263,8 +311,8 @@
     }
 
     function renderTabla(matches, totalImporte, keyword) {
-        document.getElementById('resCount').innerText = `${matches.length} conceptos encontrados`;
-        document.getElementById('resTotal').innerText = `Suma de Conceptos: ${formatMoney(totalImporte)}`;
+        document.getElementById('resCount').innerText = `${matches.length} coincidencias encontradas`;
+        document.getElementById('resTotal').innerText = `Importe Total: ${formatMoney(totalImporte)}`;
 
         const tbody = document.querySelector('#resultsTable tbody');
         tbody.innerHTML = '';
