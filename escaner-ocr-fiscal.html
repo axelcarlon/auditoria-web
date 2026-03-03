@@ -24,7 +24,7 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
         .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
@@ -58,6 +58,10 @@
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
+        .site-footer a { transition: color 0.2s; }
+        .site-footer a:hover { color: #ffffff !important; }
+
         @media (max-width: 768px) {
             .header { padding: 15px 20px; justify-content: center; text-align: center; }
             .nav-right { justify-content: center; width: 100%; }
@@ -79,20 +83,30 @@
             <div class="dropdown-content">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría y Riesgo</div>
+                    <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                    <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
                     <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
                     <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
-                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                     <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
                 </div>
                 <div class="dropdown-column">
-                    <div class="menu-category">Operación Diaria</div>
+                    <div class="menu-category">Materialidad y Defensa</div>
+                    <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
+                    <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
+                    <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
+                    <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
+                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Inteligente</div>
                     <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
+                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
                     <a href="/visor-xml.html">Visor y Decodificador XML</a>
                     <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
                     <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                     <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
                     <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
                 </div>
@@ -176,6 +190,43 @@
         <button onclick="resetUI()" style="width: 100%; background: var(--bg-primary); color: var(--text-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 30px;">Escanear Otro Documento</button>
     </div>
 </div>
+
+<footer class="site-footer">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
+            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
+            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
+            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
+            <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
+            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
+            <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
+            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
+            <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
+            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
+            <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
+            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
+            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
+            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
+            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
+            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+        </div>
+    </div>
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
+        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
+        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
+    </div>
+</footer>
 
 <style>
     .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
