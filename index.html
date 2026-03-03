@@ -106,10 +106,9 @@
         .article-date { font-size: 12px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; }
         .article-card h4 { color: var(--text-main); font-size: 18px; margin: 10px 0; }
         
-        .site-footer { text-align: center; padding: 40px 20px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; border-top: 1px solid #1E293B; }
-        .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 20px; flex-wrap: wrap; }
-        .footer-links a { color: #CBD5E1; text-decoration: none; transition: 0.2s; font-weight: 500; }
-        .footer-links a:hover { color: #ffffff; }
+        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
+        .site-footer a { transition: color 0.2s; }
+        .site-footer a:hover { color: #ffffff !important; }
         
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -117,7 +116,7 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: var(--brand); }
-        .dropdown-content { display: none; position: absolute; right: -50px; top: 100%; background-color: var(--bg-secondary); min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: -50px; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
         .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
@@ -168,7 +167,7 @@
     <section class="left-panel">
         <div class="left-content">
             <h1 style="font-size: 36px; font-weight: 800; margin-bottom: 16px; line-height: 1.2;">Auditoría Fiscal Automatizada para CFDI 4.0</h1>
-            <p style="font-size: 18px; color: #E2E8F0; margin-bottom: 40px; font-weight: 300;">Detecta discrepancias en retenciones de ISR e IVA en segundos. Genera tu dictamen preventivo del Art. 30-B del CFF sin procesos manuales.</p>
+            <p style="font-size: 18px; color: #E2E8F0; margin-bottom: 40px; font-weight: 300;">Detecta discrepancias en retenciones de IVA e ISR en segundos. Genera tu dictamen preventivo del Art. 30-B del CFF sin procesos manuales.</p>
             <img src="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg" alt="Validador de retenciones XML CFDI 4.0" class="lock-img" decoding="async" loading="lazy">
         </div>
     </section>
@@ -177,26 +176,36 @@
         <nav class="top-nav">
             <a href="/como-funciona.html" class="nav-link" style="color: var(--brand); font-weight: bold;">Cómo Funciona</a>
             <a href="/visor-xml.html" class="nav-link">Visor XML</a>
-            <a href="/dashboard-xml.html" class="nav-link">Dashboard</a>
             <div class="dropdown">
                 <div class="dropdown-toggle">Suite de Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                 <div class="dropdown-content">
                     <div class="dropdown-column">
                         <div class="menu-category">Auditoría y Riesgo</div>
                         <a href="/">Auditoría Masiva (Art. 30-B)</a>
+                        <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
                         <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                        <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
                         <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                        <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
-                        <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
-                        <a href="/proyector-iva.html">Proyector IVA Mensual</a>
                         <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
                     </div>
                     <div class="dropdown-column">
-                        <div class="menu-category">Operación Diaria</div>
-                        <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
+                        <div class="menu-category">Materialidad y Defensa</div>
+                        <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
+                        <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
+                        <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
+                        <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
+                        <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    </div>
+                    <div class="dropdown-column">
+                        <div class="menu-category">Operación Inteligente</div>
+                        <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
+                        <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
                         <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+                        <a href="/dashboard-xml.html">Dashboard Financiero</a>
+                        <a href="/proyector-iva.html">Proyector IVA Mensual</a>
+                        <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
                         <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
-                        <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                        <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
                     </div>
                 </div>
             </div>
@@ -310,33 +319,6 @@
             <p>Analiza cientos de facturas en cuestión de segundos, eliminando horas de revisión manual en Excel y mitigando el error humano.</p>
         </div>
     </div>
-
-    <div class="resources-section">
-        <h2>Recursos Fiscales</h2>
-        <div class="articles-grid">
-            <a href="/articulos/efos-edos.html" class="article-card">
-                <div class="article-date">01 Marzo, 2026</div>
-                <h4>Guía Definitiva sobre EFOS y EDOS en México</h4>
-                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Entiende el Artículo 69-B del CFF y cómo proteger tu empresa de facturas simuladas.</p>
-            </a>
-            <a href="/articulos/multas-cfdi.html" class="article-card">
-                <div class="article-date">28 Febrero, 2026</div>
-                <h4>Multas por Errores en CFDI 4.0</h4>
-                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Conoce las sanciones económicas del SAT por emitir facturas con datos incorrectos este año.</p>
-            </a>
-            <a href="/articulos/complemento-pago.html" class="article-card">
-                <div class="article-date">25 Febrero, 2026</div>
-                <h4>Todo sobre el Complemento de Recepción de Pagos (REP)</h4>
-                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Cuándo es obligatorio emitirlo y por qué el SAT puede rechazar tus deducciones si te falta.</p>
-            </a>
-            <a href="/articulos/materialidad-fiscal.html" class="article-card">
-                <div class="article-date">20 Febrero, 2026</div>
-                <h4>Materialidad Fiscal: La nueva arma del SAT</h4>
-                <p style="color: var(--text-muted); font-size: 14px; margin: 0;">Por qué un XML ya no es suficiente para deducir un gasto y cómo armar tu expediente de defensa.</p>
-            </a>
-        </div>
-    </div>
-
 </div>
 
 <footer class="site-footer">
@@ -348,18 +330,20 @@
             <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
         </div>
         <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Riesgo</h4>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
             <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
             <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
             <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
+            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
             <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
         </div>
         <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Herramientas</h4>
-            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner OCR (PDF/Foto)</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
+            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
             <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
             <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
             <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
+            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
         </div>
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
@@ -368,7 +352,7 @@
             <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
         </div>
     </div>
-    <div style="font-size: 12px; color: #64748B;">
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
         <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
         <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
