@@ -6,7 +6,9 @@
     <title>Visor de XML CFDI 4.0 Gratis | AuditorIA</title>
     <meta name="description" content="Lee y decodifica cualquier archivo XML del SAT en segundos. Visor de facturas CFDI en formato amigable sin necesidad de descargar programas.">
     <link rel="canonical" href="https://auditoriaxml.mx/visor-xml.html" />
-    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <link rel="icon" type="image/jpeg" href="candado.jpg">
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
     <style>
@@ -16,7 +18,7 @@
         
         .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
         .header .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-        .header .logo-container img { width: 36px; height: 36px; object-fit: contain; }
+        .header .logo-container img { width: 36px; height: 36px; border-radius: 50%; object-fit: contain; }
         .header .logo-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
         .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
@@ -69,6 +71,14 @@
         .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
         .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-bottom: 20px; text-align: center; }
 
+        /* Botones de Compartir */
+        .share-container { margin: 30px 0; padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center;}
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 120px; }
+        .social-btn:hover { opacity: 0.9; }
+        .btn-x { background-color: #000000; }
+        .btn-in { background-color: #0A66C2; }
+        .btn-fb { background-color: #1877F2; }
+
         /* Paywall Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
         .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
@@ -97,7 +107,7 @@
 
 <header class="header">
     <a href="index.html" class="logo-container">
-        <img src="candado.png" alt="AuditorIA Logo" onerror="this.src='https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg'">
+        <img src="candado.jpg" alt="AuditorIA Logo">
         <span class="logo-text">AuditorIA</span>
     </a>
     <div class="nav-right">
@@ -256,6 +266,14 @@
                     </div>
                 </div>
             </div>
+
+            <div class="share-container" id="shareContainer" style="display: none;">
+                <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
+                <a href="https://twitter.com/intent/tweet?text=Estoy%20automatizando%20la%20auditoría%20de%20mis%20CFDI%204.0%20y%20validando%20retenciones%20con%20AuditorIA.%20Herramienta%20gratuita:&url=https://auditoriaxml.mx/visor-xml.html" target="_blank" class="social-btn btn-x">X</a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/visor-xml.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/visor-xml.html" target="_blank" class="social-btn btn-fb">Facebook</a>
+            </div>
+
         </div>
     </div>
 </div>
@@ -360,8 +378,8 @@
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
         if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
-        // Para visualizaciones puramente locales sin IA (como este visor base), reducimos la cuota pero permitimos la ejecución.
-        // Así logramos el paywall general sin romper la experiencia local.
+        
+        // Se resta un uso por cada lote procesado en lugar de por cada archivo visualizado.
         localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
         return true;
     }
@@ -429,11 +447,13 @@
                 fileListEl.appendChild(div);
             });
             
-            renderFactura(facturasExtraidas[0].index);
+            renderFactura(facturasExtraidas[0].index); // Renderizar la primera
+            document.getElementById('shareContainer').style.display = 'block'; // Mostrar botones de compartir
         }
     }
 
     function renderFactura(index) {
+        // Estilos de lista
         document.querySelectorAll('.file-list-item').forEach(el => el.classList.remove('active'));
         document.getElementById(`file-item-${index}`).classList.add('active');
 
