@@ -78,9 +78,6 @@
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        /* Evitar cortes en los bloques renderizados al imprimir PDF */
-        .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
-
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } .toolbar button { width: 100%;} }
     </style>
 </head>
@@ -358,7 +355,7 @@
         } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
     }
 
-    // EL MOTOR DE PDF TOTALMENTE BLINDADO
+    // EL NUEVO MOTOR PDF 100% AISLADO (SIN ERRORES DE SCROLL O CORTES)
     function descargarReporte() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
@@ -368,25 +365,18 @@
         const isPro = localStorage.getItem('auditoria_pro') === 'true';
         const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : '';
         
-        // CSS Dinámico para la marca de agua SVG
         const watermarkCSS = isPro ? '' : `background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><text x='30' y='300' transform='rotate(-35 300 300)' fill='rgba(37,99,235,0.06)' font-size='40' font-family='Arial' font-weight='bold'>Generado por AuditorIA - Versión Gratuita</text></svg>"); background-repeat: repeat;`;
 
-        // Crear contenedor dinámico fuera del flujo pero en el DOM activo
-        const renderContainer = document.createElement('div');
-        renderContainer.style.width = '800px';
-        renderContainer.style.position = 'absolute';
-        renderContainer.style.top = '0';
-        renderContainer.style.left = '0';
-        renderContainer.style.zIndex = '-9999';
-        
-        renderContainer.innerHTML = `
-            <div style="width: 100%; padding: 40px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; ${watermarkCSS}">
+        // Construimos el HTML como un String puro. Esto crea un iframe invisible 
+        // totalmente independiente del scroll de la página actual.
+        const htmlContent = `
+            <div style="width: 800px; padding: 40px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; ${watermarkCSS}">
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px;">
                     <h1 style="margin: 0; font-size: 26px; color: #111827; font-weight: 900; letter-spacing: -0.5px;">Reporte Ejecutivo de Riesgo Fiscal</h1>
                     <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Modelo TADS (Tax Analytics & Detection System)</p>
                 </div>
                 
-                <div class="page-break-avoid" style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px; page-break-inside: avoid;">
                     <div style="width: 250px; text-align: center;">
                         <img src="${chartImg}" style="width: 100%; height: auto;">
                         <div style="margin-top: -30px; font-size: 50px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
@@ -394,7 +384,7 @@
                     </div>
                 </div>
 
-                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px; page-break-inside: avoid;">
                     <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
                         <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Docs Auditados</span>
                         <div style="font-size: 18px; font-weight: 900; color: #111827;">${dataReporte.totalFiles}</div>
@@ -413,44 +403,40 @@
                     </div>
                 </div>
 
-                <div class="page-break-avoid" style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
+                <div style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px; page-break-inside: avoid;">
                     <span style="font-size: 12px; color: #991B1B; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Capital Total en Riesgo de Auditoría Activa</span>
                     <div style="font-size: 32px; font-weight: 900; color: #DC2626; font-family: monospace; margin-top: 5px;">${dataReporte.amountRisk}</div>
                 </div>
 
                 ${dataReporte.dictamen ? `
-                <div class="page-break-avoid" style="background: #111827; color: white; padding: 25px; border-radius: 12px;">
-                    <h3 style="margin-top: 0; font-size: 14px; color: #60A5FA; text-transform: uppercase; letter-spacing: 1px;">Dictamen Forense Estratégico (IA)</h3>
-                    <p style="font-size: 12px; line-height: 1.6; margin-bottom: 0; text-align: justify; color: #E5E7EB;">${dataReporte.dictamen}</p>
+                <div style="background: #111827; color: white; padding: 25px; border-radius: 12px; page-break-inside: avoid;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #60A5FA; text-transform: uppercase; letter-spacing: 1px;">Dictamen Forense Estratégico (IA)</h3>
+                    <p style="font-size: 12px; line-height: 1.6; margin: 0; text-align: justify; color: #E5E7EB;">${dataReporte.dictamen}</p>
                 </div>` : ''}
                 
-                <div class="page-break-avoid" style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                <div style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px; page-break-inside: avoid;">
                     Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría de un especialista fiscal calificado.<br>
                     Plataforma: AuditoriaXML.mx
                 </div>
             </div>
         `;
 
-        document.body.appendChild(renderContainer);
-
         const opt = {
             margin:       10,
             filename:     `RiskScore_Auditoria_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
+            image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(renderContainer).save().then(() => {
-            document.body.removeChild(renderContainer);
+        html2pdf().set(opt).from(htmlContent).save().then(() => {
             btn.innerHTML = oldText;
             btn.disabled = false;
         }).catch(err => {
             console.error(err);
-            document.body.removeChild(renderContainer);
             btn.innerHTML = oldText;
             btn.disabled = false;
-            alert("Error al generar el PDF.");
+            alert("Error al generar el PDF. Reintenta recargando la página.");
         });
     }
 </script>
