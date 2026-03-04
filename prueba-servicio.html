@@ -38,7 +38,6 @@
         .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Dashboard de Resultados */
         .meta-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .meta-card { background: var(--bg-primary); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
         .meta-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 4px; }
@@ -53,12 +52,12 @@
         .data-label { font-size: 14px; text-transform: uppercase; color: #60A5FA; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
         .data-value { font-size: 14px; color: #E5E7EB; line-height: 1.7; text-align: justify;}
 
-        /* Botones Acción Toolbar */
         .btn-toolbar { display: flex; gap: 15px; justify-content: flex-end; margin-bottom: 25px; flex-wrap: wrap;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
         .btn-secondary:hover { background: #e2e8f0; }
         .btn-pdf { background: #111827; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
-        .btn-pdf:hover { background: var(--brand); transform: translateY(-2px); }
+        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); }
+        .btn-pdf:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
@@ -67,7 +66,7 @@
         .btn-in { background-color: #0A66C2; }
         .btn-wa { background-color: #25D366; }
 
-        /* --- Paywall Modal Premium & Centrado --- */
+        /* Paywall Modal Premium */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 15px; right: 15px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -78,8 +77,6 @@
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        /* --- CORRECCIÓN DE CORTES EN PDF --- */
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; width: 800px; background: white; z-index: -1000; }
         .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
 
         @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .btn-toolbar { flex-direction: column; } .btn-toolbar button { width: 100%; justify-content: center;} }
@@ -175,12 +172,9 @@
     </div>
 </div>
 
-<div id="hiddenPdfRender"></div>
-
 <script src="footer.js"></script>
 
 <script>
-    // LÓGICA PREMIUM
     function checkQuota() {
         if (localStorage.getItem('auditoria_pro') === 'true') return true;
         let usos = localStorage.getItem('auditoria_usos');
@@ -308,18 +302,7 @@
         }
     }
 
-    // EL MOTOR MAESTRO DE RENDERIZADO PDF
-    function agregarMarcaAgua(pdf) {
-        if(localStorage.getItem('auditoria_pro') === 'true') return;
-        const totalPages = pdf.internal.getNumberOfPages();
-        pdf.setTextColor(200, 200, 200);
-        pdf.setFontSize(40);
-        for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.text('Generado por AuditorIA - Versión Gratuita', 30, 150, { angle: -35, opacity: 0.1 });
-        }
-    }
-
+    // EL MOTOR MAESTRO PDF BLINDADO (SIN CORTES, SCROLL IGNORADO)
     async function descargarDictamenPDF() {
         if (!dictamenExport) return;
 
@@ -328,12 +311,20 @@
         btn.innerText = "Exportando...";
         btn.disabled = true;
 
-        const renderContainer = document.getElementById('hiddenPdfRender');
+        const isPro = localStorage.getItem('auditoria_pro') === 'true';
+        const watermarkCSS = isPro ? '' : `background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><text x='30' y='300' transform='rotate(-35 300 300)' fill='rgba(37,99,235,0.06)' font-size='40' font-family='Arial' font-weight='bold'>Generado por AuditorIA - Versión Gratuita</text></svg>"); background-repeat: repeat;`;
+
+        // Crear contenedor dinámico anclado en 0,0 absoluto
+        const renderContainer = document.createElement('div');
+        renderContainer.style.position = 'absolute';
+        renderContainer.style.top = '0px';
+        renderContainer.style.left = '0px';
+        renderContainer.style.width = '800px';
+        renderContainer.style.zIndex = '-9999';
         
         renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; position: relative;">
-                
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div style="width: 100%; padding: 45px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; ${watermarkCSS}">
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
                     <div>
                         <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen de Materialidad Fiscal</h1>
                         <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-weight: bold;">Análisis preventivo Art. 69-B del Código Fiscal de la Federación.</p>
@@ -341,12 +332,12 @@
                     <div style="font-size: 10px; color: #9CA3AF; font-family: monospace;">Folio: MT-${Date.now()}</div>
                 </div>
                 
-                <div class="page-break-avoid" style="background: ${dictamenExport.bg}; padding: 25px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid ${dictamenExport.br}; position: relative; z-index: 1;">
+                <div class="page-break-avoid" style="background: ${dictamenExport.bg}; padding: 25px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid ${dictamenExport.br};">
                     <strong style="display: block; font-size: 12px; color: ${dictamenExport.color}; text-transform: uppercase; letter-spacing: 1px;">Evaluación de Sustancia Económica</strong>
-                    <span style="font-size: 24px; font-weight: 900; color: ${dictamenExport.color}; display: block; margin-top: 10px;">${dictamenExport.status}</span>
+                    <span style="font-size: 22px; font-weight: 900; color: ${dictamenExport.color}; display: block; margin-top: 10px;">${dictamenExport.status}</span>
                 </div>
 
-                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 30px; position: relative; z-index: 1;">
+                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 30px;">
                     <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #F9FAFB;">
                         <div style="font-size: 11px; font-weight: 800; color: #6B7280; text-transform: uppercase; margin-bottom: 12px;">Datos Base (CFDI)</div>
                         <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>RFC Emisor:</strong> <span style="font-family: monospace;">${dictamenExport.rfc}</span></div>
@@ -365,24 +356,30 @@
                 </div>
             </div>
         `;
+        document.body.appendChild(renderContainer);
 
         const opt = {
-            margin:       [15, 10, 15, 10],
+            margin:       10,
             filename:     `Materialidad_Servicio_${dictamenExport.rfc}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, windowWidth: 800 },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'] }
+            image:        { type: 'jpeg', quality: 1 },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                letterRendering: true, 
+                windowWidth: 800,
+                scrollY: 0, 
+                scrollX: 0 
+            },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
         try {
-            await html2pdf().set(opt).from(renderContainer.firstElementChild).toPdf().get('pdf').then(function (pdf) {
-                agregarMarcaAgua(pdf);
-            }).save();
+            await html2pdf().set(opt).from(renderContainer).save();
         } catch (e) {
             console.error(e);
             alert("Error al procesar el archivo PDF.");
         } finally {
+            document.body.removeChild(renderContainer);
             btn.innerHTML = oldText;
             btn.disabled = false;
         }
