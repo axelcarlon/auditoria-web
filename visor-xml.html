@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visor de XML Múltiple (CFDI 4.0) | AuditorIA</title>
-    <meta name="description" content="Lee y decodifica cualquier archivo XML del SAT en segundos. Visor de facturas CFDI en formato amigable sin necesidad de descargar programas.">
+    <meta name="description" content="Lee y decodifica archivos XML del SAT en segundos. Visor de facturas CFDI en formato amigable con análisis legal integrado.">
     <link rel="canonical" href="https://auditoriaxml.mx/visor-xml.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -13,7 +13,6 @@
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
-    
     <script src="despertador.js"></script>
 
     <style>
@@ -21,7 +20,7 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .main-container { max-width: 1300px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
         
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
         .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
@@ -29,54 +28,48 @@
         .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 15px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         .trust-badges div { display: flex; align-items: center; gap: 4px; }
         
-        /* INTERFAZ DE WORKSPACE (LISTA LATERAL Y VISOR) */
-        .workspace { display: none; grid-template-columns: 320px 1fr; gap: 25px; margin-top: 20px; align-items: start; }
+        .workspace { display: none; grid-template-columns: 350px 1fr; gap: 25px; margin-top: 20px; align-items: start; }
         
-        .file-list-sidebar { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 15px; max-height: 75vh; overflow-y: auto; position: sticky; top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .file-list-item { padding: 12px 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s; border-radius: 6px; margin-bottom: 5px; }
+        .file-list-sidebar { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 15px; max-height: 80vh; overflow-y: auto; position: sticky; top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .file-list-item { padding: 12px 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.2s; border-radius: 6px; margin-bottom: 5px; border-left: 4px solid transparent; }
         .file-list-item:hover { background: var(--bg-primary); }
-        .file-list-item.active { background: #EFF6FF; border-left: 4px solid var(--brand); box-shadow: 0 2px 4px rgba(37,99,235,0.1); }
-        .file-list-item .file-name { font-size: 13px; font-weight: 700; color: var(--text-main); word-break: break-word; line-height: 1.3; }
+        .file-list-item.active { background: #EFF6FF; border-left-color: var(--brand); }
+        .file-list-item .file-name { font-size: 13px; font-weight: 700; color: var(--text-main); word-break: break-all; }
         .file-list-item .file-meta { font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between; }
-        .file-list-item .amount-badge { color: var(--success); font-weight: bold; font-family: monospace; }
-
-        .invoice-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; position: relative; margin-bottom: 30px; }
-        .invoice-header { background: #111827; color: white; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .invoice-body { padding: 30px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .data-group h3 { font-size: 13px; color: var(--brand); text-transform: uppercase; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 5px; font-weight: 800; letter-spacing: 0.5px;}
-        .data-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
-        .data-label { font-weight: 600; color: var(--text-muted); }
-        .data-value { color: var(--text-main); text-align: right; word-break: break-word; font-weight: 500; }
         
-        .table-responsive { overflow-x: auto; margin-bottom: 30px; border-radius: 8px; border: 1px solid var(--border); }
+        .type-tag { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; color: white; margin-right: 5px; }
+        .tag-I { background: var(--success); } .tag-E { background: var(--danger); } .tag-P { background: var(--brand); } .tag-N { background: #8B5CF6; }
+
+        .invoice-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        .invoice-header { background: #111827; color: white; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
+        .invoice-body { padding: 30px; }
+        
+        .copy-btn { background: rgba(255,255,255,0.1); border: none; color: #93C5FD; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; margin-left: 8px; }
+        .copy-btn:hover { background: var(--brand); color: white; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .data-group h3 { font-size: 12px; color: var(--brand); text-transform: uppercase; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 5px; font-weight: 800; letter-spacing: 0.5px;}
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .data-label { color: var(--text-muted); font-weight: 500; }
+        .data-value { color: var(--text-main); font-weight: 600; text-align: right; }
+        
+        .table-responsive { overflow-x: auto; margin-bottom: 30px; border: 1px solid var(--border); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; white-space: nowrap; }
-        tr:hover { background: #F8FAFC; }
-        .amount { font-family: monospace; text-align: right; font-weight: 600; }
+        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; }
+        .amount { text-align: right; font-family: monospace; }
         
         .totals { margin-top: 20px; width: 320px; margin-left: auto; background: var(--bg-primary); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
-        .totals .data-row.grand-total { font-size: 20px; font-weight: 900; color: var(--brand); border-top: 2px solid #111827; padding-top: 15px; margin-top: 15px; }
+        .grand-total { font-size: 18px; font-weight: 900; color: var(--brand); border-top: 2px solid #111827; padding-top: 15px; margin-top: 10px; }
 
         .ia-advisor-box { background: #EFF6FF; border-left: 4px solid var(--brand); padding: 20px; margin-bottom: 20px; border-radius: 4px; display: none; }
-        .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-transform: uppercase;}
-        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-bottom: 20px; text-align: center; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
+        .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; text-transform: uppercase;}
+        .ia-loading { color: var(--brand); font-size: 13px; font-weight: 600; display: none; margin-bottom: 20px; text-align: center; }
 
         @media (max-width: 900px) {
             .workspace { grid-template-columns: 1fr; }
-            .file-list-sidebar { max-height: 250px; position: static; margin-bottom: 20px; }
-            .grid-2 { grid-template-columns: 1fr; gap: 15px; }
-            .totals { width: 100%; }
+            .file-list-sidebar { max-height: 200px; position: static; }
+            .grid-2 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -89,28 +82,28 @@
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has visualizado el límite de facturas gratuitas de esta sesión. Actualiza a <strong>AuditorIA Pro</strong> para lectura ilimitada de XMLs.</p>
+        <p class="modal-text">Has visualizado el límite de facturas gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para lectura ilimitada de XMLs masivos.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="main-container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">LECTOR NATIVO</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Visor de XML Múltiple (CFDI 4.0)</h1>
-        <p style="color: var(--text-muted);">Decodifica cualquier factura del SAT. Arrastra múltiples archivos y navega entre ellos ágilmente usando la lista lateral.</p>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ANÁLISIS TÉCNICO CFDI</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Visor de XML Múltiple (4.0)</h1>
+        <p style="color: var(--text-muted);">Decodifica facturas, recibos de nómina y complementos de pago. Arrastra tus archivos y navega entre ellos al instante.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
         <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);">Haz clic o arrastra tus archivos XML aquí</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Soporta carga de múltiples facturas simultáneas (Lotes)</p>
+        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);">Cargar Repositorio XML</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesa localmente cientos de facturas. Tu información no sale de tu equipo.</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
         
         <div class="trust-badges">
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Procesamiento Local</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Privacidad Total</div>
         </div>
     </div>
 
@@ -118,12 +111,8 @@
         <div class="file-list-sidebar" id="fileList"></div>
 
         <div class="viewer-main">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button onclick="window.location.reload()" style="background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s;">Analizar Nuevo Lote</button>
-            </div>
-
             <div id="iaLoading" class="ia-loading">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; vertical-align: middle; margin-right: 5px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 Analizando congruencia legal del CFDI...
             </div>
             
@@ -138,27 +127,28 @@
             <div class="invoice-card" id="invoiceCard">
                 <div class="invoice-header">
                     <div>
-                        <h2 style="margin: 0; font-size: 22px; font-weight: 800;">Comprobante Fiscal Digital</h2>
+                        <h2 style="margin: 0; font-size: 20px; font-weight: 800;">Representación del CFDI</h2>
                         <span style="font-size: 12px; opacity: 0.8; font-family: monospace;" id="uuidDisplay">UUID: </span>
+                        <button class="copy-btn" onclick="copyToClipboard('uuidDisplay')">Copiar UUID</button>
                     </div>
-                    <div style="text-align: right; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 8px;">
-                        <div style="font-size: 24px; font-weight: 900;" id="tipoComprobante">I</div>
-                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Tipo CFDI</div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 22px; font-weight: 900;" id="tipoComprobante">I</div>
+                        <div style="font-size: 10px; text-transform: uppercase; font-weight: bold; opacity: 0.7;">Tipo de Comprobante</div>
                     </div>
                 </div>
                 
                 <div class="invoice-body">
                     <div class="grid-2">
                         <div class="data-group">
-                            <h3>Datos del Emisor</h3>
-                            <div class="data-row"><span class="data-label">Nombre:</span> <span class="data-value" id="emisorNombre" style="font-weight: 700;"></span></div>
-                            <div class="data-row"><span class="data-label">RFC:</span> <span class="data-value" id="emisorRfc" style="font-family: monospace;"></span></div>
-                            <div class="data-row"><span class="data-label">Régimen:</span> <span class="data-value" id="emisorRegimen"></span></div>
+                            <h3>Emisor</h3>
+                            <div class="data-row"><span class="data-label">Nombre/Razón Social:</span> <span class="data-value" id="emisorNombre"></span></div>
+                            <div class="data-row"><span class="data-label">RFC:</span> <span><span class="data-value" id="emisorRfc"></span> <button class="copy-btn" onclick="copyToClipboard('emisorRfc')">Copiar</button></span></div>
+                            <div class="data-row"><span class="data-label">Régimen Fiscal:</span> <span class="data-value" id="emisorRegimen"></span></div>
                         </div>
                         <div class="data-group">
-                            <h3>Datos del Receptor (Cliente)</h3>
-                            <div class="data-row"><span class="data-label">Nombre:</span> <span class="data-value" id="receptorNombre" style="font-weight: 700;"></span></div>
-                            <div class="data-row"><span class="data-label">RFC:</span> <span class="data-value" id="receptorRfc" style="font-family: monospace;"></span></div>
+                            <h3>Receptor</h3>
+                            <div class="data-row"><span class="data-label">Nombre/Razón Social:</span> <span class="data-value" id="receptorNombre"></span></div>
+                            <div class="data-row"><span class="data-label">RFC:</span> <span><span class="data-value" id="receptorRfc"></span> <button class="copy-btn" onclick="copyToClipboard('receptorRfc')">Copiar</button></span></div>
                             <div class="data-row"><span class="data-label">Uso CFDI:</span> <span class="data-value" id="receptorUso"></span></div>
                         </div>
                     </div>
@@ -169,9 +159,9 @@
                             <table id="conceptosTable">
                                 <thead>
                                     <tr>
+                                        <th>Cant.</th>
                                         <th>Clave SAT</th>
                                         <th>Descripción</th>
-                                        <th style="text-align: center;">Cant.</th>
                                         <th class="amount">V. Unitario</th>
                                         <th class="amount">Importe</th>
                                     </tr>
@@ -181,19 +171,24 @@
                         </div>
                     </div>
 
-                    <div class="totals">
-                        <div class="data-row"><span class="data-label">Subtotal:</span> <span class="data-value amount" id="subtotalVal"></span></div>
-                        <div class="data-row"><span class="data-label">Total Imp. Trasladados:</span> <span class="data-value amount" id="trasladosVal"></span></div>
-                        <div class="data-row"><span class="data-label">Total Imp. Retenidos:</span> <span class="data-value amount" id="retencionesVal" style="color: var(--danger);"></span></div>
-                        <div class="data-row grand-total"><span class="data-label">TOTAL:</span> <span class="data-value amount" id="totalVal"></span></div>
-                    </div>
-                    
-                    <div style="margin-top: 40px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: space-between; flex-wrap: wrap;">
-                        <div><strong>Emisión:</strong> <span id="fechaEmision"></span></div>
-                        <div><strong>Moneda:</strong> <span id="moneda" style="font-weight: bold;"></span></div>
-                        <div><strong>Método de Pago:</strong> <span id="metodoPagoVal" style="font-weight: 900; color: var(--text-main);"></span></div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+                        <div style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">
+                            <div><strong>Fecha Emisión:</strong> <span id="fechaEmision"></span></div>
+                            <div><strong>Moneda:</strong> <span id="moneda"></span></div>
+                            <div><strong>Método de Pago:</strong> <span id="metodoPagoVal" style="font-weight: 800; color: var(--text-main);"></span></div>
+                            <div><strong>Lugar Expedición:</strong> <span id="lugarExp"></span></div>
+                        </div>
+                        <div class="totals">
+                            <div class="data-row"><span class="data-label">Subtotal:</span> <span class="data-value amount" id="subtotalVal"></span></div>
+                            <div class="data-row" style="color: var(--success);"><span class="data-label" style="color: var(--success);">Imp. Trasladados:</span> <span class="data-value amount" id="trasladosVal"></span></div>
+                            <div class="data-row" style="color: var(--danger);"><span class="data-label" style="color: var(--danger);">Imp. Retenidos:</span> <span class="data-value amount" id="retencionesVal"></span></div>
+                            <div class="data-row grand-total"><span class="data-label">TOTAL:</span> <span class="data-value amount" id="totalVal"></span></div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div style="text-align: center;">
+                <button onclick="window.location.reload()" style="background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;">Cargar Nuevo Repositorio</button>
             </div>
         </div>
     </div>
@@ -202,7 +197,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // LÓGICA DEL VISOR XML CON LISTA LATERAL
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -215,12 +209,10 @@
     const dropZone = document.getElementById('dropZone');
     const workspace = document.getElementById('workspace');
     const fileListEl = document.getElementById('fileList');
-    
     let facturasExtraidas = [];
 
     ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
     ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
-    
     dropZone.addEventListener('drop', (e) => processFiles(e.dataTransfer.files));
     input.addEventListener('change', (e) => processFiles(e.target.files));
 
@@ -238,16 +230,15 @@
                 if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const rawXML = e.target.result;
                     try {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(rawXML, "text/xml");
+                        const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
                         const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
                         if (cfdi) {
+                            const tipo = cfdi.getAttribute('TipoDeComprobante').toUpperCase() || 'I';
                             const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
                             const nombreEmisor = emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : 'Desconocido';
                             const total = cfdi.getAttribute('Total');
-                            facturasExtraidas.push({ index, file, xmlDoc, nombreEmisor, total });
+                            facturasExtraidas.push({ index, file, xmlDoc, nombreEmisor, total, tipo });
                         }
                     } catch (err) {}
                     resolve();
@@ -268,22 +259,20 @@
                 div.className = 'file-list-item';
                 div.id = `file-item-${fac.index}`;
                 div.innerHTML = `
-                    <div class="file-name">${fac.nombreEmisor.substring(0,25)}</div>
+                    <div class="file-name"><span class="type-tag tag-${fac.tipo}">${fac.tipo}</span> ${fac.nombreEmisor.substring(0,25)}</div>
                     <div class="file-meta">
-                        <span>${fac.file.name.substring(0,15)}...</span>
-                        <span class="amount-badge">${formatMoney(fac.total)}</span>
+                        <span>${fac.file.name.substring(0,18)}</span>
+                        <span style="font-family:monospace; font-weight:bold; color: var(--success);">${formatMoney(fac.total)}</span>
                     </div>
                 `;
                 div.onclick = () => renderFactura(fac.index);
                 fileListEl.appendChild(div);
             });
-            
-            renderFactura(facturasExtraidas[0].index); // Renderiza la primera por defecto
+            renderFactura(facturasExtraidas[0].index);
         }
     }
 
     function renderFactura(index) {
-        // Actualizar estado visual de la lista
         document.querySelectorAll('.file-list-item').forEach(el => el.classList.remove('active'));
         document.getElementById(`file-item-${index}`).classList.add('active');
 
@@ -298,18 +287,18 @@
         const impuestos = xmlDoc.getElementsByTagName('cfdi:Impuestos');
         
         let nodoImpuestosGlobal = null;
-        // Identificar el nodo principal de impuestos y no el de cada concepto
         for(let i=0; i<impuestos.length; i++) { 
             if(impuestos[i].parentNode === comprobante) { nodoImpuestosGlobal = impuestos[i]; break; } 
         }
 
-        const metodoPago = getAttr(comprobante, 'MetodoPago').toUpperCase();
+        const metodoPago = (getAttr(comprobante, 'MetodoPago') || "").toUpperCase();
 
         document.getElementById('uuidDisplay').innerText = `UUID: ${getAttr(timbre, 'UUID') || 'No timbrado'}`;
-        document.getElementById('tipoComprobante').innerText = getAttr(comprobante, 'TipoDeComprobante').toUpperCase() || '-';
+        document.getElementById('tipoComprobante').innerText = fac.tipo;
         document.getElementById('fechaEmision').innerText = getAttr(comprobante, 'Fecha');
         document.getElementById('moneda').innerText = getAttr(comprobante, 'Moneda') || 'MXN';
         document.getElementById('metodoPagoVal').innerText = metodoPago;
+        document.getElementById('lugarExp').innerText = getAttr(comprobante, 'LugarExpedicion');
 
         document.getElementById('emisorNombre').innerText = getAttr(emisor, 'Nombre');
         document.getElementById('emisorRfc').innerText = getAttr(emisor, 'Rfc');
@@ -332,20 +321,28 @@
             const c = conceptos[i];
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="font-family: monospace;">${getAttr(c, 'ClaveProdServ')}</td>
-                <td>${getAttr(c, 'Descripcion')}</td>
                 <td style="text-align: center;">${getAttr(c, 'Cantidad')}</td>
+                <td style="font-family: monospace; font-size: 11px;">${getAttr(c, 'ClaveProdServ')}</td>
+                <td>${getAttr(c, 'Descripcion')}</td>
                 <td class="amount">${formatMoney(getAttr(c, 'ValorUnitario'))}</td>
-                <td class="amount" style="font-weight: 600;">${formatMoney(getAttr(c, 'Importe'))}</td>
+                <td class="amount">${formatMoney(getAttr(c, 'Importe'))}</td>
             `;
             tbody.appendChild(tr);
         }
 
-        // Consultar a la IA si es PPD
         document.getElementById('iaAdvisorContainer').style.display = 'none';
         if(metodoPago === 'PPD') {
-            consultarAlertaIA("Visor XML (Factura PPD)", "Obligación de Complemento de Pago", "Se visualiza factura PPD. Explica la obligación fiscal del REP.");
+            consultarAlertaIA("Factura PPD", "Requisito de REP", "Esta factura fue emitida con Método de Pago PPD. Recuerda que es obligatorio contar con el Complemento de Pago (REP) para que el gasto sea deducible y el IVA acreditable.");
         }
+    }
+
+    function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).innerText.replace('UUID: ', '');
+        navigator.clipboard.writeText(text);
+        const btn = event.target;
+        const originalText = btn.innerText;
+        btn.innerText = '¡Copiado!';
+        setTimeout(() => btn.innerText = originalText, 1500);
     }
 
     async function consultarAlertaIA(tipo, concepto, errorDesc) {
