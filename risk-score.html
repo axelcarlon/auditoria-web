@@ -27,7 +27,9 @@
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
         .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
 
-        .results-container { display: none; margin-top: 40px; }
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
         
         .score-card { background: var(--bg-secondary); padding: 30px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -40,7 +42,7 @@
         .kpi-data { font-size: 24px; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
         .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
 
-        .risk-amount-card { background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;}
+        .risk-amount-card { background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; width: 100%;}
         .risk-amount-label { font-size: 12px; color: #991B1B; font-weight: bold; }
         .risk-amount-val { font-size: 18px; font-weight: 900; color: #DC2626; font-family: monospace; }
         
@@ -49,11 +51,38 @@
         .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.6; text-align: justify; }
         .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
 
-        .toolbar { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
-        .btn-pdf { background: #111827; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; }
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
 
-        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;}
+        .btn-pdf:hover { background: var(--brand); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.2);}
+        .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; font-size: 14px;}
+        .btn-restart:hover { background: var(--bg-primary); }
+
+        /* Botones Compartir */
+        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
+        .social-btn:hover { opacity: 0.9; }
+        .btn-x { background-color: #000000; }
+        .btn-in { background-color: #0A66C2; }
+        .btn-wa { background-color: #25D366; }
+
+        /* --- Paywall Modal Premium & Centrado --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
+        .modal-icon { width: 64px; height: 64px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .modal-title { font-size: 22px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
+        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 25px 0; line-height: 1.5; }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+        .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
+
+        /* --- CORRECCIÓN DE CORTES EN PDF --- */
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; width: 800px; background: white; z-index: -1000; }
+        .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } .toolbar button { width: 100%;} }
     </style>
 </head>
 <body>
@@ -63,10 +92,12 @@
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos, ver desgloses de importes en riesgo y descargar reportes ejecutivos.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
+        <div class="modal-icon">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h2 class="modal-title">Potencia tu Auditoría</h2>
+        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos, ver importes en riesgo y descargar reportes ejecutivos limpios.</p>
+        <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
 
@@ -96,7 +127,7 @@
                     <canvas id="gaugeChart"></canvas>
                     <div class="score-value" id="scoreText">100</div>
                 </div>
-                <div style="font-size: 13px; font-weight: 800; margin-top: 10px; color: var(--text-main);" id="scoreStatus">Cumplimiento Perfecto</div>
+                <div style="font-size: 13px; font-weight: 800; margin-top: 10px; color: var(--text-main); text-transform: uppercase;" id="scoreStatus">Cumplimiento Perfecto</div>
                 
                 <div class="risk-amount-card">
                     <div class="risk-amount-label">Capital en Riesgo:</div>
@@ -147,13 +178,13 @@
 
         <div class="toolbar">
             <button onclick="window.location.reload()" class="btn-restart">Analizar Nuevo Lote</button>
-            <button onclick="descargarReporte()" class="btn-pdf">
+            <button onclick="descargarReporte()" class="btn-pdf" id="btnDescargarPDF">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Descargar Reporte Ejecutivo (PDF)
             </button>
         </div>
 
-        <div class="share-container" id="shareContainer">
+        <div class="share-container" id="shareContainer" style="display: none;">
             <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más empresas compartiendo:</p>
             <a href="https://twitter.com/intent/tweet?text=Evalué%20mi%20riesgo%20de%20auditoría%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:&url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
@@ -167,7 +198,9 @@
 <script src="footer.js"></script>
 
 <script>
+    // LÓGICA DE CONTROL PREMIUM
     function checkQuota() {
+        if (localStorage.getItem('auditoria_pro') === 'true') return true;
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
         if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
@@ -231,7 +264,7 @@
                         // Validación matemática rápida
                         const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
                         const total = parseFloat(cfdi.getAttribute('Total') || 0);
-                        if(Math.abs(subtotal - total) < 0.01 && total > 1000) { /* posible error de impuestos no trasladados */ }
+                        if(Math.abs(subtotal - total) > 0.01 && total > 1000) { countMath++; }
 
                         const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
                         const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
@@ -256,13 +289,14 @@
 
         complementos.forEach(pago => { if (ppds[pago.idDoc]) ppds[pago.idDoc].pagado += pago.impPagado; });
         Object.keys(ppds).forEach(uuid => {
-            if (ppds[uuid].pagado === 0) {
+            if ((ppds[uuid].total - ppds[uuid].pagado) > 1) { // Tolerancia 1 peso
                 countPpdOrphans++;
                 amountRisk += ppds[uuid].total;
             }
         });
 
         score -= (countEfos * 50);
+        score -= (countMath * 5);
         score -= (countPpdOrphans * 10);
         if (score < 0) score = 0;
 
@@ -281,13 +315,17 @@
         const bEfos = document.getElementById('badgeEfos');
         if (efos > 0) { bEfos.innerText = "PELIGRO"; bEfos.style.background = "#FEF2F2"; bEfos.style.color = "#DC2626"; }
         
+        document.getElementById('kpiMath').innerText = math;
+        const bMath = document.getElementById('badgeMath');
+        if (math > 0) { bMath.innerText = "REVISAR"; bMath.style.background = "#FEF3C7"; bMath.style.color = "#92400E"; }
+
         document.getElementById('kpiPpd').innerText = ppds;
         const bPpd = document.getElementById('badgePpd');
         if (ppds > 0) { bPpd.innerText = "OMISIÓN"; bPpd.style.background = "#FFFBEB"; bPpd.style.color = "#D97706"; }
 
-        let color = "#059669"; let status = "Cumplimiento Perfecto";
-        if (score < 95) { color = "#D97706"; status = "Riesgo Moderado"; }
-        if (score < 70) { color = "#DC2626"; status = "Riesgo de Auditoría Crítico"; }
+        let color = "#059669"; let status = "Probabilidad de Auditoría: NULA";
+        if (score < 95) { color = "#D97706"; status = "Probabilidad de Auditoría: MODERADA"; }
+        if (score < 70) { color = "#DC2626"; status = "Probabilidad de Auditoría: CRÍTICA"; }
         
         document.getElementById('scoreText').style.color = color;
         document.getElementById('scoreStatus').innerText = status;
@@ -295,8 +333,8 @@
 
         drawGauge(score, color);
 
-        dataReporte = { score, status, color, totalFiles, efos, ppds, amountRisk: formatMoney(amountRisk) };
-        consultarRiskIA(score, `Efos: ${efos}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
+        dataReporte = { score, status, color, totalFiles, efos, math, ppds, amountRisk: formatMoney(amountRisk) };
+        consultarRiskIA(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
     }
 
     function drawGauge(score, color) {
@@ -305,7 +343,7 @@
         gaugeInstance = new Chart(ctx, {
             type: 'doughnut',
             data: { datasets: [{ data: [score, 100 - score], backgroundColor: [color, '#E5E7EB'], borderWidth: 0, borderRadius: [20, 0] }] },
-            options: { circumference: 180, rotation: 270, cutout: '85%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            options: { circumference: 180, rotation: 270, cutout: '85%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 0 } } // Sin animacion para que el base64 se capture bien
         });
     }
 
@@ -325,48 +363,76 @@
         } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
     }
 
-    function descargarReporte() {
+    // EL MOTOR MAESTRO DE RENDERIZADO (PDF NATIVO SIN CORTES)
+    function agregarMarcaAgua(pdf) {
+        if(localStorage.getItem('auditoria_pro') === 'true') return;
+        const totalPages = pdf.internal.getNumberOfPages();
+        pdf.setTextColor(200, 200, 200);
+        pdf.setFontSize(40);
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.text('Generado por AuditorIA - Versión Gratuita', 30, 150, { angle: -35, opacity: 0.1 });
+        }
+    }
+
+    async function descargarReporte() {
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerText = "Procesando PDF...";
+        btn.disabled = true;
+
         const renderContainer = document.getElementById('hiddenPdfRender');
+        
+        // Extraer imagen del Gauge para incrustarla en el PDF
+        const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : '';
+
         renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; page-break-inside: avoid;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
                 
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Reporte Ejecutivo de Riesgo Fiscal</h1>
-                    <p style="margin: 5px 0 0; font-size: 11px; color: #6B7280; font-family: monospace;">Modelo TADS (Tax Analytics & Detection System)</p>
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px;">
+                    <h1 style="margin: 0; font-size: 26px; color: #111827; font-weight: 900; letter-spacing: -0.5px;">Reporte Ejecutivo de Riesgo Fiscal</h1>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Modelo TADS (Tax Analytics & Detection System)</p>
                 </div>
                 
-                <div style="text-align: center; margin-bottom: 40px; position: relative; z-index: 1;">
-                    <div style="font-size: 72px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
-                    <div style="font-size: 16px; font-weight: 800; color: #4B5563; text-transform: uppercase; margin-top: 10px;">${dataReporte.status}</div>
+                <div class="page-break-avoid" style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
+                    <div style="width: 250px; text-align: center;">
+                        <img src="${chartImg}" style="width: 100%; height: auto;">
+                        <div style="margin-top: -30px; font-size: 50px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
+                        <div style="font-size: 14px; font-weight: 800; color: ${dataReporte.color}; text-transform: uppercase; margin-top: 10px;">${dataReporte.status}</div>
+                    </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Docs Analizados</span>
-                        <div style="font-size: 18px; font-weight: 900;">${dataReporte.totalFiles}</div>
+                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px;">
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Docs Auditados</span>
+                        <div style="font-size: 18px; font-weight: 900; color: #111827;">${dataReporte.totalFiles}</div>
                     </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Estatus EFOS</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.efos > 0 ? '#DC2626' : '#111827'};">${dataReporte.efos > 0 ? 'PELIGRO' : 'SEGURO'}</div>
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">EFOS 69-B</span>
+                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.efos > 0 ? '#DC2626' : '#111827'};">${dataReporte.efos > 0 ? 'DETECTADO' : 'SEGURO'}</div>
                     </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center;">
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Error Aritmético</span>
+                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.math > 0 ? '#D97706' : '#111827'};">${dataReporte.math}</div>
+                    </div>
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
                         <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">REP Faltantes</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.ppds > 0 ? '#D97706' : '#111827'};">${dataReporte.ppds}</div>
+                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.ppds > 0 ? '#DC2626' : '#111827'};">${dataReporte.ppds}</div>
                     </div>
                 </div>
 
-                <div style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <span style="font-size: 11px; color: #991B1B; font-weight: bold; text-transform: uppercase;">Capital Total en Riesgo de Auditoría</span>
-                    <div style="font-size: 24px; font-weight: 900; color: #DC2626; font-family: monospace;">${dataReporte.amountRisk}</div>
+                <div class="page-break-avoid" style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
+                    <span style="font-size: 12px; color: #991B1B; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Capital Total en Riesgo de Auditoría Activa</span>
+                    <div style="font-size: 32px; font-weight: 900; color: #DC2626; font-family: monospace; margin-top: 5px;">${dataReporte.amountRisk}</div>
                 </div>
 
-                <div style="background: #111827; color: white; padding: 25px; border-radius: 8px; position: relative; z-index: 1;">
-                    <h3 style="margin-top: 0; font-size: 14px; color: #60A5FA; text-transform: uppercase;">Dictamen Forense de IA</h3>
-                    <p style="font-size: 12px; line-height: 1.6; margin-bottom: 0; text-align: justify;">${dataReporte.dictamen}</p>
-                </div>
+                ${dataReporte.dictamen ? `
+                <div class="page-break-avoid" style="background: #111827; color: white; padding: 25px; border-radius: 12px;">
+                    <h3 style="margin-top: 0; font-size: 14px; color: #60A5FA; text-transform: uppercase; letter-spacing: 1px;">Dictamen Forense Estratégico (IA)</h3>
+                    <p style="font-size: 12px; line-height: 1.6; margin-bottom: 0; text-align: justify; color: #E5E7EB;">${dataReporte.dictamen}</p>
+                </div>` : ''}
                 
-                <div style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                <div class="page-break-avoid" style="margin-top: 50px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
                     Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría de un especialista fiscal calificado.<br>
                     Plataforma: AuditoriaXML.mx
                 </div>
@@ -374,14 +440,25 @@
         `;
 
         const opt = {
-            margin: 10,
-            filename: `RiskScore_${Date.now()}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            margin:       [15, 10, 15, 10],
+            filename:     `RiskScore_Auditoria_${Date.now()}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, windowWidth: 800 },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] }
         };
 
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+        try {
+            await html2pdf().set(opt).from(renderContainer.firstElementChild).toPdf().get('pdf').then(function (pdf) {
+                agregarMarcaAgua(pdf);
+            }).save();
+        } catch (e) {
+            console.error(e);
+            alert("Error al procesar el PDF.");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
     }
 </script>
 </body>
