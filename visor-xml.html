@@ -7,9 +7,8 @@
     <meta name="description" content="Lee y decodifica archivos XML del SAT en segundos. Visor de facturas CFDI con auditoría técnica integrada.">
     <link rel="canonical" href="https://auditoriaxml.mx/visor-xml.html" />
     
-    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
-    <link rel="apple-touch-icon" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
@@ -116,6 +115,64 @@
             .btn-toolbar button { width: 100%; justify-content: center;}
         }
     </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://auditoriaxml.mx/#organization",
+          "name": "AuditorIA",
+          "alternateName": "AuditoriaXML",
+          "url": "https://auditoriaxml.mx",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://auditoriaxml.mx/logo-oficial.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": "Plataforma corporativa de auditoría forense, prevención de riesgos fiscales (Art. 69-B, EFOS) y análisis masivo de CFDI 4.0 para empresas y despachos contables en México.",
+          "sameAs": [
+            "https://www.linkedin.com/company/auditoriaxml",
+            "https://twitter.com/auditoriaxml",
+            "https://www.facebook.com/auditoriaxml"
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Soporte Técnico y Ventas",
+            "email": "contacto@auditoriaxml.mx",
+            "availableLanguage": "Spanish"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://auditoriaxml.mx/#website",
+          "url": "https://auditoriaxml.mx",
+          "name": "AuditorIA | Plataforma de Inteligencia Fiscal",
+          "publisher": {
+            "@id": "https://auditoriaxml.mx/#organization"
+          },
+          "inLanguage": "es-MX"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://auditoriaxml.mx/#software",
+          "name": "Tax Analytics & Detection System (TADS)",
+          "operatingSystem": "Web Browser",
+          "applicationCategory": "FinanceApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "MXN",
+            "description": "Auditoría preventiva freemium y licenciamiento corporativo."
+          },
+          "provider": {
+            "@id": "https://auditoriaxml.mx/#organization"
+          }
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
 
