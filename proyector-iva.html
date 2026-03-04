@@ -26,61 +26,42 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .upload-section:hover { transform: scale(1.01); }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); transform: scale(1.01); }
         .upload-section.emitidas { border-color: var(--success); }
-        .upload-section.emitidas:hover { background: rgba(5, 150, 105, 0.03); }
         .upload-section.recibidas { border-color: var(--danger); }
-        .upload-section.recibidas:hover { background: rgba(220, 38, 38, 0.03); }
-
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 15px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
 
         .results-container { display: none; margin-top: 40px; }
         
-        .toolbar { display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;}
         .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-restart:hover { background: #e2e8f0; }
-        .btn-pdf { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-pdf:hover { opacity: 0.9; }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;}
 
         .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .metric-card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .metric-title { font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
-        .metric-value { font-size: 32px; font-weight: 800; color: var(--text-main); }
+        .metric-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+        .metric-value { font-size: 32px; font-weight: 900; color: var(--text-main); font-family: monospace; }
         .metric-card.cargo { border-bottom: 4px solid var(--danger); background: #FEF2F2; }
         .metric-card.favor { border-bottom: 4px solid var(--success); background: #ECFDF5; }
 
-        .chart-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .chart-container { background: var(--bg-secondary); padding: 30px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 40px;}
         
-        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid var(--brand); padding: 20px; margin-bottom: 30px; border-radius: 4px; display: none; text-align: left; }
+        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid var(--brand); padding: 25px; margin-bottom: 30px; border-radius: 4px; display: none; text-align: left; }
         .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-transform: uppercase; }
         .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-bottom: 30px; text-align: center; }
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Botones Compartir */
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
         .social-btn:hover { opacity: 0.9; }
         .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
         .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
-
         #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
 
-        @media (max-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .toolbar { flex-direction: column; align-items: stretch; } }
     </style>
 </head>
 <body>
@@ -92,58 +73,58 @@
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus proyecciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para proyectar IVA de forma ilimitada sin restricciones y generar PDFs en marca blanca.</p>
+        <p class="modal-text">Has agotado tus proyecciones gratuitas de flujo de IVA. Actualiza a <strong>AuditorIA Pro</strong> para cálculos ilimitados y reportes gráficos ejecutivos.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ANÁLISIS FINANCIERO</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Proyector de IVA Mensual (PUE)</h1>
-        <p style="color: var(--text-muted);">Estima el IVA a cargo o a favor del mes. Separa tus facturas en Emitidas (Ingresos) y Recibidas (Gastos).</p>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ESTIMACIÓN FISCAL PUE</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Proyector de IVA Mensual</h1>
+        <p style="color: var(--text-muted);">Calcula tu saldo de IVA cruzando facturas emitidas y recibidas. <br><strong>Nota:</strong> Solo se computan facturas con Método de Pago: PUE (Efectivamente cobradas/pagadas en el mes).</p>
     </div>
 
     <div class="grid-2" id="uploadBoxes">
         <div class="upload-section emitidas" id="dropEmitidas" onclick="document.getElementById('inputEmitidas').click()">
             <svg width="48" height="48" color="var(--success)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            <p style="font-weight: 700; margin: 0; font-size: 18px; color: var(--text-main);">1. Facturas Emitidas (Ventas)</p>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="countEmitidas">0 archivos cargados</p>
+            <p style="font-weight: 700; margin: 0; font-size: 18px;">1. Facturas Emitidas (Ingresos)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="countEmitidas">Cargar XMLs</p>
             <input type="file" id="inputEmitidas" accept=".xml" multiple style="display: none;">
         </div>
 
         <div class="upload-section recibidas" id="dropRecibidas" onclick="document.getElementById('inputRecibidas').click()">
             <svg width="48" height="48" color="var(--danger)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
-            <p style="font-weight: 700; margin: 0; font-size: 18px; color: var(--text-main);">2. Facturas Recibidas (Gastos)</p>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="countRecibidas">0 archivos cargados</p>
+            <p style="font-weight: 700; margin: 0; font-size: 18px;">2. Facturas Recibidas (Gastos)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="countRecibidas">Cargar XMLs</p>
             <input type="file" id="inputRecibidas" accept=".xml" multiple style="display: none;">
         </div>
     </div>
-    
-    <div class="trust-badges" id="badgesSection" style="margin-bottom: 30px;">
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Algoritmo Extractor Nativo</div>
-    </div>
 
-    <div style="text-align: center;" id="btnSection">
-        <button onclick="calcularIVA()" style="background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2);">PROYECTAR IMPUESTO</button>
+    <div style="text-align: center; margin-bottom: 30px;" id="btnSection">
+        <button onclick="calcularIVA()" style="background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2);">PROYECTAR RESULTADO</button>
     </div>
 
     <div class="results-container" id="results">
         <div class="toolbar">
-            <button class="btn-restart" onclick="window.location.reload()">Proyectar Nuevo Mes</button>
-            <button class="btn-pdf" onclick="descargarReportePDF()">Descargar Proyección PDF</button>
+            <div style="font-weight: 800; font-size: 18px;">Dashboard de IVA Proyectado</div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="window.location.reload()" class="btn-restart">Limpiar Datos</button>
+                <button onclick="descargarReportePDF()" class="btn-pdf">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Descargar Reporte Ejecutivo
+                </button>
+            </div>
         </div>
 
         <div id="iaLoading" class="ia-loading">
-            <div class="spinner"></div> Analizando impacto financiero...
+            <div class="spinner"></div> Analizando proporción de acreditamiento y riesgos de auditoría...
         </div>
         
         <div id="iaAdvisorContainer" class="ia-advisor-box">
             <div class="ia-advisor-title">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                AuditorIA Legal Insight
+                Dictamen Estratégico IA
             </div>
             <p id="iaAdvisorText" class="ia-advisor-content"></p>
         </div>
@@ -152,38 +133,34 @@
             <div class="metric-card">
                 <div class="metric-title">IVA Trasladado (Cobrado)</div>
                 <div class="metric-value" style="color: var(--danger);" id="valCobrado">$0.00</div>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Facturas Emitidas PUE</div>
             </div>
             <div class="metric-card">
                 <div class="metric-title">IVA Acreditable (Pagado)</div>
                 <div class="metric-value" style="color: var(--success);" id="valPagado">$0.00</div>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Facturas Recibidas PUE</div>
             </div>
             <div class="metric-card">
                 <div class="metric-title">IVA Retenido</div>
-                <div class="metric-value" id="valRetenido">$0.00</div>
-                <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Retenciones aplicadas a la empresa</div>
+                <div class="metric-value" id="valRetenido" style="color: var(--brand);">$0.00</div>
             </div>
         </div>
 
         <div class="metrics-grid" style="grid-template-columns: 1fr;">
             <div class="metric-card" id="cardResultadoFinal">
-                <div class="metric-title" id="tituloResultadoFinal" style="font-size: 18px;">Resultado del Ejercicio</div>
+                <div class="metric-title" id="tituloResultadoFinal" style="font-size: 16px;">Cálculo Estimado de Impuesto</div>
                 <div class="metric-value" id="valResultadoFinal" style="font-size: 48px;">$0.00</div>
             </div>
         </div>
 
         <div class="chart-container">
-            <h3 style="margin-top: 0; text-align: center; margin-bottom: 20px; color: var(--text-main);">Composición del IVA</h3>
-            <div style="position: relative; height: 300px; width: 100%;">
+            <h3 style="margin-top: 0; text-align: center; margin-bottom: 25px;">Balance de Flujo de IVA</h3>
+            <div style="position: relative; height: 350px; width: 100%;">
                 <canvas id="ivaChart"></canvas>
             </div>
         </div>
         
-        <div class="share-container" id="shareContainer" style="display: none;">
+        <div class="share-container" id="shareContainer">
             <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
             <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20proyectar%20mi%20IVA%20mensual%20en%20segundos%20cruzando%20mis%20facturas%20con%20AuditorIA:&url=https://auditoriaxml.mx/proyector-iva.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/proyector-iva.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
             <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/proyector-iva.html" target="_blank" class="social-btn btn-fb">Facebook</a>
             <a href="https://api.whatsapp.com/send?text=Acabo%20de%20proyectar%20mi%20IVA%20mensual%20en%20segundos%20cruzando%20mis%20facturas%20con%20AuditorIA:%20https://auditoriaxml.mx/proyector-iva.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
@@ -195,7 +172,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // CUOTA FREEMIUM
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -210,32 +186,27 @@
     const inputE = document.getElementById('inputEmitidas');
     const inputR = document.getElementById('inputRecibidas');
     
-    // Drag & Drop
     ['dragover', 'dragenter'].forEach(e => document.getElementById('dropEmitidas').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(5, 150, 105, 0.05)"; }));
     ['dragleave', 'drop'].forEach(e => document.getElementById('dropEmitidas').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
-    document.getElementById('dropEmitidas').addEventListener('drop', e => { filesEmitidas = e.dataTransfer.files; document.getElementById('countEmitidas').innerText = `${filesEmitidas.length} archivos cargados`; });
+    document.getElementById('dropEmitidas').addEventListener('drop', e => { filesEmitidas = e.dataTransfer.files; document.getElementById('countEmitidas').innerText = `${filesEmitidas.length} archivos detectados`; });
 
     ['dragover', 'dragenter'].forEach(e => document.getElementById('dropRecibidas').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(220, 38, 38, 0.05)"; }));
     ['dragleave', 'drop'].forEach(e => document.getElementById('dropRecibidas').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
-    document.getElementById('dropRecibidas').addEventListener('drop', e => { filesRecibidas = e.dataTransfer.files; document.getElementById('countRecibidas').innerText = `${filesRecibidas.length} archivos cargados`; });
+    document.getElementById('dropRecibidas').addEventListener('drop', e => { filesRecibidas = e.dataTransfer.files; document.getElementById('countRecibidas').innerText = `${filesRecibidas.length} archivos detectados`; });
 
-    inputE.addEventListener('change', e => { filesEmitidas = e.target.files; document.getElementById('countEmitidas').innerText = `${filesEmitidas.length} archivos cargados`; });
-    inputR.addEventListener('change', e => { filesRecibidas = e.target.files; document.getElementById('countRecibidas').innerText = `${filesRecibidas.length} archivos cargados`; });
+    inputE.addEventListener('change', e => { filesEmitidas = e.target.files; document.getElementById('countEmitidas').innerText = `${filesEmitidas.length} archivos detectados`; });
+    inputR.addEventListener('change', e => { filesRecibidas = e.target.files; document.getElementById('countRecibidas').innerText = `${filesRecibidas.length} archivos detectados`; });
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    // Motor Regex Avanzado para lectura universal de IVA sin importar formato XML
     const sumarIVA = (rawXML) => {
         let iva = 0; let retIva = 0;
-        
         const regexTraslados = /<[^>]*Traslado[^>]*Impuesto="002"[^>]*Importe="([^"]*)"/g;
         let matchT;
         while ((matchT = regexTraslados.exec(rawXML)) !== null) { iva += parseFloat(matchT[1] || 0); }
-
         const regexRetenciones = /<[^>]*Retencion[^>]*Impuesto="002"[^>]*Importe="([^"]*)"/g;
         let matchR;
         while ((matchR = regexRetenciones.exec(rawXML)) !== null) { retIva += parseFloat(matchR[1] || 0); }
-
         return { iva, retIva };
     };
 
@@ -246,7 +217,6 @@
                 const reader = new FileReader();
                 reader.onload = e => {
                     const rawXML = e.target.result;
-                    // Barrera PUE Estricta
                     if (rawXML.includes('MetodoPago="PUE"') || rawXML.includes('metodoPago="PUE"')) {
                         const montos = sumarIVA(rawXML); 
                         totalIVA += montos.iva; 
@@ -261,13 +231,12 @@
     }
 
     async function calcularIVA() {
-        if (filesEmitidas.length === 0 && filesRecibidas.length === 0) return alert("Carga facturas emitidas o recibidas para calcular.");
+        if (filesEmitidas.length === 0 && filesRecibidas.length === 0) return alert("Carga tus facturas emitidas o recibidas.");
         if (!checkQuota()) return;
 
-        document.getElementById('uploadBoxes').style.display = 'none';
-        document.getElementById('badgesSection').style.display = 'none';
-        document.getElementById('btnSection').style.display = 'none';
         document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('uploadBoxes').style.display = 'none';
+        document.getElementById('btnSection').style.display = 'none';
 
         const emitidasData = await procesarLote(filesEmitidas);
         const recibidasData = await procesarLote(filesRecibidas);
@@ -275,24 +244,21 @@
         const ivaCobrado = emitidasData.totalIVA;
         const ivaPagado = recibidasData.totalIVA;
         const ivaRetenidoCliente = emitidasData.totalRetIVA;
-
         const ivaCargoBruto = ivaCobrado - ivaPagado - ivaRetenidoCliente;
 
         document.getElementById('valCobrado').innerText = formatMoney(ivaCobrado);
         document.getElementById('valPagado').innerText = formatMoney(ivaPagado);
         document.getElementById('valRetenido').innerText = formatMoney(ivaRetenidoCliente);
 
-        const cardFinal = document.getElementById('cardResultadoFinal');
-        const titFinal = document.getElementById('tituloResultadoFinal');
         const valFinal = document.getElementById('valResultadoFinal');
         valFinal.innerText = formatMoney(Math.abs(ivaCargoBruto));
+        const cardFinal = document.getElementById('cardResultadoFinal');
+        const titFinal = document.getElementById('tituloResultadoFinal');
 
         dataReporte = {
-            cobrado: formatMoney(ivaCobrado),
-            pagado: formatMoney(ivaPagado),
-            retenido: formatMoney(ivaRetenidoCliente),
+            cobrado: formatMoney(ivaCobrado), pagado: formatMoney(ivaPagado), retenido: formatMoney(ivaRetenidoCliente),
             resultadoFormat: formatMoney(Math.abs(ivaCargoBruto)),
-            estado: ivaCargoBruto > 0 ? "IVA A CARGO (A PAGAR)" : "IVA A FAVOR",
+            estado: ivaCargoBruto > 0 ? "IVA A CARGO (Pagar)" : "IVA A FAVOR (Acreditar)",
             colorResultado: ivaCargoBruto > 0 ? '#DC2626' : '#059669',
             bgResultado: ivaCargoBruto > 0 ? '#FEF2F2' : '#ECFDF5',
             dictamen: ""
@@ -300,14 +266,13 @@
 
         if (ivaCargoBruto > 0) {
             cardFinal.className = 'metric-card cargo'; titFinal.innerText = 'IVA A CARGO (A PAGAR AL SAT)'; valFinal.style.color = 'var(--danger)';
-            consultarAlertaIA("Proyección IVA", "Declaración Mensual", `El contribuyente tiene un IVA a Cargo estimado de $${ivaCargoBruto}. Generar advertencia de pago e implicaciones de retraso.`);
+            consultarAlertaIA("Proyección IVA", "Declaración Mensual", `El contribuyente tiene un IVA a Cargo de $${ivaCargoBruto.toFixed(2)}. Analiza el impacto de liquidez.`);
         } else {
             cardFinal.className = 'metric-card favor'; titFinal.innerText = 'IVA A FAVOR'; valFinal.style.color = 'var(--success)';
-            document.getElementById('iaAdvisorContainer').style.display = 'none';
+            consultarAlertaIA("Proyección IVA", "Saldo a Favor", `El contribuyente generó un IVA a favor de $${Math.abs(ivaCargoBruto).toFixed(2)}. Indica qué debe revisar para sustentar una futura devolución.`);
         }
 
         document.getElementById('results').style.display = 'block';
-        document.getElementById('shareContainer').style.display = 'block';
         renderChart(ivaCobrado, ivaPagado, ivaRetenidoCliente);
     }
 
@@ -323,9 +288,8 @@
             document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
             document.getElementById('iaAdvisorContainer').style.display = 'block';
             dataReporte.dictamen = data.analisis_legal;
-        } catch (err) {
-            document.getElementById('iaLoading').style.display = 'none';
-        }
+            document.getElementById('shareContainer').style.display = 'block';
+        } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
     }
 
     function renderChart(cobrado, pagado, retenido) {
@@ -334,8 +298,8 @@
         ivaChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['IVA Cobrado (+)', 'IVA Pagado (-)', 'IVA Retenido (-)'],
-                datasets: [{ data: [cobrado, pagado, retenido], backgroundColor: ['#DC2626', '#059669', '#3B82F6'], borderRadius: 4 }]
+                labels: ['Cobrado (+)', 'Pagado (-)', 'Retenido (-)'],
+                datasets: [{ data: [cobrado, pagado, retenido], backgroundColor: ['#DC2626', '#059669', '#3B82F6'], borderRadius: 6 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
@@ -344,62 +308,60 @@
     function descargarReportePDF() {
         if (!dataReporte.estado) return;
         const renderContainer = document.getElementById('hiddenPdfRender');
-        
+        const chartImg = ivaChartInstance.toBase64Image();
+
         renderContainer.innerHTML = `
             <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white; page-break-inside: avoid;">
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Proyección de IVA Mensual</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Estimación preliminar de impuestos con base en comprobantes PUE.</p>
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dashboard Ejecutivo de IVA</h1>
+                    <p style="margin: 5px 0 0; font-size: 11px; color: #6B7280;">Proyección basada en flujos de efectivo CFDI (PUE).</p>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div>
-                        <strong style="display: block; font-size: 12px; color: #111827; text-transform: uppercase;">Estado de la Declaración:</strong>
-                        <span style="font-size: 20px; font-weight: bold; color: ${dataReporte.colorResultado};">${dataReporte.estado}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: ${dataReporte.bgResultado}; padding: 25px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div><strong style="display: block; font-size: 11px; color: #111827; text-transform: uppercase;">Estado Determinado:</strong><span style="font-size: 20px; font-weight: bold; color: ${dataReporte.colorResultado};">${dataReporte.estado}</span></div>
+                    <div style="text-align: right;"><strong style="display: block; font-size: 11px; color: #111827; text-transform: uppercase;">Monto Neto:</strong><span style="font-size: 28px; font-weight: 900; color: ${dataReporte.colorResultado}; font-family: monospace;">${dataReporte.resultadoFormat}</span></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 6px; text-align: center;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold;">IVA COBRADO</span>
+                        <div style="font-size: 16px; font-weight: 800; color: #DC2626; margin-top: 5px;">${dataReporte.cobrado}</div>
                     </div>
-                    <div style="text-align: right;">
-                        <strong style="display: block; font-size: 12px; color: #111827; text-transform: uppercase;">Total Calculado:</strong>
-                        <span style="font-size: 28px; font-weight: 900; color: ${dataReporte.colorResultado}; font-family: monospace;">${dataReporte.resultadoFormat}</span>
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 6px; text-align: center;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold;">IVA PAGADO</span>
+                        <div style="font-size: 16px; font-weight: 800; color: #059669; margin-top: 5px;">${dataReporte.pagado}</div>
+                    </div>
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 6px; text-align: center;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold;">IVA RETENIDO</span>
+                        <div style="font-size: 16px; font-weight: 800; color: #2563EB; margin-top: 5px;">${dataReporte.retenido}</div>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">Desglose de Conceptos</h3>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #E5E7EB; padding: 8px 0;">
-                        <span style="font-weight: 600;">IVA Trasladado (Cobrado):</span>
-                        <span style="font-family: monospace; color: #DC2626; font-weight: bold;">${dataReporte.cobrado}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #E5E7EB; padding: 8px 0;">
-                        <span style="font-weight: 600;">IVA Acreditable (Pagado):</span>
-                        <span style="font-family: monospace; color: #059669; font-weight: bold;">${dataReporte.pagado}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #E5E7EB; padding: 8px 0;">
-                        <span style="font-weight: 600;">IVA Retenido:</span>
-                        <span style="font-family: monospace; font-weight: bold;">${dataReporte.retenido}</span>
-                    </div>
+                <div style="margin-bottom: 30px; text-align: center; position: relative; z-index: 1;">
+                    <h3 style="font-size: 12px; color: #4B5563; text-transform: uppercase; margin-bottom: 15px;">Visualización de Balances</h3>
+                    <img src="${chartImg}" style="width: 100%; max-height: 250px;">
                 </div>
 
                 ${dataReporte.dictamen ? `
-                <div style="background: #FEF2F2; border-left: 4px solid #DC2626; padding: 15px; margin-bottom: 30px; position: relative; z-index: 1; border-radius: 6px;">
-                    <strong style="color: #991B1B; font-size: 14px; display: block; margin-bottom: 5px;">Alerta de Auditoría (IVA a Cargo):</strong>
-                    <div style="color: #B91C1C; font-size: 13px; line-height: 1.6; text-align: justify;">${dataReporte.dictamen}</div>
+                <div style="background: #111827; color: white; padding: 20px; border-radius: 8px; position: relative; z-index: 1;">
+                    <strong style="color: #60A5FA; font-size: 13px; display: block; margin-bottom: 8px; text-transform: uppercase;">Dictamen Forense IA:</strong>
+                    <div style="font-size: 12px; line-height: 1.6; text-align: justify;">${dataReporte.dictamen}</div>
                 </div>` : ''}
                 
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Este documento es una proyección interna y no sustituye la determinación final del portal del SAT.<br>
-                    Plataforma: AuditoriaXML.mx
+                <div style="margin-top: 40px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    Plataforma: AuditoriaXML.mx | Este documento es una proyección financiera basada en comprobantes PUE cargados por el usuario.
                 </div>
             </div>
         `;
 
         const opt = {
-            margin:       10,
-            filename:     `Proyeccion_IVA_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            margin: 10,
+            filename: `Proyeccion_IVA_${Date.now()}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(renderContainer.firstElementChild).save();
