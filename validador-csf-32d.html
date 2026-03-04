@@ -31,7 +31,6 @@
         .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
         .trust-badges div { display: flex; align-items: center; gap: 6px; }
 
-        /* Barra de Progreso Fluida */
         .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; margin-bottom: 30px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
         .progress-title { font-weight: 900; font-size: 18px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -54,7 +53,6 @@
         .data-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 5px; letter-spacing: 0.5px;}
         .data-value { font-size: 16px; color: var(--text-main); font-weight: 900; word-break: break-all; font-family: monospace;}
 
-        /* Editor Forense */
         .advisor-box { background: #111827; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
         .advisor-title { font-weight: 900; color: #ffffff; font-size: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .advisor-subtitle { font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
@@ -77,14 +75,13 @@
         .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        /* Paywall Modal Premium */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
-        .modal-icon { width: 72px; height: 72px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .modal-icon { width: 72px; height: 72px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
         .modal-title { font-size: 24px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
-        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 25px 0; line-height: 1.6; }
+        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 30px 0; line-height: 1.6; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
@@ -121,8 +118,8 @@
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('docInput').click()">
         <svg width="56" height="56" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p style="font-weight: 800; margin: 0; font-size: 22px; color: var(--text-main);">Cargar Documento SAT (PDF/Imagen)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Compatible con Constancias (CSF) y Opiniones de Cumplimiento (32-D).</p>
+        <p style="font-weight: 800; margin: 0; font-size: 22px; color: var(--text-main);">Cargar Documento SAT</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Formatos admitidos: PDF, JPG, PNG.</p>
         <input type="file" id="docInput" accept=".pdf,image/*" style="display: none;">
         
         <div class="trust-badges">
@@ -215,7 +212,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // ASIGNACIÓN VFS (Evita el colapso silencioso de PDFMake)
     if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
         pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
     }
@@ -236,8 +232,7 @@
     let dataReporte = {};
     let progressInterval = null;
 
-    // --- MOTOR DE DRAG & DROP BLINDADO ---
-    // Previene que el navegador abra el archivo accidentalmente
+    // --- MOTOR DE DRAG & DROP BLINDADO (EVITA QUE SE ABRA EL PDF) ---
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         window.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
     });
@@ -259,15 +254,12 @@
         const files = e.dataTransfer.files;
         if (files && files.length > 0) {
             processFile(files[0]);
-        } else {
-            alert("No se detectó un archivo válido. Por favor, asegúrese de descargar el documento a su equipo antes de arrastrarlo.");
         }
     });
 
     inputDoc.addEventListener('change', e => {
         if (e.target.files.length > 0) processFile(e.target.files[0]);
     });
-    // -------------------------------------
 
     function initProgress() {
         document.getElementById('progressPanel').style.display = 'block';
@@ -295,21 +287,16 @@
         }, 300);
     }
 
-    function finishProgress() {
-        clearInterval(progressInterval);
-        document.getElementById('progressFill').style.width = '100%';
-        document.getElementById('progressText').innerText = '100%';
-        document.getElementById('progressStatusText').innerText = "Análisis Finalizado";
-        
-        setTimeout(() => {
-            document.getElementById('progressPanel').style.display = 'none';
-            document.getElementById('advisorContainer').style.display = 'block';
-            document.getElementById('toolbarContainer').style.display = 'flex';
-            document.getElementById('shareContainer').style.display = 'block';
-        }, 600);
-    }
-
     async function processFile(file) {
+        if(!file) return;
+
+        // BARRERA FRONTEND: Validar que sea un archivo válido antes de molestar al servidor
+        const extension = file.name.split('.').pop().toLowerCase();
+        if (!['pdf', 'jpg', 'jpeg', 'png'].includes(extension)) {
+            alert("FORMATO NO VÁLIDO: Por favor, suba únicamente archivos PDF o imágenes (JPG, PNG).");
+            return;
+        }
+
         if(!checkQuota()) return;
 
         document.getElementById('headerSection').style.display = 'none';
@@ -324,78 +311,100 @@
                 method: "POST", body: formData
             });
 
-            if(!res.ok) {
-                throw new Error(`El motor backend rechazó la conexión (HTTP ${res.status}).`);
-            }
+            if(!res.ok) throw new Error(`El servidor rechazó el archivo (Código ${res.status}). Es posible que el PDF esté dañado o sea demasiado pesado.`);
             
             const data = await res.json();
             
-            document.getElementById('results').style.display = 'block';
-
-            document.getElementById('resRfc').innerText = data.rfc || 'N/A';
-            document.getElementById('resRazon').innerText = data.razon_social || 'N/A';
-            document.getElementById('resCp').innerText = data.codigo_postal || 'N/A';
-            document.getElementById('resRegimen').innerText = (data.regimen_fiscal || []).join(', ') || 'N/A';
-
-            const statusBadge = document.getElementById('resStatus');
-            const status = data.estatus_cumplimiento || "NO DETECTADO";
-            statusBadge.innerText = status;
-            statusBadge.className = `status-badge status-${status.replace(/\s+/g, '')}`;
-
-            if (data.alertas && data.alertas.length > 0) {
-                document.getElementById('alertasContainer').style.display = 'block';
-                document.getElementById('resAlertas').innerText = data.alertas.join(' | ');
+            // Validación de seguridad por si el OCR devuelve JSON vacío
+            if (!data || (!data.rfc && !data.razon_social)) {
+                throw new Error("El motor de extracción no detectó datos fiscales en este documento.");
             }
-
-            const createHash = (str) => {
-                let hash = 0;
-                for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
-                return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-            };
-            const hashTrace = `KYV-${createHash((data.rfc || 'X') + Date.now())}`;
-
-            dataReporte = {
-                rfc: data.rfc || 'NO DETECTADO', 
-                razon: data.razon_social || 'NO DETECTADO', 
-                cp: data.codigo_postal || 'N/A', 
-                regimen: (data.regimen_fiscal || []).join(', ') || 'N/A',
-                status: status,
-                colorStatus: status === 'POSITIVA' ? '#065F46' : (status === 'NEGATIVA' ? '#991B1B' : '#4B5563'),
-                bgStatus: status === 'POSITIVA' ? '#ECFDF5' : (status === 'NEGATIVA' ? '#FEF2F2' : '#F9FAFB'),
-                borderStatus: status === 'POSITIVA' ? '#6EE7B7' : (status === 'NEGATIVA' ? '#FCA5A5' : '#E5E7EB'),
-                alertas: data.alertas ? data.alertas.join(' | ') : '',
-                dictamen: "",
-                date: new Date().toLocaleDateString('es-MX'),
-                hash: hashTrace
-            };
-
-            let contextMsg = `El proveedor ${data.rfc} tiene estatus ${status}. `;
-            if(data.regimen_fiscal) contextMsg += `Regimen: ${data.regimen_fiscal.join(', ')}. `;
-            if(data.alertas && data.alertas.length > 0) contextMsg += `Alertas: ${data.alertas.join(' | ')}. `;
             
-            consultarAlertaServidor("Validación Idoneidad Fiscal", "Análisis de Debida Diligencia", contextMsg + "Emite un dictamen técnico evaluando el riesgo de contratarlo.");
+            clearInterval(progressInterval);
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').innerText = '100%';
+            document.getElementById('progressStatusText').innerText = "Análisis Finalizado";
+
+            setTimeout(() => {
+                document.getElementById('progressPanel').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+
+                document.getElementById('resRfc').innerText = data.rfc || 'N/A';
+                document.getElementById('resRazon').innerText = data.razon_social || 'N/A';
+                document.getElementById('resCp').innerText = data.codigo_postal || 'N/A';
+                
+                // Mapeo Inteligente (Evita choque si el SAT lo envía como String)
+                let regimenText = 'N/A';
+                if(data.regimen_fiscal) {
+                    regimenText = Array.isArray(data.regimen_fiscal) ? data.regimen_fiscal.join(', ') : data.regimen_fiscal;
+                }
+                document.getElementById('resRegimen').innerText = regimenText;
+
+                const status = (data.estatus_cumplimiento || "NO DETECTADO").toUpperCase();
+                const statusBadge = document.getElementById('resStatus');
+                statusBadge.innerText = status;
+                statusBadge.className = `status-badge status-${status.replace(/\s+/g, '')}`;
+
+                let alertasText = '';
+                if (data.alertas) {
+                    alertasText = Array.isArray(data.alertas) ? data.alertas.join(' | ') : data.alertas;
+                    if(alertasText.trim() !== '') {
+                        document.getElementById('alertasContainer').style.display = 'block';
+                        document.getElementById('resAlertas').innerText = alertasText;
+                    }
+                }
+
+                const createHash = (str) => {
+                    let hash = 0;
+                    for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
+                    return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+                };
+                const hashTrace = `KYV-${createHash((data.rfc || 'X') + Date.now())}`;
+
+                dataReporte = {
+                    rfc: data.rfc || 'NO DETECTADO', 
+                    razon: data.razon_social || 'NO DETECTADO', 
+                    cp: data.codigo_postal || 'N/A', 
+                    regimen: regimenText,
+                    status: status,
+                    colorStatus: status === 'POSITIVA' ? '#065F46' : (status === 'NEGATIVA' ? '#991B1B' : '#4B5563'),
+                    bgStatus: status === 'POSITIVA' ? '#ECFDF5' : (status === 'NEGATIVA' ? '#FEF2F2' : '#F9FAFB'),
+                    borderStatus: status === 'POSITIVA' ? '#6EE7B7' : (status === 'NEGATIVA' ? '#FCA5A5' : '#E5E7EB'),
+                    alertas: alertasText,
+                    dictamen: "",
+                    date: new Date().toLocaleDateString('es-MX'),
+                    hash: hashTrace
+                };
+
+                let contextMsg = `El proveedor ${data.rfc} tiene estatus ${status}. `;
+                if(regimenText !== 'N/A') contextMsg += `Régimen: ${regimenText}. `;
+                if(alertasText !== '') contextMsg += `Alertas: ${alertasText}. `;
+                
+                consultarAlertaServidor("Validación Idoneidad Fiscal", "Análisis de Debida Diligencia", contextMsg + "Emite un dictamen técnico evaluando el riesgo de contratarlo.");
+                
+            }, 600);
 
         } catch (err) {
-            // MANEJO FORENSE DE ERROR (Muestra el fallo en pantalla sin romper la UI)
+            // MANEJO DE EXCEPCIONES EN PANTALLA (No colapsa, te avisa el motivo real)
             clearInterval(progressInterval);
             document.getElementById('progressPanel').style.display = 'none';
             document.getElementById('results').style.display = 'block';
             
-            document.getElementById('resRfc').innerText = 'ERROR DE EXTRACCIÓN';
-            document.getElementById('resRazon').innerText = 'El servidor no pudo decodificar el archivo.';
+            document.getElementById('resRfc').innerText = 'ERROR DE LECTURA';
+            document.getElementById('resRazon').innerText = err.message.substring(0, 60);
             document.getElementById('resCp').innerText = 'N/A';
             document.getElementById('resRegimen').innerText = 'N/A';
 
             const statusBadge = document.getElementById('resStatus');
-            statusBadge.innerText = 'FALLO DE CONEXIÓN';
+            statusBadge.innerText = 'DOCUMENTO INVÁLIDO';
             statusBadge.className = `status-badge status-NEGATIVA`;
 
             dataReporte = {
-                rfc: 'NO DISPONIBLE', razon: 'Fallo de Red/Procesamiento', cp: 'N/A', regimen: 'N/A',
-                status: 'ERROR DE PROCESAMIENTO',
+                rfc: 'NO DISPONIBLE', razon: 'Rechazado', cp: 'N/A', regimen: 'N/A',
+                status: 'RECHAZADO',
                 colorStatus: '#991B1B', bgStatus: '#FEF2F2', borderStatus: '#FCA5A5',
-                alertas: 'Se agotó el tiempo de espera (Timeout) o el motor OCR rechazó el archivo.',
-                dictamen: `El motor backend no logró procesar el documento.\n\nMotivos frecuentes:\n1. El archivo PDF pesa más de 5MB o contiene imágenes escaneadas de altísima resolución que saturaron la memoria.\n2. El documento se encuentra encriptado o protegido con contraseña.\n3. Latencia en la conexión con el servidor central.\n\nRecomendación Técnica: Comprima el archivo PDF e inténtelo nuevamente.`,
+                alertas: `Motivo técnico: ${err.message}`,
+                dictamen: `El motor de digitalización detuvo el proceso por incompatibilidad.\n\nRegistro del fallo:\n${err.message}\n\nRecomendaciones:\n1. Asegúrese de que el PDF sea una Constancia o 32-D válida.\n2. Verifique que el documento no esté encriptado o protegido.\n3. Intente descargar un PDF original directamente desde el SAT en lugar de una foto borrosa.`,
                 date: new Date().toLocaleDateString('es-MX'),
                 hash: `ERR-${Date.now().toString().slice(-6)}`
             };
@@ -404,7 +413,6 @@
             document.getElementById('resAlertas').innerText = dataReporte.alertas;
             document.getElementById('advisorContainer').style.display = 'block';
             document.getElementById('toolbarContainer').style.display = 'flex';
-            
             dictamenInput.value = dataReporte.dictamen;
         }
     }
@@ -422,7 +430,10 @@
             
             dictamenInput.value = textoDictamen;
             dataReporte.dictamen = textoDictamen;
-            finishProgress();
+            
+            document.getElementById('advisorContainer').style.display = 'block';
+            document.getElementById('toolbarContainer').style.display = 'flex';
+            document.getElementById('shareContainer').style.display = 'block';
         } catch (err) {
             let fallbackMsg = "Dictamen Preventivo Local:\n\nSe ha extraído la información contenida en el documento fiscal. ";
             if(dataReporte.status === 'NEGATIVA') {
@@ -435,12 +446,15 @@
             
             dictamenInput.value = fallbackMsg;
             dataReporte.dictamen = fallbackMsg;
-            finishProgress();
+            
+            document.getElementById('advisorContainer').style.display = 'block';
+            document.getElementById('toolbarContainer').style.display = 'flex';
+            document.getElementById('shareContainer').style.display = 'block';
         }
     }
 
     function descargarReportePDF() {
-        if (!dataReporte.rfc) return;
+        if (!dataReporte) return;
 
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
@@ -451,6 +465,13 @@
             try {
                 dataReporte.dictamen = dictamenInput.value || 'Sin observaciones adicionales.';
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
+
+                const pdfBackground = function(currentPage, pageSize) {
+                    if (!isPro) {
+                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    }
+                    return null;
+                };
 
                 const docDefinition = {
                     pageSize: 'LETTER',
@@ -523,11 +544,8 @@
                     }
                 };
 
-                // Asignar fondo de forma segura
                 if (!isPro) {
-                    docDefinition.background = function(currentPage, pageSize) {
-                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-                    };
+                    docDefinition.background = pdfBackground;
                 }
 
                 if(dataReporte.alertas && dataReporte.alertas.trim() !== '') {
@@ -560,7 +578,7 @@
 
             } catch (e) {
                 console.error("Error crítico en PDFMake:", e);
-                alert("Fallo de renderizado interno. Recargue la página e intente nuevamente.");
+                alert("Fallo de renderizado interno.");
                 btn.innerHTML = oldText;
                 btn.disabled = false;
             }
