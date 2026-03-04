@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RiskScore: Semáforo de Riesgo Fiscal CFDI | AuditorIA</title>
-    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
+    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Nuestro algoritmo procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
     <link rel="canonical" href="https://auditoriaxml.mx/risk-score.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -20,7 +20,7 @@
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --danger-light: #FEF2F2; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --brand-dark: #1E40AF; --danger: #DC2626; --danger-light: #FEF2F2; --success: #059669; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
@@ -60,7 +60,7 @@
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 20px; }
         .progress-status { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 15px; font-family: monospace; display: flex; align-items: center; gap: 8px;}
 
-        /* Editor Forense (Nuevo) */
+        /* Editor Forense */
         .advisor-box { background: #111827; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
         .advisor-title { font-weight: 900; color: #ffffff; font-size: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .advisor-subtitle { font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
@@ -82,12 +82,14 @@
         .btn-x { background-color: #000000; }
         .btn-in { background-color: #0A66C2; }
         .btn-wa { background-color: #25D366; }
+        .btn-fb { background-color: #1877F2; }
 
         /* Paywall Modal Premium */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
+        .modal-icon { width: 72px; height: 72px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
         .modal-title { font-size: 24px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
         .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 30px 0; line-height: 1.6; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
@@ -103,7 +105,9 @@
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin: 0 auto 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        <div class="modal-icon">
+            <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
         <h2 class="modal-title">Potencia tu Auditoría</h2>
         <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes ejecutivos ilimitados.</p>
         <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
@@ -198,10 +202,10 @@
                     Dictamen de Auditoría Forense
                 </div>
             </div>
-            <div class="advisor-subtitle">Revisa y edita las conclusiones del hallazgo antes de emitir el reporte final.</div>
+            <div class="advisor-subtitle">Revisa y edita las conclusiones del hallazgo antes de emitir el reporte oficial.</div>
             
             <textarea id="dictamenInput" class="editable-dictamen" placeholder="El motor está redactando las conclusiones..."></textarea>
-            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado exactamente igual en el PDF.</div>
+            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado exactamente igual en el PDF de manera vectorial.</div>
         </div>
 
         <div class="toolbar">
@@ -216,6 +220,7 @@
             <p style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Blinda a otros colegas compartiendo esta herramienta:</p>
             <a href="https://twitter.com/intent/tweet?text=Evalué%20mi%20riesgo%20de%20auditoría%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:&url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-fb">Facebook</a>
             <a href="https://api.whatsapp.com/send?text=Acabo%20de%20evaluar%20mi%20riesgo%20de%20auditoría%20de%20mi%20empresa%20con%20AuditorIA:%20https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
     </div>
@@ -285,7 +290,6 @@
             document.getElementById('advisorContainer').style.display = 'block';
             document.getElementById('shareContainer').style.display = 'block';
             
-            // Habilitar Descarga
             const btnPdf = document.getElementById('btnDescargarPDF');
             btnPdf.disabled = false;
             btnPdf.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Confirmar y Exportar PDF`;
@@ -436,7 +440,6 @@
             });
             const data = await res.json();
             
-            // Colocar el texto en el textarea editable
             document.getElementById('dictamenInput').value = data.analisis_legal;
             finishProgress();
         } catch (err) { 
@@ -446,7 +449,7 @@
     }
 
     // =========================================================================
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - CALIDAD CORPORATIVA BIG 4
+    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - MARGENES AMPLIOS, SALTO ORDENADO Y ESPACIADO
     // =========================================================================
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
@@ -454,9 +457,7 @@
         btn.innerText = "Exportando Reporte...";
         btn.disabled = true;
 
-        // Capturar el texto modificado por el usuario
         const finalDictamen = document.getElementById('dictamenInput').value;
-
         const isPro = localStorage.getItem('auditoria_pro') === 'true';
         const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null;
 
@@ -469,8 +470,12 @@
 
         const docDefinition = {
             pageSize: 'LETTER',
-            pageMargins: [40, 50, 40, 50],
+            pageMargins: [50, 60, 50, 60], // Márgenes más amplios (Estilo Word)
             background: pdfBackground,
+            defaultStyle: {
+                font: 'Helvetica',
+                lineHeight: 1.5 // Espaciado de línea amplio y elegante
+            },
             content: [
                 { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
                 
@@ -480,21 +485,21 @@
                         { text: `Folio: RS-${Date.now()}\nFecha: ${new Date().toLocaleDateString('es-MX')}`, alignment: 'right', style: 'subheader' }
                     ]
                 },
-                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 532, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
+                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
                 
                 { text: '\n1. RESUMEN EJECUTIVO', style: 'sectionTitle' },
                 {
                     columns: [
                         {
-                            width: '40%',
+                            width: '45%',
                             stack: [
-                                chartImg ? { image: chartImg, width: 140, alignment: 'center' } : {},
-                                { text: `${dataReporte.score}`, alignment: 'center', fontSize: 45, bold: true, color: dataReporte.color, margin: [0, -10, 0, 0] },
-                                { text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color }
+                                chartImg ? { image: chartImg, width: 150, alignment: 'center', margin: [0, 10, 0, -35] } : {},
+                                { text: `${dataReporte.score}`, alignment: 'center', fontSize: 50, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] },
+                                { text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color, margin: [0, 5, 0, 20] }
                             ]
                         },
                         {
-                            width: '60%',
+                            width: '55%',
                             stack: [
                                 { text: 'Métricas de Exposición Base:', bold: true, margin: [0, 5, 0, 5], fontSize: 11 },
                                 {
@@ -524,27 +529,41 @@
                         }
                     ]
                 },
-                
-                { text: '\n2. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle' },
-                { text: finalDictamen, fontSize: 10, alignment: 'justify', lineHeight: 1.5, margin: [0, 0, 0, 20] },
 
-                { text: '\n3. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
-                { ul: dataReporte.recomendaciones, fontSize: 10, lineHeight: 1.5, color: '#111827', margin: [10, 0, 0, 0] }
+                // Relleno Estratégico (Metodología) en la Página 1
+                { text: '\n2. METODOLOGÍA DE EVALUACIÓN (TADS)', style: 'sectionTitle' },
+                { 
+                    text: 'El Tax Analytics & Detection System (TADS) evalúa la probabilidad de una auditoría o requerimiento del Servicio de Administración Tributaria (SAT) mediante el cruce de metadatos XML. El algoritmo pondera tres vectores críticos de cumplimiento:', 
+                    fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] 
+                },
+                {
+                    ul: [
+                        { text: 'Riesgo 69-B (EFOS): Penalización máxima (50 pts) por vinculación con empresas que facturan operaciones simuladas.', fontSize: 10, margin: [0, 2, 0, 2] },
+                        { text: 'Materialidad de Pagos (REP): Penalización media (10 pts) por facturas PPD sin complemento de recepción de pago asociado.', fontSize: 10, margin: [0, 2, 0, 2] },
+                        { text: 'Aritmética Fiscal: Penalización (5 pts) por discrepancias entre subtotales, retenciones y el total facturado.', fontSize: 10, margin: [0, 2, 0, 2] }
+                    ]
+                },
+
+                // Salto de página obligado para el Dictamen y Plan de Acción
+                { text: '\n3. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle', pageBreak: 'before' },
+                { text: finalDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] },
+
+                { text: '\n4. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
+                { ul: dataReporte.recomendaciones, fontSize: 11, margin: [10, 0, 0, 0] }
             ],
             footer: function(currentPage, pageCount) {
                 return {
                     text: `El presente documento constituye un papel de trabajo para mitigación de contingencias. No sustituye las facultades de comprobación de la autoridad fiscal.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
-                    alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 10, 40, 0]
+                    alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0]
                 };
             },
             styles: {
                 header: { fontSize: 15, bold: true, color: '#111827' },
-                subheader: { fontSize: 10, color: '#6B7280' },
+                subheader: { fontSize: 9, color: '#6B7280' },
                 sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true },
                 tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
                 tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
-            },
-            defaultStyle: { font: 'Roboto' }
+            }
         };
 
         try {
