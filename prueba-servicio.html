@@ -28,13 +28,15 @@
         .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); transform: scale(1.01); }
         .upload-section.active { border-color: var(--success); background: #ECFDF5; }
 
-        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 18px; border-radius: 10px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); letter-spacing: 0.5px;}
         .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; box-shadow: none;}
+        .btn-action:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
         .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Dashboard de Resultados */
         .meta-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
@@ -42,26 +44,45 @@
         .meta-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 4px; }
         .meta-val { font-size: 14px; color: var(--text-main); font-family: monospace; font-weight: 600; word-break: break-all; }
 
-        .match-badge { display: block; padding: 15px 20px; border-radius: 8px; font-weight: 800; font-size: 18px; margin-bottom: 25px; text-align: center; text-transform: uppercase; letter-spacing: 1px;}
-        .match-true { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
-        .match-false { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
-        .match-warning { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+        .match-badge { display: block; padding: 20px; border-radius: 10px; font-weight: 800; font-size: 18px; margin-bottom: 25px; text-align: center; text-transform: uppercase; letter-spacing: 1px; border: 2px solid transparent;}
+        .match-true { background: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
+        .match-false { background: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
+        .match-warning { background: #FEF3C7; color: #92400E; border-color: #FCD34D; }
 
-        .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 25px; border-radius: 8px; margin-bottom: 30px; }
-        .data-label { font-size: 13px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .data-value { font-size: 14px; color: var(--text-main); line-height: 1.6; text-align: justify;}
+        .data-box { background: #111827; color: white; border-left: 6px solid var(--brand); padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+        .data-label { font-size: 14px; text-transform: uppercase; color: #60A5FA; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
+        .data-value { font-size: 14px; color: #E5E7EB; line-height: 1.7; text-align: justify;}
+
+        /* Botones Acción Toolbar */
+        .btn-toolbar { display: flex; gap: 15px; justify-content: flex-end; margin-bottom: 25px; flex-wrap: wrap;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
+        .btn-pdf:hover { background: var(--brand); transform: translateY(-2px); }
 
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
         .social-btn:hover { opacity: 0.9; }
         .btn-x { background-color: #000000; }
         .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
+        /* --- Paywall Modal Premium & Centrado --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
+        .modal-icon { width: 64px; height: 64px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .modal-title { font-size: 22px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
+        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 25px 0; line-height: 1.5; }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+        .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+        /* --- CORRECCIÓN DE CORTES EN PDF --- */
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; width: 800px; background: white; z-index: -1000; }
+        .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
+
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .btn-toolbar { flex-direction: column; } .btn-toolbar button { width: 100%; justify-content: center;} }
     </style>
 </head>
 <body>
@@ -71,10 +92,12 @@
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones de materialidad. Actualiza a <strong>AuditorIA Pro</strong> para blindar operaciones ilimitadas y generar expedientes PDF probatorios ante el SAT.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
+        <div class="modal-icon">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h2 class="modal-title">Potencia tu Auditoría</h2>
+        <p class="modal-text">Has agotado tus evaluaciones de materialidad gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para blindar operaciones ilimitadas y generar expedientes limpios.</p>
+        <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
 
@@ -105,14 +128,17 @@
 
     <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
         <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Cruzando semántica documental...</p>
+        <p style="font-weight: 600; color: var(--brand); font-size: 16px;">Cruzando semántica documental...</p>
         <p style="font-size: 13px; color: var(--text-muted);">Comparando el contenido del entregable contra los conceptos del CFDI.</p>
     </div>
 
     <div class="results-container" id="results">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
-            <button onclick="window.location.reload()" style="background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight:bold;">Nuevo Cruce</button>
-            <button onclick="descargarDictamenPDF()" style="background: #111827; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Descargar Dictamen PDF</button>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">Analizar Nueva Operación</button>
+            <button onclick="descargarDictamenPDF()" class="btn-pdf" id="btnDescargarPDF">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Descargar Dictamen Forense (PDF)
+            </button>
         </div>
 
         <div id="badgeCoincidencia" class="match-badge"></div>
@@ -133,7 +159,10 @@
         </div>
 
         <div class="data-box">
-            <div class="data-label">Justificación Forense de Razón de Negocio</div>
+            <div class="data-label">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Justificación Forense de Razón de Negocio
+            </div>
             <div class="data-value" id="resDictamen"></div>
         </div>
 
@@ -141,7 +170,6 @@
             <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
             <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20blindar%20mi%20contabilidad%20evaluando%20la%20materialidad%20de%20mis%20deducciones%20con%20AuditorIA:&url=https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-fb">Facebook</a>
             <a href="https://api.whatsapp.com/send?text=Acabo%20de%20blindar%20mi%20contabilidad%20evaluando%20la%20materialidad%20de%20mis%20deducciones%20con%20AuditorIA:%20https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
     </div>
@@ -152,7 +180,9 @@
 <script src="footer.js"></script>
 
 <script>
+    // LÓGICA PREMIUM
     function checkQuota() {
+        if (localStorage.getItem('auditoria_pro') === 'true') return true;
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
         if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
@@ -244,14 +274,14 @@
             document.getElementById('results').style.display = 'block';
 
             const badge = document.getElementById('badgeCoincidencia');
-            let colorSt = '#991B1B'; let bgSt = '#FEF2F2';
+            let colorSt = '#991B1B'; let bgSt = '#FEF2F2'; let brSt = '#FCA5A5';
             
             if(data.sustancia_economica_comprobada) {
                 badge.className = "match-badge match-true"; badge.innerText = "MATERIALIDAD COMPROBADA (ALTA CONFIANZA)";
-                colorSt = '#065F46'; bgSt = '#ECFDF5';
+                colorSt = '#065F46'; bgSt = '#ECFDF5'; brSt = '#6EE7B7';
             } else if (data.nivel_riesgo_efos === 'MEDIO') {
                 badge.className = "match-badge match-warning"; badge.innerText = `COINCIDENCIA PARCIAL: RIESGO MEDIO`;
-                colorSt = '#92400E'; bgSt = '#FEF3C7';
+                colorSt = '#92400E'; bgSt = '#FEF3C7'; brSt = '#FCD34D';
             } else {
                 badge.className = "match-badge match-false"; badge.innerText = `DISCREPANCIA DETECTADA: RIESGO ALTO`;
             }
@@ -265,6 +295,7 @@
                 status: badge.innerText,
                 color: colorSt,
                 bg: bgSt,
+                br: brSt,
                 dictamen: data.dictamen_evidencia,
                 rfc: metadataFac.rfc,
                 uuid: metadataFac.uuid,
@@ -272,61 +303,89 @@
             };
 
         } catch (e) {
-            alert("Error en el análisis. Intente con archivos más nítidos.");
+            alert("Error en el análisis. Intente con un PDF más claro o menos pesado.");
             window.location.reload();
         }
     }
 
-    function descargarDictamenPDF() {
+    // EL MOTOR MAESTRO DE RENDERIZADO PDF
+    function agregarMarcaAgua(pdf) {
+        if(localStorage.getItem('auditoria_pro') === 'true') return;
+        const totalPages = pdf.internal.getNumberOfPages();
+        pdf.setTextColor(200, 200, 200);
+        pdf.setFontSize(40);
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.text('Generado por AuditorIA - Versión Gratuita', 30, 150, { angle: -35, opacity: 0.1 });
+        }
+    }
+
+    async function descargarDictamenPDF() {
         if (!dictamenExport) return;
+
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerText = "Exportando...";
+        btn.disabled = true;
+
         const renderContainer = document.getElementById('hiddenPdfRender');
         
         renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; page-break-inside: avoid;">
-                <div style="position: absolute; top: 40%; left: 5%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+            <div style="width: 800px; padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; position: relative;">
                 
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-end;">
                     <div>
                         <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen de Materialidad Fiscal</h1>
-                        <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Análisis preventivo Art. 69-B del Código Fiscal de la Federación.</p>
+                        <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-weight: bold;">Análisis preventivo Art. 69-B del Código Fiscal de la Federación.</p>
                     </div>
-                    <div style="font-size: 10px; color: #9CA3AF; font-family: monospace;">Folio: M-${Date.now()}</div>
+                    <div style="font-size: 10px; color: #9CA3AF; font-family: monospace;">Folio: MT-${Date.now()}</div>
                 </div>
                 
-                <div style="background: ${dictamenExport.bg}; padding: 25px; border-radius: 8px; margin-bottom: 25px; text-align: center; border: 1px solid ${dictamenExport.color}; position: relative; z-index: 1;">
-                    <strong style="display: block; font-size: 12px; color: ${dictamenExport.color}; text-transform: uppercase;">Evaluación de Sustancia Económica</strong>
-                    <span style="font-size: 22px; font-weight: 900; color: ${dictamenExport.color}; display: block; margin-top: 10px;">${dictamenExport.status}</span>
+                <div class="page-break-avoid" style="background: ${dictamenExport.bg}; padding: 25px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid ${dictamenExport.br}; position: relative; z-index: 1;">
+                    <strong style="display: block; font-size: 12px; color: ${dictamenExport.color}; text-transform: uppercase; letter-spacing: 1px;">Evaluación de Sustancia Económica</strong>
+                    <span style="font-size: 24px; font-weight: 900; color: ${dictamenExport.color}; display: block; margin-top: 10px;">${dictamenExport.status}</span>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 6px; background: #F9FAFB;">
-                        <div style="font-size: 10px; font-weight: bold; color: #6B7280; text-transform: uppercase; margin-bottom: 8px;">Datos de la Factura</div>
-                        <div style="font-size: 11px; margin-bottom: 5px;"><strong>RFC Emisor:</strong> ${dictamenExport.rfc}</div>
-                        <div style="font-size: 11px; margin-bottom: 5px;"><strong>Monto:</strong> ${dictamenExport.monto}</div>
-                        <div style="font-size: 10px; font-family: monospace; color: #4B5563;">UUID: ${dictamenExport.uuid}</div>
+                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #F9FAFB;">
+                        <div style="font-size: 11px; font-weight: 800; color: #6B7280; text-transform: uppercase; margin-bottom: 12px;">Datos Base (CFDI)</div>
+                        <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>RFC Emisor:</strong> <span style="font-family: monospace;">${dictamenExport.rfc}</span></div>
+                        <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>Monto:</strong> <span style="font-weight: bold;">${dictamenExport.monto}</span></div>
+                        <div style="font-size: 10px; font-family: monospace; color: #4B5563; word-break: break-all; margin-top: 10px;">UUID: ${dictamenExport.uuid}</div>
                     </div>
-                    <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 6px;">
-                        <div style="font-size: 10px; font-weight: bold; color: #6B7280; text-transform: uppercase; margin-bottom: 8px;">Dictamen Legal de IA</div>
-                        <p style="font-size: 12px; line-height: 1.5; color: #111827; margin: 0; text-align: justify;">${dictamenExport.dictamen}</p>
+                    <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #111827; color: white;">
+                        <div style="font-size: 11px; font-weight: 800; color: #60A5FA; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Resolución Forense (IA)</div>
+                        <p style="font-size: 12px; line-height: 1.6; color: #E5E7EB; margin: 0; text-align: justify;">${dictamenExport.dictamen}</p>
                     </div>
                 </div>
                 
-                <div style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Este documento constituye un papel de trabajo para la integración de la defensa fiscal. No sustituye resoluciones definitivas del SAT.<br>
+                <div class="page-break-avoid" style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    Este documento constituye un papel de trabajo para la integración de la defensa fiscal preventiva. No sustituye facultades de comprobación de la autoridad.<br>
                     Plataforma: AuditoriaXML.mx
                 </div>
             </div>
         `;
 
         const opt = {
-            margin: 10,
-            filename: `Materialidad_Servicio_${dictamenExport.rfc}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            margin:       [15, 10, 15, 10],
+            filename:     `Materialidad_Servicio_${dictamenExport.rfc}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, windowWidth: 800 },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] }
         };
 
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+        try {
+            await html2pdf().set(opt).from(renderContainer.firstElementChild).toPdf().get('pdf').then(function (pdf) {
+                agregarMarcaAgua(pdf);
+            }).save();
+        } catch (e) {
+            console.error(e);
+            alert("Error al procesar el archivo PDF.");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
     }
 </script>
 </body>
