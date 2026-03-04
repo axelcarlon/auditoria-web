@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Escáner Inteligente de Tickets y PDFs | AuditorIA</title>
-    <meta name="description" content="¿Perdiste el XML? Sube lotes de fotos de recibos o facturas PDF. Nuestra IA extrae los datos y valida la matemática fiscal automáticamente.">
+    <meta name="description" content="¿Perdiste el XML? Nuestra IA multimodal extrae datos de fotos de tickets, valida impuestos, detecta duplicados y genera layouts contables.">
     <link rel="canonical" href="https://auditoriaxml.mx/escaner-ocr-fiscal.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -21,8 +21,8 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); margin-bottom: 30px;}
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 60px 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); margin-bottom: 30px;}
         .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
 
         .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
@@ -30,66 +30,46 @@
 
         .results-container { display: none; margin-top: 30px; }
         
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
-        .btn-restart:hover { background: #e2e8f0; }
-        .btn-export { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;}
-        .btn-export:hover { opacity: 0.9; }
-        .btn-export-pdf { background: var(--brand); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;}
-        .btn-export-pdf:hover { opacity: 0.9; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; padding: 15px; background: white; border-radius: 10px; border: 1px solid var(--border); position: sticky; top: 10px; z-index: 100;}
+        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;}
+        .btn-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px;}
+        .btn-xml { background: var(--brand); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px;}
 
-        /* Resumen Global del Lote */
-        .macro-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .macro-card { background: var(--bg-secondary); padding: 20px; border-radius: 10px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .macro-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .macro-value { font-size: 24px; font-weight: 900; color: var(--brand); }
+        /* Dashboard Global */
+        .macro-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .macro-card { background: var(--bg-secondary); padding: 25px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .macro-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .macro-value { font-size: 26px; font-weight: 900; color: var(--text-main); font-family: monospace; }
 
-        /* Lote Multi-archivo CSS */
-        .lote-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 30px; }
-        .lote-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .lote-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
-        .lote-filename { font-weight: 700; font-size: 16px; color: var(--brand); word-break: break-all; }
+        /* Lote Cards */
+        .lote-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 40px; }
+        .lote-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); border-left: 6px solid var(--brand); }
+        .lote-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .lote-filename { font-weight: 800; font-size: 16px; color: var(--text-main); }
         
-        .alert-box { padding: 10px 15px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; }
-        .alert-error { background: #FEF2F2; border: 1px solid #FCA5A5; color: #991B1B; }
-        .alert-success { background: #ECFDF5; border: 1px solid #6EE7B7; color: #065F46; }
+        .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .badge-success { background: #D1FAE5; color: #065F46; }
+        .badge-danger { background: #FEE2E2; color: #991B1B; }
 
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 12px; border-radius: 8px; }
-        .data-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 5px; }
-        .data-value { font-size: 15px; color: var(--text-main); font-family: monospace; font-weight: 600; word-break: break-all; }
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+        .data-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 5px; }
+        .data-value { font-size: 14px; color: var(--text-main); font-weight: 700; word-break: break-all; }
+        .data-value.accounting { color: var(--brand); font-style: italic; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        .amount { text-align: right; font-family: monospace; }
+        .table-mini { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px; background: white; border-radius: 6px; overflow: hidden; }
+        .table-mini th { background: #F3F4F6; padding: 10px; text-align: left; color: var(--text-muted); text-transform: uppercase; font-size: 10px; }
+        .table-mini td { padding: 10px; border-bottom: 1px solid #F3F4F6; }
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 40px; height: 40px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Botones Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .btn-wa { background-color: #25D366; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
 
         #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
 
         @media (max-width: 768px) {
-            .data-grid { grid-template-columns: 1fr; }
+            .macro-summary { grid-template-columns: 1fr 1fr; }
             .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar button { width: 100%; justify-content: center; }
+            .toolbar button { width: 100%; }
         }
     </style>
 </head>
@@ -99,73 +79,72 @@
 
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
+        <button class="modal-close" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para extraer lotes masivos de tickets, exportar a PDF y descargar XML estructurados sin límites.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
+        <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">Potencia tu Auditoría</h2>
+        <p style="color: var(--text-muted); margin-bottom: 25px;">Has alcanzado el límite gratuito. Actualiza a <strong>Pro</strong> para procesar lotes de 100+ tickets, exportar a Excel/JSON y descargar XMLs estructurados para tu ERP.</p>
+        <a href="planes.html" class="btn-upgrade" style="background: var(--brand); color:white; padding: 15px 30px; border-radius: 8px; text-decoration:none; font-weight:bold; display:inline-block;">Subir a Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">MOTOR MULTIMODAL IA</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Escáner Inteligente de Tickets y PDFs</h1>
-        <p style="color: var(--text-muted);">¿Perdiste los XML? Sube un lote de fotos de recibos o facturas PDF. La IA extraerá los datos, validará la ecuación contable y te entregará el reporte listo para deducción.</p>
+        <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px;">SISTEMA FORENSE OCR 2026</span>
+        <h1 style="font-size: 34px; margin-bottom: 10px; margin-top: 15px;">Escáner Inteligente de Tickets y PDFs</h1>
+        <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto;">Recupera la deducibilidad de tus tickets físicos. Nuestra IA extrae datos, asigna cuentas contables, detecta duplicados y valida la matemática fiscal automáticamente.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Haz clic o arrastra múltiples imágenes/PDFs</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Formatos soportados: JPG, PNG, PDF. Lote máximo recomendado: 50 archivos.</p>
+        <svg width="56" height="56" color="var(--brand)" style="margin-bottom: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <p style="font-weight: 800; margin: 0; font-size: 22px; color: var(--text-main);">Cargar Lote de Comprobantes</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Suelta tus imágenes (JPG/PNG) o PDFs aquí. La IA hará el resto.</p>
         <input type="file" id="fileInput" accept="image/*,.pdf" multiple style="display: none;">
         
         <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Ecuación Matemática Activa</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Anti-Duplicados</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Auto-Accounting</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado Grado Bancario</div>
         </div>
     </div>
 
     <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
         <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">La IA está leyendo y procesando el lote de documentos...</p>
-        <p style="font-size: 13px; color: var(--text-muted);">Extrayendo conceptos y ejecutando prueba de barrera matemática.</p>
+        <p style="font-weight: 700; color: var(--brand); font-size: 18px;">Cerebro Multimodal IA analizando el lote...</p>
+        <p style="font-size: 14px; color: var(--text-muted);">Estamos identificando RFCs, extrayendo conceptos y validando sumas matemáticas.</p>
     </div>
 
     <div class="results-container" id="results">
         
-        <div class="macro-summary" id="macroSummary" style="display: none;">
+        <div class="macro-summary">
             <div class="macro-card">
-                <div class="macro-title">Documentos Válidos</div>
-                <div class="macro-value" id="macroDocs" style="color: var(--text-main);">0</div>
+                <div class="macro-title">Documentos Validados</div>
+                <div class="macro-value" id="macroDocs">0</div>
             </div>
             <div class="macro-card">
-                <div class="macro-title">Total Base (Subtotal)</div>
+                <div class="macro-title">Base Gravable (Subtotal)</div>
                 <div class="macro-value" id="macroSubtotal">$0.00</div>
             </div>
             <div class="macro-card">
-                <div class="macro-title">Impuestos Extraídos</div>
+                <div class="macro-title">IVA / Impuestos</div>
                 <div class="macro-value" id="macroImpuestos" style="color: var(--danger);">$0.00</div>
             </div>
             <div class="macro-card" style="border-color: var(--success); background: #ECFDF5;">
-                <div class="macro-title" style="color: var(--success);">Gasto Total Digitalizado</div>
+                <div class="macro-title" style="color: var(--success);">Total Digitalizado</div>
                 <div class="macro-value" id="macroTotal" style="color: var(--success);">$0.00</div>
             </div>
         </div>
 
         <div class="toolbar">
-            <div>
-                <button class="btn-restart" onclick="window.location.reload()">Escanear Nuevo Lote</button>
-            </div>
+            <div style="font-weight: 800; font-size: 16px;">Matriz Forense de Resultados</div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-export-pdf" onclick="descargarReportePDF()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Reporte Gastos (PDF)
+                <button onclick="window.location.reload()" class="btn-restart">Limpiar Escáner</button>
+                <button onclick="exportarExcel()" class="btn-excel">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Layout Excel
                 </button>
-                <button class="btn-export" onclick="descargarXML_Lote()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                    Generar XMLs Estructurados
+                <button onclick="descargarXML_Batch()" class="btn-xml">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    Generar XMLs (ERP)
                 </button>
             </div>
         </div>
@@ -173,11 +152,10 @@
         <div class="lote-grid" id="loteContainer"></div>
 
         <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20extraer%20y%20validar%20mis%20tickets%20físicos%20en%20segundos%20usando%20la%20IA%20de%20AuditorIA:&url=https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
+            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">¿Te ahorramos horas de trabajo? Comparte la herramienta:</p>
+            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20digitalizar%20mis%20gastos%20físicos%20en%20segundos%20con%20la%20IA%20de%20AuditorIA:&url=https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20extraer%20y%20validar%20mis%20tickets%20físicos%20en%20segundos%20usando%20la%20IA%20de%20AuditorIA:%20https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+            <a href="https://api.whatsapp.com/send?text=Digitaliza%20tus%20tickets%20con%20IA:%20https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
     </div>
 </div>
@@ -187,7 +165,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // CUOTA FREEMIUM
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -198,230 +175,152 @@
 
     const input = document.getElementById('fileInput');
     const dropZone = document.getElementById('dropZone');
-    const loading = document.getElementById('loadingState');
-    const results = document.getElementById('results');
-    const loteContainer = document.getElementById('loteContainer');
     
-    let datosExtraidosGlobal = [];
+    let datosEscaneados = [];
     let globales = { docs: 0, subtotal: 0, impuestos: 0, total: 0 };
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
     
     dropZone.addEventListener('drop', e => { 
-        document.getElementById('fileCountText').innerText = `${e.dataTransfer.files.length} archivos en cola`;
-        processFiles(e.dataTransfer.files); 
+        input.files = e.dataTransfer.files; 
+        processBatch(e.dataTransfer.files); 
     });
     input.addEventListener('change', e => { 
-        document.getElementById('fileCountText').innerText = `${e.target.files.length} archivos en cola`;
-        processFiles(e.target.files); 
+        processBatch(e.target.files); 
     });
 
-    async function processFiles(files) {
+    async function processBatch(files) {
         if (files.length === 0) return;
         if (!checkQuota()) return;
         
-        dropZone.style.display = 'none';
         document.getElementById('headerSection').style.display = 'none';
-        loading.style.display = 'block';
-        results.style.display = 'none';
-        loteContainer.innerHTML = '';
-        datosExtraidosGlobal = [];
+        dropZone.style.display = 'none';
+        document.getElementById('loadingState').style.display = 'block';
+        
+        datosEscaneados = [];
         globales = { docs: 0, subtotal: 0, impuestos: 0, total: 0 };
+        document.getElementById('loteContainer').innerHTML = '';
 
         const formData = new FormData();
-        const limit = Math.min(files.length, 50); // Límite máximo de seguridad
-        for(let i=0; i<limit; i++) {
-            formData.append("archivos", files[i]);
-        }
+        // Procesamos máximo 50 por lote por seguridad de memoria
+        const limit = Math.min(files.length, 50);
+        for(let i=0; i<limit; i++) { formData.append("archivos", files[i]); }
 
         try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
-                method: "POST",
-                body: formData
-            });
-            
-            if (!res.ok) throw new Error("Error en el servidor");
-            
+            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", { method: "POST", body: formData });
+            if (!res.ok) throw new Error("Server Error");
             const data = await res.json();
-            loading.style.display = 'none';
-            results.style.display = 'block';
+            
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
 
-            let arrayResultados = data.resultados_lote || [data];
-            datosExtraidosGlobal = arrayResultados;
+            const arrayResultados = data.resultados_lote || [data];
+            datosEscaneados = arrayResultados;
 
             arrayResultados.forEach((item, index) => {
+                const d = item.datos || item;
                 const card = document.createElement('div');
                 card.className = 'lote-card';
                 
-                let contentHTML = `<div class="lote-header"><span class="lote-filename">${item.archivo || `Documento ${index+1}`}</span></div>`;
-
-                if (item.status === "error_calidad") {
-                    contentHTML += `<div class="alert-box alert-error" style="display:block;"><strong>Bloqueo Activo:</strong> ${item.mensaje}</div>`;
-                } 
-                else if (item.status === "error_matematico") {
-                    contentHTML += `<div class="alert-box alert-error" style="display:block;"><strong>Alerta de Ecuación Contable:</strong> ${item.mensaje} <br>La extracción falló la validación aritmética estricta.</div>`;
-                } 
-                else if (item.status === "success") {
-                    const d = item.datos || item;
-                    
-                    // Sumatorias Globales
+                if (item.status === 'success') {
                     globales.docs++;
                     globales.subtotal += parseFloat(d.subtotal || 0);
                     globales.impuestos += parseFloat(d.total_traslados || 0);
                     globales.total += parseFloat(d.total || 0);
 
-                    let tbodyHtml = '';
-                    if(d.conceptos && d.conceptos.length > 0) {
-                        d.conceptos.forEach(c => {
-                            tbodyHtml += `<tr><td>${c.descripcion}</td><td class="amount">${formatMoney(c.importe)}</td></tr>`;
-                        });
-                    }
+                    let rows = d.conceptos.map(c => `<tr><td>${c.descripcion}</td><td class="amount">${formatMoney(c.importe)}</td></tr>`).join('');
 
-                    contentHTML += `
-                        <div class="alert-box alert-success" style="display:block; margin-bottom: 20px;"><strong>Éxito:</strong> La ecuación contable cuadró perfectamente al centavo. Datos listos.</div>
-                        <div class="data-grid">
-                            <div class="data-box"><div class="data-label">RFC Emisor</div><div class="data-value">${d.rfc_emisor || 'N/A'}</div></div>
-                            <div class="data-box"><div class="data-label">RFC Receptor</div><div class="data-value">${d.rfc_receptor || 'N/A'}</div></div>
+                    card.innerHTML = `
+                        <div class="lote-header">
+                            <span class="lote-filename">${item.archivo || `Ticket_${index+1}`}</span>
+                            <span class="badge-status badge-success">Validado ✓</span>
                         </div>
                         <div class="data-grid">
+                            <div class="data-box"><div class="data-label">RFC Emisor</div><div class="data-value">${d.rfc_emisor || 'No detectado'}</div></div>
+                            <div class="data-box"><div class="data-label">Cuenta Contable Sugerida</div><div class="data-value accounting">${d.cuenta_sugerida || 'Gasto General'}</div></div>
+                            <div class="data-box"><div class="data-label">Fecha</div><div class="data-value">${d.fecha || 'N/A'}</div></div>
+                            <div class="data-box"><div class="data-label">Método Pago</div><div class="data-value">${d.metodo_pago || 'Efectivo'}</div></div>
+                        </div>
+                        <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
                             <div class="data-box"><div class="data-label">Subtotal</div><div class="data-value">${formatMoney(d.subtotal)}</div></div>
-                            <div class="data-box"><div class="data-label" style="color: var(--success);">Traslados (IVA)</div><div class="data-value">${formatMoney(d.total_traslados)}</div></div>
-                            <div class="data-box"><div class="data-label" style="color: var(--danger);">Retenciones</div><div class="data-value">${formatMoney(d.total_retenciones)}</div></div>
-                            <div class="data-box" style="border-color: var(--brand); background: #EFF6FF;"><div class="data-label" style="color: var(--brand);">TOTAL VALIDADO</div><div class="data-value" style="font-size: 20px;">${formatMoney(d.total)}</div></div>
+                            <div class="data-box"><div class="data-label">IVA</div><div class="data-value">${formatMoney(d.total_traslados)}</div></div>
+                            <div class="data-box"><div class="data-label">Propinas/Otros</div><div class="data-value">${formatMoney(d.otros_cargos || 0)}</div></div>
+                            <div class="data-box" style="background:#EFF6FF; border-color:var(--brand);"><div class="data-label" style="color:var(--brand)">Total Final</div><div class="data-value" style="font-size:18px;">${formatMoney(d.total)}</div></div>
                         </div>
-                        <h3 style="font-size: 14px; margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 5px; color: var(--text-muted); text-transform: uppercase;">Conceptos Identificados</h3>
-                        <div style="overflow-x: auto;">
-                            <table><thead><tr><th>Descripción del Servicio/Producto</th><th class="amount">Importe</th></tr></thead><tbody>${tbodyHtml}</tbody></table>
-                        </div>
+                        <table class="table-mini"><thead><tr><th>Concepto</th><th class="amount">Monto</th></tr></thead><tbody>${rows}</tbody></table>
                     `;
                 } else {
-                    contentHTML += `<div class="alert-box alert-error" style="display:block;"><strong>Error:</strong> No se pudo procesar el documento.</div>`;
+                    card.style.borderLeftColor = 'var(--danger)';
+                    card.innerHTML = `
+                        <div class="lote-header">
+                            <span class="lote-filename">${item.archivo}</span>
+                            <span class="badge-status badge-danger">Rechazado ✕</span>
+                        </div>
+                        <div class="alert-box alert-error"><strong>Falla Crítica:</strong> ${item.mensaje || 'Error en lectura de ecuación contable.'}</div>
+                    `;
                 }
-
-                card.innerHTML = contentHTML;
-                loteContainer.appendChild(card);
+                document.getElementById('loteContainer').appendChild(card);
             });
 
-            // Actualizar Resumen Global
-            if(globales.docs > 0) {
-                document.getElementById('macroSummary').style.display = 'grid';
-                document.getElementById('macroDocs').innerText = globales.docs;
-                document.getElementById('macroSubtotal').innerText = formatMoney(globales.subtotal);
-                document.getElementById('macroImpuestos').innerText = formatMoney(globales.impuestos);
-                document.getElementById('macroTotal').innerText = formatMoney(globales.total);
-            }
+            // Update Macros
+            document.getElementById('macroDocs').innerText = globales.docs;
+            document.getElementById('macroSubtotal').innerText = formatMoney(globales.subtotal);
+            document.getElementById('macroImpuestos').innerText = formatMoney(globales.impuestos);
+            document.getElementById('macroTotal').innerText = formatMoney(globales.total);
 
-        } catch (err) {
-            loading.style.display = 'none';
-            results.style.display = 'block';
-            loteContainer.innerHTML = `<div class="alert-box alert-error" style="display:block; padding: 20px;">Ocurrió un error al contactar al motor de IA. Intenta subir imágenes más nítidas o un PDF original.</div>`;
+        } catch (e) {
+            alert("Error al procesar el lote. Intenta subir menos archivos o fotos más claras.");
+            window.location.reload();
         }
     }
 
-    // NUEVA FUNCIÓN: EXPORTAR A PDF (REPORTE DE GASTOS)
-    function descargarReportePDF() {
-        if (globales.docs === 0) return alert("No hay documentos validados para exportar.");
-        
-        const renderContainer = document.getElementById('hiddenPdfRender');
-        let htmlTablaExport = "";
-
-        datosExtraidosGlobal.forEach((item, index) => {
-            if (item.status === 'success') {
-                const d = item.datos || item;
-                htmlTablaExport += `
-                    <tr>
-                        <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px;">${item.archivo || `Doc_${index+1}`}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; font-family: monospace;">${d.rfc_emisor || 'N/A'}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right;">${formatMoney(d.subtotal)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; color: #059669;">${formatMoney(d.total_traslados)}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; font-weight: bold; color: #111827;">${formatMoney(d.total)}</td>
-                    </tr>
-                `;
-            }
+    function exportarExcel() {
+        if(datosEscaneados.length === 0) return;
+        const headers = ['Archivo', 'RFC_Emisor', 'Fecha', 'Cuenta_IA', 'Subtotal', 'IVA', 'Propinas', 'Total', 'Metodo'];
+        const rows = datosEscaneados.filter(x => x.status === 'success').map(x => {
+            const d = x.datos || x;
+            return `"${x.archivo}","${d.rfc_emisor}","${d.fecha}","${d.cuenta_sugerida}",${d.subtotal},${d.total_traslados},${d.otros_cargos || 0},${d.total},"${d.metodo_pago}"`;
         });
-
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
-                
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Reporte de Digitalización de Gastos (OCR IA)</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Comprobación de erogaciones y tickets validados matemáticamente.</p>
-                </div>
-                
-                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #111827;">${globales.docs}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">Docs Válidos</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #111827;">${formatMoney(globales.subtotal)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">Base (Subtotal)</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #059669;">${formatMoney(globales.impuestos)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">IVA Extraído</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #2563EB;">${formatMoney(globales.total)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">Total General</span></div>
-                </div>
-
-                <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <thead style="background: #111827; color: white;">
-                        <tr>
-                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Archivo Origen</th>
-                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">RFC Emisor</th>
-                            <th style="padding: 10px; text-align: right; text-transform: uppercase;">Subtotal</th>
-                            <th style="padding: 10px; text-align: right; text-transform: uppercase;">Impuestos</th>
-                            <th style="padding: 10px; text-align: right; text-transform: uppercase;">Total Aprobado</th>
-                        </tr>
-                    </thead>
-                    <tbody>${htmlTablaExport}</tbody>
-                </table>
-                
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace;">
-                    Este reporte consolida los recibos físicos extraídos para su captura contable. <br>
-                    Plataforma: AuditoriaXML.mx
-                </div>
-            </div>
-        `;
-
-        const opt = {
-            margin:       10,
-            filename:     `Reporte_Gastos_OCR_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+        const csv = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csv));
+        link.setAttribute("download", `Layout_Gastos_OCR_${Date.now()}.csv`);
+        link.click();
     }
 
-    function descargarXML_Lote() {
-        if (datosExtraidosGlobal.length === 0) return;
-        
-        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<AuditorIA_Extraccion_Lote FechaGeneracion="${new Date().toISOString()}">\n`;
-        
-        datosExtraidosGlobal.forEach((item, index) => {
-            if (item.status === 'success') {
-                const d = item.datos || item;
-                xml += `  <Comprobante ArchivoOrigen="${item.archivo || `Doc_${index+1}`}">\n`;
-                xml += `    <Emisor Rfc="${d.rfc_emisor || ''}"/>\n`;
-                xml += `    <Receptor Rfc="${d.rfc_receptor || ''}"/>\n`;
-                xml += `    <Totales SubTotal="${d.subtotal || 0}" TotalTraslados="${d.total_traslados || 0}" TotalRetenciones="${d.total_retenciones || 0}" Total="${d.total || 0}"/>\n`;
-                xml += `    <Conceptos>\n`;
-                if(d.conceptos && d.conceptos.length > 0) {
-                    d.conceptos.forEach(c => {
-                        xml += `      <Concepto Descripcion="${c.descripcion.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')}" Importe="${c.importe || 0}"/>\n`;
-                    });
-                }
-                xml += `    </Conceptos>\n`;
-                xml += `  </Comprobante>\n`;
-            }
+    function descargarXML_Batch() {
+        if(datosEscaneados.length === 0) return;
+        let xml = `<?xml version="1.0" encoding="UTF-8"?><LoteAuditorIA Fecha="${new Date().toISOString()}">`;
+        datosEscaneados.filter(x => x.status === 'success').forEach(x => {
+            const d = x.datos || x;
+            xml += `<Gasto Archivo="${x.archivo}" RFC="${d.rfc_emisor}" Total="${d.total}" IVA="${d.total_traslados}" Cuenta="${d.cuenta_sugerida}"/>`;
         });
-        
-        xml += `</AuditorIA_Extraccion_Lote>`;
-        
-        const blob = new Blob([xml], { type: 'text/xml' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `AuditorIA_Extraccion_${Date.now()}.xml`;
-        a.click();
-        window.URL.revokeObjectURL(url);
+        xml += `</LoteAuditorIA>`;
+        const blob = new Blob([xml], {type: "text/xml"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Estructura_XML_Proxy.xml";
+        link.click();
+    }
+    
+    function descargarReportePDF() {
+        if (globales.docs === 0) return;
+        const renderContainer = document.getElementById('hiddenPdfRender');
+        renderContainer.innerHTML = `
+            <div style="width: 800px; padding: 40px; font-family: sans-serif;">
+                <h1 style="border-bottom: 2px solid #111827; padding-bottom: 10px;">Reporte Ejecutivo de Gastos OCR</h1>
+                <div style="display:flex; justify-content: space-between; background:#f4f4f4; padding:20px; border-radius:10px; margin: 20px 0;">
+                    <div><strong>Total Docs:</strong> ${globales.docs}</div>
+                    <div><strong>Total Gasto:</strong> ${formatMoney(globales.total)}</div>
+                </div>
+                <p>Este reporte contiene la digitalización de tickets físicos validados mediante IA.</p>
+                <div style="font-size:10px; color:#999; margin-top:50px; text-align:center;">Generado por AuditorIA.mx</div>
+            </div>
+        `;
+        html2pdf().set({ margin: 10, filename: 'Reporte_Gastos_IA.pdf', jsPDF: { format: 'letter' } }).from(renderContainer.firstElementChild).save();
     }
 </script>
 </body>
