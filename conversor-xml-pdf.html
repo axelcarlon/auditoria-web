@@ -59,16 +59,19 @@
         .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block;}
+        /* Paywall Modal Rediseñado */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.95); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
+        .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
+        .modal-icon { width: 72px; height: 72px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
+        .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 15px; color: var(--text-main); letter-spacing: -0.5px; }
+        .modal-text { font-size: 15px; color: var(--text-muted); margin-bottom: 30px; line-height: 1.6; }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+        .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        /* CSS de renderizado crítico: Debe tener width explícito y visibilidad oculta, NO left: -9999px */
-        #hiddenPdfRender { position: absolute; top: 0; left: 0; width: 800px; z-index: -1000; visibility: hidden; background: white; }
+        /* CSS de renderizado crítico */
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; width: 800px; z-index: -1000; background: white; }
         .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
 
         @media (max-width: 768px) {
@@ -84,10 +87,12 @@
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has consumido tus conversiones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para exportar cientos de facturas en ZIP y sin marcas de agua.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
+        <div class="modal-icon">
+            <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h2 class="modal-title">Potencia tu Auditoría</h2>
+        <p class="modal-text">Has alcanzado el límite gratuito. Actualiza a <strong>AuditorIA Pro</strong> para procesar repositorios masivos y exportar PDFs limpios sin marcas de agua.</p>
+        <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
 
@@ -115,7 +120,6 @@
         <div class="toolbar">
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
                 <div class="stats-badge" id="statsText">0 Archivos Procesados</div>
-                <span style="font-size: 12px; color: var(--brand); font-weight: bold;">*Versión Gratuita (Marca de Agua)</span>
             </div>
             <div style="display: flex; gap: 10px;">
                 <button onclick="window.location.reload()" class="btn-restart">Nuevo Lote</button>
@@ -253,8 +257,7 @@
         const retenciones = nodoImpuestosGlobal ? formatMoney(getAttr(nodoImpuestosGlobal, 'TotalImpuestosRetenidos')) : '$0.00';
 
         return `
-            <div style="width: 100%; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+            <div style="width: 100%; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; position: relative;">
                 
                 <div style="display: flex; justify-content: space-between; border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1;">
                     <div style="max-width: 60%;">
@@ -317,14 +320,27 @@
         `;
     }
 
+    // El secreto para incrustar la marca de agua con la API nativa de jsPDF en TODAS las páginas
+    function agregarMarcaAgua(pdf) {
+        const totalPages = pdf.internal.getNumberOfPages();
+        pdf.setTextColor(200, 200, 200); // Gris claro
+        pdf.setFontSize(50);
+        
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            // Rotar el texto y centrarlo (API nativa)
+            pdf.text('Generado por AuditorIA - Versión Gratuita', 40, 150, { angle: -35, opacity: 0.1 });
+        }
+    }
+
     function configurarPDFOpt(filename) {
         return {
             margin:       [10, 10, 15, 10],
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: false },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, windowWidth: 800 },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            pagebreak:    { mode: ['css', 'legacy'] }
         };
     }
 
@@ -339,7 +355,13 @@
         renderContainer.innerHTML = armarEstructuraImpresion(fac);
 
         try {
-            await html2pdf().set(configurarPDFOpt(`${fac.uuid}.pdf`)).from(renderContainer.firstElementChild).save();
+            const opt = configurarPDFOpt(`${fac.uuid}.pdf`);
+            
+            // Generamos el PDF usando promesas y agregamos la marca de agua al objeto instanciado
+            await html2pdf().set(opt).from(renderContainer.firstElementChild).toPdf().get('pdf').then(function (pdf) {
+                agregarMarcaAgua(pdf);
+            }).save();
+
         } catch(e) {
             alert("Error al generar el documento. Verifica la memoria del navegador.");
         } finally {
@@ -367,7 +389,12 @@
                 progressText.innerText = `Procesando ${i + 1} de ${facturasValidas.length}...`;
                 
                 renderContainer.innerHTML = armarEstructuraImpresion(fac);
-                const pdfBlob = await html2pdf().set(configurarPDFOpt(`${fac.uuid}.pdf`)).from(renderContainer.firstElementChild).output('blob');
+                const opt = configurarPDFOpt(`${fac.uuid}.pdf`);
+                
+                // Generamos el Blob inyectando la marca de agua antes de pasarlo al ZIP
+                const pdfBlob = await html2pdf().set(opt).from(renderContainer.firstElementChild).toPdf().get('pdf').then(function (pdf) {
+                    agregarMarcaAgua(pdf);
+                }).output('blob');
                 
                 let finalName = fac.fileName.toLowerCase().replace('.xml', '.pdf');
                 zip.file(finalName, pdfBlob);
