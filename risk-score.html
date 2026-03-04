@@ -216,7 +216,7 @@
             <div class="advisor-subtitle">Revisa y edita las conclusiones del hallazgo técnico antes de emitir el reporte oficial.</div>
             
             <textarea id="dictamenInput" class="editable-dictamen" placeholder="El motor está redactando las conclusiones..."></textarea>
-            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado de manera vectorial en el PDF.</div>
+            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado de manera vectorial en la Página 2 del PDF.</div>
         </div>
 
         <div class="toolbar">
@@ -240,7 +240,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // Asignación de VFS (Evita el colapso silencioso de PDFMake al buscar las fuentes nativas)
     if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
         pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
     }
@@ -481,8 +480,9 @@
             });
             const data = await res.json();
             
-            // Blindaje Anti-Undefined: Busca la respuesta correcta o asigna una por defecto
-            const textoDictamen = data.analisis_legal || data.dictamen || data.mensaje || "Análisis técnico completado sin observaciones de alto impacto. Los controles internos actuales previenen riesgos de fiscalización mayores.";
+            // Blindaje Anti-Undefined y purga de Markdown
+            let textoDictamen = data.analisis_legal || data.dictamen || data.mensaje || "Análisis técnico completado sin observaciones de alto impacto. Los controles internos actuales previenen riesgos de fiscalización mayores.";
+            textoDictamen = textoDictamen.replace(/[*#_]/g, ''); 
             
             document.getElementById('dictamenInput').value = textoDictamen;
             finishProgress();
@@ -492,29 +492,20 @@
         }
     }
 
-    // =========================================================================
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - BLINDADO Y AISLADO CONTRA CHOQUES
-    // =========================================================================
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
         btn.innerText = "Ensamblando Reporte...";
         btn.disabled = true;
 
-        // El setTimeout permite al navegador refrescar el texto del botón antes de congelar el hilo principal
         setTimeout(() => {
             try {
-                let finalDictamen = document.getElementById('dictamenInput').value;
-                if (!finalDictamen || finalDictamen === "undefined") {
-                    finalDictamen = 'Análisis completado. Sin observaciones adicionales que reportar en este periodo.';
-                }
-                
+                let finalDictamen = document.getElementById('dictamenInput').value || 'Sin observaciones adicionales.';
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 
                 let chartImg = null;
                 try { chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null; } catch(e){}
 
-                // Marca de agua dinámica
                 const pdfBackground = function(currentPage, pageSize) {
                     if (!isPro) {
                         return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
@@ -522,7 +513,6 @@
                     return null;
                 };
 
-                // Pila dinámica para la primera columna (Evita colapsos si la gráfica falla)
                 const leftColumnStack = [];
                 if (chartImg) {
                     leftColumnStack.push({ image: chartImg, width: 140, alignment: 'center', margin: [0, 0, 0, -35] });
@@ -530,7 +520,6 @@
                 leftColumnStack.push({ text: String(dataReporte.score), alignment: 'center', fontSize: 50, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] });
                 leftColumnStack.push({ text: String(dataReporte.status), alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color, margin: [0, 5, 0, 20] });
 
-                // Blindaje contra Arrays vacíos (Evita que el PDF colapse al renderizar listas vacías)
                 const planAccion = (dataReporte.recomendaciones && dataReporte.recomendaciones.length > 0) 
                     ? { ul: dataReporte.recomendaciones, fontSize: 11, lineHeight: 1.5, margin: [10, 0, 0, 0] }
                     : { text: "No se detectaron riesgos materiales inmediatos. Mantener los controles fiscales actuales.", fontSize: 11, color: '#4B5563', margin: [10, 0, 0, 0] };
@@ -539,9 +528,7 @@
                     pageSize: 'LETTER',
                     pageMargins: [50, 60, 50, 60],
                     background: pdfBackground,
-                    defaultStyle: { 
-                        lineHeight: 1.5 
-                    },
+                    defaultStyle: { lineHeight: 1.5 },
                     content: [
                         { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
                         {
@@ -555,10 +542,7 @@
                         { text: '\n1. RESUMEN EJECUTIVO', style: 'sectionTitle' },
                         {
                             columns: [
-                                {
-                                    width: '45%',
-                                    stack: leftColumnStack
-                                },
+                                { width: '45%', stack: leftColumnStack },
                                 {
                                     width: '55%',
                                     stack: [
@@ -625,8 +609,7 @@
                         { text: '\n3. METODOLOGÍA DE EVALUACIÓN (TADS)', style: 'sectionTitle' },
                         { text: 'El Tax Analytics & Detection System (TADS) evalúa la probabilidad de una auditoría o requerimiento del Servicio de Administración Tributaria (SAT) mediante el cruce de metadatos XML. El algoritmo pondera múltiples vectores críticos de cumplimiento (Art. 69-B, Art. 29 CFF, Materialidad).', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
 
-                        // Eliminado el pageBreak: 'before' para que no deje hojas en blanco y fluya natural
-                        { text: '\n4. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle' },
+                        { text: '\n4. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle', pageBreak: 'before' },
                         { text: finalDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] },
 
                         { text: '\n5. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
@@ -641,7 +624,7 @@
                     styles: {
                         header: { fontSize: 15, bold: true, color: '#111827' },
                         subheader: { fontSize: 9, color: '#6B7280' },
-                        sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true },
+                        sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10] },
                         tableExample: { margin: [0, 10, 0, 10] },
                         tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
                         tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
@@ -650,7 +633,6 @@
 
                 pdfMake.createPdf(docDefinition).download(`RiskScore_Reporte_${Date.now()}.pdf`);
                 
-                // Retraso seguro para reactivar el botón
                 setTimeout(() => {
                     btn.innerHTML = oldText;
                     btn.disabled = false;
@@ -662,7 +644,7 @@
                 btn.innerHTML = oldText;
                 btn.disabled = false;
             }
-        }, 300); // 300ms de respiro para la UI
+        }, 200); 
     }
 </script>
 </body>
