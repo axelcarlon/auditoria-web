@@ -32,25 +32,24 @@
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 30px; }
         .upload-section:hover { background: rgba(37, 99, 235, 0.05); transform: scale(1.01);}
 
-        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-action:hover { opacity: 0.9; }
 
         .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-top: 30px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 20px; border-radius: 8px; text-align: center; }
         .data-label { font-size: 12px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 10px; }
-        .data-value { font-size: 28px; color: var(--text-main); font-weight: 900; }
+        .data-value { font-size: 28px; font-weight: 900; color: var(--text-main); }
         
-        .alert-risk { padding: 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; font-size: 15px; text-align: center; }
-        .risk-BAJO { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
-        .risk-MEDIO { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
-        .risk-ALTO { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
+        .alert-risk { padding: 20px; border-radius: 8px; margin-bottom: 30px; font-weight: 800; font-size: 16px; text-align: center; border: 2px solid transparent; letter-spacing: 0.5px;}
+        .risk-BAJO { background: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
+        .risk-MEDIO { background: #FEF3C7; color: #92400E; border-color: #FCD34D; }
+        .risk-ALTO { background: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
 
         .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
-        .spinner { border: 3px solid rgba(37, 99, 235, 0.2); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Botones Compartir */
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px; display: none;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
         .social-btn:hover { opacity: 0.9; }
@@ -71,13 +70,13 @@
 <script src="navbar.js"></script>
 
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;">
+    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
         <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ANÁLISIS DE RIESGO SECTORIAL</span>
         <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Auditoría de Tasa Efectiva de ISR</h1>
-        <p style="color: var(--text-muted);">Compara tu carga tributaria contra los parámetros del Plan Maestro de Fiscalización del SAT para tu industria.</p>
+        <p style="color: var(--text-muted);">El SAT utiliza parámetros de tasa efectiva para disparar auditorías. Compara tu carga tributaria contra los rangos oficiales del Plan Maestro de Fiscalización.</p>
     </div>
 
-    <div class="config-card">
+    <div class="config-card" id="configCard">
         <div class="form-group">
             <label>Selecciona tu Sector Económico (SAT)</label>
             <select id="sectorSelect">
@@ -110,46 +109,50 @@
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
         <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-        <p style="font-weight: 600; margin: 0; font-size: 18px;" id="xmlText">O Extraer Automáticamente desde XML</p>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Sube facturas de Ingreso (I) emitidas o Pagos Provisionales. La extracción ocurre en tu navegador.</p>
+        <p style="font-weight: 700; margin: 0; font-size: 18px;" id="xmlText">O Extraer Automáticamente desde XML</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Sube tus facturas de ingreso emitidas (PUE) para un cálculo preciso.</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
     </div>
 
-    <button id="btnEjecutar" class="btn-action" onclick="ejecutarAnalisis()">EVALUAR RIESGO SECTORIAL</button>
+    <button id="btnEjecutar" class="btn-action" onclick="ejecutarAnalisis()">EFECTUAR BENCHMARKING SECTORIAL</button>
 
     <div id="iaLoading" class="ia-loading">
-        <div class="spinner"></div> Analizando métricas contra el Plan Maestro de Fiscalización del SAT...
+        <div class="spinner"></div> El motor IA está cruzando tus métricas contra el Plan Maestro de Fiscalización...
     </div>
 
     <div class="results-container" id="results">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-            <button onclick="descargarDictamenPDF()" style="background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Descargar Dictamen Sectorial PDF</button>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 25px; gap: 10px;">
+            <button onclick="window.location.reload()" class="btn-restart">Cargar Otros Datos</button>
+            <button onclick="descargarDictamenPDF()" style="background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Descargar Dictamen Sectorial
+            </button>
         </div>
+
+        <div id="riskAlert" class="alert-risk"></div>
 
         <div class="grid-3">
             <div class="data-box">
-                <div class="data-label">Ingresos Computados</div>
+                <div class="data-label">Ingresos Acumulables</div>
                 <div class="data-value" id="resIngresos">$0.00</div>
             </div>
             <div class="data-box">
-                <div class="data-label">ISR Contabilizado</div>
+                <div class="data-label">ISR Enterado</div>
                 <div class="data-value" id="resIsr">$0.00</div>
             </div>
             <div class="data-box" style="border-color: var(--brand); background: #EFF6FF;">
-                <div class="data-label" style="color: var(--brand);">TASA EFECTIVA DE ISR</div>
+                <div class="data-label" style="color: var(--brand);">Tu Tasa Efectiva</div>
                 <div class="data-value" id="resTasa" style="color: var(--brand);">0.00%</div>
             </div>
         </div>
 
-        <div id="riskAlert" class="alert-risk"></div>
-        
-        <div style="background: var(--bg-primary); border: 1px solid var(--border); padding: 20px; border-radius: 8px;">
-            <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Dictamen Forense IA</h3>
-            <p id="resDictamen" style="font-size: 15px; line-height: 1.6; margin-bottom: 0; color: var(--text-main); text-align: justify;"></p>
+        <div style="background: var(--bg-primary); border: 1px solid var(--border); padding: 25px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Dictamen Estratégico IA</h3>
+            <p id="resDictamen" style="font-size: 15px; line-height: 1.7; margin-bottom: 0; color: var(--text-main); text-align: justify;"></p>
         </div>
 
         <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
+            <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Compartir esta herramienta con otros colegas:</p>
             <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20evaluar%20mi%20riesgo%20de%20auditoría%20comparando%20mi%20tasa%20efectiva%20de%20ISR%20con%20AuditorIA:&url=https://auditoriaxml.mx/tasa-efectiva.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/tasa-efectiva.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
             <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/tasa-efectiva.html" target="_blank" class="social-btn btn-fb">Facebook</a>
@@ -174,25 +177,20 @@
 
     const inputXml = document.getElementById('xmlInput');
     const dropZone = document.getElementById('dropZone');
-    
-    let ingresosXml = 0; 
-    let isrXml = 0;
+    let ingresosXml = 0; let isrXml = 0;
     let dataReporte = {};
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; dropZone.style.background = "var(--bg-secondary)"; }));
     dropZone.addEventListener('drop', e => processXmls(e.dataTransfer.files));
     inputXml.addEventListener('change', e => processXmls(e.target.files));
 
     async function processXmls(files) {
         if(files.length === 0) return;
-        document.getElementById('xmlText').innerText = `${files.length} archivos procesados y extraídos en memoria.`;
-        dropZone.style.borderColor = "var(--success)";
-        
-        ingresosXml = 0; 
-        isrXml = 0;
+        document.getElementById('xmlText').innerText = `${files.length} archivos detectados`;
+        ingresosXml = 0; isrXml = 0;
 
         const promises = Array.from(files).map(file => {
             return new Promise((resolve) => {
@@ -204,8 +202,6 @@
                         if (cfdi) {
                             const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
                             const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
-                            
-                            // Solo suma ingresos si el CFDI es de Tipo "I" (Ingreso)
                             if (tipo === 'I') ingresosXml += subtotal;
 
                             const retenciones = xmlDoc.getElementsByTagName('cfdi:Retencion');
@@ -225,6 +221,7 @@
         await Promise.all(promises);
         document.getElementById('inputIngresos').value = ingresosXml.toFixed(2);
         document.getElementById('inputIsr').value = isrXml.toFixed(2);
+        document.getElementById('dropZone').style.borderColor = "var(--success)";
     }
 
     async function ejecutarAnalisis() {
@@ -234,11 +231,13 @@
         const ingresos = parseFloat(document.getElementById('inputIngresos').value || 0);
         const isr = parseFloat(document.getElementById('inputIsr').value || 0);
 
-        if (ingresos <= 0) return alert("Se requieren ingresos mayores a cero para calcular la tasa efectiva.");
+        if (ingresos <= 0) return alert("Se requieren ingresos mayores a cero para el cálculo.");
 
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('configCard').style.display = 'none';
+        document.getElementById('dropZone').style.display = 'none';
         document.getElementById('btnEjecutar').style.display = 'none';
         document.getElementById('iaLoading').style.display = 'block';
-        document.getElementById('results').style.display = 'none';
 
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/tasa-efectiva", {
@@ -256,11 +255,10 @@
 
             const riskBox = document.getElementById('riskAlert');
             riskBox.className = `alert-risk risk-${data.nivel_riesgo}`;
-            riskBox.innerHTML = `NIVEL DE RIESGO DE AUDITORÍA: <strong>${data.nivel_riesgo}</strong>`;
+            riskBox.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:8px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> RIESGO DE FISCALIZACIÓN: <strong>${data.nivel_riesgo}</strong>`;
 
             document.getElementById('resDictamen').innerText = data.dictamen_sectorial;
 
-            // Guardar para exportar PDF
             dataReporte = {
                 sector: sector, ingresos: formatMoney(ingresos), isr: formatMoney(isr),
                 tasa: data.tasa_calculada, riesgo: data.nivel_riesgo, dictamen: data.dictamen_sectorial,
@@ -271,13 +269,10 @@
             document.getElementById('iaLoading').style.display = 'none';
             document.getElementById('results').style.display = 'block';
             document.getElementById('shareContainer').style.display = 'block';
-            document.getElementById('btnEjecutar').style.display = 'block';
-            document.getElementById('btnEjecutar').innerText = 'RECALCULAR TASA EFECTIVA';
 
         } catch (e) {
-            alert("Error conectando con el motor de IA AuditorIA. Inténtalo de nuevo.");
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('btnEjecutar').style.display = 'block';
+            alert("Error al contactar al motor AuditorIA. Intenta nuevamente.");
+            window.location.reload();
         }
     }
 
@@ -290,48 +285,39 @@
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827;">Dictamen de Tasa Efectiva de ISR</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Comparativa de riesgo frente al Plan Maestro de Fiscalización del SAT.</p>
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen Sectorial de Tasa Efectiva de ISR</h1>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Análisis Preventivo conforme al Plan Maestro de Fiscalización del SAT.</p>
                 </div>
                 
                 <div style="margin-bottom: 20px; position: relative; z-index: 1;">
-                    <strong style="color: #4B5563; font-size: 12px; text-transform: uppercase;">Sector Económico Analizado:</strong>
+                    <strong style="color: #4B5563; font-size: 11px; text-transform: uppercase; font-weight: bold;">Sector Económico Analizado:</strong>
                     <div style="font-size: 18px; color: #111827; font-weight: bold; margin-top: 5px;">${dataReporte.sector}</div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; padding: 25px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div>
-                        <strong style="display: block; font-size: 11px; color: #6B7280; text-transform: uppercase;">Ingresos Computados</strong>
-                        <span style="font-size: 20px; font-weight: bold; color: #111827; font-family: monospace;">${dataReporte.ingresos}</span>
-                    </div>
-                    <div>
-                        <strong style="display: block; font-size: 11px; color: #6B7280; text-transform: uppercase;">ISR Contabilizado</strong>
-                        <span style="font-size: 20px; font-weight: bold; color: #111827; font-family: monospace;">${dataReporte.isr}</span>
-                    </div>
-                    <div style="text-align: right;">
-                        <strong style="display: block; font-size: 11px; color: #2563EB; text-transform: uppercase;">Tasa Efectiva ISR</strong>
-                        <span style="font-size: 28px; font-weight: 900; color: #2563EB;">${dataReporte.tasa}%</span>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; padding: 25px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div><strong style="display: block; font-size: 11px; color: #6B7280; text-transform: uppercase;">Ingresos Computados</strong><span style="font-size: 20px; font-weight: bold; color: #111827; font-family: monospace;">${dataReporte.ingresos}</span></div>
+                    <div><strong style="display: block; font-size: 11px; color: #6B7280; text-transform: uppercase;">ISR Enterado</strong><span style="font-size: 20px; font-weight: bold; color: #111827; font-family: monospace;">${dataReporte.isr}</span></div>
+                    <div style="text-align: right;"><strong style="display: block; font-size: 11px; color: #2563EB; text-transform: uppercase;">Tasa Efectiva ISR</strong><span style="font-size: 28px; font-weight: 900; color: #2563EB;">${dataReporte.tasa}%</span></div>
                 </div>
 
-                <div style="background: ${dataReporte.bgRiesgo}; color: ${dataReporte.colorRiesgo}; padding: 15px; border-radius: 6px; font-weight: bold; text-align: center; margin-bottom: 30px; border: 1px solid ${dataReporte.colorRiesgo}; position: relative; z-index: 1;">
-                    NIVEL DE RIESGO DE AUDITORÍA: ${dataReporte.riesgo}
+                <div style="background: ${dataReporte.bgRiesgo}; color: ${dataReporte.colorRiesgo}; padding: 15px; border-radius: 6px; font-weight: 900; text-align: center; margin-bottom: 30px; border: 1px solid ${dataReporte.colorRiesgo}; position: relative; z-index: 1; text-transform: uppercase;">
+                    RIESGO DE FISCALIZACIÓN: ${dataReporte.riesgo}
                 </div>
 
                 <div style="margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">Análisis Forense IA</h3>
-                    <p style="font-size: 13px; line-height: 1.6; text-align: justify; color: #111827;">${dataReporte.dictamen}</p>
+                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 15px;">Dictamen Estratégico IA</h3>
+                    <p style="font-size: 13px; line-height: 1.7; text-align: justify; color: #111827;">${dataReporte.dictamen}</p>
                 </div>
                 
                 <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Plataforma: AuditoriaXML.mx | La información aquí contenida es preventiva y sujeta a los parámetros de la autoridad fiscal (LISR).
+                    Plataforma: AuditoriaXML.mx | Este dictamen es un papel de trabajo de uso preventivo para mitigar riesgos fiscales corporativos.
                 </div>
             </div>
         `;
 
         const opt = {
             margin:       10,
-            filename:     `Tasa_Efectiva_ISR_${Date.now()}.pdf`,
+            filename:     `Dictamen_TasaEfectiva_${Date.now()}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
