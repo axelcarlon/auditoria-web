@@ -252,7 +252,6 @@
             if(progress > 95) progress = 95;
             fill.style.width = `${progress}%`;
             text.innerText = `${Math.floor(progress)}%`;
-
             if(progress > 40) document.getElementById('progressStatusText').innerText = "Redactando constancia de evaluación técnica...";
         }, 250);
     }
@@ -283,7 +282,7 @@
             return;
         }
 
-        document.getElementById('resultTitle').innerText = "Consultando bases...";
+        document.getElementById('resultTitle').innerText = "Cotejando bases...";
         document.getElementById('resultDesc').innerText = "Cotejando contra el Diario Oficial de la Federación.";
 
         const tipoPersona = rfc.length === 12 ? 'Persona Moral' : 'Persona Física';
@@ -305,12 +304,12 @@
                 dataReporte.desc = 'Contribuyente boletinado por presunta inexistencia de operaciones.';
                 consultarDictamenRemoto(rfc, "Se detectó un EFO definitivo en las listas oficiales. Indica las graves consecuencias penales y fiscales (Art. 113 Bis CFF) de deducir comprobantes de esta entidad.");
             } else {
-                mostrarResultado('SAFE', 'RFC Confiable', 'Este RFC NO se encuentra listado como EFO definitivo.');
-                dataReporte.status = 'LIMPIO - CUMPLIMIENTO OK';
+                mostrarResultado('SAFE', 'SIN REGISTROS CONDENATORIOS', 'Este RFC NO se encuentra listado como EFO definitivo.');
+                dataReporte.status = 'ESTATUS POSITIVO ART. 69-B';
                 dataReporte.color = '#065F46';
-                dataReporte.desc = 'El RFC consultado no presenta restricciones operativas en el Diario Oficial.';
+                dataReporte.desc = 'El contribuyente analizado no figura en los registros de presunción o definitividad de operaciones inexistentes.';
                 
-                const dictamenLimpio = "Resolución de Debida Diligencia:\n\nTras el cruce automatizado contra la matriz del SAT, certificamos que el RFC analizado no presenta inclusiones vinculadas al Artículo 69-B. Se autoriza la continuidad de las operaciones y la deducción de comprobantes fiscales de este proveedor.";
+                const dictamenLimpio = "Resolución de Debida Diligencia:\n\nTras el cruce automatizado contra la matriz del SAT, certificamos que el RFC analizado no presenta inclusiones vinculadas al Artículo 69-B del CFF. Se autoriza la continuidad de las operaciones comerciales y la deducción de comprobantes fiscales de este proveedor.";
                 dictamenInput.value = dictamenLimpio;
                 dataReporte.dictamen = dictamenLimpio;
                 initProgress(); finishProgress();
@@ -343,15 +342,10 @@
         }
     }
 
-    // =========================================================================
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - BLINDADO CONTRA CHOQUES
-    // =========================================================================
     function descargarReportePDF() {
-        if (!dataReporte.rfc) return;
-
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Ensamblando Constancia...";
+        btn.innerText = "Exportando...";
         btn.disabled = true;
 
         setTimeout(() => {
