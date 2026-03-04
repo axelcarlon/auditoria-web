@@ -223,7 +223,8 @@
         if (!file || !file.name.toLowerCase().endsWith('.xml')) return alert('Sube un archivo XML válido.');
         const reader = new FileReader();
         reader.onload = function(e) {
-            const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
             try {
                 const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
                 const rfc = emisor.getAttribute('Rfc');
@@ -251,6 +252,8 @@
             if(progress > 95) progress = 95;
             fill.style.width = `${progress}%`;
             text.innerText = `${Math.floor(progress)}%`;
+
+            if(progress > 40) document.getElementById('progressStatusText').innerText = "Redactando constancia de evaluación técnica...";
         }, 250);
     }
 
@@ -280,7 +283,7 @@
             return;
         }
 
-        document.getElementById('resultTitle').innerText = "Cotejando bases...";
+        document.getElementById('resultTitle').innerText = "Consultando bases...";
         document.getElementById('resultDesc').innerText = "Cotejando contra el Diario Oficial de la Federación.";
 
         const tipoPersona = rfc.length === 12 ? 'Persona Moral' : 'Persona Física';
@@ -300,7 +303,7 @@
                 dataReporte.status = 'RIESGO ALTO - EFO DEFINITIVO';
                 dataReporte.color = '#991B1B';
                 dataReporte.desc = 'Contribuyente boletinado por presunta inexistencia de operaciones.';
-                consultarDictamenRemoto(rfc, "Se detectó un EFO definitivo. Indica consecuencias penales (Art. 113 Bis CFF).");
+                consultarDictamenRemoto(rfc, "Se detectó un EFO definitivo en las listas oficiales. Indica las graves consecuencias penales y fiscales (Art. 113 Bis CFF) de deducir comprobantes de esta entidad.");
             } else {
                 mostrarResultado('SAFE', 'RFC Confiable', 'Este RFC NO se encuentra listado como EFO definitivo.');
                 dataReporte.status = 'LIMPIO - CUMPLIMIENTO OK';
@@ -340,24 +343,33 @@
         }
     }
 
+    // =========================================================================
+    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - BLINDADO CONTRA CHOQUES
+    // =========================================================================
     function descargarReportePDF() {
+        if (!dataReporte.rfc) return;
+
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Exportando...";
+        btn.innerText = "Ensamblando Constancia...";
         btn.disabled = true;
 
         setTimeout(() => {
             try {
+                dataReporte.dictamen = dictamenInput.value || 'Sin observaciones.';
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
-                const finalDictamen = dictamenInput.value;
                 const bgHeader = dataReporte.color === '#065F46' ? '#ECFDF5' : (dataReporte.color === '#991B1B' ? '#FEF2F2' : '#FEF3C7');
 
+                const pdfBackground = function(currentPage, pageSize) {
+                    if (!isPro) {
+                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    }
+                };
+
                 const docDef = {
-                    pageSize: 'LETTER', pageMargins: [50, 60, 50, 60],
-                    defaultStyle: { lineHeight: 1.5, font: 'Helvetica' },
-                    background: function(currentPage, pageSize) {
-                        if (!isPro) return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-                    },
+                    pageSize: 'LETTER', 
+                    pageMargins: [50, 60, 50, 60],
+                    defaultStyle: { lineHeight: 1.5 },
                     content: [
                         { text: 'VERIFICACIÓN DE CUMPLIMIENTO - USO INTERNO', alignment: 'center', color: '#111827', fontSize: 10, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
                         { columns: [ { text: 'Constancia de Idoneidad de Proveedores\nArt. 69-B (CFF)', fontSize: 14, bold: true }, { text: `Folio: ${dataReporte.hash}\nFecha: ${dataReporte.date}`, alignment: 'right', fontSize: 10, color: '#6B7280' } ] },
@@ -372,17 +384,23 @@
                                 ], margin: [20, 20, 20, 20]
                             }]] }
                         },
-                        { text: '1. RESULTADO TÉCNICO', fontSize: 12, bold: true, color: '#2563EB', borderBottom: true, margin: [0, 10, 0, 10] },
+                        { text: '1. RESULTADO TÉCNICO', fontSize: 12, bold: true, color: '#2563EB', margin: [0, 10, 0, 10] },
                         { text: String(dataReporte.desc), fontSize: 11 },
-                        { text: '\n2. DICTAMEN Y RESOLUCIÓN', fontSize: 12, bold: true, color: '#2563EB', borderBottom: true, margin: [0, 10, 0, 10] },
-                        { text: String(finalDictamen), fontSize: 11, alignment: 'justify' }
+                        { text: '\n2. DICTAMEN Y RESOLUCIÓN', fontSize: 12, bold: true, color: '#2563EB', margin: [0, 10, 0, 10] },
+                        { text: String(dataReporte.dictamen), fontSize: 11, alignment: 'justify' }
                     ],
                     footer: function(c, p) { return { text: `Este certificado acredita la debida diligencia de la empresa. Plataforma: AuditoriaXML.mx - Pág. ${c} de ${p}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] }; }
                 };
 
+                if(!isPro) { docDef.background = pdfBackground; }
+
                 pdfMake.createPdf(docDef).download(`Constancia_EFOS_${dataReporte.rfc}.pdf`);
                 setTimeout(() => { btn.innerHTML = oldText; btn.disabled = false; }, 1000);
-            } catch (e) { alert("Error de renderizado."); btn.innerHTML = oldText; btn.disabled = false; }
+            } catch (e) { 
+                console.error(e);
+                alert("Error de renderizado."); 
+                btn.innerHTML = oldText; btn.disabled = false; 
+            }
         }, 300);
     }
 </script>
