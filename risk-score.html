@@ -216,7 +216,7 @@
             <div class="advisor-subtitle">Revisa y edita las conclusiones del hallazgo técnico antes de emitir el reporte oficial.</div>
             
             <textarea id="dictamenInput" class="editable-dictamen" placeholder="El motor está redactando las conclusiones..."></textarea>
-            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado de manera vectorial en la Página 2 del PDF.</div>
+            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado de manera vectorial en el PDF.</div>
         </div>
 
         <div class="toolbar">
@@ -480,9 +480,8 @@
             });
             const data = await res.json();
             
-            // Blindaje Anti-Undefined y purga de Markdown
             let textoDictamen = data.analisis_legal || data.dictamen || data.mensaje || "Análisis técnico completado sin observaciones de alto impacto. Los controles internos actuales previenen riesgos de fiscalización mayores.";
-            textoDictamen = textoDictamen.replace(/[*#_]/g, ''); 
+            textoDictamen = textoDictamen.replace(/[*#_]/g, '').replace(/---+/g, '').trim(); 
             
             document.getElementById('dictamenInput').value = textoDictamen;
             finishProgress();
@@ -609,7 +608,7 @@
                         { text: '\n3. METODOLOGÍA DE EVALUACIÓN (TADS)', style: 'sectionTitle' },
                         { text: 'El Tax Analytics & Detection System (TADS) evalúa la probabilidad de una auditoría o requerimiento del Servicio de Administración Tributaria (SAT) mediante el cruce de metadatos XML. El algoritmo pondera múltiples vectores críticos de cumplimiento (Art. 69-B, Art. 29 CFF, Materialidad).', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
 
-                        { text: '\n4. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle', pageBreak: 'before' },
+                        { text: '\n4. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle' },
                         { text: finalDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] },
 
                         { text: '\n5. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
