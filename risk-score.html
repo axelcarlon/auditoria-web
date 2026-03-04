@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RiskScore: Semáforo de Riesgo Fiscal CFDI | AuditorIA</title>
-    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Nuestro algoritmo procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
+    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
     <link rel="canonical" href="https://auditoriaxml.mx/risk-score.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -13,7 +13,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
@@ -109,7 +109,7 @@
             <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
         </div>
         <h2 class="modal-title">Potencia tu Auditoría</h2>
-        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes ejecutivos ilimitados.</p>
+        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes corporativos ilimitados.</p>
         <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
@@ -173,10 +173,24 @@
                         </div>
                     </div>
                     <div class="kpi-box">
-                        <div class="kpi-title">Omisiones de REP (PPD)</div>
+                        <div class="kpi-title">Omisiones REP (PPD)</div>
                         <div class="kpi-data">
                             <span id="kpiPpd">0</span>
                             <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL DÍA</span>
+                        </div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-title">Riesgo Materialidad (Intangibles)</div>
+                        <div class="kpi-data">
+                            <span id="kpiMat">0</span>
+                            <span id="badgeMat" class="status-badge" style="background: #ECFDF5; color: #065F46;">BAJO</span>
+                        </div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-title">Notas de Crédito (Egresos)</div>
+                        <div class="kpi-data">
+                            <span id="kpiNc">0</span>
+                            <span id="badgeNc" class="status-badge" style="background: #ECFDF5; color: #065F46;">OK</span>
                         </div>
                     </div>
                 </div>
@@ -205,7 +219,7 @@
             <div class="advisor-subtitle">Revisa y edita las conclusiones del hallazgo antes de emitir el reporte oficial.</div>
             
             <textarea id="dictamenInput" class="editable-dictamen" placeholder="El motor está redactando las conclusiones..."></textarea>
-            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado exactamente igual en el PDF de manera vectorial.</div>
+            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado de manera vectorial en el PDF.</div>
         </div>
 
         <div class="toolbar">
@@ -274,7 +288,7 @@
             text.innerText = `${Math.floor(progress)}%`;
 
             if(progress > 20 && progress < 50) statusText.innerText = "Cotejando contra listas negras del DOF (Art. 69-B)...";
-            if(progress > 50 && progress < 80) statusText.innerText = "Validando trazabilidad de Complementos de Pago (REP)...";
+            if(progress > 50 && progress < 80) statusText.innerText = "Validando trazabilidad y riesgo de materialidad...";
             if(progress >= 80) statusText.innerText = "Redactando dictamen técnico de auditoría...";
         }, 400);
     }
@@ -309,6 +323,7 @@
         
         let score = 100;
         let countEfos = 0; let countMath = 0; let countPpdOrphans = 0;
+        let countMaterialidad = 0; let countNotasCredito = 0;
         let amountRisk = 0;
         let ppds = {}; let complementos = [];
 
@@ -341,6 +356,19 @@
                         const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
                         const uuid = timbre ? timbre.getAttribute('UUID').toUpperCase() : null;
 
+                        if (tipo === 'E') countNotasCredito++;
+
+                        // Validación Intangibles (Riesgo Materialidad)
+                        const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+                        let isIntangible = false;
+                        for(let i=0; i<conceptos.length; i++) {
+                            const desc = (conceptos[i].getAttribute('Descripcion') || '').toLowerCase();
+                            if(desc.includes('servicio') || desc.includes('asesor') || desc.includes('consultor') || desc.includes('honorario') || desc.includes('comisi')) {
+                                isIntangible = true; break;
+                            }
+                        }
+                        if(isIntangible) countMaterialidad++;
+
                         if ((tipo === 'I' || tipo === 'E') && (cfdi.getAttribute('MetodoPago') || '').toUpperCase() === 'PPD' && uuid) {
                             ppds[uuid] = { total: totalFactura, pagado: 0 };
                         } else if (tipo === 'P') {
@@ -369,12 +397,14 @@
         score -= (countEfos * 50);
         score -= (countMath * 5);
         score -= (countPpdOrphans * 10);
+        score -= (countMaterialidad * 5);
+        score -= (countNotasCredito * 5);
         if (score < 0) score = 0;
 
-        renderDashboard(score, files.length, countEfos, countMath, countPpdOrphans, amountRisk);
+        renderDashboard(score, files.length, countEfos, countMath, countPpdOrphans, countMaterialidad, countNotasCredito, amountRisk);
     }
 
-    function renderDashboard(score, totalFiles, efos, math, ppds, amountRisk) {
+    function renderDashboard(score, totalFiles, efos, math, ppds, materialidad, notas, amountRisk) {
         document.getElementById('results').style.display = 'block';
 
         document.getElementById('scoreText').innerText = score;
@@ -396,6 +426,14 @@
         const bPpd = document.getElementById('badgePpd');
         if (ppds > 0) { bPpd.innerText = "OMISIÓN"; bPpd.style.background = "#FFFBEB"; bPpd.style.color = "#D97706"; }
 
+        document.getElementById('kpiMat').innerText = materialidad;
+        const bMat = document.getElementById('badgeMat');
+        if (materialidad > 0) { bMat.innerText = "ALERTA"; bMat.style.background = "#FFFBEB"; bMat.style.color = "#D97706"; }
+
+        document.getElementById('kpiNc').innerText = notas;
+        const bNc = document.getElementById('badgeNc');
+        if (notas > 0) { bNc.innerText = "VERIFICAR"; bNc.style.background = "#FFFBEB"; bNc.style.color = "#D97706"; }
+
         let color = "#059669"; let status = "Probabilidad de Auditoría: NULA";
         if (score < 95) { color = "#D97706"; status = "Probabilidad de Auditoría: MODERADA"; }
         if (score < 70) { color = "#DC2626"; status = "Probabilidad de Auditoría: CRÍTICA"; }
@@ -411,15 +449,17 @@
         if(efos > 0) recomendaciones.push("SUSPENSIÓN INMEDIATA de pagos a los RFC detectados en el listado del Art. 69-B. Iniciar proceso de desvirtuación material (Art. 5-A).");
         if(ppds > 0) recomendaciones.push("Solicitar de carácter URGENTE la emisión de los Complementos de Recepción de Pagos (REP) faltantes a los proveedores para amparar el IVA acreditable y la deducción de ISR.");
         if(math > 0) recomendaciones.push("Revisar las facturas con diferencias en la suma de subtotales e impuestos. Solicitar sustitución de CFDI (Clave 04).");
+        if(materialidad > 0) recomendaciones.push("Se detectaron facturas de servicios intangibles. Es imperativo recabar los 'entregables', contratos y bitácoras para demostrar la materialidad (Razón de Negocio) ante el SAT.");
+        if(notas > 0) recomendaciones.push("Revisar el soporte documental de las Notas de Crédito emitidas. El SAT vigila cancelaciones indebidas de ingresos (Art. 29 CFF).");
 
         dataReporte = { 
-            score, status, color, totalFiles, efos, math, ppds, 
+            score, status, color, totalFiles, efos, math, ppds, materialidad, notasCredito: notas,
             amountRisk: formatMoney(amountRisk), 
             impacto: formatMoney(impactoReal),
             recomendaciones: recomendaciones
         };
         
-        consultarDictamen(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
+        consultarDictamen(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Intangibles: ${materialidad}, NC: ${notas}, Monto: ${formatMoney(amountRisk)}`);
     }
 
     function drawGauge(score, color) {
@@ -443,138 +483,144 @@
             document.getElementById('dictamenInput').value = data.analisis_legal;
             finishProgress();
         } catch (err) { 
-            document.getElementById('dictamenInput').value = "Análisis no disponible por fallo de conexión. Por favor evalúe los indicadores técnicos mostrados en el resumen.";
+            document.getElementById('dictamenInput').value = "Análisis no disponible por fallo de conexión. Por favor evalúe los indicadores técnicos mostrados en el resumen corporativo.";
             finishProgress();
         }
     }
 
-    // =========================================================================
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - MARGENES AMPLIOS, SALTO ORDENADO Y ESPACIADO
-    // =========================================================================
+    // 🚀 MOTOR DECLARATIVO (PDFMAKE) 100% AISLADO
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Exportando Reporte...";
+        btn.innerText = "Ensamblando Reporte...";
         btn.disabled = true;
 
-        const finalDictamen = document.getElementById('dictamenInput').value;
-        const isPro = localStorage.getItem('auditoria_pro') === 'true';
-        const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null;
-
-        const pdfBackground = function(currentPage, pageSize) {
-            if (!isPro) {
-                return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.15, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-            }
-            return "";
-        };
-
-        const docDefinition = {
-            pageSize: 'LETTER',
-            pageMargins: [50, 60, 50, 60], // Márgenes más amplios (Estilo Word)
-            background: pdfBackground,
-            defaultStyle: {
-                font: 'Helvetica',
-                lineHeight: 1.5 // Espaciado de línea amplio y elegante
-            },
-            content: [
-                { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
+        // setTimeout para permitir que el botón cambie visualmente antes del proceso asíncrono pesado
+        setTimeout(() => {
+            try {
+                const finalDictamen = document.getElementById('dictamenInput').value;
+                const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 
-                {
-                    columns: [
-                        { text: 'Reporte Ejecutivo de Riesgo Fiscal\nModelo TADS (Tax Analytics & Detection System)', style: 'header' },
-                        { text: `Folio: RS-${Date.now()}\nFecha: ${new Date().toLocaleDateString('es-MX')}`, alignment: 'right', style: 'subheader' }
-                    ]
-                },
-                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
-                
-                { text: '\n1. RESUMEN EJECUTIVO', style: 'sectionTitle' },
-                {
-                    columns: [
+                let chartImg = null;
+                try { chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null; } catch(e){}
+
+                const docDefinition = {
+                    pageSize: 'LETTER',
+                    pageMargins: [50, 60, 50, 60],
+                    defaultStyle: { font: 'Helvetica', lineHeight: 1.5 },
+                    content: [
+                        { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
                         {
-                            width: '45%',
-                            stack: [
-                                chartImg ? { image: chartImg, width: 150, alignment: 'center', margin: [0, 10, 0, -35] } : {},
-                                { text: `${dataReporte.score}`, alignment: 'center', fontSize: 50, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] },
-                                { text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color, margin: [0, 5, 0, 20] }
+                            columns: [
+                                { text: 'Reporte Ejecutivo de Riesgo Fiscal\nModelo TADS (Tax Analytics & Detection System)', style: 'header' },
+                                { text: `Folio: RS-${Date.now()}\nFecha: ${new Date().toLocaleDateString('es-MX')}`, alignment: 'right', style: 'subheader' }
                             ]
                         },
+                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
+                        
+                        { text: '\n1. RESUMEN EJECUTIVO', style: 'sectionTitle' },
                         {
-                            width: '55%',
-                            stack: [
-                                { text: 'Métricas de Exposición Base:', bold: true, margin: [0, 5, 0, 5], fontSize: 11 },
+                            columns: [
                                 {
-                                    table: {
-                                        widths: ['*', 'auto'],
-                                        body: [
-                                            [{text: 'Documentos Auditados', fontSize: 10}, { text: dataReporte.totalFiles, bold: true, fontSize: 10 }],
-                                            [{text: 'Alertas EFOS (Art. 69-B)', fontSize: 10}, { text: dataReporte.efos, color: dataReporte.efos > 0 ? '#dc2626' : '#059669', bold: true, fontSize: 10 }],
-                                            [{text: 'Errores Matemáticos', fontSize: 10}, { text: dataReporte.math, color: dataReporte.math > 0 ? '#d97706' : '#059669', bold: true, fontSize: 10 }],
-                                            [{text: 'Omisiones REP (Facturas PPD)', fontSize: 10}, { text: dataReporte.ppds, color: dataReporte.ppds > 0 ? '#dc2626' : '#059669', bold: true, fontSize: 10 }]
-                                        ]
-                                    },
-                                    layout: 'lightHorizontalLines'
+                                    width: '45%',
+                                    stack: [] // Llenado dinámicamente abajo
                                 },
-                                { text: '\nImpacto Financiero Calculado:', bold: true, margin: [0, 10, 0, 5], fontSize: 11 },
                                 {
-                                    table: {
-                                        widths: ['*', 'auto'],
-                                        body: [
-                                            [{text: 'Capital Base en Riesgo', fontSize: 10}, { text: dataReporte.amountRisk, bold: true, fontSize: 10 }],
-                                            [{text: 'Impacto Estimado (Multas + ISR)*', fontSize: 10, bold: true, color: '#dc2626'}, { text: dataReporte.impacto, bold: true, color: '#dc2626', fontSize: 10 }]
-                                        ]
-                                    },
-                                    layout: 'lightHorizontalLines'
+                                    width: '55%',
+                                    stack: [
+                                        { text: 'Impacto Financiero Calculado:', bold: true, margin: [0, 0, 0, 5], fontSize: 11 },
+                                        {
+                                            table: {
+                                                widths: ['*', 'auto'],
+                                                body: [
+                                                    [{text: 'Capital Base en Riesgo', fontSize: 10}, { text: dataReporte.amountRisk, bold: true, fontSize: 10 }],
+                                                    [{text: 'Impacto Estimado (Multas + ISR)*', fontSize: 10, bold: true, color: '#dc2626'}, { text: dataReporte.impacto, bold: true, color: '#dc2626', fontSize: 10 }]
+                                                ]
+                                            },
+                                            layout: 'lightHorizontalLines'
+                                        }
+                                    ]
                                 }
                             ]
-                        }
-                    ]
-                },
+                        },
+                        
+                        { text: '\n2. INDICADORES CLAVE DE DESEMPEÑO (KPI)', style: 'sectionTitle', margin: [0, 20, 0, 10] },
+                        {
+                            style: 'tableExample',
+                            table: {
+                                widths: ['*', '*', '*'],
+                                body: [
+                                    [
+                                        { text: 'DOCS AUDITADOS', style: 'tableHeader' },
+                                        { text: 'EFOS 69-B', style: 'tableHeader' },
+                                        { text: 'ERROR ARITMÉTICO', style: 'tableHeader' }
+                                    ],
+                                    [
+                                        { text: `${dataReporte.totalFiles}`, style: 'tableData' },
+                                        { text: `${dataReporte.efos > 0 ? 'DETECTADO' : 'SEGURO'}`, style: 'tableData', color: dataReporte.efos > 0 ? '#dc2626' : '#059669' },
+                                        { text: `${dataReporte.math}`, style: 'tableData', color: dataReporte.math > 0 ? '#d97706' : '#059669' }
+                                    ],
+                                    [
+                                        { text: 'REP FALTANTES', style: 'tableHeader' },
+                                        { text: 'ALERTA INTANGIBLES', style: 'tableHeader' },
+                                        { text: 'NOTAS CRÉDITO', style: 'tableHeader' }
+                                    ],
+                                    [
+                                        { text: `${dataReporte.ppds}`, style: 'tableData', color: dataReporte.ppds > 0 ? '#dc2626' : '#059669' },
+                                        { text: `${dataReporte.materialidad}`, style: 'tableData', color: dataReporte.materialidad > 0 ? '#d97706' : '#059669' },
+                                        { text: `${dataReporte.notasCredito}`, style: 'tableData', color: dataReporte.notasCredito > 0 ? '#d97706' : '#059669' }
+                                    ]
+                                ]
+                            },
+                            layout: 'lightHorizontalLines'
+                        },
 
-                // Relleno Estratégico (Metodología) en la Página 1
-                { text: '\n2. METODOLOGÍA DE EVALUACIÓN (TADS)', style: 'sectionTitle' },
-                { 
-                    text: 'El Tax Analytics & Detection System (TADS) evalúa la probabilidad de una auditoría o requerimiento del Servicio de Administración Tributaria (SAT) mediante el cruce de metadatos XML. El algoritmo pondera tres vectores críticos de cumplimiento:', 
-                    fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] 
-                },
-                {
-                    ul: [
-                        { text: 'Riesgo 69-B (EFOS): Penalización máxima (50 pts) por vinculación con empresas que facturan operaciones simuladas.', fontSize: 10, margin: [0, 2, 0, 2] },
-                        { text: 'Materialidad de Pagos (REP): Penalización media (10 pts) por facturas PPD sin complemento de recepción de pago asociado.', fontSize: 10, margin: [0, 2, 0, 2] },
-                        { text: 'Aritmética Fiscal: Penalización (5 pts) por discrepancias entre subtotales, retenciones y el total facturado.', fontSize: 10, margin: [0, 2, 0, 2] }
-                    ]
-                },
+                        { text: '\n3. METODOLOGÍA DE EVALUACIÓN (TADS)', style: 'sectionTitle' },
+                        { text: 'El Tax Analytics & Detection System (TADS) evalúa la probabilidad de una auditoría o requerimiento del Servicio de Administración Tributaria (SAT) mediante el cruce de metadatos XML. El algoritmo pondera múltiples vectores críticos de cumplimiento (Art. 69-B, Art. 29 CFF, Materialidad).', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
 
-                // Salto de página obligado para el Dictamen y Plan de Acción
-                { text: '\n3. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle', pageBreak: 'before' },
-                { text: finalDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] },
+                        { text: '\n4. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle', pageBreak: 'before' },
+                        { text: finalDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] },
 
-                { text: '\n4. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
-                { ul: dataReporte.recomendaciones, fontSize: 11, margin: [10, 0, 0, 0] }
-            ],
-            footer: function(currentPage, pageCount) {
-                return {
-                    text: `El presente documento constituye un papel de trabajo para mitigación de contingencias. No sustituye las facultades de comprobación de la autoridad fiscal.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
-                    alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0]
+                        { text: '\n5. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
+                        { ul: dataReporte.recomendaciones, fontSize: 11, margin: [10, 0, 0, 0] }
+                    ],
+                    footer: function(currentPage, pageCount) {
+                        return { text: `El presente documento constituye un papel de trabajo para mitigación de contingencias. No sustituye las facultades de comprobación de la autoridad fiscal.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
+                    },
+                    styles: {
+                        header: { fontSize: 15, bold: true, color: '#111827' },
+                        subheader: { fontSize: 9, color: '#6B7280' },
+                        sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true },
+                        tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
+                        tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
+                    }
                 };
-            },
-            styles: {
-                header: { fontSize: 15, bold: true, color: '#111827' },
-                subheader: { fontSize: 9, color: '#6B7280' },
-                sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true },
-                tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
-                tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
-            }
-        };
 
-        try {
-            pdfMake.createPdf(docDefinition).download(`RiskScore_Reporte_${Date.now()}.pdf`);
-        } catch(e) {
-            console.error("Error PDFMake:", e);
-            alert("Ocurrió un error al generar el PDF.");
-        } finally {
-            btn.innerHTML = oldText;
-            btn.disabled = false;
-        }
+                // Insertar gráfica dinámicamente si existe
+                const stackCol = [];
+                if (chartImg) stackCol.push({ image: chartImg, width: 140, alignment: 'center', margin: [0, 0, 0, -35] });
+                stackCol.push({ text: `${dataReporte.score}`, alignment: 'center', fontSize: 50, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] });
+                stackCol.push({ text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color, margin: [0, 5, 0, 0] });
+                docDefinition.content[4].columns[0].stack = stackCol;
+
+                if (!isPro) {
+                    docDefinition.background = function(currentPage, pageSize) {
+                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    };
+                }
+
+                pdfMake.createPdf(docDefinition).download(`RiskScore_Reporte_${Date.now()}.pdf`);
+                
+                btn.innerHTML = oldText;
+                btn.disabled = false;
+
+            } catch (e) {
+                console.error("Error al ensamblar PDF:", e);
+                alert("Ocurrió un error al generar el PDF.");
+                btn.innerHTML = oldText;
+                btn.disabled = false;
+            }
+        }, 150);
     }
 </script>
 </body>
