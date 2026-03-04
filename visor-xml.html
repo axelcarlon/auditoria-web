@@ -66,6 +66,17 @@
         .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; text-transform: uppercase;}
         .ia-loading { color: var(--brand); font-size: 13px; font-weight: 600; display: none; margin-bottom: 20px; text-align: center; }
 
+        /* Paywall Modal Premium */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
+        .modal-icon { width: 64px; height: 64px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .modal-title { font-size: 22px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
+        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 25px 0; line-height: 1.5; }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; }
+        .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+
         @media (max-width: 900px) {
             .workspace { grid-template-columns: 1fr; }
             .file-list-sidebar { max-height: 200px; position: static; }
@@ -80,7 +91,9 @@
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+        <div class="modal-icon">
+            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
         <p class="modal-text">Has visualizado el límite de facturas gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para lectura ilimitada de XMLs masivos.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
@@ -111,6 +124,10 @@
         <div class="file-list-sidebar" id="fileList"></div>
 
         <div class="viewer-main">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button onclick="window.location.reload()" style="background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s;">Analizar Nuevo Lote</button>
+            </div>
+
             <div id="iaLoading" class="ia-loading">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 Analizando congruencia legal del CFDI...
@@ -187,7 +204,7 @@
                     </div>
                 </div>
             </div>
-            <div style="text-align: center;">
+            <div style="text-align: center; margin-top: 20px;">
                 <button onclick="window.location.reload()" style="background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px;">Cargar Nuevo Repositorio</button>
             </div>
         </div>
@@ -198,6 +215,7 @@
 
 <script>
     function checkQuota() {
+        if (localStorage.getItem('auditoria_pro') === 'true') return true;
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
         if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
