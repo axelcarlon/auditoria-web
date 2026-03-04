@@ -11,6 +11,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
     <link rel="apple-touch-icon" href="candado.png">
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
@@ -69,14 +70,12 @@
         .totals { margin-top: 20px; width: 320px; margin-left: auto; background: var(--bg-primary); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
         .grand-total { font-size: 18px; font-weight: 900; color: var(--brand); border-top: 2px solid #111827; padding-top: 15px; margin-top: 10px; }
 
-        /* Badges de Auditoría */
         .audit-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
         .audit-badge { font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid transparent;}
         .badge-ok { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
         .badge-warn { background: #FFFBEB; color: #B45309; border-color: #FDE68A; }
         .badge-danger { background: #FEF2F2; color: #991B1B; border-color: #FECACA; }
 
-        /* Barra de Progreso Fluida (Reemplazo Corporativo) */
         .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 20px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
         .progress-title { font-weight: 900; font-size: 16px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -85,7 +84,6 @@
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 20px; }
         .progress-status { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: 12px; font-family: monospace; display: flex; align-items: center; gap: 8px;}
 
-        /* Editor Forense (Libre de IA) */
         .advisor-box { background: #111827; padding: 30px; border-radius: 12px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.15); margin-bottom: 30px;}
         .advisor-title { font-weight: 900; color: #ffffff; font-size: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .advisor-subtitle { font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
@@ -100,7 +98,6 @@
         .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); }
         .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Paywall Modal Premium */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 15px; right: 15px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -152,7 +149,7 @@
         <div class="trust-badges">
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Motor 100% Local</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Motor Local</div>
         </div>
     </div>
 
@@ -189,9 +186,9 @@
                         Dictamen Técnico de Cumplimiento
                     </div>
                 </div>
-                <div class="advisor-subtitle">Revisa y edita las observaciones de la auditoría antes de exportar el papel de trabajo.</div>
+                <div class="advisor-subtitle">Revisa y edita las observaciones de la auditoría. Los cambios se guardan automáticamente para este XML.</div>
                 <textarea id="dictamenInput" class="editable-dictamen" placeholder="El motor está redactando las observaciones..."></textarea>
-                <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible será vectorizado en el PDF.</div>
+                <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible será vectorizado en la exportación PDF.</div>
             </div>
 
             <div class="invoice-card" id="invoiceCard">
@@ -202,8 +199,7 @@
                             <span style="font-size: 12px; color: #9CA3AF; font-family: monospace;" id="uuidDisplay">UUID: </span>
                             <button class="copy-btn" onclick="copyToClipboard('uuidDisplay', this)">Copiar UUID</button>
                         </div>
-                        <div class="audit-badges" id="badgeContainer">
-                            </div>
+                        <div class="audit-badges" id="badgeContainer"></div>
                     </div>
                     <div style="text-align: right;">
                         <div style="font-size: 32px; font-weight: 900; line-height: 1;" id="tipoComprobante">I</div>
@@ -269,7 +265,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // ASIGNACIÓN DE VFS (Evita el colapso silencioso de PDFMake)
     if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
         pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
     }
@@ -287,6 +282,7 @@
     const dropZone = document.getElementById('dropZone');
     const workspace = document.getElementById('workspace');
     const fileListEl = document.getElementById('fileList');
+    const dictamenInput = document.getElementById('dictamenInput');
     
     let facturasExtraidas = [];
     let facturaActual = null; 
@@ -322,7 +318,9 @@
                             const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
                             const nombreEmisor = emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : 'Desconocido';
                             const total = cfdi.getAttribute('Total');
-                            facturasExtraidas.push({ index, file, xmlDoc, nombreEmisor, total, tipo });
+                            
+                            // Se inicializa dictamen en null para guardar el estado individual
+                            facturasExtraidas.push({ index, file, xmlDoc, nombreEmisor, total, tipo, dictamen: null });
                         }
                     } catch (err) {}
                     resolve();
@@ -389,6 +387,15 @@
         }, 500);
     }
 
+    // Escuchador dinámico para guardar las ediciones en el objeto de la factura
+    dictamenInput.oninput = (e) => {
+        if(facturaActual) {
+            facturaActual.dictamen = e.target.value;
+            const facEnLista = facturasExtraidas.find(f => f.index === facturaActual.index);
+            if(facEnLista) facEnLista.dictamen = e.target.value;
+        }
+    };
+
     function renderFactura(index) {
         document.querySelectorAll('.file-list-item').forEach(el => el.classList.remove('active'));
         document.getElementById(`file-item-${index}`).classList.add('active');
@@ -413,6 +420,7 @@
         const descuento = parseFloat(getAttr(comprobante, 'Descuento') || 0);
 
         facturaActual = {
+            index: fac.index,
             uuid: getAttr(timbre, 'UUID') || 'No timbrado',
             tipo: fac.tipo,
             fecha: getAttr(comprobante, 'Fecha'),
@@ -429,7 +437,7 @@
                 total: formatMoney(getAttr(comprobante, 'Total'))
             },
             conceptos: [],
-            dictamen: "",
+            dictamen: fac.dictamen, // Carga el dictamen en caché si ya existe
             badges: []
         };
 
@@ -522,7 +530,15 @@
             descConsulta = "El comprobante cumple con la estructura estándar de facturación electrónica. Revisar congruencia de Claves SAT y materialidad de la operación de forma documental.";
         }
 
-        consultarAlertaIA(fac.tipo, alertaConsulta, descConsulta);
+        // Si ya hay un dictamen guardado, lo muestra sin llamar a la API
+        if (fac.dictamen) {
+            document.getElementById('progressPanel').style.display = 'none';
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+            document.getElementById('btnDescargarPDF').disabled = false;
+            dictamenInput.value = fac.dictamen;
+        } else {
+            consultarAlertaIA(fac, alertaConsulta, descConsulta);
+        }
     }
 
     function copyToClipboard(elementId, btnElement) {
@@ -533,37 +549,35 @@
         setTimeout(() => btnElement.innerText = originalText, 1500);
     }
 
-    async function consultarAlertaIA(tipo, concepto, errorDesc) {
+    async function consultarAlertaIA(fac, concepto, errorDesc) {
         initProgress();
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
+                body: JSON.stringify({ tipo_documento: fac.tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
             });
             
             if (!res.ok) throw new Error("Fallo en red");
             
             const data = await res.json();
             
-            // Purgado de formato Markdown y validación de indefinidos
             let textoDictamen = data.analisis_legal || data.dictamen || "Análisis técnico completado satisfactoriamente. Estructura de metadatos validada sin observaciones mayores.";
             textoDictamen = textoDictamen.replace(/[*#_]/g, '').replace(/---+/g, '').trim(); 
 
-            document.getElementById('dictamenInput').value = textoDictamen;
+            fac.dictamen = textoDictamen;
             facturaActual.dictamen = textoDictamen;
+            dictamenInput.value = textoDictamen;
             finishProgress();
         } catch (err) { 
-            // Fallback robusto en caso de que el servidor se duerma o el XML sea corrupto
-            let fallbackMsg = `No se pudo establecer conexión con el motor forense central. \n\nObservación técnica local prioritaria:\n${errorDesc}`;
-            document.getElementById('dictamenInput').value = fallbackMsg;
+            // Fallback corporativo en caso de desconexión del servidor
+            let fallbackMsg = `Evaluación técnica de cumplimiento:\n\n${errorDesc}\n\nNota: Resolución generada preventivamente por el motor de reglas locales ante latencia del servidor central.`;
+            fac.dictamen = fallbackMsg;
             facturaActual.dictamen = fallbackMsg;
+            dictamenInput.value = fallbackMsg;
             finishProgress();
         }
     }
 
-    // =========================================================================
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - REPORTE INDIVIDUAL BIG 4
-    // =========================================================================
     function descargarVisorPDF() {
         if (!facturaActual) return;
 
@@ -574,11 +588,10 @@
 
         setTimeout(() => {
             try {
-                // Capturar edición en tiempo real
+                // Toma la versión final dictaminada (con la info cacheada/editada)
                 facturaActual.dictamen = document.getElementById('dictamenInput').value || 'Sin observaciones documentadas.';
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
 
-                // Transformar el array de conceptos de forma segura
                 const tablaConceptosBody = [
                     [ 
                         { text: 'CANT.', style: 'tableHeader' }, 
