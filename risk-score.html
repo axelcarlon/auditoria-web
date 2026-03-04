@@ -12,7 +12,6 @@
     <link rel="apple-touch-icon" href="candado.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
@@ -46,22 +45,27 @@
         .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
 
         .risk-amount-card { background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; width: 100%;}
-        .risk-amount-label { font-size: 12px; color: #991B1B; font-weight: bold; }
-        .risk-amount-val { font-size: 18px; font-weight: 900; color: #DC2626; font-family: monospace; }
+        .risk-amount-label { font-size: 12px; color: #991B1B; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
+        .risk-amount-val { font-size: 20px; font-weight: 900; color: #DC2626; font-family: monospace; }
         
-        .ia-advisor-box { background: #111827; color: white; padding: 25px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border-left: 6px solid #60A5FA; }
-        .ia-advisor-title { font-weight: 800; color: #60A5FA; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.6; text-align: justify; }
-        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
+        /* --- PROGRESS BAR ENTERPRISE --- */
+        .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-top: 30px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
+        .progress-title { font-weight: 900; font-size: 16px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
+        .progress-percent { font-size: 28px; font-weight: 900; color: var(--brand); font-family: monospace; line-height: 1;}
+        .progress-track { width: 100%; height: 10px; background: #E5E7EB; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 10px; }
+        .progress-status { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: 12px; font-family: monospace; }
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ia-advisor-box { background: #111827; color: white; padding: 30px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border-left: 6px solid #60A5FA; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
+        .ia-advisor-title { font-weight: 900; color: #60A5FA; font-size: 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.7; text-align: justify; }
 
         .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
-        .btn-pdf { background: #111827; color: white; border: none; padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;}
-        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.2);}
-        .btn-pdf:disabled { opacity: 0.7; cursor: not-allowed; }
-        .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; font-size: 14px;}
+        .btn-pdf { background: #111827; color: white; border: none; padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase;}
+        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.25);}
+        .btn-pdf:disabled { opacity: 0.4; cursor: not-allowed; background: var(--text-muted); }
+        .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
         .btn-restart:hover { background: var(--bg-primary); }
 
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
@@ -115,11 +119,6 @@
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
     </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Ejecutando algoritmo de riesgo TADS...</p>
-    </div>
-
     <div class="results-container" id="results">
         <div class="dashboard-grid">
             <div class="score-card">
@@ -127,7 +126,7 @@
                     <canvas id="gaugeChart"></canvas>
                     <div class="score-value" id="scoreText">100</div>
                 </div>
-                <div style="font-size: 13px; font-weight: 800; margin-top: 10px; color: var(--text-main); text-transform: uppercase;" id="scoreStatus">Cumplimiento Perfecto</div>
+                <div style="font-size: 14px; font-weight: 900; margin-top: 10px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;" id="scoreStatus">Cumplimiento Perfecto</div>
                 
                 <div class="risk-amount-card">
                     <div class="risk-amount-label">Capital en Riesgo:</div>
@@ -164,23 +163,30 @@
             </div>
         </div>
 
-        <div id="iaLoading" class="ia-loading">
-            <div class="spinner" style="width:20px; height:20px; border-width:3px; display:inline-block;"></div> Generando dictamen predictivo...
+        <div class="progress-panel" id="progressPanel">
+            <div class="progress-header">
+                <div class="progress-title">Auditoría Predictiva IA</div>
+                <div class="progress-percent" id="progressText">0%</div>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-status" id="progressStatus">> Iniciando motor de análisis forense...</div>
         </div>
         
         <div id="iaAdvisorContainer" class="ia-advisor-box">
             <div class="ia-advisor-title">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Dictamen Forense de AuditorIA
+                Dictamen de Auditoría Forense Predictiva
             </div>
             <p id="iaAdvisorText" class="ia-advisor-content"></p>
         </div>
 
         <div class="toolbar">
             <button onclick="window.location.reload()" class="btn-restart">Analizar Nuevo Lote</button>
-            <button onclick="descargarReporte()" class="btn-pdf" id="btnDescargarPDF">
+            <button onclick="descargarReporte()" class="btn-pdf" id="btnDescargarPDF" disabled>
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Descargar Reporte Ejecutivo (PDF)
+                Generando Reporte...
             </button>
         </div>
 
@@ -209,6 +215,7 @@
     const dropZone = document.getElementById('dropZone');
     let gaugeInstance = null;
     let dataReporte = {};
+    let progressInterval = null;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
@@ -222,13 +229,52 @@
         catch (e) { return []; }
     }
 
+    function initProgress() {
+        document.getElementById('progressPanel').style.display = 'block';
+        const fill = document.getElementById('progressFill');
+        const text = document.getElementById('progressText');
+        const status = document.getElementById('progressStatus');
+        
+        let progress = 0;
+        fill.style.width = '0%';
+        
+        progressInterval = setInterval(() => {
+            // Easing math para que la barra avance fluido y se detenga cerca del 95%
+            let increment = (100 - progress) * 0.05;
+            progress += increment;
+            if(progress > 95) progress = 95;
+            
+            fill.style.width = `${progress}%`;
+            text.innerText = `${Math.floor(progress)}%`;
+
+            if(progress > 30 && progress < 70) status.innerText = "> Evaluando factores de materialidad (Art. 69-B)...";
+            if(progress >= 70) status.innerText = "> Redactando dictamen jurídico predictivo...";
+        }, 300);
+    }
+
+    function finishProgress() {
+        clearInterval(progressInterval);
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressText').innerText = '100%';
+        document.getElementById('progressStatus').innerText = "> ¡Análisis Forense Completado!";
+        
+        setTimeout(() => {
+            document.getElementById('progressPanel').style.display = 'none';
+            document.getElementById('iaAdvisorContainer').style.display = 'block';
+            
+            // Habilitar Descarga
+            const btnPdf = document.getElementById('btnDescargarPDF');
+            btnPdf.disabled = false;
+            btnPdf.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Descargar Reporte Ejecutivo (PDF)`;
+        }, 800);
+    }
+
     async function processRiskScore(files) {
         if (files.length === 0) return;
         if (!checkQuota()) return;
         
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('dropZone').style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
 
         const listaEfos = await fetchEfosList();
         
@@ -300,7 +346,6 @@
     }
 
     function renderDashboard(score, totalFiles, efos, math, ppds, amountRisk) {
-        document.getElementById('loadingState').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
         document.getElementById('scoreText').innerText = score;
@@ -329,7 +374,10 @@
 
         drawGauge(score, color);
 
-        dataReporte = { score, status, color, totalFiles, efos, math, ppds, amountRisk: formatMoney(amountRisk) };
+        dataReporte = { score, status, color, totalFiles, efos, math, ppds, amountRisk: formatMoney(amountRisk), dictamen: '' };
+        
+        // Iniciar carga visual e IA
+        initProgress();
         consultarRiskIA(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
     }
 
@@ -344,39 +392,51 @@
     }
 
     async function consultarRiskIA(score, factores) {
-        document.getElementById('iaLoading').style.display = 'block';
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/risk-score-ia", {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ puntaje: score, factores: factores })
             });
             const data = await res.json();
-            document.getElementById('iaLoading').style.display = 'none';
+            
             document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
             dataReporte.dictamen = data.analisis_legal;
             document.getElementById('shareContainer').style.display = 'block';
-        } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
+            finishProgress();
+
+        } catch (err) { 
+            clearInterval(progressInterval);
+            document.getElementById('progressPanel').style.display = 'none';
+            alert("Error al conectar con la IA forense.");
+        }
     }
 
-    // 🚀 NUEVO MOTOR DECLARATIVO (PDFMAKE) - CALIDAD BIG 4
+    // =========================================================================
+    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - CALIDAD CORPORATIVA BIG 4
+    // NUNCA sale en blanco. NUNCA se corta. Texto 100% Seleccionable.
+    // =========================================================================
     function descargarReporte() {
+        if(!dataReporte.dictamen) return; // Doble candado
+
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Procesando PDF...";
+        btn.innerText = "Exportando...";
         btn.disabled = true;
 
         const isPro = localStorage.getItem('auditoria_pro') === 'true';
         const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null;
 
-        // Configuración de la marca de agua nativa vectorial
+        // Marca de agua nativa vectorial
         const watermarkConfig = isPro ? null : { text: 'Generado por AuditorIA - Versión Gratuita', color: 'gray', opacity: 0.1, bold: true, italics: false };
 
         const docDefinition = {
             pageSize: 'LETTER',
-            pageMargins: [40, 60, 40, 60],
+            pageMargins: [40, 50, 40, 50],
             watermark: watermarkConfig,
             content: [
+                // Etiqueta de Confidencialidad
+                { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 9, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
+                
                 // Encabezado
                 {
                     columns: [
@@ -393,7 +453,7 @@
                 { text: `${dataReporte.score}`, alignment: 'center', fontSize: 60, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] },
                 { text: `${dataReporte.status.toUpperCase()}`, alignment: 'center', fontSize: 14, bold: true, color: dataReporte.color, margin: [0, 5, 0, 30] },
 
-                // KPIs Tabulares (Alineación perfecta)
+                // KPIs Tabulares
                 {
                     style: 'tableExample',
                     table: {
@@ -418,7 +478,7 @@
 
                 // Tarjeta de Monto en Riesgo
                 {
-                    margin: [0, 30, 0, 30],
+                    margin: [0, 20, 0, 30],
                     table: {
                         widths: ['*'],
                         body: [
@@ -429,7 +489,7 @@
                                     borderColor: ['#FCA5A5', '#FCA5A5', '#FCA5A5', '#FCA5A5'],
                                     text: [
                                         { text: 'CAPITAL TOTAL EN RIESGO DE AUDITORÍA ACTIVA\n\n', fontSize: 11, bold: true, color: '#991B1B' },
-                                        { text: `${dataReporte.amountRisk}`, fontSize: 28, bold: true, color: '#DC2626' }
+                                        { text: `${dataReporte.amountRisk}`, fontSize: 26, bold: true, color: '#DC2626' }
                                     ],
                                     alignment: 'center',
                                     margin: [20, 20, 20, 20]
@@ -439,9 +499,9 @@
                     }
                 },
 
-                // Dictamen de IA (Evita romperse a la mitad de la página)
-                dataReporte.dictamen ? {
-                    unbreakable: true, // Esto reemplaza al page-break-avoid
+                // DICTAMEN DE AUDITORÍA FORENSE PREDICTIVA (Garantizado)
+                {
+                    unbreakable: true, 
                     table: {
                         widths: ['*'],
                         body: [
@@ -449,38 +509,37 @@
                                 {
                                     fillColor: '#111827',
                                     text: [
-                                        { text: 'DICTAMEN FORENSE ESTRATÉGICO (IA)\n\n', fontSize: 12, bold: true, color: '#60A5FA' },
+                                        { text: 'DICTAMEN DE AUDITORÍA FORENSE PREDICTIVA (IA)\n\n', fontSize: 12, bold: true, color: '#60A5FA', letterSpacing: 1 },
                                         { text: `${dataReporte.dictamen}`, fontSize: 11, color: '#E5E7EB', alignment: 'justify', lineHeight: 1.4 }
                                     ],
-                                    margin: [25, 25, 25, 25]
+                                    margin: [25, 25, 25, 25],
+                                    border: [false, false, false, false]
                                 }
                             ]
                         ]
-                    },
-                    layout: 'noBorders'
-                } : {}
+                    }
+                }
             ],
             footer: function(currentPage, pageCount) {
                 return {
-                    text: `Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría fiscal calificada.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
+                    text: `El presente documento constituye un papel de trabajo para mitigación de contingencias. No sustituye las facultades de comprobación de la autoridad fiscal.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
                     alignment: 'center',
                     fontSize: 8,
                     color: '#9CA3AF',
-                    margin: [0, 20, 0, 0]
+                    margin: [40, 10, 40, 0]
                 };
             },
             styles: {
-                header: { fontSize: 16, bold: true, color: '#111827' },
+                header: { fontSize: 15, bold: true, color: '#111827' },
                 subheader: { fontSize: 10, color: '#6B7280' },
                 tableExample: { margin: [0, 10, 0, 10] },
-                tableHeader: { bold: true, fontSize: 10, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
-                tableData: { bold: true, fontSize: 16, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
+                tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
+                tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
             }
         };
 
-        // Generar y descargar (100% Vectorial, 0% Errores de Scroll)
         try {
-            pdfMake.createPdf(docDefinition).download(`RiskScore_Auditoria_${Date.now()}.pdf`);
+            pdfMake.createPdf(docDefinition).download(`RiskScore_Forense_${Date.now()}.pdf`);
         } catch(e) {
             console.error("Error PDFMake:", e);
             alert("Error al generar el PDF.");
