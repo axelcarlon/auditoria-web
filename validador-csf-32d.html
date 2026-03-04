@@ -32,7 +32,7 @@
         .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         
         .status-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 15px;}
-        .status-badge { padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 18px; text-transform: uppercase; }
+        .status-badge { padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 18px; text-transform: uppercase; letter-spacing: 1px;}
         .status-POSITIVA { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
         .status-NEGATIVA { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
         .status-NODETECTADO { background: var(--bg-primary); color: var(--text-muted); border: 1px solid var(--border); }
@@ -42,16 +42,19 @@
         .data-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 5px; }
         .data-value { font-size: 15px; color: var(--text-main); font-weight: 600; word-break: break-all; }
 
-        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 20px; margin-top: 20px; border-radius: 4px; display: none; text-align: left; }
-        .ia-advisor-title { font-weight: 700; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; text-transform: uppercase; }
-        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
+        .ia-advisor-box { background: #111827; color: white; padding: 25px; margin-top: 20px; border-radius: 8px; display: none; text-align: left; }
+        .ia-advisor-title { font-weight: 800; color: #60A5FA; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-transform: uppercase; }
+        .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.6; }
+        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
 
-        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .btn-pdf { background: #111827; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;}
+        .btn-pdf:hover { background: var(--brand); }
+
         /* Botones Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px; display: none;}
+        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
         .social-btn:hover { opacity: 0.9; }
         .btn-x { background-color: #000000; }
@@ -59,18 +62,12 @@
         .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block;}
-
         #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
 
         @media (max-width: 768px) {
             .data-grid { grid-template-columns: 1fr; }
+            .status-header { flex-direction: column; align-items: flex-start; }
+            .btn-pdf { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -83,83 +80,92 @@
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus validaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para analizar constancias ilimitadas y generar comprobantes PDF de idoneidad.</p>
+        <p class="modal-text">Has agotado tus validaciones de idoneidad gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para analizar documentos ilimitados y generar expedientes de proveedores.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">EVALUACIÓN DE PROVEEDORES</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Analista de Idoneidad Fiscal (CSF y 32-D)</h1>
-        <p style="color: var(--text-muted);">Sube la Constancia de Situación Fiscal o la Opinión de Cumplimiento (PDF). Extrae los datos clave y alerta sobre restricciones de deducción.</p>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">DEBIDA DILIGENCIA (KYV)</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Analista de Idoneidad Fiscal</h1>
+        <p style="color: var(--text-muted);">Digitaliza y analiza la Constancia de Situación Fiscal (CSF) o la Opinión 32-D de tus proveedores. Extrae datos, detecta riesgos de deducción y blinda tu empresa.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('docInput').click()">
         <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p style="font-weight: 600; margin: 0; font-size: 18px;">Cargar Documento SAT (CSF o 32-D)</p>
+        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);">Cargar Documento SAT (PDF/Imagen)</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Compatible con Constancias y Opiniones de Cumplimiento.</p>
         <input type="file" id="docInput" accept=".pdf,image/*" style="display: none;">
         
         <div class="trust-badges">
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Extracción Directa</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Visión Multimodal</div>
         </div>
     </div>
 
     <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
         <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Analizando documento oficial...</p>
+        <p style="font-weight: 600; color: var(--brand);">Digitalizando documento oficial...</p>
+        <p style="font-size: 13px; color: var(--text-muted);">Aplicando algoritmos de extracción y reglas de cumplimiento SAT.</p>
     </div>
 
     <div class="results-container" id="results">
         <div class="status-header">
             <div>
                 <h2 style="margin: 0; font-size: 20px; color: var(--text-main);">Estatus de Cumplimiento:</h2>
-                <p style="margin: 5px 0 0; font-size: 13px; color: var(--text-muted);">Lectura directa del documento oficial del SAT.</p>
+                <p style="margin: 5px 0 0; font-size: 13px; color: var(--text-muted);">Resultado extraído del documento legal del SAT.</p>
             </div>
-            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 15px; align-items: center;">
                 <div id="resStatus" class="status-badge status-NODETECTADO">N/A</div>
-                <button onclick="descargarReportePDF()" style="background: #111827; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Descargar Comprobante PDF</button>
+                <button onclick="descargarReportePDF()" class="btn-pdf">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Descargar Dictamen
+                </button>
             </div>
         </div>
 
         <div class="data-grid">
             <div class="data-box">
-                <div class="data-label">RFC</div>
+                <div class="data-label">RFC Contribuyente</div>
                 <div class="data-value" id="resRfc"></div>
             </div>
             <div class="data-box">
-                <div class="data-label">Razón Social</div>
+                <div class="data-label">Nombre o Razón Social</div>
                 <div class="data-value" id="resRazon"></div>
             </div>
             <div class="data-box">
-                <div class="data-label">Código Postal</div>
+                <div class="data-label">Domicilio Fiscal (CP)</div>
                 <div class="data-value" id="resCp"></div>
             </div>
             <div class="data-box">
-                <div class="data-label">Régimen Fiscal (Ids)</div>
+                <div class="data-label">Régimen y Estatus</div>
                 <div class="data-value" id="resRegimen"></div>
             </div>
         </div>
 
-        <div id="alertasContainer" style="background: #FEF2F2; border-left: 4px solid #DC2626; padding: 15px; margin-top: 20px; display: none; border-radius: 8px;">
-            <strong style="color: #991B1B; font-size: 14px; display: block; margin-bottom: 5px;">Alertas o Inconsistencias:</strong>
-            <div id="resAlertas" style="color: #B91C1C; font-size: 13px;"></div>
+        <div id="alertasContainer" style="background: #FEF2F2; border-left: 4px solid #DC2626; padding: 20px; margin-top: 20px; display: none; border-radius: 8px;">
+            <strong style="color: #991B1B; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                Alertas Detectadas:
+            </strong>
+            <div id="resAlertas" style="color: #B91C1C; font-size: 13px; line-height: 1.5;"></div>
         </div>
 
         <div id="iaLoading" class="ia-loading">
-            <div class="spinner" style="width: 20px; height: 20px; border-width: 3px; display: inline-block;"></div> Evaluando implicaciones...
+            <div class="spinner" style="width: 20px; height: 20px; border-width: 3px; display: inline-block;"></div> Evaluando materialidad operativa...
         </div>
         <div id="iaAdvisorContainer" class="ia-advisor-box">
             <div class="ia-advisor-title">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                AuditorIA Legal Insight
+                AuditorIA Forensic Intelligence
             </div>
             <p id="iaAdvisorText" class="ia-advisor-content"></p>
         </div>
 
         <div style="margin-top: 30px;">
-            <button onclick="window.location.reload()" style="width: 100%; background: var(--bg-primary); color: var(--text-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;">Escanear Otro Documento</button>
+            <button onclick="window.location.reload()" style="width: 100%; background: var(--bg-primary); color: var(--text-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;">Analizar Nuevo Documento</button>
         </div>
 
         <div class="share-container" id="shareContainer">
@@ -167,7 +173,7 @@
             <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20verificar%20la%20idoneidad%20fiscal%20de%20mis%20proveedores%20con%20AuditorIA:&url=https://auditoriaxml.mx/validador-csf-32d.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/validador-csf-32d.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
             <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/validador-csf-32d.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20verificar%20la%20idoneidad%20fiscal%20de%20mis%20proveedores%20con%20AuditorIA:%20https://auditoriaxml.mx/validador-csf-32d.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20verificar%20la%20idoneidad%20fiscal%20de%20mis%20proveedores%20con%20AuditorIA:&url=https://auditoriaxml.mx/validador-csf-32d.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
     </div>
 </div>
@@ -237,18 +243,21 @@
                 rfc: data.rfc, razon: data.razon_social, cp: data.codigo_postal, regimen: (data.regimen_fiscal || []).join(', '),
                 status: status,
                 colorStatus: status === 'POSITIVA' ? '#065F46' : (status === 'NEGATIVA' ? '#991B1B' : '#4B5563'),
+                bgStatus: status === 'POSITIVA' ? '#ECFDF5' : (status === 'NEGATIVA' ? '#FEF2F2' : '#F9FAFB'),
+                borderStatus: status === 'POSITIVA' ? '#6EE7B7' : (status === 'NEGATIVA' ? '#FCA5A5' : '#E5E7EB'),
                 alertas: data.alertas ? data.alertas.join(' | ') : '',
-                dictamen: ""
+                dictamen: "",
+                date: new Date().toLocaleDateString('es-MX')
             };
 
-            if (status === 'NEGATIVA') {
-                consultarAlertaIA("Opinión de Cumplimiento 32-D", "Estatus Negativo", "El proveedor presenta una opinión de cumplimiento negativa. Indica brevemente los riesgos de deducir facturas de este proveedor y la implicación en la retención de impuestos.");
-            } else {
-                document.getElementById('shareContainer').style.display = 'block';
-            }
+            // Consultar IA para análisis profundo
+            let contextMsg = `El proveedor ${data.rfc} tiene estatus ${status}. `;
+            if(data.regimen_fiscal) contextMsg += `Regimen: ${data.regimen_fiscal.join(', ')}. `;
+            
+            consultarAlertaIA("Validación Idoneidad Fiscal", "Análisis de Debida Diligencia", contextMsg + "Analiza el riesgo de contratarlo y si el documento es apto para soportar la materialidad del gasto.");
 
         } catch (err) {
-            alert("Error procesando el documento. Por favor, sube un PDF claro.");
+            alert("Error procesando el documento. Asegúrate de subir un archivo PDF claro y sin contraseñas.");
             window.location.reload();
         }
     }
@@ -258,7 +267,7 @@
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
+                body: JSON.stringify({ tipo_documento: tipo, descripcion_concept: concepto, error_detectado: errorDesc })
             });
             const data = await res.json();
             document.getElementById('iaLoading').style.display = 'none';
@@ -280,38 +289,41 @@
             <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white; page-break-inside: avoid;">
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
-                <div style="border-bottom: 2px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827;">Comprobante de Idoneidad Fiscal de Proveedor</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Validación de Constancia de Situación Fiscal y Opinión 32-D.</p>
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen de Idoneidad Fiscal de Terceros</h1>
+                    <p style="margin: 5px 0 0; font-size: 11px; color: #6B7280; font-family: monospace;">Expediente de Debida Diligencia para Auditoría SAT.</p>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <strong style="font-size: 16px; color: #111827; text-transform: uppercase;">Estatus de Cumplimiento SAT:</strong>
-                    <span style="font-size: 24px; font-weight: 900; color: ${dataReporte.colorStatus};">${dataReporte.status}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: ${dataReporte.bgStatus}; padding: 25px; border: 1px solid ${dataReporte.borderStatus}; border-radius: 8px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <strong style="font-size: 14px; color: #111827; text-transform: uppercase;">Estatus de Cumplimiento:</strong>
+                    <span style="font-size: 22px; font-weight: 900; color: ${dataReporte.colorStatus}; letter-spacing: 1px;">${dataReporte.status}</span>
                 </div>
 
                 <div style="margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">Datos Fiscales Extraídos</h3>
-                    <div style="margin-bottom: 10px;"><strong>RFC:</strong> <span style="font-family: monospace;">${dataReporte.rfc}</span></div>
-                    <div style="margin-bottom: 10px;"><strong>Razón Social:</strong> ${dataReporte.razon}</div>
-                    <div style="margin-bottom: 10px;"><strong>Código Postal:</strong> ${dataReporte.cp}</div>
-                    <div style="margin-bottom: 10px;"><strong>Régimen Fiscal (Ids):</strong> ${dataReporte.regimen}</div>
+                    <h3 style="font-size: 13px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 15px;">Ficha Técnica del Proveedor</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="font-size: 12px; margin-bottom: 8px;"><strong>RFC:</strong> <span style="font-family: monospace;">${dataReporte.rfc}</span></div>
+                        <div style="font-size: 12px; margin-bottom: 8px;"><strong>Fecha Consulta:</strong> ${dataReporte.date}</div>
+                        <div style="font-size: 12px; margin-bottom: 8px; grid-column: span 2;"><strong>Razón Social:</strong> ${dataReporte.razon}</div>
+                        <div style="font-size: 12px; margin-bottom: 8px;"><strong>Código Postal:</strong> ${dataReporte.cp}</div>
+                        <div style="font-size: 12px; margin-bottom: 8px;"><strong>Régimen:</strong> ${dataReporte.regimen}</div>
+                    </div>
                 </div>
 
                 ${dataReporte.alertas ? `
                 <div style="background: #FEF2F2; border-left: 4px solid #DC2626; padding: 15px; margin-bottom: 30px; position: relative; z-index: 1; border-radius: 6px;">
-                    <strong style="color: #991B1B; font-size: 14px; display: block; margin-bottom: 5px;">Alertas o Inconsistencias:</strong>
-                    <div style="color: #B91C1C; font-size: 13px;">${dataReporte.alertas}</div>
+                    <strong style="color: #991B1B; font-size: 12px; display: block; margin-bottom: 5px; text-transform: uppercase;">Inconsistencias Detectadas:</strong>
+                    <div style="color: #B91C1C; font-size: 11px; line-height: 1.4;">${dataReporte.alertas}</div>
                 </div>` : ''}
 
                 ${dataReporte.dictamen ? `
                 <div style="margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h3 style="font-size: 14px; text-transform: uppercase; color: #2563EB; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">Dictamen Legal (Implicaciones de Riesgo)</h3>
-                    <p style="font-size: 13px; line-height: 1.6; text-align: justify; color: #111827;">${dataReporte.dictamen}</p>
+                    <h3 style="font-size: 13px; text-transform: uppercase; color: #2563EB; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 10px;">Dictamen Forense de IA</h3>
+                    <p style="font-size: 12px; line-height: 1.6; text-align: justify; color: #111827; margin: 0;">${dataReporte.dictamen}</p>
                 </div>` : ''}
                 
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Comprobante generado para resguardo en el expediente de proveedores. <br>
+                <div style="margin-top: 50px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    Este dictamen fue generado automáticamente mediante el análisis multimodal de documentos oficiales emitidos por el SAT. <br>
                     Plataforma: AuditoriaXML.mx
                 </div>
             </div>
@@ -319,7 +331,7 @@
 
         const opt = {
             margin:       10,
-            filename:     `Idoneidad_Proveedor_${dataReporte.rfc}_${Date.now()}.pdf`,
+            filename:     `Idoneidad_Fiscal_${dataReporte.rfc}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
