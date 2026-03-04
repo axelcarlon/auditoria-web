@@ -20,73 +20,76 @@
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --brand-dark: #1E40AF; --danger: #DC2626; --danger-light: #FEF2F2; --success: #059669; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
         
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); border-color: var(--text-main); }
 
-        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: start;}
         
-        .score-card { background: var(--bg-secondary); padding: 30px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .chart-wrapper { position: relative; width: 280px; height: 160px; margin: 0 auto; }
-        .score-value { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 56px; font-weight: 900; color: var(--text-main); }
+        .score-card { background: var(--bg-secondary); padding: 40px 30px; border-radius: 16px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .chart-wrapper { position: relative; width: 260px; height: 150px; margin: 0 auto; }
+        .score-value { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 64px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -2px;}
         
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;}
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px; }
-        .kpi-data { font-size: 24px; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
-        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+        .kpi-data { font-size: 26px; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
+        .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
 
-        .risk-amount-card { background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; width: 100%;}
-        .risk-amount-label { font-size: 12px; color: #991B1B; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
-        .risk-amount-val { font-size: 20px; font-weight: 900; color: #DC2626; font-family: monospace; }
+        .financial-impact { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .impact-card { padding: 20px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; border: 1px solid transparent;}
+        .impact-card.base { background: var(--bg-secondary); border-color: var(--border); }
+        .impact-card.risk { background: var(--danger-light); border-color: #FCA5A5; }
+        .impact-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .impact-val { font-size: 22px; font-weight: 900; font-family: monospace; letter-spacing: -0.5px;}
         
         /* --- PROGRESS BAR ENTERPRISE --- */
-        .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-top: 30px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
-        .progress-title { font-weight: 900; font-size: 16px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
-        .progress-percent { font-size: 28px; font-weight: 900; color: var(--brand); font-family: monospace; line-height: 1;}
-        .progress-track { width: 100%; height: 10px; background: #E5E7EB; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 10px; }
-        .progress-status { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: 12px; font-family: monospace; }
+        .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; margin-top: 30px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .progress-title { font-weight: 900; font-size: 18px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
+        .progress-percent { font-size: 32px; font-weight: 900; color: var(--brand); font-family: monospace; line-height: 1;}
+        .progress-track { width: 100%; height: 12px; background: #E5E7EB; border-radius: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 20px; }
+        .progress-status { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 15px; font-family: monospace; display: flex; align-items: center; gap: 8px;}
 
-        .ia-advisor-box { background: #111827; color: white; padding: 30px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border-left: 6px solid #60A5FA; box-shadow: 0 10px 30px rgba(0,0,0,0.15);}
+        .ia-advisor-box { background: #111827; color: white; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; text-align: left; border-left: 6px solid #60A5FA; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
         .ia-advisor-title { font-weight: 900; color: #60A5FA; font-size: 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
         .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.7; text-align: justify; }
 
         .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
-        .btn-pdf { background: #111827; color: white; border: none; padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; letter-spacing: 0.5px; text-transform: uppercase;}
-        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.25);}
-        .btn-pdf:disabled { opacity: 0.4; cursor: not-allowed; background: var(--text-muted); }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.25);}
+        .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; background: var(--text-muted); }
         .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .btn-restart:hover { background: var(--bg-primary); }
+        .btn-restart:hover { background: var(--bg-primary); border-color: var(--text-main);}
 
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
+        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 700; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: 0.2s; min-width: 110px; }
         .social-btn:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-x { background-color: #000000; }
         .btn-in { background-color: #0A66C2; }
         .btn-wa { background-color: #25D366; }
 
         /* Paywall Modal Premium */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 40px; border-radius: 16px; max-width: 400px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
+        .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
-        .modal-icon { width: 64px; height: 64px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        .modal-title { font-size: 22px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
-        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 25px 0; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+        .modal-icon { width: 72px; height: 72px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
+        .modal-title { font-size: 24px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
+        .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 30px 0; line-height: 1.6; }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } .toolbar button { width: 100%;} }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } .financial-impact { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } .toolbar button { width: 100%;} }
     </style>
 </head>
 <body>
@@ -97,26 +100,40 @@
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <div class="modal-icon">
-            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
         </div>
         <h2 class="modal-title">Potencia tu Auditoría</h2>
-        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes ejecutivos limpios.</p>
+        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes corporativos ilimitados.</p>
         <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">SISTEMA PREDICTIVO DE FISCALIZACIÓN</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">RiskScore: Semáforo de Riesgo Fiscal</h1>
-        <p style="color: var(--text-muted);">Evalúa la probabilidad de una auditoría del SAT. Analiza masivamente EFOS, discrepancias en IVA/ISR y omisiones de REP en un solo clic.</p>
+        <span style="background: #111827; color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 1px;">TAX ANALYTICS & DETECTION SYSTEM (TADS)</span>
+        <h1 style="font-size: 34px; margin-bottom: 10px; margin-top: 20px; letter-spacing: -1px;">RiskScore: Semáforo de Riesgo Fiscal</h1>
+        <p style="color: var(--text-muted); font-size: 16px;">Evalúa predictivamente la probabilidad de una auditoría del SAT. Analiza EFOS, discrepancias en IVA/ISR y omisiones REP instantáneamente.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Repositorio XML (Ingresos y Egresos)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesamiento local ultrarrápido (Privacidad 100%).</p>
+        <svg width="56" height="56" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <p style="font-weight: 800; margin: 0; font-size: 22px; color: var(--text-main);" id="fileCountText">Cargar Repositorio XML (Ingresos y Egresos)</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesamiento local ultrarrápido. Los datos nunca salen de tu equipo.</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+    </div>
+
+    <div class="progress-panel" id="progressPanel">
+        <div class="progress-header">
+            <div class="progress-title">Motor Predictivo IA</div>
+            <div class="progress-percent" id="progressText">0%</div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-status" id="progressStatus">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span id="progressStatusText">Inicializando variables de riesgo...</span>
+        </div>
     </div>
 
     <div class="results-container" id="results">
@@ -126,72 +143,70 @@
                     <canvas id="gaugeChart"></canvas>
                     <div class="score-value" id="scoreText">100</div>
                 </div>
-                <div style="font-size: 14px; font-weight: 900; margin-top: 10px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;" id="scoreStatus">Cumplimiento Perfecto</div>
+                <div style="font-size: 14px; font-weight: 900; margin-top: 15px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;" id="scoreStatus">Cumplimiento Perfecto</div>
+            </div>
+
+            <div>
+                <div class="kpi-grid">
+                    <div class="kpi-box">
+                        <div class="kpi-title">Facturas Procesadas</div>
+                        <div class="kpi-data"><span id="kpiFiles">0</span></div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-title">EFOS Detectados (Art. 69-B)</div>
+                        <div class="kpi-data">
+                            <span id="kpiEfos">0</span>
+                            <span id="badgeEfos" class="status-badge" style="background: #ECFDF5; color: #065F46;">LIMPIO</span>
+                        </div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-title">Errores Aritméticos</div>
+                        <div class="kpi-data">
+                            <span id="kpiMath">0</span>
+                            <span id="badgeMath" class="status-badge" style="background: #ECFDF5; color: #065F46;">OK</span>
+                        </div>
+                    </div>
+                    <div class="kpi-box">
+                        <div class="kpi-title">Omisiones de REP (PPD)</div>
+                        <div class="kpi-data">
+                            <span id="kpiPpd">0</span>
+                            <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL DÍA</span>
+                        </div>
+                    </div>
+                </div>
                 
-                <div class="risk-amount-card">
-                    <div class="risk-amount-label">Capital en Riesgo:</div>
-                    <div class="risk-amount-val" id="valRiskAmount">$0.00</div>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-box">
-                    <div class="kpi-title">Facturas Procesadas</div>
-                    <div class="kpi-data"><span id="kpiFiles">0</span></div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">EFOS Detectados (Art. 69-B)</div>
-                    <div class="kpi-data">
-                        <span id="kpiEfos">0</span>
-                        <span id="badgeEfos" class="status-badge" style="background: #ECFDF5; color: #065F46;">LIMPIO</span>
+                <div class="financial-impact">
+                    <div class="impact-card base">
+                        <div class="impact-label" style="color: var(--text-muted);">Capital Base en Riesgo</div>
+                        <div class="impact-val" id="valRiskAmount" style="color: var(--text-main);">$0.00</div>
                     </div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">Errores Aritméticos</div>
-                    <div class="kpi-data">
-                        <span id="kpiMath">0</span>
-                        <span id="badgeMath" class="status-badge" style="background: #ECFDF5; color: #065F46;">OK</span>
-                    </div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">Omisiones de REP (PPD)</div>
-                    <div class="kpi-data">
-                        <span id="kpiPpd">0</span>
-                        <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL DÍA</span>
+                    <div class="impact-card risk">
+                        <div class="impact-label" style="color: #991B1B;">Impacto Financiero Estimado*</div>
+                        <div class="impact-val" id="valFinancialImpact">$0.00</div>
+                        <div style="font-size: 9px; color: #B91C1C; margin-top: 5px;">*Cálculo del 40% (ISR + Recargos/Multas) sobre la base en riesgo.</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="progress-panel" id="progressPanel">
-            <div class="progress-header">
-                <div class="progress-title">Auditoría Predictiva IA</div>
-                <div class="progress-percent" id="progressText">0%</div>
-            </div>
-            <div class="progress-track">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-status" id="progressStatus">> Iniciando motor de análisis forense...</div>
-        </div>
-        
         <div id="iaAdvisorContainer" class="ia-advisor-box">
             <div class="ia-advisor-title">
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Dictamen de Auditoría Forense Predictiva
+                Dictamen Forense de AuditorIA
             </div>
             <p id="iaAdvisorText" class="ia-advisor-content"></p>
         </div>
 
         <div class="toolbar">
             <button onclick="window.location.reload()" class="btn-restart">Analizar Nuevo Lote</button>
-            <button onclick="descargarReporte()" class="btn-pdf" id="btnDescargarPDF" disabled>
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Generando Reporte...
+            <button onclick="descargarReportePDF()" class="btn-pdf" id="btnDescargarPDF" disabled>
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Generando Dictamen...
             </button>
         </div>
 
         <div class="share-container" id="shareContainer" style="display: none;">
-            <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más empresas compartiendo:</p>
+            <p style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Blinda a otros colegas compartiendo esta herramienta:</p>
             <a href="https://twitter.com/intent/tweet?text=Evalué%20mi%20riesgo%20de%20auditoría%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:&url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
             <a href="https://api.whatsapp.com/send?text=Acabo%20de%20evaluar%20mi%20riesgo%20de%20auditoría%20de%20mi%20empresa%20con%20AuditorIA:%20https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
@@ -219,8 +234,8 @@
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
     dropZone.addEventListener('drop', e => processRiskScore(e.dataTransfer.files));
     input.addEventListener('change', e => processRiskScore(e.target.files));
 
@@ -233,39 +248,40 @@
         document.getElementById('progressPanel').style.display = 'block';
         const fill = document.getElementById('progressFill');
         const text = document.getElementById('progressText');
-        const status = document.getElementById('progressStatus');
+        const statusText = document.getElementById('progressStatusText');
         
         let progress = 0;
         fill.style.width = '0%';
         
         progressInterval = setInterval(() => {
-            // Easing math para que la barra avance fluido y se detenga cerca del 95%
-            let increment = (100 - progress) * 0.05;
+            let increment = (100 - progress) * 0.08;
             progress += increment;
             if(progress > 95) progress = 95;
             
             fill.style.width = `${progress}%`;
             text.innerText = `${Math.floor(progress)}%`;
 
-            if(progress > 30 && progress < 70) status.innerText = "> Evaluando factores de materialidad (Art. 69-B)...";
-            if(progress >= 70) status.innerText = "> Redactando dictamen jurídico predictivo...";
-        }, 300);
+            if(progress > 20 && progress < 50) statusText.innerText = "Cotejando contra listas negras del DOF (Art. 69-B)...";
+            if(progress > 50 && progress < 80) statusText.innerText = "Validando trazabilidad de Complementos de Pago (REP)...";
+            if(progress >= 80) statusText.innerText = "Redactando dictamen jurídico predictivo...";
+        }, 400);
     }
 
     function finishProgress() {
         clearInterval(progressInterval);
         document.getElementById('progressFill').style.width = '100%';
         document.getElementById('progressText').innerText = '100%';
-        document.getElementById('progressStatus').innerText = "> ¡Análisis Forense Completado!";
+        document.getElementById('progressStatusText').innerText = "¡Auditoría Forense Completada!";
         
         setTimeout(() => {
             document.getElementById('progressPanel').style.display = 'none';
             document.getElementById('iaAdvisorContainer').style.display = 'block';
+            document.getElementById('shareContainer').style.display = 'block';
             
             // Habilitar Descarga
             const btnPdf = document.getElementById('btnDescargarPDF');
             btnPdf.disabled = false;
-            btnPdf.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Descargar Reporte Ejecutivo (PDF)`;
+            btnPdf.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Exportar Reporte (PDF)`;
         }, 800);
     }
 
@@ -275,6 +291,8 @@
         
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('dropZone').style.display = 'none';
+        
+        initProgress();
 
         const listaEfos = await fetchEfosList();
         
@@ -352,6 +370,10 @@
         document.getElementById('kpiFiles').innerText = totalFiles;
         document.getElementById('valRiskAmount').innerText = formatMoney(amountRisk);
         
+        // Impacto Financiero Asumido (40% del Capital Base en Riesgo)
+        const impactoReal = amountRisk * 0.40;
+        document.getElementById('valFinancialImpact').innerText = formatMoney(impactoReal);
+        
         document.getElementById('kpiEfos').innerText = efos;
         const bEfos = document.getElementById('badgeEfos');
         if (efos > 0) { bEfos.innerText = "PELIGRO"; bEfos.style.background = "#FEF2F2"; bEfos.style.color = "#DC2626"; }
@@ -374,10 +396,21 @@
 
         drawGauge(score, color);
 
-        dataReporte = { score, status, color, totalFiles, efos, math, ppds, amountRisk: formatMoney(amountRisk), dictamen: '' };
+        // Generar Recomendaciones de Acción
+        let recomendaciones = [];
+        if(score === 100) recomendaciones.push("Mantener los controles actuales. La materialidad fiscal y técnica del periodo está sana.");
+        if(efos > 0) recomendaciones.push("SUSPENSIÓN INMEDIATA de pagos a los RFC detectados en el listado del Art. 69-B. Iniciar proceso de desvirtuación material (Art. 5-A).");
+        if(ppds > 0) recomendaciones.push("Solicitar de carácter URGENTE la emisión de los Complementos de Recepción de Pagos (REP) faltantes a los proveedores para amparar el IVA acreditable y la deducción de ISR.");
+        if(math > 0) recomendaciones.push("Revisar las facturas con diferencias en la suma de subtotales e impuestos. Solicitar sustitución de CFDI (Clave 04).");
+
+        dataReporte = { 
+            score, status, color, totalFiles, efos, math, ppds, 
+            amountRisk: formatMoney(amountRisk), 
+            impacto: formatMoney(impactoReal),
+            recomendaciones: recomendaciones,
+            dictamen: '' // Se llenará con la IA
+        };
         
-        // Iniciar carga visual e IA
-        initProgress();
         consultarRiskIA(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
     }
 
@@ -400,106 +433,99 @@
             const data = await res.json();
             
             document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            dataReporte.dictamen = data.analisis_legal;
-            document.getElementById('shareContainer').style.display = 'block';
-            finishProgress();
+            dataReporte.dictamen = data.analisis_legal; // Guardamos el dictamen en el objeto del PDF
+            finishProgress(); // Liberamos el botón
 
         } catch (err) { 
-            clearInterval(progressInterval);
-            document.getElementById('progressPanel').style.display = 'none';
-            alert("Error al conectar con la IA forense.");
+            dataReporte.dictamen = "Análisis IA no disponible por fallo de conexión. Por favor evalúe los indicadores técnicos mostrados en el resumen.";
+            finishProgress();
         }
     }
 
     // =========================================================================
     // 🚀 MOTOR DECLARATIVO (PDFMAKE) - CALIDAD CORPORATIVA BIG 4
-    // NUNCA sale en blanco. NUNCA se corta. Texto 100% Seleccionable.
+    // Cero errores de captura. Texto Vectorial y Estructura Intocable.
     // =========================================================================
-    function descargarReporte() {
-        if(!dataReporte.dictamen) return; // Doble candado
-
-        const btn = document.getElementById('btnDescargarPDF');
-        const oldText = btn.innerHTML;
-        btn.innerText = "Exportando...";
-        btn.disabled = true;
-
+    function descargarReportePDF() {
         const isPro = localStorage.getItem('auditoria_pro') === 'true';
         const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null;
 
-        // Marca de agua nativa vectorial
-        const watermarkConfig = isPro ? null : { text: 'Generado por AuditorIA - Versión Gratuita', color: 'gray', opacity: 0.1, bold: true, italics: false };
+        // Marca de agua como background centrado (La forma oficial y segura de pdfmake)
+        const pdfBackground = function(currentPage, pageSize) {
+            if (!isPro) {
+                return {
+                    text: 'Generado por AuditorIA - Versión Gratuita',
+                    color: '#9CA3AF',
+                    opacity: 0.15,
+                    bold: true,
+                    fontSize: 40,
+                    angle: -45,
+                    alignment: 'center',
+                    margin: [0, pageSize.height / 3, 0, 0] // Centrado verticalmente
+                };
+            }
+            return "";
+        };
 
         const docDefinition = {
             pageSize: 'LETTER',
-            pageMargins: [40, 50, 40, 50],
-            watermark: watermarkConfig,
+            pageMargins: [40, 60, 40, 60],
+            background: pdfBackground,
             content: [
-                // Etiqueta de Confidencialidad
-                { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 9, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
+                { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -20, 0, 20], letterSpacing: 1 },
                 
-                // Encabezado
                 {
                     columns: [
                         { text: 'Reporte Ejecutivo de Riesgo Fiscal\nModelo TADS (Tax Analytics & Detection System)', style: 'header' },
                         { text: `Folio: RS-${Date.now()}\nFecha: ${new Date().toLocaleDateString('es-MX')}`, alignment: 'right', style: 'subheader' }
                     ]
                 },
-                // Línea divisoria
                 { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 532, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
-                { text: '\n\n' },
                 
-                // Score y Gráfica
-                chartImg ? { image: chartImg, width: 180, alignment: 'center', margin: [0, 10, 0, -30] } : {},
-                { text: `${dataReporte.score}`, alignment: 'center', fontSize: 60, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] },
-                { text: `${dataReporte.status.toUpperCase()}`, alignment: 'center', fontSize: 14, bold: true, color: dataReporte.color, margin: [0, 5, 0, 30] },
-
-                // KPIs Tabulares
+                { text: '\n1. RESUMEN EJECUTIVO', style: 'sectionTitle' },
                 {
-                    style: 'tableExample',
-                    table: {
-                        widths: ['*', '*', '*', '*'],
-                        body: [
-                            [
-                                { text: 'DOCS AUDITADOS', style: 'tableHeader' },
-                                { text: 'EFOS 69-B', style: 'tableHeader' },
-                                { text: 'ERROR ARITMÉTICO', style: 'tableHeader' },
-                                { text: 'REP FALTANTES', style: 'tableHeader' }
-                            ],
-                            [
-                                { text: `${dataReporte.totalFiles}`, style: 'tableData' },
-                                { text: `${dataReporte.efos > 0 ? 'DETECTADO' : 'SEGURO'}`, style: 'tableData', color: dataReporte.efos > 0 ? '#DC2626' : '#111827' },
-                                { text: `${dataReporte.math}`, style: 'tableData', color: dataReporte.math > 0 ? '#D97706' : '#111827' },
-                                { text: `${dataReporte.ppds}`, style: 'tableData', color: dataReporte.ppds > 0 ? '#DC2626' : '#111827' }
+                    columns: [
+                        {
+                            width: '40%',
+                            stack: [
+                                chartImg ? { image: chartImg, width: 140, alignment: 'center' } : {},
+                                { text: `${dataReporte.score}`, alignment: 'center', fontSize: 45, bold: true, color: dataReporte.color, margin: [0, -10, 0, 0] },
+                                { text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color }
                             ]
-                        ]
-                    },
-                    layout: 'lightHorizontalLines'
-                },
-
-                // Tarjeta de Monto en Riesgo
-                {
-                    margin: [0, 20, 0, 30],
-                    table: {
-                        widths: ['*'],
-                        body: [
-                            [
+                        },
+                        {
+                            width: '60%',
+                            stack: [
+                                { text: 'Métricas de Exposición Base:', bold: true, margin: [0, 5, 0, 5], fontSize: 11 },
                                 {
-                                    fillColor: '#FEF2F2',
-                                    border: [true, true, true, true],
-                                    borderColor: ['#FCA5A5', '#FCA5A5', '#FCA5A5', '#FCA5A5'],
-                                    text: [
-                                        { text: 'CAPITAL TOTAL EN RIESGO DE AUDITORÍA ACTIVA\n\n', fontSize: 11, bold: true, color: '#991B1B' },
-                                        { text: `${dataReporte.amountRisk}`, fontSize: 26, bold: true, color: '#DC2626' }
-                                    ],
-                                    alignment: 'center',
-                                    margin: [20, 20, 20, 20]
+                                    table: {
+                                        widths: ['*', 'auto'],
+                                        body: [
+                                            [{text: 'Documentos Auditados', fontSize: 10}, { text: dataReporte.totalFiles, bold: true, fontSize: 10 }],
+                                            [{text: 'Alertas EFOS (Art. 69-B)', fontSize: 10}, { text: dataReporte.efos, color: dataReporte.efos > 0 ? '#dc2626' : '#059669', bold: true, fontSize: 10 }],
+                                            [{text: 'Errores Matemáticos', fontSize: 10}, { text: dataReporte.math, color: dataReporte.math > 0 ? '#d97706' : '#059669', bold: true, fontSize: 10 }],
+                                            [{text: 'Omisiones REP (Facturas PPD)', fontSize: 10}, { text: dataReporte.ppds, color: dataReporte.ppds > 0 ? '#dc2626' : '#059669', bold: true, fontSize: 10 }]
+                                        ]
+                                    },
+                                    layout: 'lightHorizontalLines'
+                                },
+                                { text: '\nImpacto Financiero Calculado:', bold: true, margin: [0, 10, 0, 5], fontSize: 11 },
+                                {
+                                    table: {
+                                        widths: ['*', 'auto'],
+                                        body: [
+                                            [{text: 'Capital Base en Riesgo', fontSize: 10}, { text: dataReporte.amountRisk, bold: true, fontSize: 10 }],
+                                            [{text: 'Impacto Estimado (Multas + ISR)*', fontSize: 10, bold: true, color: '#dc2626'}, { text: dataReporte.impacto, bold: true, color: '#dc2626', fontSize: 10 }]
+                                        ]
+                                    },
+                                    layout: 'lightHorizontalLines'
                                 }
                             ]
-                        ]
-                    }
+                        }
+                    ]
                 },
-
-                // DICTAMEN DE AUDITORÍA FORENSE PREDICTIVA (Garantizado)
+                
+                { text: '\n2. DICTAMEN FORENSE PREDICTIVO (IA)', style: 'sectionTitle' },
                 {
                     unbreakable: true, 
                     table: {
@@ -509,15 +535,24 @@
                                 {
                                     fillColor: '#111827',
                                     text: [
-                                        { text: 'DICTAMEN DE AUDITORÍA FORENSE PREDICTIVA (IA)\n\n', fontSize: 12, bold: true, color: '#60A5FA', letterSpacing: 1 },
-                                        { text: `${dataReporte.dictamen}`, fontSize: 11, color: '#E5E7EB', alignment: 'justify', lineHeight: 1.4 }
+                                        { text: 'RESOLUCIÓN ALGORÍTMICA\n\n', fontSize: 11, bold: true, color: '#60A5FA', letterSpacing: 1 },
+                                        { text: `${dataReporte.dictamen}`, fontSize: 10, color: '#E5E7EB', alignment: 'justify', lineHeight: 1.5 }
                                     ],
-                                    margin: [25, 25, 25, 25],
+                                    margin: [20, 20, 20, 20],
                                     border: [false, false, false, false]
                                 }
                             ]
                         ]
                     }
+                },
+
+                { text: '\n3. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
+                {
+                    ul: dataReporte.recomendaciones,
+                    fontSize: 10,
+                    lineHeight: 1.5,
+                    color: '#111827',
+                    margin: [10, 0, 0, 0]
                 }
             ],
             footer: function(currentPage, pageCount) {
@@ -526,15 +561,16 @@
                     alignment: 'center',
                     fontSize: 8,
                     color: '#9CA3AF',
-                    margin: [40, 10, 40, 0]
+                    margin: [40, 20, 40, 0]
                 };
             },
             styles: {
-                header: { fontSize: 15, bold: true, color: '#111827' },
-                subheader: { fontSize: 10, color: '#6B7280' },
-                tableExample: { margin: [0, 10, 0, 10] },
-                tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
-                tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
+                header: { fontSize: 14, bold: true, color: '#111827' },
+                subheader: { fontSize: 9, color: '#6B7280' },
+                sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true }
+            },
+            defaultStyle: {
+                font: 'Roboto'
             }
         };
 
@@ -542,10 +578,7 @@
             pdfMake.createPdf(docDefinition).download(`RiskScore_Forense_${Date.now()}.pdf`);
         } catch(e) {
             console.error("Error PDFMake:", e);
-            alert("Error al generar el PDF.");
-        } finally {
-            btn.innerHTML = oldText;
-            btn.disabled = false;
+            alert("Ocurrió un error al generar el PDF.");
         }
     }
 </script>
