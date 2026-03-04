@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RiskScore: Semáforo de Riesgo Fiscal CFDI | AuditorIA</title>
-    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Nuestro algoritmo procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
+    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
     <link rel="canonical" href="https://auditoriaxml.mx/risk-score.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -20,7 +20,7 @@
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --brand-dark: #1E40AF; --danger: #DC2626; --danger-light: #FEF2F2; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --danger-light: #FEF2F2; --success: #059669; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
@@ -51,7 +51,7 @@
         .impact-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
         .impact-val { font-size: 22px; font-weight: 900; font-family: monospace; letter-spacing: -0.5px;}
         
-        /* --- PROGRESS BAR ENTERPRISE --- */
+        /* Barra de Progreso */
         .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; margin-top: 30px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
         .progress-title { font-weight: 900; font-size: 18px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -60,14 +60,19 @@
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 20px; }
         .progress-status { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 15px; font-family: monospace; display: flex; align-items: center; gap: 8px;}
 
-        .ia-advisor-box { background: #111827; color: white; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; text-align: left; border-left: 6px solid #60A5FA; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
-        .ia-advisor-title { font-weight: 900; color: #60A5FA; font-size: 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.7; text-align: justify; }
+        /* Editor Forense (Nuevo) */
+        .advisor-box { background: #111827; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
+        .advisor-title { font-weight: 900; color: #ffffff; font-size: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .advisor-subtitle { font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
+        
+        .editable-dictamen { width: 100%; min-height: 250px; background: #1F2937; color: #F9FAFB; border: 1px solid #374151; border-radius: 8px; padding: 20px; font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.6; resize: vertical; outline: none; transition: border 0.2s; }
+        .editable-dictamen:focus { border-color: var(--brand); }
 
         .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
-        .btn-pdf { background: #111827; color: white; border: none; padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.25);}
+        .btn-pdf { background: var(--brand); color: white; border: none; padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .btn-pdf:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.3);}
         .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; background: var(--text-muted); }
+        
         .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; flex: 1; transition: 0.3s; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;}
         .btn-restart:hover { background: var(--bg-primary); border-color: var(--text-main);}
 
@@ -83,7 +88,6 @@
         .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .modal-close:hover { background: #E5E7EB; color: var(--text-main); }
-        .modal-icon { width: 72px; height: 72px; background: #EFF6FF; color: var(--brand); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
         .modal-title { font-size: 24px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
         .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 30px 0; line-height: 1.6; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
@@ -99,11 +103,9 @@
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <div class="modal-icon">
-            <svg width="36" height="36" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-        </div>
+        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin: 0 auto 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
         <h2 class="modal-title">Potencia tu Auditoría</h2>
-        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes corporativos ilimitados.</p>
+        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes ejecutivos ilimitados.</p>
         <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
@@ -124,7 +126,7 @@
 
     <div class="progress-panel" id="progressPanel">
         <div class="progress-header">
-            <div class="progress-title">Motor Predictivo IA</div>
+            <div class="progress-title">Motor de Auditoría Forense</div>
             <div class="progress-percent" id="progressText">0%</div>
         </div>
         <div class="progress-track">
@@ -189,19 +191,24 @@
             </div>
         </div>
 
-        <div id="iaAdvisorContainer" class="ia-advisor-box">
-            <div class="ia-advisor-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Dictamen Forense de AuditorIA
+        <div id="advisorContainer" class="advisor-box">
+            <div class="advisor-title">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Dictamen de Auditoría Forense
+                </div>
             </div>
-            <p id="iaAdvisorText" class="ia-advisor-content"></p>
+            <div class="advisor-subtitle">Revisa y edita las conclusiones del hallazgo antes de emitir el reporte final.</div>
+            
+            <textarea id="dictamenInput" class="editable-dictamen" placeholder="El motor está redactando las conclusiones..."></textarea>
+            <div style="text-align: right; font-size: 11px; color: #6B7280; margin-top: 8px;">El texto visible aquí será capturado exactamente igual en el PDF.</div>
         </div>
 
         <div class="toolbar">
             <button onclick="window.location.reload()" class="btn-restart">Analizar Nuevo Lote</button>
             <button onclick="descargarReportePDF()" class="btn-pdf" id="btnDescargarPDF" disabled>
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Generando Dictamen...
+                Generando Reporte...
             </button>
         </div>
 
@@ -263,7 +270,7 @@
 
             if(progress > 20 && progress < 50) statusText.innerText = "Cotejando contra listas negras del DOF (Art. 69-B)...";
             if(progress > 50 && progress < 80) statusText.innerText = "Validando trazabilidad de Complementos de Pago (REP)...";
-            if(progress >= 80) statusText.innerText = "Redactando dictamen jurídico predictivo...";
+            if(progress >= 80) statusText.innerText = "Redactando dictamen técnico de auditoría...";
         }, 400);
     }
 
@@ -275,13 +282,13 @@
         
         setTimeout(() => {
             document.getElementById('progressPanel').style.display = 'none';
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
+            document.getElementById('advisorContainer').style.display = 'block';
             document.getElementById('shareContainer').style.display = 'block';
             
             // Habilitar Descarga
             const btnPdf = document.getElementById('btnDescargarPDF');
             btnPdf.disabled = false;
-            btnPdf.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Exportar Reporte (PDF)`;
+            btnPdf.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Confirmar y Exportar PDF`;
         }, 800);
     }
 
@@ -370,7 +377,6 @@
         document.getElementById('kpiFiles').innerText = totalFiles;
         document.getElementById('valRiskAmount').innerText = formatMoney(amountRisk);
         
-        // Impacto Financiero Asumido (40% del Capital Base en Riesgo)
         const impactoReal = amountRisk * 0.40;
         document.getElementById('valFinancialImpact').innerText = formatMoney(impactoReal);
         
@@ -396,7 +402,6 @@
 
         drawGauge(score, color);
 
-        // Generar Recomendaciones de Acción
         let recomendaciones = [];
         if(score === 100) recomendaciones.push("Mantener los controles actuales. La materialidad fiscal y técnica del periodo está sana.");
         if(efos > 0) recomendaciones.push("SUSPENSIÓN INMEDIATA de pagos a los RFC detectados en el listado del Art. 69-B. Iniciar proceso de desvirtuación material (Art. 5-A).");
@@ -407,11 +412,10 @@
             score, status, color, totalFiles, efos, math, ppds, 
             amountRisk: formatMoney(amountRisk), 
             impacto: formatMoney(impactoReal),
-            recomendaciones: recomendaciones,
-            dictamen: '' // Se llenará con la IA
+            recomendaciones: recomendaciones
         };
         
-        consultarRiskIA(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
+        consultarDictamen(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
     }
 
     function drawGauge(score, color) {
@@ -424,7 +428,7 @@
         });
     }
 
-    async function consultarRiskIA(score, factores) {
+    async function consultarDictamen(score, factores) {
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/risk-score-ia", {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -432,47 +436,43 @@
             });
             const data = await res.json();
             
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            dataReporte.dictamen = data.analisis_legal; // Guardamos el dictamen en el objeto del PDF
-            finishProgress(); // Liberamos el botón
-
+            // Colocar el texto en el textarea editable
+            document.getElementById('dictamenInput').value = data.analisis_legal;
+            finishProgress();
         } catch (err) { 
-            dataReporte.dictamen = "Análisis IA no disponible por fallo de conexión. Por favor evalúe los indicadores técnicos mostrados en el resumen.";
+            document.getElementById('dictamenInput').value = "Análisis no disponible por fallo de conexión. Por favor evalúe los indicadores técnicos mostrados en el resumen.";
             finishProgress();
         }
     }
 
     // =========================================================================
     // 🚀 MOTOR DECLARATIVO (PDFMAKE) - CALIDAD CORPORATIVA BIG 4
-    // Cero errores de captura. Texto Vectorial y Estructura Intocable.
     // =========================================================================
     function descargarReportePDF() {
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerText = "Exportando Reporte...";
+        btn.disabled = true;
+
+        // Capturar el texto modificado por el usuario
+        const finalDictamen = document.getElementById('dictamenInput').value;
+
         const isPro = localStorage.getItem('auditoria_pro') === 'true';
         const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null;
 
-        // Marca de agua como background centrado (La forma oficial y segura de pdfmake)
         const pdfBackground = function(currentPage, pageSize) {
             if (!isPro) {
-                return {
-                    text: 'Generado por AuditorIA - Versión Gratuita',
-                    color: '#9CA3AF',
-                    opacity: 0.15,
-                    bold: true,
-                    fontSize: 40,
-                    angle: -45,
-                    alignment: 'center',
-                    margin: [0, pageSize.height / 3, 0, 0] // Centrado verticalmente
-                };
+                return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.15, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
             }
             return "";
         };
 
         const docDefinition = {
             pageSize: 'LETTER',
-            pageMargins: [40, 60, 40, 60],
+            pageMargins: [40, 50, 40, 50],
             background: pdfBackground,
             content: [
-                { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -20, 0, 20], letterSpacing: 1 },
+                { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
                 
                 {
                     columns: [
@@ -525,60 +525,36 @@
                     ]
                 },
                 
-                { text: '\n2. DICTAMEN FORENSE PREDICTIVO (IA)', style: 'sectionTitle' },
-                {
-                    unbreakable: true, 
-                    table: {
-                        widths: ['*'],
-                        body: [
-                            [
-                                {
-                                    fillColor: '#111827',
-                                    text: [
-                                        { text: 'RESOLUCIÓN ALGORÍTMICA\n\n', fontSize: 11, bold: true, color: '#60A5FA', letterSpacing: 1 },
-                                        { text: `${dataReporte.dictamen}`, fontSize: 10, color: '#E5E7EB', alignment: 'justify', lineHeight: 1.5 }
-                                    ],
-                                    margin: [20, 20, 20, 20],
-                                    border: [false, false, false, false]
-                                }
-                            ]
-                        ]
-                    }
-                },
+                { text: '\n2. DICTAMEN DE AUDITORÍA FORENSE', style: 'sectionTitle' },
+                { text: finalDictamen, fontSize: 10, alignment: 'justify', lineHeight: 1.5, margin: [0, 0, 0, 20] },
 
                 { text: '\n3. PLAN DE ACCIÓN RECOMENDADO', style: 'sectionTitle' },
-                {
-                    ul: dataReporte.recomendaciones,
-                    fontSize: 10,
-                    lineHeight: 1.5,
-                    color: '#111827',
-                    margin: [10, 0, 0, 0]
-                }
+                { ul: dataReporte.recomendaciones, fontSize: 10, lineHeight: 1.5, color: '#111827', margin: [10, 0, 0, 0] }
             ],
             footer: function(currentPage, pageCount) {
                 return {
                     text: `El presente documento constituye un papel de trabajo para mitigación de contingencias. No sustituye las facultades de comprobación de la autoridad fiscal.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
-                    alignment: 'center',
-                    fontSize: 8,
-                    color: '#9CA3AF',
-                    margin: [40, 20, 40, 0]
+                    alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 10, 40, 0]
                 };
             },
             styles: {
-                header: { fontSize: 14, bold: true, color: '#111827' },
-                subheader: { fontSize: 9, color: '#6B7280' },
-                sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true }
+                header: { fontSize: 15, bold: true, color: '#111827' },
+                subheader: { fontSize: 10, color: '#6B7280' },
+                sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true },
+                tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
+                tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
             },
-            defaultStyle: {
-                font: 'Roboto'
-            }
+            defaultStyle: { font: 'Roboto' }
         };
 
         try {
-            pdfMake.createPdf(docDefinition).download(`RiskScore_Forense_${Date.now()}.pdf`);
+            pdfMake.createPdf(docDefinition).download(`RiskScore_Reporte_${Date.now()}.pdf`);
         } catch(e) {
             console.error("Error PDFMake:", e);
             alert("Ocurrió un error al generar el PDF.");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
         }
     }
 </script>
