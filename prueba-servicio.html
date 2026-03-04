@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba de Servicio (Materialidad Intangibles) | AuditorIA</title>
-    <meta name="description" content="Evita que el SAT clasifique tus gastos como EFOS. Cruza la evidencia de tus servicios (reportes, correos) contra el XML de la factura.">
+    <meta name="description" content="Evita que el SAT clasifique tus gastos como EFOS. Cruza la evidencia de tus servicios contra el XML de la factura.">
     <link rel="canonical" href="https://auditoriaxml.mx/prueba-servicio.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -32,8 +32,12 @@
         .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; box-shadow: none;}
         .btn-action:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Barra de Progreso Fluida */
+        .progress-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .progress-wrapper { width: 100%; background: var(--border); border-radius: 10px; height: 12px; overflow: hidden; margin: 20px 0; position: relative; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #1E40AF, var(--brand), #60A5FA); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
+        .progress-text { font-size: 24px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+        .progress-status { font-size: 14px; color: var(--text-muted); font-weight: 600; margin-top: 10px; }
 
         .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -77,6 +81,12 @@
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
+        /* Modal de Renderizado de PDF Seguro */
+        #pdfLoadingModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner-large { border: 5px solid rgba(37, 99, 235, 0.2); width: 60px; height: 60px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin-bottom: 20px; }
+
+        /* Contenedor PDF Real (Se renderiza DEBAJO del Modal para asegurar captura perfecta por html2canvas) */
+        #pdfRenderArea { position: absolute; top: 0; left: 0; width: 800px; background: white; z-index: 99998; display: none; }
         .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
 
         @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .btn-toolbar { flex-direction: column; } .btn-toolbar button { width: 100%; justify-content: center;} }
@@ -97,6 +107,14 @@
         <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
+
+<div id="pdfLoadingModal">
+    <div class="spinner-large"></div>
+    <h2 style="margin: 0; color: var(--text-main); font-size: 24px; font-weight: 900;">Ensamblando Dictamen Forense</h2>
+    <p style="color: var(--text-muted); font-size: 15px; margin-top: 10px;">Renderizando documento para exportación. Por favor, no cierres esta ventana.</p>
+</div>
+
+<div id="pdfRenderArea"></div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
@@ -123,10 +141,13 @@
 
     <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarAuditoria()">GENERAR EXPEDIENTE DE MATERIALIDAD</button>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand); font-size: 16px;">Cruzando semántica documental...</p>
-        <p style="font-size: 13px; color: var(--text-muted);">Comparando el contenido del entregable contra los conceptos del CFDI.</p>
+    <div class="progress-container" id="loadingState">
+        <h3 style="margin: 0; font-size: 20px; color: var(--text-main); font-weight: 900;">Analizando Documentación Forense</h3>
+        <p class="progress-status" id="progressStatus">Extrayendo semántica del contrato/entregable...</p>
+        <div class="progress-wrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
     </div>
 
     <div class="results-container" id="results">
@@ -188,6 +209,7 @@
     let xmlDatos = null;
     let metadataFac = {};
     let dictamenExport = null;
+    let progressTimer = null;
 
     const inputEvidencia = document.getElementById('evidenciaInput');
     const inputXml = document.getElementById('xmlInput');
@@ -247,13 +269,43 @@
 
     function checkReady() { if(fileEvidencia && xmlDatos) btnEjecutar.disabled = false; }
 
+    function startProgress() {
+        let progress = 0;
+        const bar = document.getElementById('progressBar');
+        const text = document.getElementById('progressText');
+        const status = document.getElementById('progressStatus');
+        
+        progressTimer = setInterval(() => {
+            // Easing matemático: se ralentiza al llegar a 90%
+            let increment = (100 - progress) * 0.08; 
+            progress += increment;
+            
+            if(progress > 95) progress = 95; 
+            
+            bar.style.width = `${progress}%`;
+            text.innerText = `${Math.floor(progress)}%`;
+
+            if(progress > 30 && progress < 60) status.innerText = "Cruzando datos con el CFDI...";
+            if(progress >= 60) status.innerText = "Generando dictamen forense de materialidad...";
+        }, 400);
+    }
+
+    function completeProgress() {
+        clearInterval(progressTimer);
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressText').innerText = '100%';
+        document.getElementById('progressStatus').innerText = "¡Auditoría Completada!";
+    }
+
     async function ejecutarAuditoria() {
         if(!checkQuota()) return;
 
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('uploadZones').style.display = 'none';
         btnEjecutar.style.display = 'none';
+        
         document.getElementById('loadingState').style.display = 'block';
+        startProgress();
 
         const formData = new FormData();
         formData.append("evidencia", fileEvidencia);
@@ -264,72 +316,76 @@
             if(!res.ok) throw new Error("Falla en el servidor");
             const data = await res.json();
             
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('results').style.display = 'block';
+            completeProgress();
 
-            const badge = document.getElementById('badgeCoincidencia');
-            let colorSt = '#991B1B'; let bgSt = '#FEF2F2'; let brSt = '#FCA5A5';
-            
-            if(data.sustancia_economica_comprobada) {
-                badge.className = "match-badge match-true"; badge.innerText = "MATERIALIDAD COMPROBADA (ALTA CONFIANZA)";
-                colorSt = '#065F46'; bgSt = '#ECFDF5'; brSt = '#6EE7B7';
-            } else if (data.nivel_riesgo_efos === 'MEDIO') {
-                badge.className = "match-badge match-warning"; badge.innerText = `COINCIDENCIA PARCIAL: RIESGO MEDIO`;
-                colorSt = '#92400E'; bgSt = '#FEF3C7'; brSt = '#FCD34D';
-            } else {
-                badge.className = "match-badge match-false"; badge.innerText = `DISCREPANCIA DETECTADA: RIESGO ALTO`;
-            }
+            setTimeout(() => {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
 
-            document.getElementById('resMetaRfc').innerText = metadataFac.rfc;
-            document.getElementById('resMetaMonto').innerText = formatMoney(metadataFac.total);
-            document.getElementById('resMetaUuid').innerText = metadataFac.uuid;
-            document.getElementById('resDictamen').innerText = data.dictamen_evidencia;
-            
-            dictamenExport = {
-                status: badge.innerText,
-                color: colorSt,
-                bg: bgSt,
-                br: brSt,
-                dictamen: data.dictamen_evidencia,
-                rfc: metadataFac.rfc,
-                uuid: metadataFac.uuid,
-                monto: formatMoney(metadataFac.total)
-            };
+                const badge = document.getElementById('badgeCoincidencia');
+                let colorSt = '#991B1B'; let bgSt = '#FEF2F2'; let brSt = '#FCA5A5';
+                
+                if(data.sustancia_economica_comprobada) {
+                    badge.className = "match-badge match-true"; badge.innerText = "MATERIALIDAD COMPROBADA (ALTA CONFIANZA)";
+                    colorSt = '#065F46'; bgSt = '#ECFDF5'; brSt = '#6EE7B7';
+                } else if (data.nivel_riesgo_efos === 'MEDIO') {
+                    badge.className = "match-badge match-warning"; badge.innerText = `COINCIDENCIA PARCIAL: RIESGO MEDIO`;
+                    colorSt = '#92400E'; bgSt = '#FEF3C7'; brSt = '#FCD34D';
+                } else {
+                    badge.className = "match-badge match-false"; badge.innerText = `DISCREPANCIA DETECTADA: RIESGO ALTO`;
+                }
+
+                document.getElementById('resMetaRfc').innerText = metadataFac.rfc;
+                document.getElementById('resMetaMonto').innerText = formatMoney(metadataFac.total);
+                document.getElementById('resMetaUuid').innerText = metadataFac.uuid;
+                document.getElementById('resDictamen').innerText = data.dictamen_evidencia;
+                
+                dictamenExport = {
+                    status: badge.innerText,
+                    color: colorSt,
+                    bg: bgSt,
+                    br: brSt,
+                    dictamen: data.dictamen_evidencia,
+                    rfc: metadataFac.rfc,
+                    uuid: metadataFac.uuid,
+                    monto: formatMoney(metadataFac.total)
+                };
+            }, 600); // Pequeño delay para que el usuario vea el 100%
 
         } catch (e) {
+            clearInterval(progressTimer);
             alert("Error en el análisis. Intente con un PDF más claro o menos pesado.");
             window.location.reload();
         }
     }
 
-    // EL MOTOR MAESTRO PDF BLINDADO (SIN CORTES, SCROLL IGNORADO)
+    // EL MOTOR MAESTRO DE PDF - 100% BLINDADO Y A PRUEBA DE FALLOS
     async function descargarDictamenPDF() {
         if (!dictamenExport) return;
 
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Exportando...";
+        btn.innerText = "Empaquetando...";
         btn.disabled = true;
 
         const isPro = localStorage.getItem('auditoria_pro') === 'true';
-        const watermarkCSS = isPro ? '' : `background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><text x='30' y='300' transform='rotate(-35 300 300)' fill='rgba(37,99,235,0.06)' font-size='40' font-family='Arial' font-weight='bold'>Generado por AuditorIA - Versión Gratuita</text></svg>"); background-repeat: repeat;`;
-
-        // Crear contenedor dinámico anclado en 0,0 absoluto
-        const renderContainer = document.createElement('div');
-        renderContainer.style.position = 'absolute';
-        renderContainer.style.top = '0px';
-        renderContainer.style.left = '0px';
-        renderContainer.style.width = '800px';
-        renderContainer.style.zIndex = '-9999';
         
-        renderContainer.innerHTML = `
-            <div style="width: 100%; padding: 45px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; ${watermarkCSS}">
+        // Modal de Carga para Ocultar el Renderizado en Pantalla
+        document.getElementById('pdfLoadingModal').style.display = 'flex';
+        
+        // El contenedor real se ubica visible en el flujo para que html2canvas lo capture sin fallas
+        const renderArea = document.getElementById('pdfRenderArea');
+        renderArea.style.display = 'block';
+
+        renderArea.innerHTML = `
+            <div style="width: 100%; padding: 50px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
+                
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
                     <div>
-                        <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen de Materialidad Fiscal</h1>
-                        <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-weight: bold;">Análisis preventivo Art. 69-B del Código Fiscal de la Federación.</p>
+                        <h1 style="margin: 0; font-size: 26px; color: #111827; font-weight: 900; letter-spacing: -0.5px;">Dictamen de Materialidad Fiscal</h1>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #6B7280; font-weight: bold;">Análisis preventivo Art. 69-B del Código Fiscal de la Federación.</p>
                     </div>
-                    <div style="font-size: 10px; color: #9CA3AF; font-family: monospace;">Folio: MT-${Date.now()}</div>
+                    <div style="font-size: 12px; color: #9CA3AF; font-family: monospace;">Folio: MT-${Date.now()}</div>
                 </div>
                 
                 <div class="page-break-avoid" style="background: ${dictamenExport.bg}; padding: 25px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid ${dictamenExport.br};">
@@ -341,8 +397,8 @@
                     <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #F9FAFB;">
                         <div style="font-size: 11px; font-weight: 800; color: #6B7280; text-transform: uppercase; margin-bottom: 12px;">Datos Base (CFDI)</div>
                         <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>RFC Emisor:</strong> <span style="font-family: monospace;">${dictamenExport.rfc}</span></div>
-                        <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>Monto:</strong> <span style="font-weight: bold;">${dictamenExport.monto}</span></div>
-                        <div style="font-size: 10px; font-family: monospace; color: #4B5563; word-break: break-all; margin-top: 10px;">UUID: ${dictamenExport.uuid}</div>
+                        <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>Monto:</strong> <span style="font-weight: bold; font-family: monospace;">${dictamenExport.monto}</span></div>
+                        <div style="font-size: 10px; font-family: monospace; color: #4B5563; word-break: break-all; margin-top: 15px;">UUID: ${dictamenExport.uuid}</div>
                     </div>
                     <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #111827; color: white;">
                         <div style="font-size: 11px; font-weight: 800; color: #60A5FA; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Resolución Forense (IA)</div>
@@ -356,30 +412,38 @@
                 </div>
             </div>
         `;
-        document.body.appendChild(renderContainer);
+
+        // TRUCO MAESTRO: Llevamos el scroll al origen para que la foto de html2canvas no se desface
+        window.scrollTo(0, 0);
 
         const opt = {
             margin:       10,
             filename:     `Materialidad_Servicio_${dictamenExport.rfc}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true, 
-                letterRendering: true, 
-                windowWidth: 800,
-                scrollY: 0, 
-                scrollX: 0 
-            },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0, scrollX: 0 },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
         try {
-            await html2pdf().set(opt).from(renderContainer).save();
+            await html2pdf().set(opt).from(renderArea).toPdf().get('pdf').then(function(pdf) {
+                if(!isPro) {
+                    const totalPages = pdf.internal.getNumberOfPages();
+                    pdf.setTextColor(220, 220, 220); // Gris nativo seguro
+                    pdf.setFontSize(40);
+                    for (let i = 1; i <= totalPages; i++) {
+                        pdf.setPage(i);
+                        pdf.text('Generado por AuditorIA - Version Gratuita', 30, 150, { angle: -35 });
+                    }
+                }
+            }).save();
         } catch (e) {
             console.error(e);
             alert("Error al procesar el archivo PDF.");
         } finally {
-            document.body.removeChild(renderContainer);
+            // Limpieza del DOM y fin del modal
+            document.getElementById('pdfLoadingModal').style.display = 'none';
+            renderArea.style.display = 'none';
+            renderArea.innerHTML = '';
             btn.innerHTML = oldText;
             btn.disabled = false;
         }
