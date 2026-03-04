@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RiskScore: Semáforo de Riesgo Fiscal CFDI | AuditorIA</title>
-    <meta name="description" content="Evalúa el riesgo de auditoría del SAT. Nuestro algoritmo procesa EFOS, discrepancias matemáticas y complementos faltantes para emitir un score fiscal.">
-    <link rel="canonical" href="https://auditoriaxml.mx/risk-score.html" />
+    <title>Prueba de Servicio (Materialidad Intangibles) | AuditorIA</title>
+    <meta name="description" content="Evita que el SAT clasifique tus gastos como EFOS. Cruza la evidencia de tus servicios contra el XML de la factura.">
+    <link rel="canonical" href="https://auditoriaxml.mx/prueba-servicio.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
     <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
     <link rel="apple-touch-icon" href="candado.png">
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
@@ -22,47 +21,51 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); transform: scale(1.01); }
+        .upload-section.active { border-color: var(--success); background: #ECFDF5; }
 
-        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 18px; border-radius: 10px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); letter-spacing: 0.5px;}
+        .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; box-shadow: none;}
+        .btn-action:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
+
+        /* Barra de Progreso Fluida */
+        .progress-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .progress-wrapper { width: 100%; background: var(--border); border-radius: 10px; height: 12px; overflow: hidden; margin: 20px 0; position: relative; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #1E40AF, var(--brand), #60A5FA); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
+        .progress-text { font-size: 24px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+        .progress-status { font-size: 14px; color: var(--text-muted); font-weight: 600; margin-top: 10px; }
+
+        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
         
-        .score-card { background: var(--bg-secondary); padding: 30px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .chart-wrapper { position: relative; width: 280px; height: 160px; margin: 0 auto; }
-        .score-value { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 56px; font-weight: 900; color: var(--text-main); }
-        
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px; }
-        .kpi-data { font-size: 24px; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
-        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+        .meta-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .meta-card { background: var(--bg-primary); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+        .meta-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 4px; }
+        .meta-val { font-size: 14px; color: var(--text-main); font-family: monospace; font-weight: 600; word-break: break-all; }
 
-        .risk-amount-card { background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; width: 100%;}
-        .risk-amount-label { font-size: 12px; color: #991B1B; font-weight: bold; }
-        .risk-amount-val { font-size: 18px; font-weight: 900; color: #DC2626; font-family: monospace; }
-        
-        .ia-advisor-box { background: #111827; color: white; padding: 25px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border-left: 6px solid #60A5FA; }
-        .ia-advisor-title { font-weight: 800; color: #60A5FA; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.6; text-align: justify; }
-        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
+        .match-badge { display: block; padding: 20px; border-radius: 10px; font-weight: 800; font-size: 18px; margin-bottom: 25px; text-align: center; text-transform: uppercase; letter-spacing: 1px; border: 2px solid transparent;}
+        .match-true { background: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
+        .match-false { background: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
+        .match-warning { background: #FEF3C7; color: #92400E; border-color: #FCD34D; }
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        .data-box { background: #111827; color: white; border-left: 6px solid var(--brand); padding: 25px; border-radius: 12px; margin-bottom: 30px; }
+        .data-label { font-size: 14px; text-transform: uppercase; color: #60A5FA; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;}
+        .data-value { font-size: 14px; color: #E5E7EB; line-height: 1.7; text-align: justify;}
 
-        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
-        .btn-pdf { background: #111827; color: white; border: none; padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;}
-        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37,99,235,0.2);}
+        .btn-toolbar { display: flex; gap: 15px; justify-content: flex-end; margin-bottom: 25px; flex-wrap: wrap;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
+        .btn-pdf:hover:not(:disabled) { background: var(--brand); transform: translateY(-2px); }
         .btn-pdf:disabled { opacity: 0.7; cursor: not-allowed; }
-        .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; font-size: 14px;}
-        .btn-restart:hover { background: var(--bg-primary); }
 
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .social-btn:hover { opacity: 0.9; }
         .btn-x { background-color: #000000; }
         .btn-in { background-color: #0A66C2; }
         .btn-wa { background-color: #25D366; }
@@ -78,11 +81,15 @@
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
 
-        /* --- MOTOR PDF: ANCLAJE INFALIBLE --- */
-        #hiddenPdfRender { position: absolute; left: 0; top: 0; width: 800px; background: white; z-index: -10000; pointer-events: none; }
+        /* Modal de Renderizado de PDF Seguro */
+        #pdfLoadingModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-primary); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner-large { border: 5px solid rgba(37, 99, 235, 0.2); width: 60px; height: 60px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin-bottom: 20px; }
+
+        /* Contenedor PDF Real (Se renderiza DEBAJO del Modal para asegurar captura perfecta por html2canvas) */
+        #pdfRenderArea { position: absolute; top: 0; left: 0; width: 800px; background: white; z-index: 99998; display: none; }
         .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
 
-        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } .toolbar button { width: 100%;} }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } .btn-toolbar { flex-direction: column; } .btn-toolbar button { width: 100%; justify-content: center;} }
     </style>
 </head>
 <body>
@@ -96,104 +103,95 @@
             <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
         </div>
         <h2 class="modal-title">Potencia tu Auditoría</h2>
-        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos y descargar reportes ejecutivos limpios.</p>
+        <p class="modal-text">Has agotado tus evaluaciones de materialidad gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para blindar operaciones ilimitadas y generar expedientes limpios.</p>
         <a href="planes.html" class="btn-upgrade">Subir a Nivel Pro</a>
     </div>
 </div>
 
+<div id="pdfLoadingModal">
+    <div class="spinner-large"></div>
+    <h2 style="margin: 0; color: var(--text-main); font-size: 24px; font-weight: 900;">Ensamblando Dictamen Forense</h2>
+    <p style="color: var(--text-muted); font-size: 15px; margin-top: 10px;">Renderizando documento para exportación. Por favor, no cierres esta ventana.</p>
+</div>
+
+<div id="pdfRenderArea"></div>
+
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">SISTEMA PREDICTIVO DE FISCALIZACIÓN</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">RiskScore: Semáforo de Riesgo Fiscal</h1>
-        <p style="color: var(--text-muted);">Evalúa la probabilidad de una auditoría del SAT. Analiza masivamente EFOS, discrepancias en IVA/ISR y omisiones de REP en un solo clic.</p>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">BLINDAJE ART. 69-B CFF</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Prueba de Materialidad (Intangibles)</h1>
+        <p style="color: var(--text-muted);">Comprueba que tus servicios erogados realmente existieron. Cruza la evidencia (reportes, entregables) contra el XML de la factura mediante Inteligencia Artificial.</p>
     </div>
 
-    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Repositorio XML (Ingresos y Egresos)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesamiento local ultrarrápido (Privacidad 100%).</p>
-        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+    <div class="grid-2" id="uploadZones">
+        <div class="upload-section" id="dropEvidencia" onclick="document.getElementById('evidenciaInput').click()">
+            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+            <p style="font-weight: 700; margin: 0; font-size: 18px;">1. Evidencia Documental (PDF)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="evidenciaText">Reportes, bitácoras o entregables.</p>
+            <input type="file" id="evidenciaInput" accept=".pdf,image/*" style="display: none;">
+        </div>
+
+        <div class="upload-section" id="dropXml" onclick="document.getElementById('xmlInput').click()">
+            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <p style="font-weight: 700; margin: 0; font-size: 18px;" id="xmlText">2. Factura Asociada (XML)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Comprobante de honorarios o servicios.</p>
+            <input type="file" id="xmlInput" accept=".xml" style="display: none;">
+        </div>
     </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Ejecutando algoritmo de riesgo TADS...</p>
+    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarAuditoria()">GENERAR EXPEDIENTE DE MATERIALIDAD</button>
+
+    <div class="progress-container" id="loadingState">
+        <h3 style="margin: 0; font-size: 20px; color: var(--text-main); font-weight: 900;">Analizando Documentación Forense</h3>
+        <p class="progress-status" id="progressStatus">Extrayendo semántica del contrato/entregable...</p>
+        <div class="progress-wrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
     </div>
 
     <div class="results-container" id="results">
-        <div class="dashboard-grid">
-            <div class="score-card">
-                <div class="chart-wrapper">
-                    <canvas id="gaugeChart"></canvas>
-                    <div class="score-value" id="scoreText">100</div>
-                </div>
-                <div style="font-size: 13px; font-weight: 800; margin-top: 10px; color: var(--text-main); text-transform: uppercase;" id="scoreStatus">Cumplimiento Perfecto</div>
-                
-                <div class="risk-amount-card">
-                    <div class="risk-amount-label">Capital en Riesgo:</div>
-                    <div class="risk-amount-val" id="valRiskAmount">$0.00</div>
-                </div>
-            </div>
-
-            <div class="kpi-grid">
-                <div class="kpi-box">
-                    <div class="kpi-title">Facturas Procesadas</div>
-                    <div class="kpi-data"><span id="kpiFiles">0</span></div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">EFOS Detectados (Art. 69-B)</div>
-                    <div class="kpi-data">
-                        <span id="kpiEfos">0</span>
-                        <span id="badgeEfos" class="status-badge" style="background: #ECFDF5; color: #065F46;">LIMPIO</span>
-                    </div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">Errores Aritméticos</div>
-                    <div class="kpi-data">
-                        <span id="kpiMath">0</span>
-                        <span id="badgeMath" class="status-badge" style="background: #ECFDF5; color: #065F46;">OK</span>
-                    </div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">Omisiones de REP (PPD)</div>
-                    <div class="kpi-data">
-                        <span id="kpiPpd">0</span>
-                        <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL DÍA</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="iaLoading" class="ia-loading">
-            <div class="spinner" style="width:20px; height:20px; border-width:3px; display:inline-block;"></div> Generando dictamen predictivo...
-        </div>
-        
-        <div id="iaAdvisorContainer" class="ia-advisor-box">
-            <div class="ia-advisor-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                Dictamen Forense de AuditorIA
-            </div>
-            <p id="iaAdvisorText" class="ia-advisor-content"></p>
-        </div>
-
-        <div class="toolbar">
-            <button onclick="window.location.reload()" class="btn-restart">Analizar Nuevo Lote</button>
-            <button onclick="descargarReporte()" class="btn-pdf" id="btnDescargarPDF">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Descargar Reporte Ejecutivo (PDF)
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">Analizar Nueva Operación</button>
+            <button onclick="descargarDictamenPDF()" class="btn-pdf" id="btnDescargarPDF">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Descargar Dictamen Forense (PDF)
             </button>
         </div>
 
-        <div class="share-container" id="shareContainer" style="display: none;">
-            <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más empresas compartiendo:</p>
-            <a href="https://twitter.com/intent/tweet?text=Evalué%20mi%20riesgo%20de%20auditoría%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:&url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20evaluar%20mi%20riesgo%20de%20auditoría%20de%20mi%20empresa%20con%20AuditorIA:%20https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        <div id="badgeCoincidencia" class="match-badge"></div>
+        
+        <div class="meta-summary">
+            <div class="meta-card">
+                <div class="meta-label">RFC Emisor</div>
+                <div class="meta-val" id="resMetaRfc">-</div>
+            </div>
+            <div class="meta-card">
+                <div class="meta-label">Monto de Operación</div>
+                <div class="meta-val" id="resMetaMonto">-</div>
+            </div>
+            <div class="meta-card">
+                <div class="meta-label">Folio Fiscal (UUID)</div>
+                <div class="meta-val" id="resMetaUuid" style="font-size: 11px;">-</div>
+            </div>
+        </div>
+
+        <div class="data-box">
+            <div class="data-label">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Justificación Forense de Razón de Negocio
+            </div>
+            <div class="data-value" id="resDictamen"></div>
+        </div>
+
+        <div class="share-container" id="shareContainer">
+            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
+            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20blindar%20mi%20contabilidad%20evaluando%20la%20materialidad%20de%20mis%20deducciones%20con%20AuditorIA:&url=https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-x">X</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
+            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20blindar%20mi%20contabilidad%20evaluando%20la%20materialidad%20de%20mis%20deducciones%20con%20AuditorIA:%20https://auditoriaxml.mx/prueba-servicio.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
     </div>
 </div>
-
-<div id="hiddenPdfRender"></div>
 
 <script src="footer.js"></script>
 
@@ -207,241 +205,230 @@
         return true;
     }
 
-    const input = document.getElementById('xmlInput');
-    const dropZone = document.getElementById('dropZone');
-    let gaugeInstance = null;
-    let dataReporte = {};
+    let fileEvidencia = null;
+    let xmlDatos = null;
+    let metadataFac = {};
+    let dictamenExport = null;
+    let progressTimer = null;
 
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+    const inputEvidencia = document.getElementById('evidenciaInput');
+    const inputXml = document.getElementById('xmlInput');
+    const btnEjecutar = document.getElementById('btnEjecutar');
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
-    dropZone.addEventListener('drop', e => processRiskScore(e.dataTransfer.files));
-    input.addEventListener('change', e => processRiskScore(e.target.files));
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
 
-    async function fetchEfosList() {
-        try { const res = await fetch('/efos.json'); return await res.json(); } 
-        catch (e) { return []; }
-    }
+    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropEvidencia').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(37, 99, 235, 0.05)"; }));
+    ['dragleave', 'drop'].forEach(e => document.getElementById('dropEvidencia').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
+    document.getElementById('dropEvidencia').addEventListener('drop', e => { 
+        fileEvidencia = e.dataTransfer.files[0]; 
+        document.getElementById('evidenciaText').innerText = fileEvidencia.name; 
+        document.getElementById('dropEvidencia').classList.add('active'); 
+        checkReady(); 
+    });
+    
+    inputEvidencia.addEventListener('change', e => { 
+        fileEvidencia = e.target.files[0]; 
+        document.getElementById('evidenciaText').innerText = fileEvidencia.name;
+        document.getElementById('dropEvidencia').classList.add('active');
+        checkReady(); 
+    });
 
-    async function processRiskScore(files) {
-        if (files.length === 0) return;
-        if (!checkQuota()) return;
+    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropXml').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(37, 99, 235, 0.05)"; }));
+    ['dragleave', 'drop'].forEach(e => document.getElementById('dropXml').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
+    document.getElementById('dropXml').addEventListener('drop', e => procesarXmlBox(e.dataTransfer.files[0]));
+    inputXml.addEventListener('change', e => { procesarXmlBox(e.target.files[0]); });
+
+    function procesarXmlBox(file) {
+        document.getElementById('xmlText').innerText = file.name;
+        document.getElementById('dropXml').classList.add('active');
         
-        document.getElementById('headerSection').style.display = 'none';
-        document.getElementById('dropZone').style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
-
-        const listaEfos = await fetchEfosList();
-        
-        let score = 100;
-        let countEfos = 0; let countMath = 0; let countPpdOrphans = 0;
-        let amountRisk = 0;
-        let ppds = {}; let complementos = [];
-
-        const promises = Array.from(files).map(file => {
-            return new Promise((resolve) => {
-                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
-                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
-                        if (!cfdi) { resolve(); return; }
-
-                        const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
-                        const totalFactura = parseFloat(cfdi.getAttribute('Total') || 0);
-
-                        if (emisor) {
-                            const rfc = emisor.getAttribute('Rfc');
-                            if (listaEfos.includes(rfc)) {
-                                countEfos++;
-                                amountRisk += totalFactura;
-                            }
-                        }
-
-                        const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
-                        const total = parseFloat(cfdi.getAttribute('Total') || 0);
-                        if(Math.abs(subtotal - total) > 0.01 && total > 1000) { countMath++; }
-
-                        const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
-                        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
-                        const uuid = timbre ? timbre.getAttribute('UUID').toUpperCase() : null;
-
-                        if ((tipo === 'I' || tipo === 'E') && (cfdi.getAttribute('MetodoPago') || '').toUpperCase() === 'PPD' && uuid) {
-                            ppds[uuid] = { total: totalFactura, pagado: 0 };
-                        } else if (tipo === 'P') {
-                            const doctos = xmlDoc.getElementsByTagName('pago20:DoctoRelacionado') || xmlDoc.getElementsByTagName('pago10:DoctoRelacionado');
-                            for (let i = 0; i < doctos.length; i++) {
-                                complementos.push({ idDoc: (doctos[i].getAttribute('IdDocumento') || '').toUpperCase(), impPagado: parseFloat(doctos[i].getAttribute('ImpPagado') || 0) });
-                            }
-                        }
-                    } catch (err) {}
-                    resolve();
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
+                const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
+                const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
+                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
+                
+                metadataFac = {
+                    rfc: emisor ? emisor.getAttribute('Rfc') : 'N/A',
+                    total: cfdi ? cfdi.getAttribute('Total') : '0',
+                    uuid: timbre ? timbre.getAttribute('UUID') : 'NO_TIMBRADO'
                 };
-                reader.readAsText(file);
-            });
-        });
 
-        await Promise.all(promises);
-
-        complementos.forEach(pago => { if (ppds[pago.idDoc]) ppds[pago.idDoc].pagado += pago.impPagado; });
-        Object.keys(ppds).forEach(uuid => {
-            if ((ppds[uuid].total - ppds[uuid].pagado) > 1) {
-                countPpdOrphans++;
-                amountRisk += ppds[uuid].total;
-            }
-        });
-
-        score -= (countEfos * 50);
-        score -= (countMath * 5);
-        score -= (countPpdOrphans * 10);
-        if (score < 0) score = 0;
-
-        renderDashboard(score, files.length, countEfos, countMath, countPpdOrphans, amountRisk);
+                let descripciones = [];
+                for (let i = 0; i < conceptos.length; i++) descripciones.push(conceptos[i].getAttribute('Descripcion'));
+                
+                xmlDatos = JSON.stringify({ conceptos_facturados: descripciones, metadatos: metadataFac });
+                checkReady();
+            } catch(err) { alert("Error al leer el XML."); }
+        };
+        reader.readAsText(file);
     }
 
-    function renderDashboard(score, totalFiles, efos, math, ppds, amountRisk) {
-        document.getElementById('loadingState').style.display = 'none';
-        document.getElementById('results').style.display = 'block';
+    function checkReady() { if(fileEvidencia && xmlDatos) btnEjecutar.disabled = false; }
 
-        document.getElementById('scoreText').innerText = score;
-        document.getElementById('kpiFiles').innerText = totalFiles;
-        document.getElementById('valRiskAmount').innerText = formatMoney(amountRisk);
+    function startProgress() {
+        let progress = 0;
+        const bar = document.getElementById('progressBar');
+        const text = document.getElementById('progressText');
+        const status = document.getElementById('progressStatus');
         
-        document.getElementById('kpiEfos').innerText = efos;
-        const bEfos = document.getElementById('badgeEfos');
-        if (efos > 0) { bEfos.innerText = "PELIGRO"; bEfos.style.background = "#FEF2F2"; bEfos.style.color = "#DC2626"; }
-        
-        document.getElementById('kpiMath').innerText = math;
-        const bMath = document.getElementById('badgeMath');
-        if (math > 0) { bMath.innerText = "REVISAR"; bMath.style.background = "#FEF3C7"; bMath.style.color = "#92400E"; }
+        progressTimer = setInterval(() => {
+            // Easing matemático: se ralentiza al llegar a 90%
+            let increment = (100 - progress) * 0.08; 
+            progress += increment;
+            
+            if(progress > 95) progress = 95; 
+            
+            bar.style.width = `${progress}%`;
+            text.innerText = `${Math.floor(progress)}%`;
 
-        document.getElementById('kpiPpd').innerText = ppds;
-        const bPpd = document.getElementById('badgePpd');
-        if (ppds > 0) { bPpd.innerText = "OMISIÓN"; bPpd.style.background = "#FFFBEB"; bPpd.style.color = "#D97706"; }
-
-        let color = "#059669"; let status = "Probabilidad de Auditoría: NULA";
-        if (score < 95) { color = "#D97706"; status = "Probabilidad de Auditoría: MODERADA"; }
-        if (score < 70) { color = "#DC2626"; status = "Probabilidad de Auditoría: CRÍTICA"; }
-        
-        document.getElementById('scoreText').style.color = color;
-        document.getElementById('scoreStatus').innerText = status;
-        document.getElementById('scoreStatus').style.color = color;
-
-        drawGauge(score, color);
-
-        dataReporte = { score, status, color, totalFiles, efos, math, ppds, amountRisk: formatMoney(amountRisk) };
-        consultarRiskIA(score, `Efos: ${efos}, Errores Math: ${math}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
+            if(progress > 30 && progress < 60) status.innerText = "Cruzando datos con el CFDI...";
+            if(progress >= 60) status.innerText = "Generando dictamen forense de materialidad...";
+        }, 400);
     }
 
-    function drawGauge(score, color) {
-        const ctx = document.getElementById('gaugeChart').getContext('2d');
-        if(gaugeInstance) gaugeInstance.destroy();
-        gaugeInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: { datasets: [{ data: [score, 100 - score], backgroundColor: [color, '#E5E7EB'], borderWidth: 0, borderRadius: [20, 0] }] },
-            options: { circumference: 180, rotation: 270, cutout: '85%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: false }
-        });
+    function completeProgress() {
+        clearInterval(progressTimer);
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressText').innerText = '100%';
+        document.getElementById('progressStatus').innerText = "¡Auditoría Completada!";
     }
 
-    async function consultarRiskIA(score, factores) {
-        document.getElementById('iaLoading').style.display = 'block';
+    async function ejecutarAuditoria() {
+        if(!checkQuota()) return;
+
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('uploadZones').style.display = 'none';
+        btnEjecutar.style.display = 'none';
+        
+        document.getElementById('loadingState').style.display = 'block';
+        startProgress();
+
+        const formData = new FormData();
+        formData.append("evidencia", fileEvidencia);
+        formData.append("datos_xml", xmlDatos);
+
         try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/risk-score-ia", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ puntaje: score, factores: factores })
-            });
+            const res = await fetch("https://fastapi-susu.onrender.com/api/prueba-servicio", { method: "POST", body: formData });
+            if(!res.ok) throw new Error("Falla en el servidor");
             const data = await res.json();
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
-            dataReporte.dictamen = data.analisis_legal;
-            document.getElementById('shareContainer').style.display = 'block';
-        } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
+            
+            completeProgress();
+
+            setTimeout(() => {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+
+                const badge = document.getElementById('badgeCoincidencia');
+                let colorSt = '#991B1B'; let bgSt = '#FEF2F2'; let brSt = '#FCA5A5';
+                
+                if(data.sustancia_economica_comprobada) {
+                    badge.className = "match-badge match-true"; badge.innerText = "MATERIALIDAD COMPROBADA (ALTA CONFIANZA)";
+                    colorSt = '#065F46'; bgSt = '#ECFDF5'; brSt = '#6EE7B7';
+                } else if (data.nivel_riesgo_efos === 'MEDIO') {
+                    badge.className = "match-badge match-warning"; badge.innerText = `COINCIDENCIA PARCIAL: RIESGO MEDIO`;
+                    colorSt = '#92400E'; bgSt = '#FEF3C7'; brSt = '#FCD34D';
+                } else {
+                    badge.className = "match-badge match-false"; badge.innerText = `DISCREPANCIA DETECTADA: RIESGO ALTO`;
+                }
+
+                document.getElementById('resMetaRfc').innerText = metadataFac.rfc;
+                document.getElementById('resMetaMonto').innerText = formatMoney(metadataFac.total);
+                document.getElementById('resMetaUuid').innerText = metadataFac.uuid;
+                document.getElementById('resDictamen').innerText = data.dictamen_evidencia;
+                
+                dictamenExport = {
+                    status: badge.innerText,
+                    color: colorSt,
+                    bg: bgSt,
+                    br: brSt,
+                    dictamen: data.dictamen_evidencia,
+                    rfc: metadataFac.rfc,
+                    uuid: metadataFac.uuid,
+                    monto: formatMoney(metadataFac.total)
+                };
+            }, 600); // Pequeño delay para que el usuario vea el 100%
+
+        } catch (e) {
+            clearInterval(progressTimer);
+            alert("Error en el análisis. Intente con un PDF más claro o menos pesado.");
+            window.location.reload();
+        }
     }
 
-    // EL MOTOR PDF 100% GARANTIZADO (SIN CORTES NI HOJAS EN BLANCO)
-    async function descargarReporte() {
+    // EL MOTOR MAESTRO DE PDF - 100% BLINDADO Y A PRUEBA DE FALLOS
+    async function descargarDictamenPDF() {
+        if (!dictamenExport) return;
+
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Generando PDF...";
+        btn.innerText = "Empaquetando...";
         btn.disabled = true;
 
-        const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : '';
-        const renderContainer = document.getElementById('hiddenPdfRender');
+        const isPro = localStorage.getItem('auditoria_pro') === 'true';
         
-        // Inyectamos el HTML de manera limpia
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px;">
-                    <h1 style="margin: 0; font-size: 26px; color: #111827; font-weight: 900; letter-spacing: -0.5px;">Reporte Ejecutivo de Riesgo Fiscal</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Modelo TADS (Tax Analytics & Detection System)</p>
+        // Modal de Carga para Ocultar el Renderizado en Pantalla
+        document.getElementById('pdfLoadingModal').style.display = 'flex';
+        
+        // El contenedor real se ubica visible en el flujo para que html2canvas lo capture sin fallas
+        const renderArea = document.getElementById('pdfRenderArea');
+        renderArea.style.display = 'block';
+
+        renderArea.innerHTML = `
+            <div style="width: 100%; padding: 50px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
+                
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div>
+                        <h1 style="margin: 0; font-size: 26px; color: #111827; font-weight: 900; letter-spacing: -0.5px;">Dictamen de Materialidad Fiscal</h1>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #6B7280; font-weight: bold;">Análisis preventivo Art. 69-B del Código Fiscal de la Federación.</p>
+                    </div>
+                    <div style="font-size: 12px; color: #9CA3AF; font-family: monospace;">Folio: MT-${Date.now()}</div>
                 </div>
                 
-                <div class="page-break-avoid" style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
-                    <div style="width: 250px; text-align: center;">
-                        <img src="${chartImg}" style="width: 100%; height: auto;">
-                        <div style="margin-top: -30px; font-size: 50px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
-                        <div style="font-size: 14px; font-weight: 800; color: ${dataReporte.color}; text-transform: uppercase; margin-top: 10px;">${dataReporte.status}</div>
-                    </div>
+                <div class="page-break-avoid" style="background: ${dictamenExport.bg}; padding: 25px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid ${dictamenExport.br};">
+                    <strong style="display: block; font-size: 12px; color: ${dictamenExport.color}; text-transform: uppercase; letter-spacing: 1px;">Evaluación de Sustancia Económica</strong>
+                    <span style="font-size: 22px; font-weight: 900; color: ${dictamenExport.color}; display: block; margin-top: 10px;">${dictamenExport.status}</span>
                 </div>
 
-                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px;">
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Docs Auditados</span>
-                        <div style="font-size: 18px; font-weight: 900; color: #111827;">${dataReporte.totalFiles}</div>
+                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 30px;">
+                    <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #F9FAFB;">
+                        <div style="font-size: 11px; font-weight: 800; color: #6B7280; text-transform: uppercase; margin-bottom: 12px;">Datos Base (CFDI)</div>
+                        <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>RFC Emisor:</strong> <span style="font-family: monospace;">${dictamenExport.rfc}</span></div>
+                        <div style="font-size: 12px; margin-bottom: 8px; color: #111827;"><strong>Monto:</strong> <span style="font-weight: bold; font-family: monospace;">${dictamenExport.monto}</span></div>
+                        <div style="font-size: 10px; font-family: monospace; color: #4B5563; word-break: break-all; margin-top: 15px;">UUID: ${dictamenExport.uuid}</div>
                     </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">EFOS 69-B</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.efos > 0 ? '#DC2626' : '#111827'};">${dataReporte.efos > 0 ? 'DETECTADO' : 'SEGURO'}</div>
-                    </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Error Aritmético</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.math > 0 ? '#D97706' : '#111827'};">${dataReporte.math}</div>
-                    </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">REP Faltantes</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.ppds > 0 ? '#DC2626' : '#111827'};">${dataReporte.ppds}</div>
+                    <div style="border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #111827; color: white;">
+                        <div style="font-size: 11px; font-weight: 800; color: #60A5FA; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Resolución Forense (IA)</div>
+                        <p style="font-size: 12px; line-height: 1.6; color: #E5E7EB; margin: 0; text-align: justify;">${dictamenExport.dictamen}</p>
                     </div>
                 </div>
-
-                <div class="page-break-avoid" style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
-                    <span style="font-size: 12px; color: #991B1B; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Capital Total en Riesgo de Auditoría Activa</span>
-                    <div style="font-size: 32px; font-weight: 900; color: #DC2626; font-family: monospace; margin-top: 5px;">${dataReporte.amountRisk}</div>
-                </div>
-
-                ${dataReporte.dictamen ? `
-                <div class="page-break-avoid" style="background: #111827; color: white; padding: 25px; border-radius: 12px;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #60A5FA; text-transform: uppercase; letter-spacing: 1px;">Dictamen Forense Estratégico (IA)</h3>
-                    <p style="font-size: 12px; line-height: 1.6; margin: 0; text-align: justify; color: #E5E7EB;">${dataReporte.dictamen}</p>
-                </div>` : ''}
                 
                 <div class="page-break-avoid" style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría de un especialista fiscal calificado.<br>
+                    Este documento constituye un papel de trabajo para la integración de la defensa fiscal preventiva. No sustituye facultades de comprobación de la autoridad.<br>
                     Plataforma: AuditoriaXML.mx
                 </div>
             </div>
         `;
 
-        // EL SECRETO ANTI-CORTE: Anclamos momentáneamente el scroll de la página a 0
-        const prevScrollY = window.scrollY;
+        // TRUCO MAESTRO: Llevamos el scroll al origen para que la foto de html2canvas no se desface
         window.scrollTo(0, 0);
 
         const opt = {
             margin:       10,
-            filename:     `RiskScore_Auditoria_${Date.now()}.pdf`,
+            filename:     `Materialidad_Servicio_${dictamenExport.rfc}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0, scrollX: 0 },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
         try {
-            await html2pdf().set(opt).from(renderContainer).toPdf().get('pdf').then(function(pdf) {
-                // Validación para la marca de agua PRO
-                if(localStorage.getItem('auditoria_pro') !== 'true') {
+            await html2pdf().set(opt).from(renderArea).toPdf().get('pdf').then(function(pdf) {
+                if(!isPro) {
                     const totalPages = pdf.internal.getNumberOfPages();
-                    pdf.setTextColor(220, 220, 220); // Gris súper claro sin opacidad problemática
+                    pdf.setTextColor(220, 220, 220); // Gris nativo seguro
                     pdf.setFontSize(40);
                     for (let i = 1; i <= totalPages; i++) {
                         pdf.setPage(i);
@@ -451,11 +438,12 @@
             }).save();
         } catch (e) {
             console.error(e);
-            alert("Error al procesar el PDF.");
+            alert("Error al procesar el archivo PDF.");
         } finally {
-            // Regresamos la pantalla a donde estaba el usuario y limpiamos la memoria
-            window.scrollTo(0, prevScrollY);
-            renderContainer.innerHTML = '';
+            // Limpieza del DOM y fin del modal
+            document.getElementById('pdfLoadingModal').style.display = 'none';
+            renderArea.style.display = 'none';
+            renderArea.innerHTML = '';
             btn.innerHTML = oldText;
             btn.disabled = false;
         }
