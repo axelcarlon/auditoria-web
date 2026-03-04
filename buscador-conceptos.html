@@ -14,37 +14,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script src="despertador.js"></script>
+
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
-        
-        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-        .header .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-        .header .logo-container img { width: 40px; height: 40px; object-fit: contain; }
-        .header .logo-text { font-weight: 800; font-size: 24px; letter-spacing: -0.5px; }
-        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-link:hover { color: #ffffff; }
 
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
-        .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 900px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(4, 1fr); padding: 20px; gap: 15px; text-align: left; }
-        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 8px 10px; text-decoration: none; display: block; font-size: 12px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
-        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 10px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
-
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
         
         .search-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .search-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
         .search-input { flex: 1; min-width: 200px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; }
         .search-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        
+        .search-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; display: block; }
+
         .upload-area { border: 2px dashed var(--border); border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: 0.2s; background: var(--bg-primary); }
         .upload-area:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
 
@@ -52,17 +36,24 @@
         .trust-badges div { display: flex; align-items: center; gap: 4px; }
 
         .results-container { display: none; }
-        .table-wrapper { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .table-wrapper { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 600px; }
+        
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        .highlight-text { background-color: #FEF08A; font-weight: bold; padding: 0 2px; border-radius: 2px; }
-        .amount { font-family: monospace; text-align: right; }
+        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; position: sticky; top: 0; box-shadow: 0 1px 0 var(--border); z-index: 10;}
+        .highlight-text { background-color: #FEF08A; font-weight: bold; padding: 0 4px; border-radius: 4px; color: #92400E; }
+        .amount { font-family: monospace; text-align: right; font-weight: bold; }
+        .uuid-text { font-family: monospace; font-size: 11px; color: var(--text-muted); }
         
         .summary { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 20px; background: #EFF6FF; border-radius: 8px; border: 1px solid #BFDBFE; color: #1E3A8A; font-weight: 600; flex-wrap: wrap; gap: 15px; font-size: 16px; }
 
+        .btn-export { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;}
+        .btn-export:hover { opacity: 0.9; }
+        .btn-export-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;}
+        .btn-export-excel:hover { opacity: 0.9; }
+
         .ia-advisor-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 20px; margin-bottom: 30px; border-radius: 4px; display: none; text-align: left; }
-        .ia-advisor-title { font-weight: 700; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; text-transform: uppercase;}
         .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
         .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-bottom: 30px; text-align: center; }
         .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 24px; height: 24px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
@@ -85,112 +76,58 @@
         .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block;}
 
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; }
-
-        .site-footer { text-align: left; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 13px; margin-top: 60px; border-top: 1px solid #1E293B; }
-        .site-footer a { color: #CBD5E1; text-decoration: none; transition: 0.2s; display: block; margin-bottom: 10px; }
-        .site-footer a:hover { color: #ffffff; }
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
 
         @media (max-width: 768px) {
-            .header { padding: 15px 20px; justify-content: center; text-align: center; }
-            .nav-right { display: none; }
-            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
+            .summary { flex-direction: column; align-items: flex-start; }
+            .btn-export, .btn-export-excel { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <a href="index.html" class="logo-container">
-        <img src="candado.png" alt="AuditorIA Logo">
-        <span class="logo-text">AuditorIA</span>
-    </a>
-    <div class="nav-right">
-        <a href="como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
-        <a href="index.html" class="nav-link">Auditoría Masiva</a>
-        <div class="dropdown">
-            <div class="dropdown-toggle">Suite de Herramientas ▾</div>
-            <div class="dropdown-content">
-                <div class="dropdown-column">
-                    <div class="menu-category">Auditoría y Riesgo</div>
-                    <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
-                    <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
-                    <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
-                    <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
-                    <a href="calculadora-recargos.html">Calculadora de Recargos</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Materialidad y Defensa</div>
-                    <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-                    <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
-                    <a href="auditoria-activos.html">Auditoría Visual Activos</a>
-                    <a href="precios-aduana.html">Riesgo Aduanero</a>
-                    <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
-                    <a href="defensa-legal.html">Generador Defensa Legal</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Inteligencia y Bancos</div>
-                    <a href="analisis-proveedores.html">Análisis Proveedores</a>
-                    <a href="proyector-iva.html">Proyector IVA Mensual</a>
-                    <a href="dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="conversor-bancario.html">Conversor PDF a CSV</a>
-                    <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Operación Diaria</div>
-                    <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
-                    <a href="visor-xml.html">Visor y Decodificador</a>
-                    <a href="generador-polizas.html">Generador de Pólizas</a>
-                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="buscador-conceptos.html">Buscador Forense XML</a>
-                    <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+<script src="navbar.js"></script>
 
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus búsquedas gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para buscar conceptos y descargar reportes forenses ilimitados.</p>
+        <p class="modal-text">Has agotado tus búsquedas gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para buscar conceptos ilimitados, usar filtros avanzados y descargar reportes masivos en Excel y PDF.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;">
-        <h1 style="font-size: 32px; margin-bottom: 10px;">Buscador Forense de Conceptos</h1>
-        <p style="color: var(--text-muted);">Escanea el interior de miles de XMLs en segundos. Busca palabras clave como "Comisiones", "Gasolina" o "Asesoría" en tus gastos.</p>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">AUDITORÍA DE GASTOS</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Buscador Forense de Conceptos</h1>
+        <p style="color: var(--text-muted);">Escanea el interior de miles de XMLs en segundos. Extrae información específica cruzando palabras clave.</p>
     </div>
 
     <div class="search-container">
         <div class="search-box">
-            <input type="text" id="keyword" class="search-input" placeholder="Ej. Computadora, Viáticos, Mantenimiento...">
+            <input type="text" id="keyword" class="search-input" placeholder="Ej. Gasolina, Comisiones, Publicidad, Viáticos...">
             <button onclick="ejecutarBusqueda()" style="background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s;">BUSCAR EN XML</button>
         </div>
+        <span class="search-hint">💡 Tip: Puedes buscar múltiples términos separándolos por comas (ej. <em>computadora, laptop, software</em>).</span>
         
         <div class="upload-area" id="dropZone" onclick="document.getElementById('xmlInput').click()">
             <svg width="32" height="32" color="var(--brand)" style="margin-bottom: 10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            <p style="margin: 0; font-weight: 600; font-size: 16px;" id="fileCountText">1. Cargar Repositorio XML (Haz clic o arrastra)</p>
+            <p style="margin: 0; font-weight: 600; font-size: 16px;" id="fileCountText">1. Cargar Repositorio XML (Haz clic o arrastra todo el mes)</p>
             <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
         </div>
 
         <div class="trust-badges">
             <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Motor Regex Ultra-rápido</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Memoria Volátil</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Extracción Multi-hilo</div>
         </div>
     </div>
 
     <div class="results-container" id="results">
         <div id="iaLoading" class="ia-loading">
-            <div class="spinner"></div> Analizando materialidad fiscal del concepto buscado...
+            <div class="spinner"></div> Analizando riesgo y materialidad fiscal de los conceptos encontrados...
         </div>
         <div id="iaAdvisorContainer" class="ia-advisor-box">
             <div class="ia-advisor-title">
@@ -201,10 +138,20 @@
         </div>
 
         <div class="summary">
-            <span id="resCount">0 coincidencias encontradas</span>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <span id="resTotal" style="color: var(--danger);">Importe Total: $0.00</span>
-                <button onclick="descargarReportePDF()" style="background: #111827; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Descargar Reporte</button>
+            <div>
+                <div id="resCount" style="font-size: 20px; font-weight: 900;">0 coincidencias encontradas</div>
+                <div id="resKeywords" style="font-size: 12px; color: #3B82F6; margin-top: 4px;"></div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span id="resTotal" style="color: var(--danger); font-size: 20px; font-family: monospace; font-weight: 900; margin-right: 15px;">$0.00</span>
+                <button onclick="descargarCSV_Forense()" class="btn-export-excel">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    A Excel (CSV)
+                </button>
+                <button onclick="descargarReportePDF()" class="btn-export">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    A PDF
+                </button>
             </div>
         </div>
 
@@ -213,9 +160,9 @@
                 <thead>
                     <tr>
                         <th>Fecha</th>
-                        <th>Emisor (Proveedor)</th>
-                        <th>Concepto Detectado</th>
-                        <th class="amount">Valor Unitario</th>
+                        <th>Emisor / Proveedor</th>
+                        <th>Concepto Facturado Detectado</th>
+                        <th class="amount">V. Unitario</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -234,99 +181,7 @@
 
 <div id="hiddenPdfRender"></div>
 
-<footer class="site-footer">
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px;">
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="index.html">Auditoría Masiva XML</a>
-            <a href="despachos-contables.html">Para Despachos</a>
-            <a href="empresas.html">Para Empresas</a>
-            
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px; margin-top: 30px;">Legal y Contacto</h4>
-            <a href="privacidad.html">Aviso de Privacidad</a>
-            <a href="terminos.html">Términos de Servicio</a>
-            <a href="mailto:contacto@auditoriaxml.mx" style="color: #3B82F6; font-weight: 600;">contacto@auditoriaxml.mx</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Riesgo</h4>
-            <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
-            <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
-            <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-            <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
-            <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
-            <a href="calculadora-recargos.html">Calculadora Recargos</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Materialidad y Defensa</h4>
-            <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-            <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
-            <a href="auditoria-activos.html">Auditoría Visual Activos</a>
-            <a href="precios-aduana.html">Riesgo Aduanero</a>
-            <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
-            <a href="defensa-legal.html">Generador Defensa Legal</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Inteligencia y Bancos</h4>
-            <a href="analisis-proveedores.html">Análisis Proveedores</a>
-            <a href="proyector-iva.html">Proyector IVA Mensual</a>
-            <a href="dashboard-xml.html">Dashboard Financiero</a>
-            <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-            <a href="conversor-bancario.html">Conversor PDF a CSV</a>
-            <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación Diaria</h4>
-            <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
-            <a href="visor-xml.html">Visor y Decodificador</a>
-            <a href="generador-polizas.html">Generador de Pólizas</a>
-            <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-            <a href="buscador-conceptos.html">Buscador Forense XML</a>
-            <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px; margin-top: 40px; color: #9CA3AF; text-align: center;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
-    </div>
-</footer>
-
-<style>
-    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
-    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-    .advisor-btn:hover { transform: scale(1.05); }
-    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
-    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
-    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
-    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
-    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
-    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
-    .advisor-input:focus { border-color: var(--brand, #2563EB); }
-    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
-    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
-</style>
-<div id="advisorWidget" class="advisor-widget">
-    <button id="advisorBtn" class="advisor-btn">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-        Asesor Fiscal IA
-    </button>
-    <div id="advisorChat" class="advisor-chat">
-        <div class="advisor-header">
-            <span>Paula - AuditorIA Advisor</span>
-            <button id="closeAdvisor" class="advisor-close">×</button>
-        </div>
-        <div id="advisorBody" class="advisor-body">
-            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
-            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
-        </div>
-        <div class="advisor-footer">
-            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
-            <button id="sendAdvisor" class="advisor-send">Enviar</button>
-        </div>
-    </div>
-</div>
+<script src="footer.js"></script>
 
 <script>
     // CUOTA FREEMIUM
@@ -341,7 +196,7 @@
     let currentFiles = [];
     let globalMatches = [];
     let globalTotalImporte = 0;
-    let globalKeyword = "";
+    let globalKeywordArray = [];
 
     const input = document.getElementById('xmlInput');
     const dropZone = document.getElementById('dropZone');
@@ -352,7 +207,9 @@
     input.addEventListener('change', (e) => { currentFiles = e.target.files; updateUI(); });
 
     function updateUI() {
-        document.getElementById('fileCountText').innerText = `${currentFiles.length} archivos en memoria listos para escaneo`;
+        document.getElementById('fileCountText').innerText = `${currentFiles.length} archivos cargados en memoria. Listo para buscar.`;
+        document.getElementById('dropZone').style.borderColor = "var(--success)";
+        document.getElementById('dropZone').style.background = "#ECFDF5";
     }
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
@@ -360,12 +217,18 @@
     async function ejecutarBusqueda() {
         if (!checkQuota()) return;
         
-        globalKeyword = document.getElementById('keyword').value.trim().toLowerCase();
-        if (!globalKeyword) return alert("Ingresa una palabra clave para buscar.");
-        if (currentFiles.length === 0) return alert("Carga los archivos XML primero.");
+        const rawInput = document.getElementById('keyword').value.trim();
+        if (!rawInput) return alert("Ingresa al menos una palabra clave para buscar.");
+        if (currentFiles.length === 0) return alert("Carga el lote de facturas XML primero.");
+
+        // Separar múltiples términos por coma
+        globalKeywordArray = rawInput.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
 
         globalMatches = [];
         globalTotalImporte = 0;
+
+        // Construir Regex dinámica para resaltar múltiples palabras
+        const highlightRegex = new RegExp('(' + globalKeywordArray.join('|') + ')', 'gi');
 
         const promises = Array.from(currentFiles).map(file => {
             return new Promise((resolve) => {
@@ -377,19 +240,34 @@
                         const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
                         const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
                         const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto') || xmlDoc.getElementsByTagName('Concepto');
+                        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
                         
                         if (cfdi && emisor) {
                             const fecha = (cfdi.getAttribute('Fecha') || '').split('T')[0];
+                            const tipo = cfdi.getAttribute('TipoDeComprobante') || '-';
                             const nombreEmisor = emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc');
+                            const uuid = timbre ? timbre.getAttribute('UUID') : 'SIN_TIMBRE';
 
                             for (let i = 0; i < conceptos.length; i++) {
                                 const desc = (conceptos[i].getAttribute('Descripcion') || '');
-                                if (desc.toLowerCase().includes(globalKeyword)) {
+                                const descLower = desc.toLowerCase();
+                                
+                                // Evaluar si alguna de las palabras clave está en la descripción
+                                if (globalKeywordArray.some(k => descLower.includes(k))) {
                                     const importe = parseFloat(conceptos[i].getAttribute('Importe') || 0);
                                     globalTotalImporte += importe;
-                                    const regex = new RegExp(`(${globalKeyword})`, 'gi');
-                                    const highlightedDesc = desc.replace(regex, '<span class="highlight-text">$1</span>');
-                                    globalMatches.push({ fecha, emisor: nombreEmisor, concepto: desc, conceptoHTML: highlightedDesc, importe });
+                                    
+                                    const highlightedDesc = desc.replace(highlightRegex, '<span class="highlight-text">$1</span>');
+                                    
+                                    globalMatches.push({ 
+                                        fecha, 
+                                        tipo,
+                                        uuid,
+                                        emisor: nombreEmisor, 
+                                        concepto: desc, 
+                                        conceptoHTML: highlightedDesc, 
+                                        importe 
+                                    });
                                 }
                             }
                         }
@@ -405,8 +283,9 @@
     }
 
     function renderTabla() {
-        document.getElementById('resCount').innerText = `${globalMatches.length} coincidencias encontradas para "${globalKeyword}"`;
-        document.getElementById('resTotal').innerText = `Importe Total: ${formatMoney(globalTotalImporte)}`;
+        document.getElementById('resCount').innerText = `${globalMatches.length} coincidencias encontradas`;
+        document.getElementById('resKeywords').innerText = `Términos: ${globalKeywordArray.join(' | ')}`;
+        document.getElementById('resTotal').innerText = `${formatMoney(globalTotalImporte)}`;
 
         const tbody = document.querySelector('#resultsTable tbody');
         tbody.innerHTML = '';
@@ -414,9 +293,12 @@
         globalMatches.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach(m => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="white-space: nowrap;">${m.fecha}</td>
-                <td>${m.emisor.substring(0, 30)}</td>
-                <td>${m.conceptoHTML}</td>
+                <td style="white-space: nowrap; font-size: 11px;">${m.fecha}</td>
+                <td>
+                    <strong style="color: var(--text-main); font-size: 12px;">${m.emisor.substring(0, 35)}</strong><br>
+                    <span class="uuid-text">${m.uuid}</span>
+                </td>
+                <td style="line-height: 1.4;">${m.conceptoHTML}</td>
                 <td class="amount">${formatMoney(m.importe)}</td>
             `;
             tbody.appendChild(tr);
@@ -425,71 +307,13 @@
         document.getElementById('results').style.display = 'block';
         document.getElementById('shareContainer').style.display = 'block';
 
-        const palabrasRiesgo = ["asesoría", "honorarios", "comisiones", "viáticos", "gasolina", "mantenimiento", "publicidad", "marketing"];
-        if (palabrasRiesgo.some(p => globalKeyword.includes(p)) && globalMatches.length > 0) {
-            consultarAlertaIA("Búsqueda Forense XML", globalKeyword, `El usuario busca gastos bajo el concepto de "${globalKeyword}" sumando un total de $${globalTotalImporte}. Indicar los requisitos de estricta indispensabilidad o materialidad que exige el SAT para su deducción.`);
+        // Lógica IA de riesgo
+        const palabrasRiesgo = ["asesoría", "honorarios", "comisiones", "viáticos", "gasolina", "mantenimiento", "publicidad", "marketing", "consultoría"];
+        if (globalKeywordArray.some(k => palabrasRiesgo.some(pr => k.includes(pr))) && globalMatches.length > 0) {
+            consultarAlertaIA("Búsqueda Forense XML", globalKeywordArray.join(', '), `El usuario busca gastos bajo conceptos de riesgo como "${globalKeywordArray.join(', ')}" sumando un total de $${globalTotalImporte}. Indicar brevemente los requisitos de materialidad y estricta indispensabilidad que exige el SAT para su deducción (Art. 27 LISR / 69-B CFF).`);
         } else {
             document.getElementById('iaAdvisorContainer').style.display = 'none';
         }
-    }
-
-    function descargarReportePDF() {
-        if (globalMatches.length === 0) return;
-        const renderContainer = document.getElementById('hiddenPdfRender');
-        
-        let htmlTablaExport = "";
-        globalMatches.forEach(m => {
-            htmlTablaExport += `
-                <tr>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px;">${m.fecha}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px;">${m.emisor.substring(0, 30)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px;">${m.concepto}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; font-weight: bold;">${formatMoney(m.importe)}</td>
-                </tr>
-            `;
-        });
-
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
-                
-                <div style="border-bottom: 2px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827;">Reporte de Búsqueda Forense XML</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Búsqueda de la palabra clave: "${globalKeyword}"</p>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div><strong style="display: block; font-size: 12px; color: #6B7280; text-transform: uppercase;">Coincidencias Encontradas</strong><span style="font-size: 24px; font-weight: bold; color: #111827;">${globalMatches.length}</span></div>
-                    <div style="text-align: right;"><strong style="display: block; font-size: 12px; color: #6B7280; text-transform: uppercase;">Importe Total Involucrado</strong><span style="font-size: 24px; font-weight: 900; color: #DC2626;">${formatMoney(globalTotalImporte)}</span></div>
-                </div>
-                
-                <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <thead style="background: #111827; color: white;">
-                        <tr>
-                            <th style="padding: 10px; text-align: left;">Fecha</th>
-                            <th style="padding: 10px; text-align: left;">Emisor</th>
-                            <th style="padding: 10px; text-align: left;">Concepto Facturado</th>
-                            <th style="padding: 10px; text-align: right;">Importe</th>
-                        </tr>
-                    </thead>
-                    <tbody>${htmlTablaExport}</tbody>
-                </table>
-                
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Plataforma: AuditoriaXML.mx | Reporte para uso interno y revisión de materialidad fiscal.
-                </div>
-            </div>
-        `;
-
-        const opt = {
-            margin:       10,
-            filename:     `Busqueda_Forense_${globalKeyword}_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
     }
 
     async function consultarAlertaIA(tipo, concepto, errorDesc) {
@@ -508,58 +332,78 @@
         }
     }
 
-    document.querySelectorAll('.dropdown-toggle').forEach(t => t.addEventListener('touchstart', e => {}, {passive: true}));
-
-    // Chat General
-    const advisorBtn = document.getElementById('advisorBtn');
-    const advisorChat = document.getElementById('advisorChat');
-    const closeAdvisor = document.getElementById('closeAdvisor');
-    const sendAdvisor = document.getElementById('sendAdvisor');
-    const advisorInput = document.getElementById('advisorInput');
-    const advisorBody = document.getElementById('advisorBody');
-    const typingIndicator = document.getElementById('typingIndicator');
-    let chatHistory = [];
-
-    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
-    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
-
-    function renderMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
-        div.innerText = text;
-        advisorBody.insertBefore(div, typingIndicator);
-        advisorBody.scrollTop = advisorBody.scrollHeight;
+    function descargarCSV_Forense() {
+        if (globalMatches.length === 0) return;
+        const headers = ['Fecha', 'Tipo CFDI', 'UUID', 'Proveedor / Emisor', 'Concepto Extraído', 'Valor Unitario'];
+        const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + globalMatches.map(m => 
+            `${m.fecha},${m.tipo},${m.uuid},"${m.emisor}","${m.concepto.replace(/"/g, '""')}",${m.importe.toFixed(2)}`
+        ).join('\n');
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Extraccion_Forense_${Date.now()}.csv`);
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-    async function handleSend() {
-        const text = advisorInput.value.trim();
-        if (!text) return;
-        renderMessage(text, 'user');
-        advisorInput.value = '';
-        typingIndicator.style.display = 'block';
-        advisorBody.scrollTop = advisorBody.scrollHeight;
+    function descargarReportePDF() {
+        if (globalMatches.length === 0) return;
+        const renderContainer = document.getElementById('hiddenPdfRender');
+        
+        let htmlTablaExport = "";
+        globalMatches.forEach(m => {
+            htmlTablaExport += `
+                <tr style="page-break-inside: avoid;">
+                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px; white-space: nowrap;">${m.fecha}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px;"><strong>${m.emisor.substring(0, 25)}</strong><br><span style="font-family: monospace; color: #6B7280;">${m.uuid}</span></td>
+                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px;">${m.concepto}</td>
+                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; font-weight: bold; font-family: monospace;">${formatMoney(m.importe)}</td>
+                </tr>
+            `;
+        });
 
-        const currentHistory = [...chatHistory];
-        chatHistory.push({ rol: "usuario", texto: text });
+        renderContainer.innerHTML = `
+            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
+                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+                
+                <div style="border-bottom: 2px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Reporte de Extracción Forense XML</h1>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Búsqueda múltiple: "${globalKeywordArray.join(', ')}"</p>
+                </div>
 
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mensaje: text, historial: currentHistory })
-            });
-            if (!res.ok) throw new Error('Error API');
-            const data = await res.json();
-            renderMessage(data.respuesta, 'bot');
-            chatHistory.push({ rol: "modelo", texto: data.respuesta });
-        } catch (err) {
-            renderMessage("Error de red. Intente nuevamente.", 'bot');
-            chatHistory.pop();
-        } finally {
-            typingIndicator.style.display = 'none';
-        }
+                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div><strong style="display: block; font-size: 11px; color: #6B7280; text-transform: uppercase;">Coincidencias Encontradas</strong><span style="font-size: 24px; font-weight: bold; color: #111827;">${globalMatches.length}</span></div>
+                    <div style="text-align: right;"><strong style="display: block; font-size: 11px; color: #6B7280; text-transform: uppercase;">Importe Total Involucrado</strong><span style="font-size: 24px; font-weight: 900; color: #DC2626; font-family: monospace;">${formatMoney(globalTotalImporte)}</span></div>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <thead style="background: #111827; color: white;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; font-size: 10px; text-transform: uppercase;">Fecha</th>
+                            <th style="padding: 10px; text-align: left; font-size: 10px; text-transform: uppercase;">Proveedor / UUID</th>
+                            <th style="padding: 10px; text-align: left; font-size: 10px; text-transform: uppercase;">Concepto Original Facturado</th>
+                            <th style="padding: 10px; text-align: right; font-size: 10px; text-transform: uppercase;">Valor Unit.</th>
+                        </tr>
+                    </thead>
+                    <tbody>${htmlTablaExport}</tbody>
+                </table>
+                
+                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    Plataforma: AuditoriaXML.mx | Reporte extraído localmente para control interno y soporte de auditorías.
+                </div>
+            </div>
+        `;
+
+        const opt = {
+            margin:       10,
+            filename:     `Busqueda_Forense_${Date.now()}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
     }
-    sendAdvisor.onclick = handleSend;
-    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
