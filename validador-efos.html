@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validador de EFOS Art. 69-B SAT | AuditorIA</title>
-    <meta name="description" content="Verifica si un RFC se encuentra en la lista negra del SAT (Artículo 69-B) por simulación de operaciones. Emite certificados de debida diligencia.">
+    <meta name="description" content="Verifica si un RFC se encuentra en la lista negra del SAT (Artículo 69-B). Emite certificados de debida diligencia.">
     <link rel="canonical" href="https://auditoriaxml.mx/validador-efos.html" />
     
     <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
@@ -49,14 +49,11 @@
 
         .status-safe { border-top: 6px solid var(--success); }
         .status-safe .result-icon, .status-safe .result-title { color: var(--success); }
-        
         .status-danger { border-color: #FCA5A5; background: #FEF2F2; border-top: 6px solid var(--danger); }
         .status-danger .result-icon, .status-danger .result-title { color: var(--danger); }
-        
         .status-invalid { border-top: 6px solid var(--warning); }
         .status-invalid .result-icon, .status-invalid .result-title { color: var(--warning); }
 
-        /* Barra de Progreso Fluida */
         .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; margin-top: 30px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
         .progress-title { font-weight: 900; font-size: 18px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -65,7 +62,6 @@
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 20px; }
         .progress-status { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 15px; font-family: monospace; display: flex; align-items: center; gap: 8px;}
 
-        /* Editor Forense */
         .advisor-box { background: #111827; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
         .advisor-title { font-weight: 900; color: #ffffff; font-size: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .advisor-subtitle { font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
@@ -75,7 +71,7 @@
 
         .btn-toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; justify-content: center;}
         .btn-pdf { background: var(--brand); color: white; border: none; padding: 18px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; min-width: 250px;}
-        .btn-pdf:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.3);}
+        .btn-pdf:hover:not(:disabled) { background: #1E40AF; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.3);}
         .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; background: var(--text-muted); }
 
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
@@ -86,7 +82,6 @@
         .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        /* Paywall Modal Premium */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -137,7 +132,7 @@
         <div class="trust-badges">
             <div><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
             <div><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Base DOF Oficial</div>
+            <div><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Base SAT Oficial</div>
         </div>
     </div>
 
@@ -195,7 +190,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // Asignación de VFS nativo para evitar colapso de PDFMake
     if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
         pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
     }
@@ -209,11 +203,10 @@
         return true;
     }
 
-    const input = document.getElementById('xmlInput');
-    const dropZone = document.getElementById('dropZone');
     const rfcInput = document.getElementById('rfcInput');
     const resultCard = document.getElementById('resultCard');
     const regexRFC = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+    const dictamenInput = document.getElementById('dictamenInput');
 
     let dataReporte = {};
     let progressInterval = null;
@@ -221,25 +214,22 @@
     rfcInput.addEventListener('input', function() { this.value = this.value.toUpperCase(); });
     rfcInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') validarRFCManual(); });
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--text-main)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
-    dropZone.addEventListener('drop', e => extraerXML(e.dataTransfer.files[0]));
-    input.addEventListener('change', e => extraerXML(e.target.files[0]));
+    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropZone').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.borderColor = "var(--text-main)"; }));
+    ['dragleave', 'drop'].forEach(e => document.getElementById('dropZone').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.borderColor = "var(--brand)"; }));
+    document.getElementById('dropZone').addEventListener('drop', e => { e.preventDefault(); extraerXML(e.dataTransfer.files[0]); });
+    document.getElementById('xmlInput').addEventListener('change', e => extraerXML(e.target.files[0]));
 
     function extraerXML(file) {
-        if (!file || !file.name.toLowerCase().endsWith('.xml')) return alert('Sube un archivo XML válido de una factura.');
+        if (!file || !file.name.toLowerCase().endsWith('.xml')) return alert('Sube un archivo XML válido.');
         const reader = new FileReader();
         reader.onload = function(e) {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+            const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
             try {
                 const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0] || xmlDoc.getElementsByTagName('Emisor')[0];
                 const rfc = emisor.getAttribute('Rfc');
                 rfcInput.value = rfc;
                 ejecutarValidacion(rfc);
-            } catch(err) {
-                mostrarResultado('INVALID', 'Error de Lectura', 'No se pudo detectar el RFC del emisor en este XML.');
-            }
+            } catch(err) { mostrarResultado('INVALID', 'Error de Lectura', 'No se pudo detectar el RFC emisor en el XML.'); }
         };
         reader.readAsText(file);
     }
@@ -251,23 +241,16 @@
         document.getElementById('advisorContainer').style.display = 'none';
         document.getElementById('toolbarContainer').style.display = 'none';
         document.getElementById('shareContainer').style.display = 'none';
-        
         const fill = document.getElementById('progressFill');
         const text = document.getElementById('progressText');
-        const statusText = document.getElementById('progressStatusText');
-        
         let progress = 0;
         fill.style.width = '0%';
-        
         progressInterval = setInterval(() => {
             let increment = (100 - progress) * 0.15;
             progress += increment;
             if(progress > 95) progress = 95;
-            
             fill.style.width = `${progress}%`;
             text.innerText = `${Math.floor(progress)}%`;
-
-            if(progress > 40) statusText.innerText = "Redactando constancia de evaluación técnica...";
         }, 250);
     }
 
@@ -275,16 +258,12 @@
         clearInterval(progressInterval);
         document.getElementById('progressFill').style.width = '100%';
         document.getElementById('progressText').innerText = '100%';
-        document.getElementById('progressStatusText').innerText = "Análisis Finalizado";
-        
         setTimeout(() => {
             document.getElementById('progressPanel').style.display = 'none';
             document.getElementById('advisorContainer').style.display = 'block';
             document.getElementById('toolbarContainer').style.display = 'flex';
             document.getElementById('shareContainer').style.display = 'block';
-            
-            const btnPdf = document.getElementById('btnDescargarPDF');
-            btnPdf.disabled = false;
+            document.getElementById('btnDescargarPDF').disabled = false;
         }, 600);
     }
 
@@ -293,227 +272,117 @@
         
         document.getElementById('resultRfc').innerText = rfc || "SIN RFC";
         resultCard.style.display = 'block'; 
-        resultCard.className = 'result-card';
         document.getElementById('iconSafe').style.display = 'none';
         document.getElementById('iconDanger').style.display = 'none';
 
         if (!rfc || !regexRFC.test(rfc)) {
-            mostrarResultado('INVALID', 'Formato Inválido', 'El RFC no cumple con la estructura alfanumérica del SAT.');
+            mostrarResultado('INVALID', 'Formato Inválido', 'El RFC no cumple con la estructura SAT.');
             return;
         }
 
-        document.getElementById('resultTitle').innerText = "Consultando matrices...";
-        document.getElementById('resultDesc').innerText = "Cotejando encriptado contra el listado del Diario Oficial de la Federación.";
+        document.getElementById('resultTitle').innerText = "Cotejando bases...";
+        document.getElementById('resultDesc').innerText = "Cotejando contra el Diario Oficial de la Federación.";
 
         const tipoPersona = rfc.length === 12 ? 'Persona Moral' : 'Persona Física';
-
-        const createHash = (str) => {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
-            return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-        };
-        const hashTrace = `AUD-${createHash(rfc + Date.now())}`;
+        const hashTrace = `AUD-${Math.floor(Math.random() * 1000000).toString(16).toUpperCase()}`;
 
         dataReporte = { 
-            rfc: rfc, 
-            tipo: tipoPersona,
-            status: '', desc: '', dictamen: '', color: '', 
-            date: new Date().toLocaleString('es-MX'),
-            hash: hashTrace
+            rfc: rfc, tipo: tipoPersona, status: '', desc: '', dictamen: '', color: '', 
+            date: new Date().toLocaleString('es-MX'), hash: hashTrace
         };
 
         try {
             const response = await fetch('/efos.json');
-            if (!response.ok) throw new Error('Error json');
             const listaNegraEFOS = await response.json();
             
             if (listaNegraEFOS.includes(rfc)) {
-                mostrarResultado('DANGER', '¡RIESGO FISCAL CRÍTICO!', 'Este RFC figura en el listado DEFINITIVO del Art. 69-B del CFF como empresa simuladora.');
+                mostrarResultado('DANGER', '¡RIESGO FISCAL CRÍTICO!', 'RFC detectado en listado DEFINITIVO del Art. 69-B del CFF.');
                 dataReporte.status = 'RIESGO ALTO - EFO DEFINITIVO';
                 dataReporte.color = '#991B1B';
-                dataReporte.desc = 'Contribuyente boletinado en las listas negras del SAT por presunta inexistencia de operaciones y falta de materialidad.';
-                consultarAlertaServidor("Consulta EFOS", `RFC Evaluado: ${rfc}`, "Se detectó un EFO definitivo en las listas oficiales. Indica las graves consecuencias penales y fiscales (Art. 113 Bis CFF) de deducir comprobantes de esta entidad.");
+                dataReporte.desc = 'Contribuyente boletinado por presunta inexistencia de operaciones.';
+                consultarDictamenRemoto(rfc, "Se detectó un EFO definitivo. Indica consecuencias penales (Art. 113 Bis CFF).");
             } else {
-                if(rfc.startsWith('Z') || rfc.endsWith('Z')) {
-                    mostrarResultado('INVALID', 'Vigilancia Preventiva', 'El contribuyente no es definitivo, pero presenta comportamientos atípicos. Sugerimos precaución.');
-                    dataReporte.status = 'RIESGO MEDIO - EFO PRESUNTO';
-                    dataReporte.color = '#D97706';
-                    dataReporte.desc = 'El RFC se encuentra en fase de presunción. Se sugiere pausar relaciones comerciales hasta su desvirtuación.';
-                    
-                    const dictamenSeguro = "Resolución Preventiva:\n\nEl contribuyente evaluado no se encuentra firme en la lista negra, sin embargo, muestra características que sugieren una posible inclusión futura (Estatus Presunto). Se recomienda suspender temporalmente los pagos, solicitar la Constancia de Situación Fiscal actualizada y requerir evidencia documental (entregables) de todas las operaciones recientes para blindar la materialidad ante una eventual revisión del SAT.";
-                    document.getElementById('dictamenInput').value = dictamenSeguro;
-                    dataReporte.dictamen = dictamenSeguro;
-                    
-                    initProgress();
-                    finishProgress();
-                } else {
-                    mostrarResultado('SAFE', 'Contribuyente Confiable', 'Este RFC NO se encuentra listado como EFO definitivo a la fecha de esta consulta.');
-                    dataReporte.status = 'LIMPIO - CUMPLIMIENTO OK';
-                    dataReporte.color = '#065F46';
-                    dataReporte.desc = 'El RFC consultado no presenta restricciones operativas en el Diario Oficial de la Federación (Art. 69-B).';
-                    
-                    // Emisión de Certificado Seguro incluso si está limpio
-                    const dictamenLimpio = "Resolución de Debida Diligencia:\n\nTras realizar el cruce automatizado de metadatos contra la matriz oficial del Sistema de Administración Tributaria (SAT), certificamos que el RFC analizado no presenta irregularidades, sentencias o inclusiones vinculadas al Artículo 69-B del Código Fiscal de la Federación.\n\nSe autoriza la continuidad de las operaciones comerciales y la deducción de los comprobantes fiscales asociados a este proveedor en el periodo actual.";
-                    document.getElementById('dictamenInput').value = dictamenLimpio;
-                    dataReporte.dictamen = dictamenLimpio;
-
-                    initProgress();
-                    finishProgress();
-                }
+                mostrarResultado('SAFE', 'RFC Confiable', 'Este RFC NO se encuentra listado como EFO definitivo.');
+                dataReporte.status = 'LIMPIO - CUMPLIMIENTO OK';
+                dataReporte.color = '#065F46';
+                dataReporte.desc = 'El RFC consultado no presenta restricciones operativas en el Diario Oficial.';
+                
+                const dictamenLimpio = "Resolución de Debida Diligencia:\n\nTras el cruce automatizado contra la matriz del SAT, certificamos que el RFC analizado no presenta inclusiones vinculadas al Artículo 69-B. Se autoriza la continuidad de las operaciones y la deducción de comprobantes fiscales de este proveedor.";
+                dictamenInput.value = dictamenLimpio;
+                dataReporte.dictamen = dictamenLimpio;
+                initProgress(); finishProgress();
             }
-        } catch (error) {
-            mostrarResultado('INVALID', 'Error de Conexión', 'No se pudo conectar con la base de datos de EFOS. Reintenta más tarde.');
-        }
+        } catch (error) { mostrarResultado('INVALID', 'Error de Conexión', 'No se pudo conectar con la base de datos.'); }
     }
 
     function mostrarResultado(tipo, titulo, descripcion) {
         document.getElementById('resultTitle').innerText = titulo;
         document.getElementById('resultDesc').innerText = descripcion;
-        if (tipo === 'SAFE') { 
-            resultCard.classList.remove('status-danger', 'status-invalid');
-            resultCard.classList.add('status-safe'); 
-            document.getElementById('iconSafe').style.display = 'block'; 
-        } else if (tipo === 'DANGER') { 
-            resultCard.classList.remove('status-safe', 'status-invalid');
-            resultCard.classList.add('status-danger'); 
-            document.getElementById('iconDanger').style.display = 'block'; 
-        } else { 
-            resultCard.classList.remove('status-safe', 'status-danger');
-            resultCard.classList.add('status-invalid'); 
-            document.getElementById('iconDanger').style.display = 'block'; 
-        }
+        resultCard.className = 'result-card ' + (tipo === 'SAFE' ? 'status-safe' : (tipo === 'DANGER' ? 'status-danger' : 'status-invalid'));
+        document.getElementById(tipo === 'SAFE' ? 'iconSafe' : 'iconDanger').style.display = 'block';
     }
 
-    async function consultarAlertaServidor(tipo, concepto, errorDesc) {
+    async function consultarDictamenRemoto(rfc, errorDesc) {
         initProgress();
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
+                body: JSON.stringify({ tipo_documento: "Consulta EFOS", descripcion_concepto: `RFC: ${rfc}`, error_detectado: errorDesc })
             });
             const data = await res.json();
-            
-            // Purgado de Markdown y validación Anti-Undefined
-            let textoDictamen = data.analisis_legal || data.dictamen || "Resolución técnica completada. Operación documentada en los registros.";
-            textoDictamen = textoDictamen.replace(/[*#_]/g, '').replace(/---+/g, '').trim(); 
-            
-            document.getElementById('dictamenInput').value = textoDictamen;
-            dataReporte.dictamen = textoDictamen;
+            let texto = (data.analisis_legal || data.dictamen || "Análisis técnico completado.").replace(/[*#_]/g, '').replace(/---+/g, '').trim(); 
+            dictamenInput.value = texto;
+            dataReporte.dictamen = texto;
             finishProgress();
         } catch (err) {
-            // Fallback corporativo en caso de latencia
-            const fallbackMsg = "Alerta de Riesgo Inminente:\n\nSe confirma la inclusión definitiva del contribuyente en el listado del Artículo 69-B del CFF.\n\nAcción Inmediata Requerida: Suspender todo pago y relación comercial. Los comprobantes fiscales emitidos por este RFC carecen de validez (no deducibles/no acreditables). Se requiere iniciar procedimiento de autocorrección o desvirtuación material en un plazo máximo de 30 días hábiles para evitar tipificación penal por simulación de operaciones.";
-            document.getElementById('dictamenInput').value = fallbackMsg;
-            dataReporte.dictamen = fallbackMsg;
-            finishProgress();
+            const fallback = "ALERTA DE RIESGO: Inclusión definitiva en 69-B. Los comprobantes carecen de validez fiscal. Se requiere autocorrección inmediata.";
+            dictamenInput.value = fallback; dataReporte.dictamen = fallback; finishProgress();
         }
     }
 
-    // =========================================================================
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) - CERO CHOQUES, TEXTO VECTORIAL
-    // =========================================================================
     function descargarReportePDF() {
-        if (!dataReporte.rfc) return;
-
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Ensamblando Constancia...";
+        btn.innerText = "Exportando...";
         btn.disabled = true;
 
         setTimeout(() => {
             try {
-                // Capturar el texto final del editor
-                dataReporte.dictamen = document.getElementById('dictamenInput').value || 'Sin observaciones adicionales.';
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
+                const finalDictamen = dictamenInput.value;
+                const bgHeader = dataReporte.color === '#065F46' ? '#ECFDF5' : (dataReporte.color === '#991B1B' ? '#FEF2F2' : '#FEF3C7');
 
-                const pdfBackground = function(currentPage, pageSize) {
-                    if (!isPro) {
-                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-                    }
-                    return null;
-                };
-
-                const bgHeaderColor = dataReporte.color === '#065F46' ? '#ECFDF5' : (dataReporte.color === '#991B1B' ? '#FEF2F2' : '#FEF3C7');
-
-                const docDefinition = {
-                    pageSize: 'LETTER',
-                    pageMargins: [50, 60, 50, 60],
-                    background: pdfBackground,
+                const docDef = {
+                    pageSize: 'LETTER', pageMargins: [50, 60, 50, 60],
                     defaultStyle: { lineHeight: 1.5, font: 'Helvetica' },
+                    background: function(currentPage, pageSize) {
+                        if (!isPro) return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    },
                     content: [
-                        { text: 'USO INTERNO - VERIFICACIÓN DE CUMPLIMIENTO', alignment: 'center', color: '#111827', fontSize: 10, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
-                        {
-                            columns: [
-                                { text: 'Constancia de Idoneidad de Proveedores\nValidación Oficial Art. 69-B (CFF)', style: 'header' },
-                                { text: `Folio de Trazabilidad: ${dataReporte.hash}\nFecha: ${dataReporte.date}`, alignment: 'right', style: 'subheader' }
-                            ]
-                        },
+                        { text: 'VERIFICACIÓN DE CUMPLIMIENTO - USO INTERNO', alignment: 'center', color: '#111827', fontSize: 10, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
+                        { columns: [ { text: 'Constancia de Idoneidad de Proveedores\nArt. 69-B (CFF)', fontSize: 14, bold: true }, { text: `Folio: ${dataReporte.hash}\nFecha: ${dataReporte.date}`, alignment: 'right', fontSize: 10, color: '#6B7280' } ] },
                         { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
-                        
                         {
                             margin: [0, 30, 0, 30],
-                            table: {
-                                widths: ['*'],
-                                body: [
-                                    [
-                                        {
-                                            fillColor: bgHeaderColor,
-                                            border: [true, true, true, true],
-                                            borderColor: [dataReporte.color, dataReporte.color, dataReporte.color, dataReporte.color],
-                                            columns: [
-                                                {
-                                                    stack: [
-                                                        { text: `RFC Auditado (${dataReporte.tipo})`, fontSize: 10, bold: true, color: dataReporte.color, margin: [0, 0, 0, 5] },
-                                                        { text: String(dataReporte.rfc), fontSize: 24, bold: true, color: '#111827' }
-                                                    ]
-                                                },
-                                                {
-                                                    alignment: 'right',
-                                                    stack: [
-                                                        { text: 'ESTATUS LEGAL DOF', fontSize: 10, bold: true, color: dataReporte.color, margin: [0, 0, 0, 5] },
-                                                        { text: String(dataReporte.status), fontSize: 16, bold: true, color: dataReporte.color }
-                                                    ]
-                                                }
-                                            ],
-                                            margin: [20, 20, 20, 20]
-                                        }
-                                    ]
-                                ]
-                            }
+                            table: { widths: ['*'], body: [[ {
+                                fillColor: bgHeader, border: [true, true, true, true], borderColor: [dataReporte.color, dataReporte.color, dataReporte.color, dataReporte.color],
+                                columns: [
+                                    { stack: [ { text: `RFC Auditado (${dataReporte.tipo})`, fontSize: 10, bold: true, color: dataReporte.color }, { text: String(dataReporte.rfc), fontSize: 24, bold: true, color: '#111827' } ] },
+                                    { alignment: 'right', stack: [ { text: 'ESTATUS LEGAL SAT', fontSize: 10, bold: true, color: dataReporte.color }, { text: String(dataReporte.status), fontSize: 16, bold: true, color: dataReporte.color } ] }
+                                ], margin: [20, 20, 20, 20]
+                            }]] }
                         },
-
-                        { text: '\n1. RESULTADO DE EVALUACIÓN TÉCNICA', style: 'sectionTitle' },
-                        { text: String(dataReporte.desc), fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] },
-
-                        { text: '\n2. DICTAMEN TÉCNICO Y RESOLUCIÓN', style: 'sectionTitle' },
-                        { text: String(dataReporte.dictamen), fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] }
+                        { text: '1. RESULTADO TÉCNICO', fontSize: 12, bold: true, color: '#2563EB', borderBottom: true, margin: [0, 10, 0, 10] },
+                        { text: String(dataReporte.desc), fontSize: 11 },
+                        { text: '\n2. DICTAMEN Y RESOLUCIÓN', fontSize: 12, bold: true, color: '#2563EB', borderBottom: true, margin: [0, 10, 0, 10] },
+                        { text: String(finalDictamen), fontSize: 11, alignment: 'justify' }
                     ],
-                    footer: function(currentPage, pageCount) {
-                        return {
-                            text: `El presente certificado se expide como papel de trabajo para acreditar la debida diligencia de la empresa en la selección de proveedores.\nPlataforma Emisora: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
-                            alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0]
-                        };
-                    },
-                    styles: {
-                        header: { fontSize: 16, bold: true, color: '#111827' },
-                        subheader: { fontSize: 10, color: '#6B7280', margin: [0, 5, 0, 0] },
-                        sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 10, 0, 10], borderBottom: true }
-                    }
+                    footer: function(c, p) { return { text: `Este certificado acredita la debida diligencia de la empresa. Plataforma: AuditoriaXML.mx - Pág. ${c} de ${p}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] }; }
                 };
 
-                pdfMake.createPdf(docDefinition).download(`Constancia_EFOS_${dataReporte.rfc}.pdf`);
-                
-                setTimeout(() => {
-                    btn.innerHTML = oldText;
-                    btn.disabled = false;
-                }, 1000);
-
-            } catch (e) {
-                console.error("Error crítico en PDFMake:", e);
-                alert("Fallo de renderizado interno. Recargue la página e intente nuevamente.");
-                btn.innerHTML = oldText;
-                btn.disabled = false;
-            }
+                pdfMake.createPdf(docDef).download(`Constancia_EFOS_${dataReporte.rfc}.pdf`);
+                setTimeout(() => { btn.innerHTML = oldText; btn.disabled = false; }, 1000);
+            } catch (e) { alert("Error de renderizado."); btn.innerHTML = oldText; btn.disabled = false; }
         }, 300);
     }
 </script>
