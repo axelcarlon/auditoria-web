@@ -17,48 +17,55 @@
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --warning: #D97706;}
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
         .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
 
         .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        .alert-risk { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; }
-        .risk-BAJO { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
-        .risk-MEDIO { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
-        .risk-ALTO { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
+        .alert-risk { padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; border: 2px solid transparent; text-transform: uppercase;}
+        .risk-BAJO { background: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
+        .risk-MEDIO { background: #FEF3C7; color: #92400E; border-color: #FCD34D; }
+        .risk-ALTO { background: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
 
-        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        /* Card de Metadata Aduanera */
+        .meta-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .meta-card { background: var(--bg-primary); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+        .meta-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; margin-bottom: 5px; }
+        .meta-val { font-size: 14px; color: var(--text-main); font-family: monospace; font-weight: 700; word-break: break-all; }
+
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Botones Compartir */
+        /* Botones Acción */
+        .btn-toolbar { display: flex; gap: 15px; justify-content: flex-end; margin-bottom: 25px; flex-wrap: wrap;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; display: flex; align-items: center; gap: 8px;}
+        .btn-pdf:hover { background: var(--brand); }
+
         .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
         .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
         .social-btn:hover { opacity: 0.9; }
         .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
         .btn-fb { background-color: #1877F2; }
         .btn-wa { background-color: #25D366; }
 
-        /* Paywall Modal */
+        /* Modales */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
         .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
 
-        /* Error Aduanero Modal */
         .error-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
         .error-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; border-left: 6px solid var(--danger); }
-        .error-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--danger); display: flex; align-items: center; justify-content: center; gap: 10px;}
-        .error-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
 
         #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
+
+        @media (max-width: 768px) { .btn-toolbar { flex-direction: column; } .btn-secondary, .btn-pdf { width: 100%; justify-content: center; } }
     </style>
 </head>
 <body>
@@ -67,61 +74,75 @@
 
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
+        <button class="modal-close" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para generar dictámenes de precios internacionales ilimitados y sin marcas de agua.</p>
+        <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 15px;">Límite Gratuito Alcanzado</h2>
+        <p style="font-size: 16px; color: var(--text-muted); margin-bottom: 25px;">Has agotado tus evaluaciones de riesgo aduanero. Actualiza a <strong>Pro</strong> para validar pedimentos ilimitados.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="error-modal" id="errorAduanaModal">
     <div class="error-content">
-        <h2 class="error-title">
-            <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            Documento Incompatible
-        </h2>
-        <p class="error-text">El archivo XML proporcionado no contiene complementos de importación/exportación ni pedimentos aduanales. Esta herramienta solo evalúa facturas de comercio exterior.</p>
-        <button onclick="document.getElementById('errorAduanaModal').style.display='none'; window.location.reload();" style="background: var(--text-main); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold;">Entendido, cargar otra factura</button>
+        <h2 style="font-size: 24px; font-weight: bold; color: var(--danger); margin-bottom: 15px;">XML Incompatible</h2>
+        <p style="font-size: 16px; color: var(--text-muted); margin-bottom: 25px;">Este archivo no contiene el Complemento de Comercio Exterior ni metadatos de Pedimento Aduanal. Solo se analizan operaciones de importación/exportación.</p>
+        <button onclick="window.location.reload()" style="background: var(--text-main); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold;">Cargar otro XML</button>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ANÁLISIS ADUANERO Y PRECIOS DE TRANSFERENCIA</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Riesgo de Subvaluación en Importaciones</h1>
-        <p style="color: var(--text-muted);">El SAT y la ANAM auditan los valores unitarios. Carga tus XML de operaciones extranjeras para validar si existe riesgo de rechazo por subvaluación.</p>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">COMPLIANCE COMERCIO EXTERIOR</span>
+        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Riesgo de Subvaluación Aduanera</h1>
+        <p style="color: var(--text-muted);">Evita sanciones de la ANAM. Validamos los valores unitarios de tus importaciones cruzándolos contra promedios de mercado y reglas de valoración.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
         <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="xmlText">Cargar Factura de Importación (XML)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Debe contener complemento exterior o pedimento.</p>
+        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);">Cargar Factura de Importación (XML)</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Debe incluir el nodo de información aduanera o complemento CCE.</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
     </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
+    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
         <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Consultando matrices de precios internacionales...</p>
+        <p style="font-weight: 600; color: var(--brand);">Consultando bases de valoración internacional...</p>
     </div>
 
     <div class="results-container" id="results">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
-            <button onclick="window.location.reload()" style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">Analizar Nuevo Documento</button>
-            <button onclick="descargarDictamenPDF()" style="background: #111827; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Descargar Dictamen (PDF)</button>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">Analizar Nuevo Pedimento</button>
+            <button onclick="descargarDictamenPDF()" class="btn-pdf">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Descargar Dictamen Forense
+            </button>
         </div>
 
         <div id="riskAlert" class="alert-risk"></div>
+
+        <div class="meta-summary" id="metaBox">
+            <div class="meta-card">
+                <div class="meta-label">País de Origen / Divisa</div>
+                <div class="meta-val" id="resMetaPais">-</div>
+            </div>
+            <div class="meta-card">
+                <div class="meta-label">Total en Moneda Extranjera</div>
+                <div class="meta-val" id="resMetaMonto" style="color: var(--brand);">-</div>
+            </div>
+            <div class="meta-card">
+                <div class="meta-label">N. Pedimento / UUID</div>
+                <div class="meta-val" id="resMetaUuid" style="font-size: 11px;">-</div>
+            </div>
+        </div>
         
-        <div style="background: var(--bg-primary); border: 1px solid var(--border); padding: 25px; border-radius: 8px;">
-            <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Análisis de Valoración Aduanera</h3>
-            <p id="resDictamen" style="font-size: 15px; line-height: 1.6; color: var(--text-main); margin-bottom: 0; text-align: justify;"></p>
+        <div style="background: var(--bg-primary); border: 1px solid var(--border); padding: 25px; border-radius: 8px; margin-bottom: 30px;">
+            <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Informe Técnico de Valoración</h3>
+            <p id="resDictamen" style="font-size: 15px; line-height: 1.7; color: var(--text-main); margin-bottom: 0; text-align: justify;"></p>
         </div>
         
         <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20evaluar%20el%20riesgo%20de%20subvaluación%20de%20mis%20importaciones%20con%20AuditorIA:&url=https://auditoriaxml.mx/precios-aduana.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/precios-aduana.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
+            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más empresas compartiendo esta herramienta:</p>
+            <a href="https://twitter.com/intent/tweet?text=Evalué%20el%20riesgo%20de%20subvaluación%20de%20mis%20importaciones%20con%20AuditorIA:&url=https://auditoriaxml.mx/precios-aduana.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/precios-aduana.html" target="_blank" class="social-btn btn-fb">Facebook</a>
             <a href="https://api.whatsapp.com/send?text=Acabo%20de%20evaluar%20el%20riesgo%20de%20subvaluación%20de%20mis%20importaciones%20con%20AuditorIA:%20https://auditoriaxml.mx/precios-aduana.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
@@ -133,7 +154,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // CUOTA FREEMIUM
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -145,9 +165,10 @@
     const inputXml = document.getElementById('xmlInput');
     const dropZone = document.getElementById('dropZone');
     let dictamenDataGlobal = null;
+    let metadataExtraida = {};
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
     dropZone.addEventListener('drop', e => processXmls(e.dataTransfer.files));
     inputXml.addEventListener('change', e => processXmls(e.target.files));
 
@@ -164,12 +185,23 @@
                 reader.onload = function(e) {
                     try {
                         const rawText = e.target.result;
-                        // Barrera Aduanera Estricta
-                        if (rawText.includes('<cce11:ComercioExterior') || rawText.includes('<cfdi:InformacionAduanera')) {
+                        const xmlDoc = new DOMParser().parseFromString(rawText, "text/xml");
+                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
+                        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
+                        const cce = xmlDoc.getElementsByTagName('cce11:ComercioExterior')[0] || xmlDoc.getElementsByTagName('cce20:ComercioExterior')[0];
+                        
+                        if (rawText.includes('cce11:') || rawText.includes('cce20:') || xmlDoc.getElementsByTagName('cfdi:InformacionAduanera').length > 0) {
                             tieneAduana = true;
                         }
 
-                        const xmlDoc = new DOMParser().parseFromString(rawText, "text/xml");
+                        // Extraer Metadata de Cabecera
+                        metadataExtraida = {
+                            moneda: cfdi.getAttribute('Moneda') || 'MXN',
+                            total: cfdi.getAttribute('Total') || '0',
+                            uuid: timbre ? timbre.getAttribute('UUID') : 'SIN_UUID',
+                            pais: cce ? cce.getAttribute('Receptor') || 'EXTRANJERO' : 'NO_ESPECIFICADO'
+                        };
+
                         const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
                         for (let i = 0; i < conceptos.length; i++) {
                             listaConceptos.push({
@@ -199,7 +231,7 @@
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/precios-aduana", {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ conceptos: listaConceptos.slice(0, 50) }) // Evitar rebasar tokens
+                body: JSON.stringify({ conceptos: listaConceptos.slice(0, 30) })
             });
 
             if(!res.ok) throw new Error("Error API");
@@ -208,22 +240,30 @@
             document.getElementById('loadingState').style.display = 'none';
             document.getElementById('results').style.display = 'block';
 
+            // Llenado de UI
+            document.getElementById('resMetaPais').innerText = `${metadataExtraida.pais} / ${metadataExtraida.moneda}`;
+            document.getElementById('resMetaMonto').innerText = `${metadataExtraida.total} ${metadataExtraida.moneda}`;
+            document.getElementById('resMetaUuid').innerText = metadataExtraida.uuid;
+
             const riskBox = document.getElementById('riskAlert');
             riskBox.className = `alert-risk risk-${data.nivel_riesgo_aduanero}`;
-            riskBox.innerHTML = `<strong>ALERTA DE SUBVALUACIÓN: ${data.nivel_riesgo_aduanero}</strong>`;
+            riskBox.innerHTML = `Estatus de Valoración: <strong>${data.nivel_riesgo_aduanero === 'ALTO' ? 'RIESGO CRÍTICO DE SUBVALUACIÓN' : (data.nivel_riesgo_aduanero === 'MEDIO' ? 'DIFERENCIA DE VALOR DETECTADA' : 'VALORES DENTRO DE MERCADO')}</strong>`;
 
             document.getElementById('resDictamen').innerText = data.analisis_valoracion;
             
-            // Guardar para exportación PDF
             dictamenDataGlobal = {
                 riesgo: data.nivel_riesgo_aduanero,
                 analisis: data.analisis_valoracion,
-                color: data.nivel_riesgo_aduanero === 'ALTO' ? '#DC2626' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#D97706' : '#059669'),
-                bgStatus: data.nivel_riesgo_aduanero === 'ALTO' ? '#FEF2F2' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#FEF3C7' : '#ECFDF5')
+                color: data.nivel_riesgo_aduanero === 'ALTO' ? '#DC2626' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#D97706' : '#065F46'),
+                bgStatus: data.nivel_riesgo_aduanero === 'ALTO' ? '#FEF2F2' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#FEF3C7' : '#ECFDF5'),
+                brStatus: data.nivel_riesgo_aduanero === 'ALTO' ? '#FCA5A5' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#FCD34D' : '#6EE7B7'),
+                meta: metadataExtraida
             };
 
+            document.getElementById('shareContainer').style.display = 'block';
+
         } catch (e) {
-            alert("Error de conexión con el servidor IA. Intente nuevamente.");
+            alert("Error en el motor IA. Intenta con un XML menos pesado.");
             window.location.reload();
         }
     }
@@ -233,37 +273,49 @@
         const renderContainer = document.getElementById('hiddenPdfRender');
         
         renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white; page-break-inside: avoid;">
+            <div style="width: 800px; padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white; page-break-inside: avoid;">
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen Predictivo de Valoración Aduanera</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Análisis cruzado de XML de importación contra referencias internacionales.</p>
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen Forense de Valoración Aduanera</h1>
+                    <p style="margin: 5px 0 0; font-size: 11px; color: #6B7280;">Mitigación de riesgos en Precios de Transferencia y Subvaluación.</p>
                 </div>
                 
-                <div style="background: ${dictamenDataGlobal.bgStatus}; padding: 20px; border: 1px solid ${dictamenDataGlobal.color}; border-radius: 6px; margin-bottom: 30px; text-align: center; position: relative; z-index: 1;">
-                    <strong style="display: block; font-size: 12px; color: ${dictamenDataGlobal.color}; text-transform: uppercase;">Nivel de Riesgo por Subvaluación (ANAM/SAT)</strong>
-                    <span style="font-size: 24px; font-weight: 900; color: ${dictamenDataGlobal.color}; display: block; margin-top: 10px;">${dictamenDataGlobal.riesgo}</span>
+                <div style="background: ${dictamenDataGlobal.bgStatus}; padding: 25px; border: 1px solid ${dictamenDataGlobal.brStatus}; border-radius: 8px; margin-bottom: 30px; text-align: center; position: relative; z-index: 1;">
+                    <strong style="display: block; font-size: 12px; color: ${dictamenDataGlobal.color}; text-transform: uppercase; letter-spacing: 1px;">Evaluación ANAM/SAT</strong>
+                    <span style="font-size: 20px; font-weight: 900; color: ${dictamenDataGlobal.color}; display: block; margin-top: 10px;">${dictamenDataGlobal.riesgo === 'ALTO' ? 'RIESGO CRÍTICO' : (dictamenDataGlobal.riesgo === 'MEDIO' ? 'RIESGO MODERADO' : 'CUMPLIMIENTO ÓPTIMO')}</span>
                 </div>
 
-                <div style="margin-bottom: 30px; position: relative; z-index: 1; border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #F9FAFB;">
-                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px; margin-top: 0;">Análisis Forense Detallado</h3>
-                    <p style="font-size: 13px; line-height: 1.6; text-align: justify; margin-bottom: 0;">${dictamenDataGlobal.analisis}</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 6px; background: #F9FAFB;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Datos de la Operación</span>
+                        <div style="font-size: 12px; margin-top: 8px;"><strong>Destino/País:</strong> ${dictamenDataGlobal.meta.pais}</div>
+                        <div style="font-size: 12px;"><strong>Monto Total:</strong> ${dictamenDataGlobal.meta.total} ${dictamenDataGlobal.meta.moneda}</div>
+                    </div>
+                    <div style="border: 1px solid #E5E7EB; padding: 15px; border-radius: 6px; background: #F9FAFB;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Identificación</span>
+                        <div style="font-size: 10px; margin-top: 8px; font-family: monospace; word-break: break-all;"><strong>UUID:</strong> ${dictamenDataGlobal.meta.uuid}</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 30px; position: relative; z-index: 1;">
+                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px; margin-bottom: 15px;">Dictamen Estratégico</h3>
+                    <p style="font-size: 12px; line-height: 1.6; text-align: justify; color: #111827;">${dictamenDataGlobal.analisis}</p>
                 </div>
                 
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px; font-family: monospace;">
-                    Este documento es de carácter predictivo para mitigación de contingencias en Precios de Transferencia.<br>
+                <div style="margin-top: 50px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    Este análisis es predictivo y se basa en el cruce de metadatos contra tendencias de valoración global. <br>
                     Plataforma: AuditoriaXML.mx
                 </div>
             </div>
         `;
 
         const opt = {
-            margin:       10,
-            filename:     `Valoracion_Aduanera_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            margin: 10,
+            filename: `Dictamen_Aduana_${Date.now()}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(renderContainer.firstElementChild).save();
