@@ -67,8 +67,9 @@
         .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block;}
 
-        /* Contenedor Oculto para renderizar el PDF */
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
+        /* CSS de renderizado crítico: Debe tener width explícito y visibilidad oculta, NO left: -9999px */
+        #hiddenPdfRender { position: absolute; top: 0; left: 0; width: 800px; z-index: -1000; visibility: hidden; background: white; }
+        .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
 
         @media (max-width: 768px) {
             .file-item { flex-direction: column; align-items: flex-start; }
@@ -136,6 +137,8 @@
         </div>
     </div>
 </div>
+
+<div id="hiddenPdfRender"></div>
 
 <script src="footer.js"></script>
 
@@ -230,7 +233,6 @@
         const conceptos = fac.xmlDoc.getElementsByTagName('cfdi:Concepto');
         const impuestos = fac.xmlDoc.getElementsByTagName('cfdi:Impuestos');
 
-        // Buscar nodo principal de impuestos para resumen
         let nodoImpuestosGlobal = null;
         for(let i=0; i<impuestos.length; i++) { 
             if(impuestos[i].parentNode === cfdi) { nodoImpuestosGlobal = impuestos[i]; break; } 
@@ -238,7 +240,7 @@
 
         let tbodyHTML = '';
         for(let i=0; i<conceptos.length; i++) {
-            tbodyHTML += `<tr style="page-break-inside: avoid;">
+            tbodyHTML += `<tr class="page-break-avoid">
                 <td style="padding: 12px 8px; border-bottom: 1px solid #E5E7EB; color: #111827; text-align: center;">${getAttr(conceptos[i], 'Cantidad')}</td>
                 <td style="padding: 12px 8px; border-bottom: 1px solid #E5E7EB; color: #4B5563; font-family: monospace;">${getAttr(conceptos[i], 'ClaveProdServ')}</td>
                 <td style="padding: 12px 8px; border-bottom: 1px solid #E5E7EB; color: #111827; font-size: 11px;">${getAttr(conceptos[i], 'Descripcion')}</td>
@@ -251,7 +253,7 @@
         const retenciones = nodoImpuestosGlobal ? formatMoney(getAttr(nodoImpuestosGlobal, 'TotalImpuestosRetenidos')) : '$0.00';
 
         return `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
+            <div style="width: 100%; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
                 <div style="display: flex; justify-content: space-between; border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1;">
@@ -289,7 +291,7 @@
                     <tbody>${tbodyHTML}</tbody>
                 </table>
                 
-                <div style="display: flex; justify-content: flex-end; font-size: 13px; position: relative; z-index: 1; page-break-inside: avoid;">
+                <div class="page-break-avoid" style="display: flex; justify-content: flex-end; font-size: 13px; position: relative; z-index: 1;">
                     <div style="width: 300px; border: 1px solid #E5E7EB; border-radius: 6px; padding: 15px; background: #ffffff;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #4B5563;">
                             <span>Subtotal:</span> <span style="font-family: monospace;">${formatMoney(getAttr(cfdi, 'SubTotal'))}</span>
@@ -306,13 +308,24 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 50px; font-size: 10px; color: #6B7280; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace; page-break-inside: avoid;">
+                <div class="page-break-avoid" style="margin-top: 50px; font-size: 10px; color: #6B7280; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace;">
                     <strong>UUID (Folio Fiscal):</strong> ${fac.uuid} <br>
                     <strong>Forma de Pago:</strong> ${getAttr(cfdi, 'FormaPago') || 'N/A'} | <strong>Método de Pago:</strong> ${getAttr(cfdi, 'MetodoPago') || 'N/A'} | <strong>Moneda:</strong> ${getAttr(cfdi, 'Moneda') || 'MXN'}<br><br>
                     Este documento es una representación impresa de un CFDI generada por AuditoriaXML.mx
                 </div>
             </div>
         `;
+    }
+
+    function configurarPDFOpt(filename) {
+        return {
+            margin:       [10, 10, 15, 10],
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
     }
 
     async function descargarPDFNatvo(index) {
@@ -325,25 +338,16 @@
         const renderContainer = document.getElementById('hiddenPdfRender');
         renderContainer.innerHTML = armarEstructuraImpresion(fac);
 
-        const opt = {
-            margin:       10,
-            filename:     `${fac.uuid}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
-        };
-
         try {
-            await html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+            await html2pdf().set(configurarPDFOpt(`${fac.uuid}.pdf`)).from(renderContainer.firstElementChild).save();
         } catch(e) {
-            alert("Error al generar PDF.");
+            alert("Error al generar el documento. Verifica la memoria del navegador.");
         } finally {
             document.getElementById('loadingModal').style.display = 'none';
             renderContainer.innerHTML = '';
         }
     }
 
-    // FUNCIONALIDAD PREMIUM: EXPORTACIÓN MASIVA A ZIP
     async function descargarTodoEnZIP() {
         const facturasValidas = xmlDataArray.filter(f => !f.invalido);
         if(facturasValidas.length === 0) return alert("No hay facturas válidas para exportar.");
@@ -363,26 +367,14 @@
                 progressText.innerText = `Procesando ${i + 1} de ${facturasValidas.length}...`;
                 
                 renderContainer.innerHTML = armarEstructuraImpresion(fac);
-
-                const opt = {
-                    margin:       10,
-                    filename:     `${fac.uuid}.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true },
-                    jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
-                };
-
-                // Generar PDF en memoria como ArrayBuffer
-                const pdfBlob = await html2pdf().set(opt).from(renderContainer.firstElementChild).output('blob');
+                const pdfBlob = await html2pdf().set(configurarPDFOpt(`${fac.uuid}.pdf`)).from(renderContainer.firstElementChild).output('blob');
                 
-                // Limpiar nombre de archivo (usar el nombre original del XML cambiando la extensión)
                 let finalName = fac.fileName.toLowerCase().replace('.xml', '.pdf');
                 zip.file(finalName, pdfBlob);
             }
 
             progressText.innerText = "Empaquetando ZIP, casi listo...";
             
-            // Descargar el archivo ZIP
             const zipContent = await zip.generateAsync({type:"blob"});
             const url = window.URL.createObjectURL(zipContent);
             const a = document.createElement("a");
@@ -392,7 +384,7 @@
             window.URL.revokeObjectURL(url);
 
         } catch(e) {
-            alert("Ocurrió un error al generar el archivo ZIP. Intente con un lote más pequeño.");
+            alert("Ocurrió un error al compilar el ZIP. Intente con un lote más pequeño para liberar memoria.");
         } finally {
             loadingModal.style.display = 'none';
             renderContainer.innerHTML = '';
