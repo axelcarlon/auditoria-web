@@ -12,7 +12,10 @@
     <link rel="apple-touch-icon" href="candado.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -52,6 +55,7 @@
         .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
 
         .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
         .btn-pdf { background: #111827; color: white; border: none; padding: 16px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px;}
@@ -77,10 +81,6 @@
         .modal-text { font-size: 15px; color: var(--text-muted); margin: 0 0 25px 0; line-height: 1.5; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; transition: 0.2s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
         .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.3); }
-
-        /* --- MOTOR PDF: ANCLAJE INFALIBLE --- */
-        #hiddenPdfRender { position: absolute; left: 0; top: 0; width: 800px; background: white; z-index: -10000; pointer-events: none; }
-        .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; }
 
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } .toolbar { flex-direction: column; } .toolbar button { width: 100%;} }
     </style>
@@ -192,8 +192,6 @@
         </div>
     </div>
 </div>
-
-<div id="hiddenPdfRender"></div>
 
 <script src="footer.js"></script>
 
@@ -361,101 +359,132 @@
         } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
     }
 
-    // EL MOTOR PDF 100% GARANTIZADO (SIN CORTES NI HOJAS EN BLANCO)
-    async function descargarReporte() {
+    // 🚀 NUEVO MOTOR DECLARATIVO (PDFMAKE) - CALIDAD BIG 4
+    function descargarReporte() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Generando PDF...";
+        btn.innerText = "Procesando PDF...";
         btn.disabled = true;
 
-        const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : '';
-        const renderContainer = document.getElementById('hiddenPdfRender');
-        
-        // Inyectamos el HTML de manera limpia
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white;">
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px;">
-                    <h1 style="margin: 0; font-size: 26px; color: #111827; font-weight: 900; letter-spacing: -0.5px;">Reporte Ejecutivo de Riesgo Fiscal</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Modelo TADS (Tax Analytics & Detection System)</p>
-                </div>
+        const isPro = localStorage.getItem('auditoria_pro') === 'true';
+        const chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null;
+
+        // Configuración de la marca de agua nativa vectorial
+        const watermarkConfig = isPro ? null : { text: 'Generado por AuditorIA - Versión Gratuita', color: 'gray', opacity: 0.1, bold: true, italics: false };
+
+        const docDefinition = {
+            pageSize: 'LETTER',
+            pageMargins: [40, 60, 40, 60],
+            watermark: watermarkConfig,
+            content: [
+                // Encabezado
+                {
+                    columns: [
+                        { text: 'Reporte Ejecutivo de Riesgo Fiscal\nModelo TADS (Tax Analytics & Detection System)', style: 'header' },
+                        { text: `Folio: RS-${Date.now()}\nFecha: ${new Date().toLocaleDateString('es-MX')}`, alignment: 'right', style: 'subheader' }
+                    ]
+                },
+                // Línea divisoria
+                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 532, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
+                { text: '\n\n' },
                 
-                <div class="page-break-avoid" style="display: flex; justify-content: center; align-items: center; margin-bottom: 40px;">
-                    <div style="width: 250px; text-align: center;">
-                        <img src="${chartImg}" style="width: 100%; height: auto;">
-                        <div style="margin-top: -30px; font-size: 50px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
-                        <div style="font-size: 14px; font-weight: 800; color: ${dataReporte.color}; text-transform: uppercase; margin-top: 10px;">${dataReporte.status}</div>
-                    </div>
-                </div>
+                // Score y Gráfica
+                chartImg ? { image: chartImg, width: 180, alignment: 'center', margin: [0, 10, 0, -30] } : {},
+                { text: `${dataReporte.score}`, alignment: 'center', fontSize: 60, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] },
+                { text: `${dataReporte.status.toUpperCase()}`, alignment: 'center', fontSize: 14, bold: true, color: dataReporte.color, margin: [0, 5, 0, 30] },
 
-                <div class="page-break-avoid" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 30px;">
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Docs Auditados</span>
-                        <div style="font-size: 18px; font-weight: 900; color: #111827;">${dataReporte.totalFiles}</div>
-                    </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">EFOS 69-B</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.efos > 0 ? '#DC2626' : '#111827'};">${dataReporte.efos > 0 ? 'DETECTADO' : 'SEGURO'}</div>
-                    </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Error Aritmético</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.math > 0 ? '#D97706' : '#111827'};">${dataReporte.math}</div>
-                    </div>
-                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">REP Faltantes</span>
-                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.ppds > 0 ? '#DC2626' : '#111827'};">${dataReporte.ppds}</div>
-                    </div>
-                </div>
+                // KPIs Tabulares (Alineación perfecta)
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: ['*', '*', '*', '*'],
+                        body: [
+                            [
+                                { text: 'DOCS AUDITADOS', style: 'tableHeader' },
+                                { text: 'EFOS 69-B', style: 'tableHeader' },
+                                { text: 'ERROR ARITMÉTICO', style: 'tableHeader' },
+                                { text: 'REP FALTANTES', style: 'tableHeader' }
+                            ],
+                            [
+                                { text: `${dataReporte.totalFiles}`, style: 'tableData' },
+                                { text: `${dataReporte.efos > 0 ? 'DETECTADO' : 'SEGURO'}`, style: 'tableData', color: dataReporte.efos > 0 ? '#DC2626' : '#111827' },
+                                { text: `${dataReporte.math}`, style: 'tableData', color: dataReporte.math > 0 ? '#D97706' : '#111827' },
+                                { text: `${dataReporte.ppds}`, style: 'tableData', color: dataReporte.ppds > 0 ? '#DC2626' : '#111827' }
+                            ]
+                        ]
+                    },
+                    layout: 'lightHorizontalLines'
+                },
 
-                <div class="page-break-avoid" style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
-                    <span style="font-size: 12px; color: #991B1B; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Capital Total en Riesgo de Auditoría Activa</span>
-                    <div style="font-size: 32px; font-weight: 900; color: #DC2626; font-family: monospace; margin-top: 5px;">${dataReporte.amountRisk}</div>
-                </div>
+                // Tarjeta de Monto en Riesgo
+                {
+                    margin: [0, 30, 0, 30],
+                    table: {
+                        widths: ['*'],
+                        body: [
+                            [
+                                {
+                                    fillColor: '#FEF2F2',
+                                    border: [true, true, true, true],
+                                    borderColor: ['#FCA5A5', '#FCA5A5', '#FCA5A5', '#FCA5A5'],
+                                    text: [
+                                        { text: 'CAPITAL TOTAL EN RIESGO DE AUDITORÍA ACTIVA\n\n', fontSize: 11, bold: true, color: '#991B1B' },
+                                        { text: `${dataReporte.amountRisk}`, fontSize: 28, bold: true, color: '#DC2626' }
+                                    ],
+                                    alignment: 'center',
+                                    margin: [20, 20, 20, 20]
+                                }
+                            ]
+                        ]
+                    }
+                },
 
-                ${dataReporte.dictamen ? `
-                <div class="page-break-avoid" style="background: #111827; color: white; padding: 25px; border-radius: 12px;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #60A5FA; text-transform: uppercase; letter-spacing: 1px;">Dictamen Forense Estratégico (IA)</h3>
-                    <p style="font-size: 12px; line-height: 1.6; margin: 0; text-align: justify; color: #E5E7EB;">${dataReporte.dictamen}</p>
-                </div>` : ''}
-                
-                <div class="page-break-avoid" style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría de un especialista fiscal calificado.<br>
-                    Plataforma: AuditoriaXML.mx
-                </div>
-            </div>
-        `;
-
-        // EL SECRETO ANTI-CORTE: Anclamos momentáneamente el scroll de la página a 0
-        const prevScrollY = window.scrollY;
-        window.scrollTo(0, 0);
-
-        const opt = {
-            margin:       10,
-            filename:     `RiskScore_Auditoria_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0, scrollX: 0 },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+                // Dictamen de IA (Evita romperse a la mitad de la página)
+                dataReporte.dictamen ? {
+                    unbreakable: true, // Esto reemplaza al page-break-avoid
+                    table: {
+                        widths: ['*'],
+                        body: [
+                            [
+                                {
+                                    fillColor: '#111827',
+                                    text: [
+                                        { text: 'DICTAMEN FORENSE ESTRATÉGICO (IA)\n\n', fontSize: 12, bold: true, color: '#60A5FA' },
+                                        { text: `${dataReporte.dictamen}`, fontSize: 11, color: '#E5E7EB', alignment: 'justify', lineHeight: 1.4 }
+                                    ],
+                                    margin: [25, 25, 25, 25]
+                                }
+                            ]
+                        ]
+                    },
+                    layout: 'noBorders'
+                } : {}
+            ],
+            footer: function(currentPage, pageCount) {
+                return {
+                    text: `Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría fiscal calificada.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`,
+                    alignment: 'center',
+                    fontSize: 8,
+                    color: '#9CA3AF',
+                    margin: [0, 20, 0, 0]
+                };
+            },
+            styles: {
+                header: { fontSize: 16, bold: true, color: '#111827' },
+                subheader: { fontSize: 10, color: '#6B7280' },
+                tableExample: { margin: [0, 10, 0, 10] },
+                tableHeader: { bold: true, fontSize: 10, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
+                tableData: { bold: true, fontSize: 16, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
+            }
         };
 
+        // Generar y descargar (100% Vectorial, 0% Errores de Scroll)
         try {
-            await html2pdf().set(opt).from(renderContainer).toPdf().get('pdf').then(function(pdf) {
-                // Validación para la marca de agua PRO
-                if(localStorage.getItem('auditoria_pro') !== 'true') {
-                    const totalPages = pdf.internal.getNumberOfPages();
-                    pdf.setTextColor(220, 220, 220); // Gris súper claro sin opacidad problemática
-                    pdf.setFontSize(40);
-                    for (let i = 1; i <= totalPages; i++) {
-                        pdf.setPage(i);
-                        pdf.text('Generado por AuditorIA - Version Gratuita', 30, 150, { angle: -35 });
-                    }
-                }
-            }).save();
-        } catch (e) {
-            console.error(e);
-            alert("Error al procesar el PDF.");
+            pdfMake.createPdf(docDefinition).download(`RiskScore_Auditoria_${Date.now()}.pdf`);
+        } catch(e) {
+            console.error("Error PDFMake:", e);
+            alert("Error al generar el PDF.");
         } finally {
-            // Regresamos la pantalla a donde estaba el usuario y limpiamos la memoria
-            window.scrollTo(0, prevScrollY);
-            renderContainer.innerHTML = '';
             btn.innerHTML = oldText;
             btn.disabled = false;
         }
