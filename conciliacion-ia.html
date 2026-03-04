@@ -14,31 +14,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script src="despertador.js"></script>
+
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-        .header .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-        .header .logo-container img { width: 40px; height: 40px; object-fit: contain; }
-        .header .logo-text { font-weight: 800; font-size: 24px; letter-spacing: -0.5px; }
-        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-link:hover { color: #ffffff; }
-
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
-        .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 900px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(4, 1fr); padding: 20px; gap: 15px; text-align: left; }
-        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 8px 10px; text-decoration: none; display: block; font-size: 12px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
-        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 10px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
-
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
@@ -49,21 +32,36 @@
 
         .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 30px; }
         .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+        .btn-action:hover:not(:disabled) { opacity: 0.9; }
 
         .results-container { display: none; }
         
-        .table-wrapper { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 30px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .metric-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+        .metric-value { font-size: 32px; font-weight: 800; color: var(--text-main); }
+        
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 15px;}
+        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-restart:hover { background: #e2e8f0; }
+        .btn-export { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.2s; }
+        .btn-export:hover { opacity: 0.9; }
+        .btn-export-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.2s; }
+        .btn-export-excel:hover { opacity: 0.9; }
+
+        .table-wrapper { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 600px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        .amount { text-align: right; font-family: monospace; font-size: 14px; }
+        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; position: sticky; top: 0; box-shadow: 0 1px 0 var(--border); z-index: 10; }
+        tr:hover { background: #F9FAFB; }
+        .amount { text-align: right; font-family: monospace; font-size: 14px; font-weight: bold; }
         
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
         .badge.exact { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
         .badge.ia-high { background: #EFF6FF; color: #1E3A8A; border: 1px solid #BFDBFE; }
         .badge.ia-low { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
 
-        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Botones Compartir */
@@ -83,104 +81,49 @@
         .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
         .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
 
-        .site-footer { text-align: left; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 13px; margin-top: 60px; border-top: 1px solid #1E293B; }
-        .site-footer a { color: #CBD5E1; text-decoration: none; transition: 0.2s; display: block; margin-bottom: 10px; }
-        .site-footer a:hover { color: #ffffff; }
-
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; }
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
 
         @media (max-width: 768px) {
-            .header { padding: 15px 20px; justify-content: center; text-align: center; }
-            .nav-right { display: none; }
             .grid-2 { grid-template-columns: 1fr; }
-            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
+            .metrics-grid { grid-template-columns: 1fr; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar button { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <a href="index.html" class="logo-container">
-        <img src="candado.png" alt="AuditorIA Logo">
-        <span class="logo-text">AuditorIA</span>
-    </a>
-    <div class="nav-right">
-        <a href="como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
-        <a href="index.html" class="nav-link">Auditoría Masiva</a>
-        <div class="dropdown">
-            <div class="dropdown-toggle">Suite de Herramientas ▾</div>
-            <div class="dropdown-content">
-                <div class="dropdown-column">
-                    <div class="menu-category">Auditoría y Riesgo</div>
-                    <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
-                    <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
-                    <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
-                    <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
-                    <a href="calculadora-recargos.html">Calculadora de Recargos</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Materialidad y Defensa</div>
-                    <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-                    <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
-                    <a href="auditoria-activos.html">Auditoría Visual Activos</a>
-                    <a href="precios-aduana.html">Riesgo Aduanero</a>
-                    <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
-                    <a href="defensa-legal.html">Generador Defensa Legal</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Inteligencia y Bancos</div>
-                    <a href="analisis-proveedores.html">Análisis Proveedores</a>
-                    <a href="proyector-iva.html">Proyector IVA Mensual</a>
-                    <a href="dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="conversor-bancario.html">Conversor PDF a CSV</a>
-                    <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Operación Diaria</div>
-                    <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
-                    <a href="visor-xml.html">Visor y Decodificador XML</a>
-                    <a href="generador-polizas.html">Generador de Pólizas (Layout)</a>
-                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="buscador-conceptos.html">Buscador Forense XML</a>
-                    <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+<script src="navbar.js"></script>
 
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para conciliar facturas y movimientos bancarios masivamente sin restricciones.</p>
+        <p class="modal-text">Has agotado tus conciliaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para automatizar el cierre contable con IA sin restricciones y descargar matrices exportables.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">IA AGENTICA</span>
+        <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">IA AGENTICA DE CONCILIACIÓN</span>
         <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Conciliador Bancario IA (Fuzzy Matching)</h1>
-        <p style="color: var(--text-muted);">Asocia cobros y pagos bancarios con conceptos ambiguos a tus facturas XML usando análisis semántico.</p>
+        <p style="color: var(--text-muted);">Automatiza el cierre de mes. Nuestra IA asocia transferencias bancarias ambiguas con tus facturas XML usando algoritmos de análisis semántico.</p>
     </div>
 
     <div class="grid-2" id="uploadZones">
         <div class="upload-section" id="dropCsv" onclick="document.getElementById('csvInput').click()">
-            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <p style="font-weight: 600; margin: 0; font-size: 18px;">1. Estado de Cuenta (CSV)</p>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="csvText">Debe contener: Fecha, Concepto, Monto</p>
+            <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <p style="font-weight: 700; margin: 0; font-size: 18px;">1. Estado de Cuenta (CSV)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="csvText">Estructura requerida: Fecha, Concepto, Monto</p>
             <input type="file" id="csvInput" accept=".csv" style="display: none;">
         </div>
 
         <div class="upload-section" id="dropXml" onclick="document.getElementById('xmlInput').click()">
-            <svg width="40" height="40" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-            <p style="font-weight: 600; margin: 0; font-size: 18px;" id="xmlText">2. Repositorio XMLs del mes</p>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Arrastra todas las facturas</p>
+            <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <p style="font-weight: 700; margin: 0; font-size: 18px;" id="xmlText">2. Facturas del Mes (XML)</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Arrastra todo el repositorio de XMLs emitidos/recibidos</p>
             <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
         </div>
     </div>
@@ -188,33 +131,53 @@
     <div class="trust-badges" id="badgesSection" style="margin-bottom: 30px;">
         <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
         <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Doble Validación IA</div>
+        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Doble Cerebro IA</div>
     </div>
 
-    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarConciliacion()">INICIAR CONCILIACIÓN BANCARIA</button>
+    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarConciliacion()">EJECUTAR CONCILIACIÓN SEMÁNTICA</button>
 
     <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
         <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Cerebro 1: Cruce determinista...</p>
-        <p style="font-size: 13px; color: var(--text-muted);" id="loadingSubtext">Procesando montos exactos.</p>
+        <p style="font-weight: 600; color: var(--brand);">Cerebro 1: Cruce determinista activado...</p>
+        <p style="font-size: 13px; color: var(--text-muted);" id="loadingSubtext">Enlazando montos exactos y metadatos.</p>
     </div>
 
     <div class="results-container" id="results">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
-            <button onclick="window.location.reload()" style="background: var(--bg-primary); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Conciliar Otro Mes</button>
-            <button onclick="descargarConciliacionPDF()" style="background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Descargar Matriz PDF</button>
+        <div class="toolbar">
+            <div style="font-weight: 800; font-size: 18px; color: var(--text-main);">Resultados de Conciliación</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-export-excel" onclick="descargarCSV_IA()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Matriz a Excel
+                </button>
+                <button onclick="descargarConciliacionPDF()" class="btn-export">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Reporte PDF
+                </button>
+                <button onclick="window.location.reload()" class="btn-restart">Limpiar</button>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card" style="border-bottom: 4px solid var(--success);">
+                <div class="metric-title">Monto Conciliado</div>
+                <div class="metric-value" style="color: var(--success);" id="kpiConciliado">$0.00</div>
+            </div>
+            <div class="metric-card" style="border-bottom: 4px solid var(--danger);">
+                <div class="metric-title">Monto Huérfano (No Asociado)</div>
+                <div class="metric-value" style="color: var(--danger);" id="kpiHuerfano">$0.00</div>
+            </div>
         </div>
 
         <div class="table-wrapper">
-            <h3 style="padding: 15px 20px; margin: 0; border-bottom: 1px solid var(--border);">Matriz de Conciliación Bancaria</h3>
             <table id="conciliacionTable">
                 <thead>
                     <tr>
-                        <th>Concepto Bancario</th>
+                        <th>Concepto de Banco</th>
                         <th class="amount">Monto Banco</th>
-                        <th>Factura Asociada (UUID/RFC)</th>
-                        <th>Estado / Confianza</th>
-                        <th>Razonamiento IA</th>
+                        <th>Factura Asociada (IA)</th>
+                        <th>Nivel de Confianza</th>
+                        <th>Razonamiento Semántico</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -233,102 +196,9 @@
 
 <div id="hiddenPdfRender"></div>
 
-<footer class="site-footer">
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px;">
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="index.html">Auditoría Masiva XML</a>
-            <a href="despachos-contables.html">Para Despachos</a>
-            <a href="empresas.html">Para Empresas</a>
-            
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px; margin-top: 30px;">Legal y Contacto</h4>
-            <a href="privacidad.html">Aviso de Privacidad</a>
-            <a href="terminos.html">Términos de Servicio</a>
-            <a href="mailto:contacto@auditoriaxml.mx" style="color: #3B82F6; font-weight: 600;">contacto@auditoriaxml.mx</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Riesgo</h4>
-            <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
-            <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
-            <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-            <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
-            <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
-            <a href="calculadora-recargos.html">Calculadora Recargos</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Materialidad y Defensa</h4>
-            <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-            <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
-            <a href="auditoria-activos.html">Auditoría Visual Activos</a>
-            <a href="precios-aduana.html">Riesgo Aduanero</a>
-            <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
-            <a href="defensa-legal.html">Generador Defensa Legal</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Inteligencia y Bancos</h4>
-            <a href="analisis-proveedores.html">Análisis Proveedores</a>
-            <a href="proyector-iva.html">Proyector IVA Mensual</a>
-            <a href="dashboard-xml.html">Dashboard Financiero</a>
-            <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-            <a href="conversor-bancario.html">Conversor PDF a CSV</a>
-            <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación Diaria</h4>
-            <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
-            <a href="visor-xml.html">Visor y Decodificador</a>
-            <a href="generador-polizas.html">Generador de Pólizas</a>
-            <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-            <a href="buscador-conceptos.html">Buscador Forense XML</a>
-            <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px; margin-top: 40px; color: #9CA3AF; text-align: center;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
-    </div>
-</footer>
-
-<style>
-    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
-    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-    .advisor-btn:hover { transform: scale(1.05); }
-    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
-    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
-    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
-    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
-    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
-    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
-    .advisor-input:focus { border-color: var(--brand, #2563EB); }
-    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
-    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
-</style>
-<div id="advisorWidget" class="advisor-widget">
-    <button id="advisorBtn" class="advisor-btn">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-        Asesor Fiscal IA
-    </button>
-    <div id="advisorChat" class="advisor-chat">
-        <div class="advisor-header">
-            <span>Paula - AuditorIA Advisor</span>
-            <button id="closeAdvisor" class="advisor-close">×</button>
-        </div>
-        <div id="advisorBody" class="advisor-body">
-            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
-            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
-        </div>
-        <div class="advisor-footer">
-            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
-            <button id="sendAdvisor" class="advisor-send">Enviar</button>
-        </div>
-    </div>
-</div>
+<script src="footer.js"></script>
 
 <script>
-    // CUOTA FREEMIUM
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -340,6 +210,8 @@
     let bancoData = [];
     let xmlData = [];
     let exportHTMLRows = "";
+    let csvExportData = [];
+    let dataReporte = { conciliado: 0, huerfano: 0 };
 
     const inputCsv = document.getElementById('csvInput');
     const inputXml = document.getElementById('xmlInput');
@@ -466,6 +338,8 @@
                                     confianza: c.nivel_confianza,
                                     razonamiento: c.razonamiento
                                 });
+                                // Quitar de huérfanos ya que fue asociado
+                                bancoHuerfanos = bancoHuerfanos.filter(x => x.id !== c.id_banco);
                             }
                         });
                     }
@@ -473,10 +347,10 @@
             } catch (e) {}
         }
 
-        renderResultados([...conciliadosExactos, ...conciliadosFuzzy]);
+        renderResultados([...conciliadosExactos, ...conciliadosFuzzy], bancoHuerfanos);
     }
 
-    function renderResultados(resultados) {
+    function renderResultados(resultados, huerfanos) {
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('results').style.display = 'block';
         document.getElementById('shareContainer').style.display = 'block';
@@ -484,17 +358,23 @@
         const tbody = document.querySelector('#conciliacionTable tbody');
         tbody.innerHTML = '';
         exportHTMLRows = '';
+        csvExportData = [];
+
+        let totalConciliado = 0;
+        let totalHuerfano = 0;
 
         resultados.forEach(r => {
+            totalConciliado += Math.abs(r.banco.monto);
+
             let badgeClass = r.estado;
             let badgeText = r.estado === 'exact' ? 'MATEMÁTICA EXACTA' : `IA MATCH (${r.confianza}%)`;
             let colorPDF = r.estado === 'exact' ? '#065F46' : (r.estado === 'ia-high' ? '#1E3A8A' : '#92400E');
             if (r.estado === 'ia-low') badgeText += " ⚠️ REVISAR";
 
             const tr = `
-                <tr>
+                <tr style="page-break-inside: avoid;">
                     <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #E5E7EB; color: #111827;">${r.banco.concepto.substring(0,40)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace;">${formatMoney(r.banco.monto)}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace; font-weight: bold; color: var(--success);">${formatMoney(r.banco.monto)}</td>
                     <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #E5E7EB;">
                         <strong style="color: #111827;">${r.xml.nombreEmisor.substring(0,25)}</strong><br>
                         <span style="font-family:monospace; color: #4B5563;">${r.xml.uuid.substring(0,18)}...</span>
@@ -505,7 +385,44 @@
             `;
             tbody.innerHTML += tr;
             exportHTMLRows += tr;
+
+            csvExportData.push(`"${r.banco.concepto}",${Math.abs(r.banco.monto).toFixed(2)},"${r.xml.nombreEmisor}",${r.xml.uuid},${r.estado},"${r.razonamiento}"`);
         });
+
+        // Agregar huérfanos a la tabla
+        huerfanos.forEach(h => {
+            totalHuerfano += Math.abs(h.monto);
+            const tr = `
+                <tr style="background: #FEF2F2; page-break-inside: avoid;">
+                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #FCA5A5; color: #991B1B;">${h.concepto.substring(0,40)}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #FCA5A5; text-align: right; font-family: monospace; font-weight: bold; color: #991B1B;">${formatMoney(h.monto)}</td>
+                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #FCA5A5; color: #991B1B;">SIN FACTURA ASOCIADA</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #FCA5A5;"><span class="badge" style="color:#991B1B; font-weight:bold;">HUÉRFANO</span></td>
+                    <td style="font-size: 10px; padding: 10px; border-bottom: 1px solid #FCA5A5; color: #991B1B;">Movimiento bancario sin soporte fiscal.</td>
+                </tr>
+            `;
+            tbody.innerHTML += tr;
+            exportHTMLRows += tr;
+
+            csvExportData.push(`"${h.concepto}",${Math.abs(h.monto).toFixed(2)},"SIN FACTURA","N/A","HUERFANO","Sin soporte fiscal"`);
+        });
+
+        // Actualizar KPIs
+        document.getElementById('kpiConciliado').innerText = formatMoney(totalConciliado);
+        document.getElementById('kpiHuerfano').innerText = formatMoney(totalHuerfano);
+        dataReporte.conciliado = formatMoney(totalConciliado);
+        dataReporte.huerfano = formatMoney(totalHuerfano);
+    }
+
+    function descargarCSV_IA() {
+        if (csvExportData.length === 0) return;
+        const headers = ['Concepto Bancario', 'Monto', 'Emisor/Cliente XML', 'UUID Asociado', 'Estatus Cruce IA', 'Razonamiento Forense'];
+        const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + csvExportData.join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Matriz_Conciliacion_IA_${Date.now()}.csv`);
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
     function descargarConciliacionPDF() {
@@ -513,12 +430,17 @@
         const renderContainer = document.getElementById('hiddenPdfRender');
         
         renderContainer.innerHTML = `
-            <div style="width: 1000px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 60px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+            <div style="width: 1050px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
+                <div style="position: absolute; top: 40%; left: 15%; font-size: 60px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
                 <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1;">
                     <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Matriz de Conciliación Bancaria IA</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Fuzzy Matching & Análisis Semántico</p>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Cruce Determinista y Fuzzy Matching (Análisis Semántico)</p>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div style="text-align: center;"><strong style="font-size: 24px; display: block; color: #059669; font-family: monospace;">${dataReporte.conciliado}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Monto Validado (Asociado a XML)</span></div>
+                    <div style="text-align: center;"><strong style="font-size: 24px; display: block; color: #DC2626; font-family: monospace;">${dataReporte.huerfano}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Monto Huérfano (Riesgo / Sin XML)</span></div>
                 </div>
                 
                 <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 30px; position: relative; z-index: 1;">
@@ -535,14 +457,14 @@
                 </table>
                 
                 <div style="margin-top: 50px; font-size: 10px; color: #6B7280; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace;">
-                    Plataforma: AuditoriaXML.mx | El análisis semántico IA puede requerir supervisión contable final.
+                    Plataforma: AuditoriaXML.mx | El análisis semántico IA puede requerir supervisión contable final sobre operaciones ambiguas.
                 </div>
             </div>
         `;
 
         const opt = {
             margin:       10,
-            filename:     `Conciliacion_Bancaria_${Date.now()}.pdf`,
+            filename:     `Conciliacion_Bancaria_IA_${Date.now()}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'mm', format: 'letter', orientation: 'landscape' }
@@ -550,59 +472,6 @@
 
         html2pdf().set(opt).from(renderContainer.firstElementChild).save();
     }
-
-    document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', e => {}, {passive: true}); });
-
-    // Chat General
-    const advisorBtn = document.getElementById('advisorBtn');
-    const advisorChat = document.getElementById('advisorChat');
-    const closeAdvisor = document.getElementById('closeAdvisor');
-    const sendAdvisor = document.getElementById('sendAdvisor');
-    const advisorInput = document.getElementById('advisorInput');
-    const advisorBody = document.getElementById('advisorBody');
-    const typingIndicator = document.getElementById('typingIndicator');
-    let chatHistory = [];
-
-    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
-    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
-
-    function renderMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
-        div.innerText = text;
-        advisorBody.insertBefore(div, typingIndicator);
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-    }
-
-    async function handleSend() {
-        const text = advisorInput.value.trim();
-        if (!text) return;
-        renderMessage(text, 'user');
-        advisorInput.value = '';
-        typingIndicator.style.display = 'block';
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-
-        const currentHistory = [...chatHistory];
-        chatHistory.push({ rol: "usuario", texto: text });
-
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mensaje: text, historial: currentHistory })
-            });
-            if (!res.ok) throw new Error('Error API');
-            const data = await res.json();
-            renderMessage(data.respuesta, 'bot');
-            chatHistory.push({ rol: "modelo", texto: data.respuesta });
-        } catch (err) {
-            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
-            chatHistory.pop();
-        } finally {
-            typingIndicator.style.display = 'none';
-        }
-    }
-    sendAdvisor.onclick = handleSend;
-    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
