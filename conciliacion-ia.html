@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conciliador Bancario IA (Fuzzy Matching) | AuditorIA</title>
     <meta name="description" content="Automatiza la conciliación bancaria. Nuestra IA agentica asocia pagos ambiguos con tus facturas XML mediante análisis semántico.">
-    <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://auditoriaxml.mx/conciliacion-ia.html" />
-    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
+    <link rel="apple-touch-icon" href="candado.png">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
     <style>
@@ -16,7 +20,9 @@
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
         .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-        .header a.logo { color: white; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
+        .header .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .header .logo-container img { width: 40px; height: 40px; object-fit: contain; }
+        .header .logo-text { font-weight: 800; font-size: 24px; letter-spacing: -0.5px; }
         .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
         .nav-link:hover { color: #ffffff; }
@@ -24,19 +30,19 @@
         .dropdown { position: relative; display: inline-block; }
         .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
         .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 900px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(4, 1fr); padding: 20px; gap: 15px; text-align: left; }
         .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
         .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
+        .dropdown-content a { color: var(--text-main); padding: 8px 10px; text-decoration: none; display: block; font-size: 12px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
         .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
         .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+        .menu-category { padding: 10px 10px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
 
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .upload-section:hover { border-color: var(--brand); background: rgba(37, 99, 235, 0.05); }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
+        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
 
         .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 15px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
         .trust-badges div { display: flex; align-items: center; gap: 4px; }
@@ -53,20 +59,39 @@
         .amount { text-align: right; font-family: monospace; font-size: 14px; }
         
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .badge.exact { background: #ECFDF5; color: #065F46; }
+        .badge.exact { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
         .badge.ia-high { background: #EFF6FF; color: #1E3A8A; border: 1px solid #BFDBFE; }
-        .badge.ia-low { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+        .badge.ia-low { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
 
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
-        .site-footer a { transition: color 0.2s; }
-        .site-footer a:hover { color: #ffffff !important; }
+        /* Botones Compartir */
+        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
+        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
+        .social-btn:hover { opacity: 0.9; }
+        .btn-x { background-color: #000000; }
+        .btn-in { background-color: #0A66C2; }
+        .btn-fb { background-color: #1877F2; }
+        .btn-wa { background-color: #25D366; }
+
+        /* Paywall Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
+        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
+        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
+        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
+
+        .site-footer { text-align: left; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 13px; margin-top: 60px; border-top: 1px solid #1E293B; }
+        .site-footer a { color: #CBD5E1; text-decoration: none; transition: 0.2s; display: block; margin-bottom: 10px; }
+        .site-footer a:hover { color: #ffffff; }
+
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; }
 
         @media (max-width: 768px) {
             .header { padding: 15px 20px; justify-content: center; text-align: center; }
-            .nav-right { justify-content: center; width: 100%; }
+            .nav-right { display: none; }
             .grid-2 { grid-template-columns: 1fr; }
             .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
             .dropdown:hover .dropdown-content { transform: none; }
@@ -76,49 +101,69 @@
 <body>
 
 <header class="header">
-    <a href="/" class="logo">AuditorIA</a>
+    <a href="index.html" class="logo-container">
+        <img src="candado.png" alt="AuditorIA Logo">
+        <span class="logo-text">AuditorIA</span>
+    </a>
     <div class="nav-right">
-        <a href="/como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
-        <a href="/" class="nav-link">Auditoría Masiva</a>
+        <a href="como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
+        <a href="index.html" class="nav-link">Auditoría Masiva</a>
         <div class="dropdown">
             <div class="dropdown-toggle">Suite de Herramientas ▾</div>
             <div class="dropdown-content">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría y Riesgo</div>
-                    <a href="/">Auditoría Masiva (Art. 30-B)</a>
-                    <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
-                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
-                    <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
+                    <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
+                    <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
+                    <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
+                    <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
+                    <a href="calculadora-recargos.html">Calculadora de Recargos</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Materialidad y Defensa</div>
-                    <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
-                    <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
-                    <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
-                    <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
+                    <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
+                    <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
+                    <a href="auditoria-activos.html">Auditoría Visual Activos</a>
+                    <a href="precios-aduana.html">Riesgo Aduanero</a>
+                    <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
+                    <a href="defensa-legal.html">Generador Defensa Legal</a>
                 </div>
                 <div class="dropdown-column">
-                    <div class="menu-category">Operación Inteligente</div>
-                    <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
-                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="/visor-xml.html">Visor y Decodificador XML</a>
-                    <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
-                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
-                    <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
-                    <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
+                    <div class="menu-category">Inteligencia y Bancos</div>
+                    <a href="analisis-proveedores.html">Análisis Proveedores</a>
+                    <a href="proyector-iva.html">Proyector IVA Mensual</a>
+                    <a href="dashboard-xml.html">Dashboard Financiero</a>
+                    <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
+                    <a href="conversor-bancario.html">Conversor PDF a CSV</a>
+                    <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
+                </div>
+                <div class="dropdown-column">
+                    <div class="menu-category">Operación Diaria</div>
+                    <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
+                    <a href="visor-xml.html">Visor y Decodificador XML</a>
+                    <a href="generador-polizas.html">Generador de Pólizas (Layout)</a>
+                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
+                    <a href="buscador-conceptos.html">Buscador Forense XML</a>
+                    <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
+<div class="modal-overlay" id="paywallModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
+        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
+        <p class="modal-text">Has agotado tus evaluaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para conciliar facturas y movimientos bancarios masivamente sin restricciones.</p>
+        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
+    </div>
+</div>
+
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;">
+    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
         <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">IA AGENTICA</span>
         <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Conciliador Bancario IA (Fuzzy Matching)</h1>
         <p style="color: var(--text-muted);">Asocia cobros y pagos bancarios con conceptos ambiguos a tus facturas XML usando análisis semántico.</p>
@@ -140,13 +185,13 @@
         </div>
     </div>
     
-    <div class="trust-badges" style="margin-bottom: 30px;">
+    <div class="trust-badges" id="badgesSection" style="margin-bottom: 30px;">
         <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Doble Validación Determinista/Probabilística</div>
+        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
+        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Doble Validación IA</div>
     </div>
 
-    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarConciliacion()">INICIAR CONCILIACIÓN</button>
+    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarConciliacion()">INICIAR CONCILIACIÓN BANCARIA</button>
 
     <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
         <div class="spinner"></div>
@@ -155,8 +200,13 @@
     </div>
 
     <div class="results-container" id="results">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
+            <button onclick="window.location.reload()" style="background: var(--bg-primary); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Conciliar Otro Mes</button>
+            <button onclick="descargarConciliacionPDF()" style="background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Descargar Matriz PDF</button>
+        </div>
+
         <div class="table-wrapper">
-            <h3 style="padding: 15px 20px; margin: 0; border-bottom: 1px solid var(--border);">Matriz de Conciliación</h3>
+            <h3 style="padding: 15px 20px; margin: 0; border-bottom: 1px solid var(--border);">Matriz de Conciliación Bancaria</h3>
             <table id="conciliacionTable">
                 <thead>
                     <tr>
@@ -170,41 +220,70 @@
                 <tbody></tbody>
             </table>
         </div>
+
+        <div class="share-container" id="shareContainer" style="display: none;">
+            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
+            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20automatizar%20mi%20conciliación%20bancaria%20con%20inteligencia%20artificial%20usando%20AuditorIA:&url=https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-x">X</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-fb">Facebook</a>
+            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20automatizar%20mi%20conciliación%20bancaria%20con%20inteligencia%20artificial%20usando%20AuditorIA:%20https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        </div>
     </div>
 </div>
 
+<div id="hiddenPdfRender"></div>
+
 <footer class="site-footer">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px;">
         <div>
             <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
-            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
-            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
+            <a href="index.html">Auditoría Masiva XML</a>
+            <a href="despachos-contables.html">Para Despachos</a>
+            <a href="empresas.html">Para Empresas</a>
+            
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px; margin-top: 30px;">Legal y Contacto</h4>
+            <a href="privacidad.html">Aviso de Privacidad</a>
+            <a href="terminos.html">Términos de Servicio</a>
+            <a href="mailto:contacto@auditoriaxml.mx" style="color: #3B82F6; font-weight: 600;">contacto@auditoriaxml.mx</a>
         </div>
         <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
-            <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
-            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
-            <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
-            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
-            <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Riesgo</h4>
+            <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
+            <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
+            <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
+            <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
+            <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
+            <a href="calculadora-recargos.html">Calculadora Recargos</a>
         </div>
         <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
-            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
-            <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
-            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
-            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
-            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Materialidad y Defensa</h4>
+            <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
+            <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
+            <a href="auditoria-activos.html">Auditoría Visual Activos</a>
+            <a href="precios-aduana.html">Riesgo Aduanero</a>
+            <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
+            <a href="defensa-legal.html">Generador Defensa Legal</a>
         </div>
         <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
-            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
-            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Inteligencia y Bancos</h4>
+            <a href="analisis-proveedores.html">Análisis Proveedores</a>
+            <a href="proyector-iva.html">Proyector IVA Mensual</a>
+            <a href="dashboard-xml.html">Dashboard Financiero</a>
+            <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
+            <a href="conversor-bancario.html">Conversor PDF a CSV</a>
+            <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
+        </div>
+        <div>
+            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación Diaria</h4>
+            <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
+            <a href="visor-xml.html">Visor y Decodificador</a>
+            <a href="generador-polizas.html">Generador de Pólizas</a>
+            <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
+            <a href="buscador-conceptos.html">Buscador Forense XML</a>
+            <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
         </div>
     </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
+    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px; margin-top: 40px; color: #9CA3AF; text-align: center;">
         <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
         <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
     </div>
@@ -249,40 +328,65 @@
 </div>
 
 <script>
+    // CUOTA FREEMIUM
+    function checkQuota() {
+        let usos = localStorage.getItem('auditoria_usos');
+        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
+        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
+        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
+        return true;
+    }
+
     let bancoData = [];
     let xmlData = [];
+    let exportHTMLRows = "";
 
     const inputCsv = document.getElementById('csvInput');
     const inputXml = document.getElementById('xmlInput');
     const btnEjecutar = document.getElementById('btnEjecutar');
 
-    inputCsv.addEventListener('change', e => { 
-        const file = e.target.files[0];
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
+
+    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropCsv').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(37, 99, 235, 0.05)"; }));
+    ['dragleave', 'drop'].forEach(e => document.getElementById('dropCsv').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
+    document.getElementById('dropCsv').addEventListener('drop', e => processCsv(e.dataTransfer.files[0]));
+    inputCsv.addEventListener('change', e => processCsv(e.target.files[0]));
+
+    function processCsv(file) {
+        if(!file) return;
         document.getElementById('csvText').innerText = file.name;
+        document.getElementById('dropCsv').style.borderColor = "var(--success)";
+        document.getElementById('dropCsv').style.background = "#ECFDF5";
         checkReady();
         const reader = new FileReader();
         reader.onload = function(e) {
             const lines = e.target.result.split('\n');
             bancoData = lines.slice(1).filter(l => l.trim() !== '').map((line, index) => {
                 const cols = line.split(',');
-                // Estructura esperada genérica: Fecha, Concepto, Monto
                 return { id: `BNK-${index}`, concepto: cols[1] || 'Sin concepto', monto: parseFloat(cols[2] || 0) };
             });
         };
         reader.readAsText(file);
-    });
+    }
 
-    inputXml.addEventListener('change', e => { 
-        document.getElementById('xmlText').innerText = `${e.target.files.length} XMLs cargados`;
+    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropXml').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(37, 99, 235, 0.05)"; }));
+    ['dragleave', 'drop'].forEach(e => document.getElementById('dropXml').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
+    document.getElementById('dropXml').addEventListener('drop', e => processXmls(e.dataTransfer.files));
+    inputXml.addEventListener('change', e => processXmls(e.target.files));
+
+    function processXmls(files) {
+        if(files.length === 0) return;
+        document.getElementById('xmlText').innerText = `${files.length} XMLs cargados`;
+        document.getElementById('dropXml').style.borderColor = "var(--success)";
+        document.getElementById('dropXml').style.background = "#ECFDF5";
         checkReady();
         xmlData = [];
-        Array.from(e.target.files).forEach(file => {
+        Array.from(files).forEach(file => {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
                 const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
                 const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
-                const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
                 const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
                 
                 if(cfdi && timbre) {
@@ -290,23 +394,24 @@
                         uuid: timbre.getAttribute('UUID'),
                         rfcEmisor: emisor ? emisor.getAttribute('Rfc') : '',
                         nombreEmisor: emisor ? emisor.getAttribute('Nombre') : '',
-                        rfcReceptor: receptor ? receptor.getAttribute('Rfc') : '',
                         total: parseFloat(cfdi.getAttribute('Total') || 0)
                     });
                 }
             };
             reader.readAsText(file);
         });
-    });
-
-    function checkReady() {
-        if(inputCsv.files.length > 0 && inputXml.files.length > 0) btnEjecutar.disabled = false;
     }
 
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+    function checkReady() {
+        if(bancoData.length > 0 && xmlData.length > 0) btnEjecutar.disabled = false;
+    }
 
     async function ejecutarConciliacion() {
+        if (!checkQuota()) return;
+
+        document.getElementById('headerSection').style.display = 'none';
         document.getElementById('uploadZones').style.display = 'none';
+        document.getElementById('badgesSection').style.display = 'none';
         btnEjecutar.style.display = 'none';
         document.getElementById('loadingState').style.display = 'block';
         
@@ -337,7 +442,7 @@
 
         if (bancoHuerfanos.length > 0 && xmlHuerfanos.length > 0) {
             try {
-                // Preparar payload reducido para ahorrar tokens
+                // Reducción de payload
                 const payloadBancos = bancoHuerfanos.map(b => ({id: b.id, concepto: b.concepto, monto: Math.abs(b.monto)}));
                 const payloadXmls = xmlHuerfanos.map(x => ({uuid: x.uuid, nombre: x.nombreEmisor, total: x.total}));
 
@@ -347,26 +452,25 @@
                     body: JSON.stringify({ bancos: payloadBancos, facturas: payloadXmls })
                 });
                 
-                const dataIA = await res.json();
-                
-                if(dataIA.conciliados) {
-                    dataIA.conciliados.forEach(c => {
-                        const bOrigin = bancoHuerfanos.find(x => x.id === c.id_banco);
-                        const xOrigin = xmlHuerfanos.find(x => x.uuid === c.uuid_factura);
-                        if(bOrigin && xOrigin) {
-                            conciliadosFuzzy.push({
-                                banco: bOrigin,
-                                xml: xOrigin,
-                                estado: c.nivel_confianza >= 95 ? 'ia-high' : 'ia-low',
-                                confianza: c.nivel_confianza,
-                                razonamiento: c.razonamiento
-                            });
-                        }
-                    });
+                if (res.ok) {
+                    const dataIA = await res.json();
+                    if(dataIA.conciliados) {
+                        dataIA.conciliados.forEach(c => {
+                            const bOrigin = bancoHuerfanos.find(x => x.id === c.id_banco);
+                            const xOrigin = xmlHuerfanos.find(x => x.uuid === c.uuid_factura);
+                            if(bOrigin && xOrigin) {
+                                conciliadosFuzzy.push({
+                                    banco: bOrigin,
+                                    xml: xOrigin,
+                                    estado: c.nivel_confianza >= 95 ? 'ia-high' : 'ia-low',
+                                    confianza: c.nivel_confianza,
+                                    razonamiento: c.razonamiento
+                                });
+                            }
+                        });
+                    }
                 }
-            } catch (e) {
-                console.error("Error en IA Fuzzy:", e);
-            }
+            } catch (e) {}
         }
 
         renderResultados([...conciliadosExactos, ...conciliadosFuzzy]);
@@ -375,29 +479,76 @@
     function renderResultados(resultados) {
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('results').style.display = 'block';
+        document.getElementById('shareContainer').style.display = 'block';
 
         const tbody = document.querySelector('#conciliacionTable tbody');
         tbody.innerHTML = '';
+        exportHTMLRows = '';
 
         resultados.forEach(r => {
-            const tr = document.createElement('tr');
-            
             let badgeClass = r.estado;
             let badgeText = r.estado === 'exact' ? 'MATEMÁTICA EXACTA' : `IA MATCH (${r.confianza}%)`;
+            let colorPDF = r.estado === 'exact' ? '#065F46' : (r.estado === 'ia-high' ? '#1E3A8A' : '#92400E');
             if (r.estado === 'ia-low') badgeText += " ⚠️ REVISAR";
 
-            tr.innerHTML = `
-                <td style="font-size: 11px;">${r.banco.concepto.substring(0,40)}</td>
-                <td class="amount">${formatMoney(r.banco.monto)}</td>
-                <td style="font-size: 11px;">
-                    <strong>${r.xml.nombreEmisor.substring(0,25)}</strong><br>
-                    <span style="font-family:monospace; color:var(--text-muted);">${r.xml.uuid.substring(0,18)}...</span>
-                </td>
-                <td><span class="badge ${badgeClass}">${badgeText}</span></td>
-                <td style="font-size: 11px; color: var(--text-muted); white-space: normal;">${r.razonamiento}</td>
+            const tr = `
+                <tr>
+                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #E5E7EB; color: #111827;">${r.banco.concepto.substring(0,40)}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace;">${formatMoney(r.banco.monto)}</td>
+                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #E5E7EB;">
+                        <strong style="color: #111827;">${r.xml.nombreEmisor.substring(0,25)}</strong><br>
+                        <span style="font-family:monospace; color: #4B5563;">${r.xml.uuid.substring(0,18)}...</span>
+                    </td>
+                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB;"><span class="badge ${badgeClass}" style="color:${colorPDF}; font-weight:bold;">${badgeText}</span></td>
+                    <td style="font-size: 10px; padding: 10px; border-bottom: 1px solid #E5E7EB; color: #4B5563;">${r.razonamiento}</td>
+                </tr>
             `;
-            tbody.appendChild(tr);
+            tbody.innerHTML += tr;
+            exportHTMLRows += tr;
         });
+    }
+
+    function descargarConciliacionPDF() {
+        if (!exportHTMLRows) return;
+        const renderContainer = document.getElementById('hiddenPdfRender');
+        
+        renderContainer.innerHTML = `
+            <div style="width: 1000px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
+                <div style="position: absolute; top: 40%; left: 10%; font-size: 60px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
+                
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1;">
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Matriz de Conciliación Bancaria IA</h1>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Fuzzy Matching & Análisis Semántico</p>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <thead style="background: #111827; color: white;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Concepto Bancario</th>
+                            <th style="padding: 10px; text-align: right; text-transform: uppercase;">Monto Banco</th>
+                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Factura Asociada</th>
+                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Confianza IA</th>
+                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Razonamiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>${exportHTMLRows}</tbody>
+                </table>
+                
+                <div style="margin-top: 50px; font-size: 10px; color: #6B7280; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace;">
+                    Plataforma: AuditoriaXML.mx | El análisis semántico IA puede requerir supervisión contable final.
+                </div>
+            </div>
+        `;
+
+        const opt = {
+            margin:       10,
+            filename:     `Conciliacion_Bancaria_${Date.now()}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'landscape' }
+        };
+
+        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
     }
 
     document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', e => {}, {passive: true}); });
@@ -436,17 +587,13 @@
 
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ mensaje: text, historial: currentHistory })
             });
-            
             if (!res.ok) throw new Error('Error API');
-            
             const data = await res.json();
             renderMessage(data.respuesta, 'bot');
             chatHistory.push({ rol: "modelo", texto: data.respuesta });
-            
         } catch (err) {
             renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
             chatHistory.pop();
