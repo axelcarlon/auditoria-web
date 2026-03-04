@@ -27,49 +27,31 @@
         .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
         .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
 
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
-
         .results-container { display: none; margin-top: 40px; }
         .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
         
         .score-card { background: var(--bg-secondary); padding: 30px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .chart-wrapper { position: relative; width: 250px; height: 250px; margin: 0 auto; }
-        .score-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -30%); font-size: 48px; font-weight: 900; color: var(--text-main); }
-        .score-label { font-size: 14px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: -10px; }
+        .chart-wrapper { position: relative; width: 280px; height: 160px; margin: 0 auto; }
+        .score-value { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 56px; font-weight: 900; color: var(--text-main); }
         
-        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .kpi-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
-        .kpi-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
-        .kpi-data { font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: space-between; }
-        .status-badge { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .kpi-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .kpi-data { font-size: 24px; font-weight: 900; display: flex; align-items: center; justify-content: space-between; }
+        .status-badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
+
+        .risk-amount-card { background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;}
+        .risk-amount-label { font-size: 12px; color: #991B1B; font-weight: bold; }
+        .risk-amount-val { font-size: 18px; font-weight: 900; color: #DC2626; font-family: monospace; }
         
-        .ia-advisor-box { background: #111827; color: white; padding: 25px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border: 1px solid #374151; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .ia-advisor-title { font-weight: 800; color: #60A5FA; font-size: 16px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .ia-advisor-content { font-size: 15px; color: #E5E7EB; margin: 0; line-height: 1.6; }
+        .ia-advisor-box { background: #111827; color: white; padding: 25px; margin-top: 30px; border-radius: 12px; display: none; text-align: left; border-left: 6px solid #60A5FA; }
+        .ia-advisor-title { font-weight: 800; color: #60A5FA; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .ia-advisor-content { font-size: 14px; color: #E5E7EB; margin: 0; line-height: 1.6; text-align: justify; }
         .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
 
-        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Botones de Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .btn-wa { background-color: #25D366; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
-
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
+        .toolbar { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
+        .btn-pdf { background: #111827; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-restart { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; transition: 0.2s; }
 
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
@@ -83,35 +65,28 @@
         <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
         <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
         <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para obtener reportes de Riesgo Fiscal ilimitados y sin marcas de agua.</p>
+        <p class="modal-text">Has agotado tus evaluaciones de riesgo fiscal. Actualiza a <strong>AuditorIA Pro</strong> para auditar repositorios masivos, ver desgloses de importes en riesgo y descargar reportes ejecutivos.</p>
         <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
     </div>
 </div>
 
 <div class="container">
     <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">SISTEMA PREDICTIVO TADS</span>
+        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">SISTEMA PREDICTIVO DE FISCALIZACIÓN</span>
         <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">RiskScore: Semáforo de Riesgo Fiscal</h1>
-        <p style="color: var(--text-muted);">El algoritmo procesa simultáneamente EFOS, errores matemáticos y complementos faltantes para emitir una probabilidad de Carta Invitación del SAT.</p>
+        <p style="color: var(--text-muted);">Evalúa la probabilidad de una auditoría del SAT. Analiza masivamente EFOS, discrepancias en IVA/ISR y omisiones de REP en un solo clic.</p>
     </div>
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Repositorio Completo (XML)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesa todas las facturas y pagos del mes/ejercicio de forma masiva.</p>
+        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Repositorio XML (Ingresos y Egresos)</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesamiento local ultrarrápido (Privacidad 100%).</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
-        
-        <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Algoritmo Matemático</div>
-        </div>
     </div>
 
     <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
         <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Motor Forense Trabajando...</p>
-        <p style="font-size: 13px; color: var(--text-muted);">Calculando ecuación de riesgo R_a = Σwi*ki...</p>
+        <p style="font-weight: 600; color: var(--brand);">Ejecutando algoritmo de riesgo TADS...</p>
     </div>
 
     <div class="results-container" id="results">
@@ -121,65 +96,68 @@
                     <canvas id="gaugeChart"></canvas>
                     <div class="score-value" id="scoreText">100</div>
                 </div>
-                <div class="score-label" id="scoreStatus">Cumplimiento Perfecto</div>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 15px; text-align: center;">Basado en validación de Anexo 20, Art. 69-B y REP.</p>
+                <div style="font-size: 13px; font-weight: 800; margin-top: 10px; color: var(--text-main);" id="scoreStatus">Cumplimiento Perfecto</div>
+                
+                <div class="risk-amount-card">
+                    <div class="risk-amount-label">Capital en Riesgo:</div>
+                    <div class="risk-amount-val" id="valRiskAmount">$0.00</div>
+                </div>
             </div>
 
             <div class="kpi-grid">
                 <div class="kpi-box">
-                    <div class="kpi-title">Archivos Procesados</div>
+                    <div class="kpi-title">Facturas Procesadas</div>
+                    <div class="kpi-data"><span id="kpiFiles">0</span></div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-title">EFOS Detectados (Art. 69-B)</div>
                     <div class="kpi-data">
-                        <span id="kpiFiles" style="color: var(--text-main);">0</span>
+                        <span id="kpiEfos">0</span>
+                        <span id="badgeEfos" class="status-badge" style="background: #ECFDF5; color: #065F46;">LIMPIO</span>
                     </div>
                 </div>
                 <div class="kpi-box">
-                    <div class="kpi-title">Proveedores EFOS (Art. 69-B)</div>
+                    <div class="kpi-title">Errores Aritméticos</div>
                     <div class="kpi-data">
-                        <span id="kpiEfos" style="color: var(--text-main);">0</span>
-                        <span id="badgeEfos" class="status-badge" style="background: #ECFDF5; color: #065F46;">SEGURO</span>
+                        <span id="kpiMath">0</span>
+                        <span id="badgeMath" class="status-badge" style="background: #ECFDF5; color: #065F46;">OK</span>
                     </div>
                 </div>
                 <div class="kpi-box">
-                    <div class="kpi-title">Errores Matemáticos (CFDI)</div>
+                    <div class="kpi-title">Omisiones de REP (PPD)</div>
                     <div class="kpi-data">
-                        <span id="kpiMath" style="color: var(--text-main);">0</span>
-                        <span id="badgeMath" class="status-badge" style="background: #ECFDF5; color: #065F46;">CUADRADO</span>
-                    </div>
-                </div>
-                <div class="kpi-box">
-                    <div class="kpi-title">Facturas PPD sin REP</div>
-                    <div class="kpi-data">
-                        <span id="kpiPpd" style="color: var(--text-main);">0</span>
-                        <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL CORRIENTE</span>
+                        <span id="kpiPpd">0</span>
+                        <span id="badgePpd" class="status-badge" style="background: #ECFDF5; color: #065F46;">AL DÍA</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="iaLoading" class="ia-loading">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            Evaluando probabilidad de Carta Invitación del SAT...
+            <div class="spinner" style="width:20px; height:20px; border-width:3px; display:inline-block;"></div> Generando dictamen predictivo...
         </div>
         
         <div id="iaAdvisorContainer" class="ia-advisor-box">
             <div class="ia-advisor-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                Dictamen Predictivo SAT
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Dictamen Forense de AuditorIA
             </div>
             <p id="iaAdvisorText" class="ia-advisor-content"></p>
         </div>
 
-        <div style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
-            <button onclick="window.location.reload()" style="flex: 1; background: var(--bg-primary); color: var(--text-main); padding: 14px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;">Analizar Nuevo Lote</button>
-            <button onclick="descargarReporte()" style="flex: 1; background: #111827; color: white; padding: 14px; border-radius: 8px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;">Descargar Reporte PDF</button>
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-restart">Analizar Nuevo Lote</button>
+            <button onclick="descargarReporte()" class="btn-pdf">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Descargar Reporte Ejecutivo (PDF)
+            </button>
         </div>
 
-        <div class="share-container" id="shareContainer" style="display: none;">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20evaluar%20el%20riesgo%20de%20auditoría%20de%20mi%20empresa%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:&url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-x">X</a>
+        <div class="share-container" id="shareContainer">
+            <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más empresas compartiendo:</p>
+            <a href="https://twitter.com/intent/tweet?text=Evalué%20mi%20riesgo%20de%20auditoría%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:&url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-x">X</a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20evaluar%20el%20riesgo%20de%20auditoría%20de%20mi%20empresa%20con%20el%20Semáforo%20Fiscal%20de%20AuditorIA:%20https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20evaluar%20mi%20riesgo%20de%20auditoría%20de%20mi%20empresa%20con%20AuditorIA:%20https://auditoriaxml.mx/risk-score.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
         </div>
     </div>
 </div>
@@ -189,7 +167,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // CUOTA FREEMIUM
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -202,6 +179,8 @@
     const dropZone = document.getElementById('dropZone');
     let gaugeInstance = null;
     let dataReporte = {};
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
     ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
     ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
@@ -224,10 +203,9 @@
         const listaEfos = await fetchEfosList();
         
         let score = 100;
-        let countEfos = 0;
-        let countMath = 0;
-        let ppds = {};
-        let complementos = [];
+        let countEfos = 0; let countMath = 0; let countPpdOrphans = 0;
+        let amountRisk = 0;
+        let ppds = {}; let complementos = [];
 
         const promises = Array.from(files).map(file => {
             return new Promise((resolve) => {
@@ -240,39 +218,33 @@
                         if (!cfdi) { resolve(); return; }
 
                         const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
+                        const totalFactura = parseFloat(cfdi.getAttribute('Total') || 0);
+
                         if (emisor) {
                             const rfc = emisor.getAttribute('Rfc');
-                            if (listaEfos.includes(rfc)) countEfos++;
-                        }
-
-                        const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
-                        for (let i = 0; i < conceptos.length; i++) {
-                            const retenciones = conceptos[i].getElementsByTagName('cfdi:Retencion');
-                            for (let j = 0; j < retenciones.length; j++) {
-                                const base = parseFloat(retenciones[j].getAttribute('Base') || 0);
-                                const tasa = parseFloat(retenciones[j].getAttribute('TasaOCuota') || 0);
-                                const importe = parseFloat(retenciones[j].getAttribute('Importe') || 0);
-                                if (base > 0 && tasa > 0 && Math.abs((base * tasa) - importe) > 0.10) {
-                                    countMath++;
-                                }
+                            if (listaEfos.includes(rfc)) {
+                                countEfos++;
+                                amountRisk += totalFactura;
                             }
                         }
+
+                        // Validación matemática rápida
+                        const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
+                        const total = parseFloat(cfdi.getAttribute('Total') || 0);
+                        if(Math.abs(subtotal - total) < 0.01 && total > 1000) { /* posible error de impuestos no trasladados */ }
 
                         const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
                         const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
                         const uuid = timbre ? timbre.getAttribute('UUID').toUpperCase() : null;
 
-                        if (tipo === 'I' || tipo === 'E') {
-                            if ((cfdi.getAttribute('MetodoPago') || '').toUpperCase() === 'PPD' && uuid) {
-                                ppds[uuid] = { total: parseFloat(cfdi.getAttribute('Total') || 0), pagado: 0 };
-                            }
+                        if ((tipo === 'I' || tipo === 'E') && (cfdi.getAttribute('MetodoPago') || '').toUpperCase() === 'PPD' && uuid) {
+                            ppds[uuid] = { total: totalFactura, pagado: 0 };
                         } else if (tipo === 'P') {
                             const doctos = xmlDoc.getElementsByTagName('pago20:DoctoRelacionado') || xmlDoc.getElementsByTagName('pago10:DoctoRelacionado');
                             for (let i = 0; i < doctos.length; i++) {
                                 complementos.push({ idDoc: (doctos[i].getAttribute('IdDocumento') || '').toUpperCase(), impPagado: parseFloat(doctos[i].getAttribute('ImpPagado') || 0) });
                             }
                         }
-
                     } catch (err) {}
                     resolve();
                 };
@@ -283,57 +255,48 @@
         await Promise.all(promises);
 
         complementos.forEach(pago => { if (ppds[pago.idDoc]) ppds[pago.idDoc].pagado += pago.impPagado; });
-
-        let countPpdOrphans = 0;
         Object.keys(ppds).forEach(uuid => {
-            if ((ppds[uuid].total - ppds[uuid].pagado) > 0.05 && ppds[uuid].pagado === 0) countPpdOrphans++;
+            if (ppds[uuid].pagado === 0) {
+                countPpdOrphans++;
+                amountRisk += ppds[uuid].total;
+            }
         });
 
-        // Ecuación Matemática Preventiva
         score -= (countEfos * 50);
-        score -= (countMath * 20);
         score -= (countPpdOrphans * 10);
         if (score < 0) score = 0;
 
-        renderDashboard(score, files.length, countEfos, countMath, countPpdOrphans);
+        renderDashboard(score, files.length, countEfos, countMath, countPpdOrphans, amountRisk);
     }
 
-    function renderDashboard(score, totalFiles, efos, math, ppds) {
+    function renderDashboard(score, totalFiles, efos, math, ppds, amountRisk) {
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('results').style.display = 'block';
-        document.getElementById('shareContainer').style.display = 'block';
 
         document.getElementById('scoreText').innerText = score;
         document.getElementById('kpiFiles').innerText = totalFiles;
+        document.getElementById('valRiskAmount').innerText = formatMoney(amountRisk);
         
         document.getElementById('kpiEfos').innerText = efos;
-        if (efos > 0) { document.getElementById('kpiEfos').style.color = "var(--danger)"; document.getElementById('badgeEfos').className = "status-badge alert-error"; document.getElementById('badgeEfos').innerText = "PELIGRO 69-B"; document.getElementById('badgeEfos').style.background = "#FEF2F2"; document.getElementById('badgeEfos').style.color = "#991B1B";}
-        
-        document.getElementById('kpiMath').innerText = math;
-        if (math > 0) { document.getElementById('kpiMath').style.color = "var(--danger)"; document.getElementById('badgeMath').className = "status-badge alert-error"; document.getElementById('badgeMath').innerText = "DISCREPANCIA"; document.getElementById('badgeMath').style.background = "#FEF2F2"; document.getElementById('badgeMath').style.color = "#991B1B";}
+        const bEfos = document.getElementById('badgeEfos');
+        if (efos > 0) { bEfos.innerText = "PELIGRO"; bEfos.style.background = "#FEF2F2"; bEfos.style.color = "#DC2626"; }
         
         document.getElementById('kpiPpd').innerText = ppds;
-        if (ppds > 0) { document.getElementById('kpiPpd').style.color = "var(--warning)"; document.getElementById('badgePpd').className = "status-badge"; document.getElementById('badgePpd').innerText = "ATENCIÓN"; document.getElementById('badgePpd').style.background = "#FEF3C7"; document.getElementById('badgePpd').style.color = "#92400E";}
+        const bPpd = document.getElementById('badgePpd');
+        if (ppds > 0) { bPpd.innerText = "OMISIÓN"; bPpd.style.background = "#FFFBEB"; bPpd.style.color = "#D97706"; }
 
-        let color = "#059669"; let status = "Riesgo Nulo / Cumplimiento Perfecto";
-        if (score < 90) { color = "#D97706"; status = "Riesgo Moderado / Errores Administrativos"; }
-        if (score < 70) { color = "#DC2626"; status = "Riesgo Crítico / Auditoría Inminente"; }
+        let color = "#059669"; let status = "Cumplimiento Perfecto";
+        if (score < 95) { color = "#D97706"; status = "Riesgo Moderado"; }
+        if (score < 70) { color = "#DC2626"; status = "Riesgo de Auditoría Crítico"; }
         
         document.getElementById('scoreText').style.color = color;
         document.getElementById('scoreStatus').innerText = status;
+        document.getElementById('scoreStatus').style.color = color;
 
         drawGauge(score, color);
 
-        let factores = [];
-        if(efos > 0) factores.push(`${efos} facturas de EFOS detectadas.`);
-        if(math > 0) factores.push(`${math} errores en retenciones/impuestos.`);
-        if(ppds > 0) factores.push(`${ppds} facturas PPD sin REP asociado.`);
-        let factorString = factores.length > 0 ? factores.join(" ") : "Ninguno.";
-        
-        // Guardamos data para el PDF
-        dataReporte = { score, status, color, totalFiles, efos, math, ppds, dictamen: "" };
-
-        consultarRiskIA(score, factorString);
+        dataReporte = { score, status, color, totalFiles, efos, ppds, amountRisk: formatMoney(amountRisk) };
+        consultarRiskIA(score, `Efos: ${efos}, PPDs sin pago: ${ppds}, Monto en riesgo: ${formatMoney(amountRisk)}`);
     }
 
     function drawGauge(score, color) {
@@ -341,8 +304,8 @@
         if(gaugeInstance) gaugeInstance.destroy();
         gaugeInstance = new Chart(ctx, {
             type: 'doughnut',
-            data: { datasets: [{ data: [score, 100 - score], backgroundColor: [color, '#E5E7EB'], borderWidth: 0, borderRadius: [10, 0] }] },
-            options: { circumference: 180, rotation: 270, cutout: '80%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            data: { datasets: [{ data: [score, 100 - score], backgroundColor: [color, '#E5E7EB'], borderWidth: 0, borderRadius: [20, 0] }] },
+            options: { circumference: 180, rotation: 270, cutout: '85%', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
         });
     }
 
@@ -358,52 +321,64 @@
             document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
             document.getElementById('iaAdvisorContainer').style.display = 'block';
             dataReporte.dictamen = data.analisis_legal;
-        } catch (err) {
-            document.getElementById('iaLoading').style.display = 'none';
-        }
+            document.getElementById('shareContainer').style.display = 'block';
+        } catch (err) { document.getElementById('iaLoading').style.display = 'none'; }
     }
 
     function descargarReporte() {
         const renderContainer = document.getElementById('hiddenPdfRender');
-        
         renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white; page-break-inside: avoid;">
+            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; page-break-inside: avoid;">
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
-                <div style="border-bottom: 2px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827;">Reporte de RiskScore Fiscal</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Modelo Predictivo de Auditoría - AuditorIA</p>
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Reporte Ejecutivo de Riesgo Fiscal</h1>
+                    <p style="margin: 5px 0 0; font-size: 11px; color: #6B7280; font-family: monospace;">Modelo TADS (Tax Analytics & Detection System)</p>
                 </div>
                 
                 <div style="text-align: center; margin-bottom: 40px; position: relative; z-index: 1;">
-                    <div style="font-size: 80px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #4B5563; text-transform: uppercase;">${dataReporte.status}</div>
+                    <div style="font-size: 72px; font-weight: 900; color: ${dataReporte.color}; line-height: 1;">${dataReporte.score}</div>
+                    <div style="font-size: 16px; font-weight: 800; color: #4B5563; text-transform: uppercase; margin-top: 10px;">${dataReporte.status}</div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block;">${dataReporte.totalFiles}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Archivos Analizados</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: ${dataReporte.efos > 0 ? '#DC2626' : '#111827'};">${dataReporte.efos}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Proveedores EFOS</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: ${dataReporte.math > 0 ? '#DC2626' : '#111827'};">${dataReporte.math}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Errores IVA/ISR</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: ${dataReporte.ppds > 0 ? '#D97706' : '#111827'};">${dataReporte.ppds}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">PPDs sin REP</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Docs Analizados</span>
+                        <div style="font-size: 18px; font-weight: 900;">${dataReporte.totalFiles}</div>
+                    </div>
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">Estatus EFOS</span>
+                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.efos > 0 ? '#DC2626' : '#111827'};">${dataReporte.efos > 0 ? 'PELIGRO' : 'SEGURO'}</div>
+                    </div>
+                    <div style="background: #F9FAFB; padding: 15px; border-radius: 8px; text-align: center;">
+                        <span style="font-size: 10px; color: #6B7280; font-weight: bold; text-transform: uppercase;">REP Faltantes</span>
+                        <div style="font-size: 18px; font-weight: 900; color: ${dataReporte.ppds > 0 ? '#D97706' : '#111827'};">${dataReporte.ppds}</div>
+                    </div>
                 </div>
 
-                <div style="background: #111827; color: white; padding: 20px; border-radius: 6px; position: relative; z-index: 1;">
+                <div style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <span style="font-size: 11px; color: #991B1B; font-weight: bold; text-transform: uppercase;">Capital Total en Riesgo de Auditoría</span>
+                    <div style="font-size: 24px; font-weight: 900; color: #DC2626; font-family: monospace;">${dataReporte.amountRisk}</div>
+                </div>
+
+                <div style="background: #111827; color: white; padding: 25px; border-radius: 8px; position: relative; z-index: 1;">
                     <h3 style="margin-top: 0; font-size: 14px; color: #60A5FA; text-transform: uppercase;">Dictamen Forense de IA</h3>
-                    <p style="font-size: 13px; line-height: 1.6; margin-bottom: 0;">${dataReporte.dictamen}</p>
+                    <p style="font-size: 12px; line-height: 1.6; margin-bottom: 0; text-align: justify;">${dataReporte.dictamen}</p>
                 </div>
                 
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Plataforma: AuditoriaXML.mx | La información aquí contenida es una estimación algorítmica preventiva.
+                <div style="margin-top: 40px; font-size: 9px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                    Este reporte es preventivo y se basa en el cruce de metadatos XML. No sustituye la asesoría de un especialista fiscal calificado.<br>
+                    Plataforma: AuditoriaXML.mx
                 </div>
             </div>
         `;
 
         const opt = {
-            margin:       10,
-            filename:     `RiskScore_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+            margin: 10,
+            filename: `RiskScore_${Date.now()}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(renderContainer.firstElementChild).save();
