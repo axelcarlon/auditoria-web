@@ -13,7 +13,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
@@ -51,7 +51,6 @@
         .impact-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
         .impact-val { font-size: 22px; font-weight: 900; font-family: monospace; letter-spacing: -0.5px;}
         
-        /* Barra de Progreso */
         .progress-panel { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; margin-top: 30px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .progress-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
         .progress-title { font-weight: 900; font-size: 18px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -60,7 +59,6 @@
         .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #1E40AF, #3B82F6); transition: width 0.3s ease; border-radius: 20px; }
         .progress-status { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 15px; font-family: monospace; display: flex; align-items: center; gap: 8px;}
 
-        /* Editor Forense */
         .advisor-box { background: #111827; padding: 30px; margin-top: 30px; border-radius: 16px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.15);}
         .advisor-title { font-weight: 900; color: #ffffff; font-size: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .advisor-subtitle { font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
@@ -84,7 +82,6 @@
         .btn-wa { background-color: #25D366; }
         .btn-fb { background-color: #1877F2; }
 
-        /* Paywall Modal Premium */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); display: none; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(5px); }
         .modal-content { background: white; padding: 50px; border-radius: 16px; max-width: 450px; width: 90%; text-align: center; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); margin: auto; }
         .modal-close { position: absolute; top: 20px; right: 20px; background: #F3F4F6; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -358,7 +355,6 @@
 
                         if (tipo === 'E') countNotasCredito++;
 
-                        // Validación Intangibles (Riesgo Materialidad)
                         const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto');
                         let isIntangible = false;
                         for(let i=0; i<conceptos.length; i++) {
@@ -488,14 +484,12 @@
         }
     }
 
-    // 🚀 MOTOR DECLARATIVO (PDFMAKE) 100% AISLADO
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
-        btn.innerText = "Ensamblando Reporte...";
+        btn.innerText = "Exportando Reporte...";
         btn.disabled = true;
 
-        // setTimeout para permitir que el botón cambie visualmente antes del proceso asíncrono pesado
         setTimeout(() => {
             try {
                 const finalDictamen = document.getElementById('dictamenInput').value;
@@ -504,10 +498,21 @@
                 let chartImg = null;
                 try { chartImg = gaugeInstance ? gaugeInstance.toBase64Image() : null; } catch(e){}
 
+                const leftColStack = [];
+                if (chartImg) leftColStack.push({ image: chartImg, width: 140, alignment: 'center', margin: [0, 0, 0, -35] });
+                leftColStack.push({ text: `${dataReporte.score}`, alignment: 'center', fontSize: 45, bold: true, color: dataReporte.color, margin: [0, -10, 0, 0] });
+                leftColStack.push({ text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color });
+
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [50, 60, 50, 60],
                     defaultStyle: { font: 'Helvetica', lineHeight: 1.5 },
+                    background: function(currentPage, pageSize) {
+                        if (!isPro) {
+                            return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                        }
+                        return { text: '', margin: 0 }; 
+                    },
                     content: [
                         { text: 'ESTRICTAMENTE CONFIDENCIAL - USO INTERNO', alignment: 'center', color: '#DC2626', fontSize: 10, bold: true, margin: [0, -10, 0, 20], letterSpacing: 1 },
                         {
@@ -521,10 +526,7 @@
                         { text: '\n1. RESUMEN EJECUTIVO', style: 'sectionTitle' },
                         {
                             columns: [
-                                {
-                                    width: '45%',
-                                    stack: [] // Llenado dinámicamente abajo
-                                },
+                                { width: '45%', stack: leftColStack },
                                 {
                                     width: '55%',
                                     stack: [
@@ -588,26 +590,13 @@
                         return { text: `El presente documento constituye un papel de trabajo para mitigación de contingencias. No sustituye las facultades de comprobación de la autoridad fiscal.\nPlataforma: AuditoriaXML.mx - Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
                     },
                     styles: {
-                        header: { fontSize: 15, bold: true, color: '#111827' },
+                        header: { fontSize: 14, bold: true, color: '#111827' },
                         subheader: { fontSize: 9, color: '#6B7280' },
                         sectionTitle: { fontSize: 12, bold: true, color: '#2563EB', margin: [0, 15, 0, 10], borderBottom: true },
                         tableHeader: { bold: true, fontSize: 9, color: '#6B7280', alignment: 'center', fillColor: '#F9FAFB', margin: [5, 10, 5, 10] },
                         tableData: { bold: true, fontSize: 15, color: '#111827', alignment: 'center', margin: [5, 15, 5, 15] }
                     }
                 };
-
-                // Insertar gráfica dinámicamente si existe
-                const stackCol = [];
-                if (chartImg) stackCol.push({ image: chartImg, width: 140, alignment: 'center', margin: [0, 0, 0, -35] });
-                stackCol.push({ text: `${dataReporte.score}`, alignment: 'center', fontSize: 50, bold: true, color: dataReporte.color, margin: [0, 0, 0, 0] });
-                stackCol.push({ text: `${dataReporte.status}`, alignment: 'center', fontSize: 11, bold: true, color: dataReporte.color, margin: [0, 5, 0, 0] });
-                docDefinition.content[4].columns[0].stack = stackCol;
-
-                if (!isPro) {
-                    docDefinition.background = function(currentPage, pageSize) {
-                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-                    };
-                }
 
                 pdfMake.createPdf(docDefinition).download(`RiskScore_Reporte_${Date.now()}.pdf`);
                 
@@ -616,11 +605,10 @@
 
             } catch (e) {
                 console.error("Error al ensamblar PDF:", e);
-                alert("Ocurrió un error al generar el PDF.");
                 btn.innerHTML = oldText;
                 btn.disabled = false;
             }
-        }, 150);
+        }, 250); 
     }
 </script>
 </body>
