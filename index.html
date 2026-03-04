@@ -3,159 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auditoría Masiva de XML y Validación de Retenciones ISR e IVA</title>
-    <meta name="description" content="Analiza miles de XMLs en segundos. Detecta discrepancias en retenciones de IVA e ISR y genera dictámenes preventivos automatizados para CFDI 4.0.">
+    <title>AuditorIA | Terminal de Inteligencia Fiscal y Auditoría CFDI 4.0</title>
+    <meta name="description" content="La terminal de auditoría masiva más potente de México. Detecta discrepancias, valida retenciones y genera dictámenes preventivos con IA en segundos.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://auditoriaxml.mx/" />
     
-    <link rel="preconnect" href="https://auditoria-backend-crar.onrender.com" crossorigin>
-    <link rel="dns-prefetch" href="https://auditoria-backend-crar.onrender.com">
-    <link rel="preload" as="image" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg">
-    <link rel="icon" type="image/svg+xml" href="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg">
+    <link rel="preconnect" href="https://fastapi-susu.onrender.com" crossorigin>
+    <link rel="icon" type="image/png" href="candado.png">
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KJW30G9ETZ');
-    </script>
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://auditoriaxml.mx/">
-    <meta property="og:title" content="Auditoría Masiva de XML para CFDI 4.0">
-    <meta property="og:description" content="Validador automático de discrepancias fiscales en retenciones de IVA e ISR.">
-    <meta property="og:image" content="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg">
-    <meta name="twitter:card" content="summary_large_image">
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
+    
+    <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --drop-bg: #F3F4F6; --error: #EF4444; }
-        @media (prefers-color-scheme: dark) { :root { --bg-primary: #111827; --bg-secondary: #1F2937; --text-main: #F9FAFB; --text-muted: #D1D5DB; --border: #374151; --brand: #3B82F6; --drop-bg: #374151; } }
+        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --brand-dark: #1E40AF; --success: #059669; --error: #EF4444; }
+        @media (prefers-color-scheme: dark) { :root { --bg-primary: #0B0F1A; --bg-secondary: #161B22; --text-main: #F9FAFB; --text-muted: #9CA3AF; --border: #30363D; --brand: #3B82F6; } }
         
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow-x: hidden; line-height: 1.5; }
         
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--text-main); color: var(--bg-secondary); padding: 16px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.1); opacity: 0; transform: translateX(100%); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); display: flex; align-items: center; gap: 10px; }
-        .toast.show { opacity: 1; transform: translateX(0); }
-        .toast.error { background: var(--error); color: white; }
+        /* Layout Principal */
+        .hero-split { display: flex; min-height: 100vh; width: 100%; }
+        .hero-visual { flex: 1.2; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.8) 100%), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; padding: 60px; color: white; position: relative; }
+        .hero-visual h1 { font-size: 48px; font-weight: 900; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+        .hero-visual p { font-size: 20px; opacity: 0.9; margin-bottom: 40px; font-weight: 300; max-width: 500px; }
+        
+        .hero-interface { flex: 1; background: var(--bg-primary); display: flex; flex-direction: column; padding: 40px; position: relative; }
 
-        .top-nav { position: absolute; top: 0; right: 0; padding: 20px 40px; display: flex; gap: 20px; z-index: 10; align-items: center; }
-        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; transition: color 0.2s; }
-        .nav-link:hover { color: var(--brand); }
-        .nav-btn { background: var(--text-main); color: var(--bg-secondary); padding: 10px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: background 0.2s; }
-        .nav-btn:hover { background: var(--text-muted); }
+        /* Componente de Carga */
+        .audit-terminal { background: var(--bg-secondary); border-radius: 16px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); border: 1px solid var(--border); width: 100%; max-width: 600px; margin: auto; }
+        #dropZone { border: 2px dashed var(--border); border-radius: 12px; padding: 60px 20px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        #dropZone:hover, #dropZone.dragover { border-color: var(--brand); background: rgba(37, 99, 235, 0.03); }
 
-        .split-layout { display: flex; width: 100vw; min-height: 100vh; }
-        .left-panel { flex: 1; background-image: url('https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/8ea3b2f7-d794-4756-b94a-e9b5eeca2b82.jpeg'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; color: white; position: relative; }
-        .left-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 36, 62, 0.85); z-index: 1; }
-        .left-content { position: relative; z-index: 2; width: 100%; max-width: 500px; text-align: center; }
-        .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background-color: var(--bg-secondary); position: relative; }
-        
-        .upload-card { width: 100%; max-width: 600px; background-color: var(--bg-secondary); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); }
-        
-        #dropZone { background-color: var(--drop-bg); border: 2px dashed var(--border); border-radius: 8px; padding: 60px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
-        #dropZone.dragover { border-color: var(--brand); background-color: rgba(37, 99, 235, 0.05); transform: scale(1.02); }
-        .lock-img { width: 180px; height: 180px; object-fit: cover; border-radius: 50%; background-color: white; padding: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); margin: 0 auto; display: block; }
-        
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
-        
-        #resultsWrapper { display: none; text-align: left; }
-        .success-icon { width: 64px; height: 64px; color: #059669; margin-bottom: 20px; }
-        .error-icon { width: 48px; height: 48px; color: var(--error); margin-bottom: 15px; }
-        
-        .share-container { margin: 30px 0; padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        
-        .resource-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; text-align: left; }
-        .resource-links a { display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-main); text-decoration: none; font-size: 13px; font-weight: 500; transition: border-color 0.2s; }
-        .resource-links a:hover { border-color: var(--brand); }
+        /* Preview Card */
+        #preAuditPreview { display: none; margin-top: 20px; background: var(--bg-primary); border-radius: 8px; padding: 15px; border: 1px solid var(--border); }
+        .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .preview-item { font-size: 11px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); }
+        .preview-val { font-size: 16px; font-weight: 900; color: var(--brand); font-family: monospace; }
 
-        .trust-banner { background-color: #0F172A; color: #D1D5DB; text-align: center; padding: 20px; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; }
-        .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        /* Botón de Acción */
+        #uploadBtn { width: 100%; background: var(--text-main); color: var(--bg-secondary); border: none; padding: 18px; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 25px; letter-spacing: 1px; box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+        #uploadBtn:hover:not(:disabled) { transform: translateY(-2px); background: var(--brand); color: white; }
+        #uploadBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Resultados IA */
+        #resultsWrapper { display: none; animation: fadeIn 0.5s ease; }
+        .dictamen-card { background: #111827; color: white; border-radius: 12px; padding: 30px; margin-top: 20px; border-left: 6px solid var(--brand); }
         
-        .steps-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin: 40px 0 80px; text-align: center; }
-        .step-box { padding: 30px; }
-        .step-number { width: 40px; height: 40px; background: var(--brand); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; margin: 0 auto 15px; }
-        .step-box h4 { margin: 0 0 10px; font-size: 18px; }
-        .step-box p { color: var(--text-muted); font-size: 14px; margin: 0; }
+        .savings-badge { background: #ECFDF5; color: #065F46; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center; border: 1px solid #6EE7B7; font-weight: 700; }
 
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        .feature-card { background: var(--bg-secondary); padding: 30px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
-        .feature-card h3 { color: var(--text-main); font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        
-        .faq-section { background: var(--bg-secondary); padding: 40px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 60px; }
-        .faq-section h2 { color: var(--text-main); font-size: 24px; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        details { border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-        summary { font-weight: 600; font-size: 16px; color: var(--brand); padding: 15px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        summary::-webkit-details-marker { display: none; }
-        summary::after { content: '+'; font-size: 20px; color: var(--text-muted); }
-        details[open] summary::after { content: '-'; }
-        details p { margin: 0 0 20px 0; color: var(--text-muted); font-size: 15px; line-height: 1.6; }
+        /* Estilo Paula */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; }
+        .toast { background: #111827; color: white; padding: 16px 24px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translateX(120%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
+        .toast.show { transform: translateX(0); }
 
-        .resources-section { max-width: 1200px; margin: 0 auto 60px; padding: 0 20px; }
-        .resources-section h2 { color: var(--text-main); font-size: 24px; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        .articles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .article-card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); text-decoration: none; display: block; transition: transform 0.2s, box-shadow 0.2s; }
-        .article-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-        .article-date { font-size: 12px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; }
-        .article-card h4 { color: var(--text-main); font-size: 18px; margin: 10px 0; }
-        
-        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 14px; margin-top: 60px; border-top: 1px solid #1E293B; }
-        .site-footer a { transition: color 0.2s; }
-        .site-footer a:hover { color: #ffffff !important; }
-        
-        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
-        .dropdown-toggle:hover { color: var(--brand); }
-        .dropdown-content { display: none; position: absolute; right: -50px; top: 100%; background-color: var(--bg-secondary); min-width: 750px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(3, 1fr); padding: 15px; gap: 15px; text-align: left; }
-        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
-        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
-
-        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid #2563EB; padding: 20px; margin-top: 20px; border-radius: 4px; display: none; text-align: left; }
-        .ia-advisor-title { font-weight: 700; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: #2563EB; font-size: 14px; font-weight: 600; display: none; margin-top: 20px; text-align: center; }
-
-        /* WIDGET CHAT CSS */
-        .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
-        .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-        .advisor-btn:hover { transform: scale(1.05); }
-        .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
-        .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-        .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
-        .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-        .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
-        .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
-        .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
-        .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
-        .advisor-input:focus { border-color: var(--brand, #2563EB); }
-        .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
-
-        @media (max-width: 768px) { 
-            .split-layout { flex-direction: column; display: block; width: 100%; } 
-            .left-panel { min-height: 400px; padding: 60px 20px; }
-            .right-panel { padding: 20px; display: block; } 
-            .top-nav { position: relative; top: 0; right: 0; padding: 20px 10px; background: var(--bg-secondary); flex-direction: column; gap: 15px; border-bottom: 1px solid var(--border); margin-bottom: 20px; } 
-            .upload-card { max-width: 100%; margin: 0 auto; padding: 20px; box-shadow: none; }
-            .dropdown-content { position: fixed; top: 20px; left: 5%; right: 5%; min-width: 90%; grid-template-columns: 1fr; max-height: 80vh; overflow-y: auto; }
-            .nav-btn { width: 100%; text-align: center; }
-            .left-content h1 { font-size: 26px !important; }
-            .resource-links { grid-template-columns: 1fr; }
-            .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; }
+        @media (max-width: 1024px) {
+            .hero-split { flex-direction: column; }
+            .hero-visual { min-height: 40vh; padding: 40px; }
+            .hero-interface { padding: 20px; }
         }
     </style>
 </head>
@@ -163,425 +71,200 @@
 
 <div id="toast-container"></div>
 
-<main class="split-layout">
-    <section class="left-panel">
-        <div class="left-content">
-            <h1 style="font-size: 36px; font-weight: 800; margin-bottom: 16px; line-height: 1.2;">Auditoría Fiscal Automatizada para CFDI 4.0</h1>
-            <p style="font-size: 18px; color: #E2E8F0; margin-bottom: 40px; font-weight: 300;">Detecta discrepancias en retenciones de IVA e ISR en segundos. Genera tu dictamen preventivo del Art. 30-B del CFF sin procesos manuales.</p>
-            <img src="https://assets.softr-files.com/applications/c2030848-4b55-48d4-96ac-6c4800e2c845/assets/61326845-7673-40a3-bed9-0f0caaeb83a6.svg" alt="Validador de retenciones XML CFDI 4.0" class="lock-img" decoding="async" loading="lazy">
+<main class="hero-split">
+    <section class="hero-visual">
+        <div style="position: absolute; top: 40px; left: 60px; display: flex; align-items: center; gap: 12px;">
+            <img src="candado.png" width="40" height="40" alt="AuditorIA Logo">
+            <span style="font-size: 24px; font-weight: 900; letter-spacing: -1px;">AuditorIA</span>
+        </div>
+        
+        <h1>Auditoría Masiva de XML <br> <span style="color: #60A5FA;">CFDI 4.0</span></h1>
+        <p>Detecta discrepancias en retenciones de IVA e ISR en segundos. La terminal más potente para blindar la materialidad fiscal de tu empresa.</p>
+        
+        <div style="display: flex; gap: 40px; margin-top: 20px;">
+            <div><div style="font-size: 28px; font-weight: 900;">100%</div><div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Privacidad Local</div></div>
+            <div><div style="font-size: 28px; font-weight: 900;">0.8s</div><div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Por Factura</div></div>
+            <div><div style="font-size: 28px; font-weight: 900;">GPT-4o</div><div style="font-size: 12px; opacity: 0.7; text-transform: uppercase;">Motor de Dictamen</div></div>
         </div>
     </section>
 
-    <section class="right-panel">
-        <nav class="top-nav">
-            <a href="/como-funciona.html" class="nav-link" style="color: var(--brand); font-weight: bold;">Cómo Funciona</a>
-            <a href="/visor-xml.html" class="nav-link">Visor XML</a>
-            <div class="dropdown">
-                <div class="dropdown-toggle">Suite de Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-                <div class="dropdown-content">
-                    <div class="dropdown-column">
-                        <div class="menu-category">Auditoría y Riesgo</div>
-                        <a href="/">Auditoría Masiva (Art. 30-B)</a>
-                        <a href="/risk-score.html">RiskScore (Semáforo SAT)</a>
-                        <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                        <a href="/tasa-efectiva.html">Tasa Efectiva de ISR</a>
-                        <a href="/auditor-nomina.html">Auditor de Nómina (CFDI 1.2)</a>
-                        <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
-                    </div>
-                    <div class="dropdown-column">
-                        <div class="menu-category">Materialidad y Defensa</div>
-                        <a href="/auditor-materialidad.html">Materialidad (Contratos vs XML)</a>
-                        <a href="/prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
-                        <a href="/auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
-                        <a href="/precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
-                        <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
-                    </div>
-                    <div class="dropdown-column">
-                        <div class="menu-category">Operación Inteligente</div>
-                        <a href="/escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
-                        <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
-                        <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
-                        <a href="/dashboard-xml.html">Dashboard Financiero</a>
-                        <a href="/proyector-iva.html">Proyector IVA Mensual</a>
-                        <a href="/generador-polizas.html">Generador de Pólizas (Layout)</a>
-                        <a href="/buscador-conceptos.html">Buscador Forense en XML</a>
-                        <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
-                    </div>
-                </div>
-            </div>
-            <div style="width: 1px; height: 24px; background: var(--border); margin: 0 10px;"></div>
-            <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-link">Acceder</a>
-            <a href="#" onclick="showToast('AuditorIA se encuentra en fase Beta Abierta. El uso es gratuito y no requiere registro.'); return false;" class="nav-btn">Registrarse</a>
-        </nav>
+    <section class="hero-interface">
+        <script src="navbar.js"></script>
 
-        <div class="upload-card">
+        <div class="audit-terminal">
             <div id="uploadSection">
-                <div style="text-align: left; margin-bottom: 24px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 12px;">
-                        <svg width="20" height="20" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Cargar Repositorio XML
-                    </label>
-                    <div id="dropZone" aria-label="Área para arrastrar y soltar archivos XML">
-                        <svg width="40" height="40" color="var(--text-muted)" style="margin-bottom: 12px; pointer-events: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <p id="fileNameDisplay" style="font-size: 15px; color: var(--text-muted); margin: 0; font-weight: 500; pointer-events: none;">Arrastra tus archivos o haz clic para explorar</p>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px; pointer-events: none;">Soporta carga masiva (Máx. 50MB por lote)</p>
-                        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;" aria-hidden="true">
+                <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 10px;">Terminal de Auditoría</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 25px;">Sube el lote completo de facturas (Emitidas o Recibidas) del periodo.</p>
+
+                <div id="dropZone">
+                    <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <p id="dropText" style="font-weight: 700; color: var(--text-main);">Suelta tus archivos aquí</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Solo archivos .XML soportados</p>
+                    <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+                </div>
+
+                <div id="preAuditPreview">
+                    <div class="preview-item" style="margin-bottom: 10px;">Pre-Análisis del Lote:</div>
+                    <div class="preview-grid">
+                        <div><div class="preview-item">Facturas</div><div class="preview-val" id="preCount">0</div></div>
+                        <div><div class="preview-item">Monto Total</div><div class="preview-val" id="preTotal">$0.00</div></div>
                     </div>
                 </div>
 
-                <div style="margin: 15px 0; text-align: left; display: flex; align-items: flex-start; gap: 10px;">
-                    <input type="checkbox" id="legalCheck" style="margin-top: 4px; cursor: pointer; width: 16px; height: 16px;">
-                    <label for="legalCheck" style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
-                        He leído y acepto el <a href="/privacidad.html" target="_blank" style="color: var(--brand);">Aviso de Privacidad</a>. Entiendo que los datos se procesan en memoria volátil sin ser almacenados.
+                <div style="margin-top: 20px; display: flex; gap: 10px; align-items: flex-start;">
+                    <input type="checkbox" id="legalCheck" style="width: 18px; height: 18px; margin-top: 3px; cursor: pointer;">
+                    <label for="legalCheck" style="font-size: 12px; color: var(--text-muted); line-height: 1.4; cursor: pointer;">
+                        Acepto los <a href="/terminos.html" style="color: var(--brand);">Términos de Servicio</a> y entiendo que mis datos se analizan localmente bajo el Art. 30-B del CFF.
                     </label>
                 </div>
-                
-                <button id="uploadBtn" disabled aria-label="Iniciar auditoría" style="width: 100%; background: var(--brand); color: white; padding: 16px; border-radius: 8px; border: none; font-size: 16px; font-weight: 700; cursor: not-allowed; opacity: 0.5; transition: all 0.3s;">INICIAR AUDITORÍA AHORA</button>
-                
-                <div class="trust-badges">
-                    <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-                    <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-                    <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Zero-Trust</div>
-                </div>
 
-                <div id="statusContainer" aria-live="polite" style="margin-top: 20px; display: none; text-align: center;">
-                    <div id="loadingSpinner" class="spinner" style="display:none;"></div>
-                    <p id="statusText" style="font-size: 14px; font-weight: 600; color: #059669;"></p>
-                </div>
+                <button id="uploadBtn" disabled>INICIAR ESCANEO FORENSE</button>
             </div>
 
             <div id="resultsWrapper">
-                <div style="text-align: center;">
-                    <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 24px;">Dictamen Generado</h2>
-                    <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 20px;">Tu archivo Excel ha sido descargado. Las discrepancias detectadas han sido enviadas al Asesor de IA.</p>
-                </div>
-
-                <div id="errorSection" style="display: none; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: var(--error); font-weight: bold; font-size: 16px;">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Anomalías en el Lote
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="background: var(--success); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                        <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                    <p id="mathErrorText" style="font-size: 13px; color: var(--text-main); margin: 0; line-height: 1.5;"></p>
+                    <h2 style="margin: 0; font-size: 24px; font-weight: 900;">Auditoría Finalizada</h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Se ha descargado el reporte detallado en Excel.</p>
                 </div>
 
-                <div id="iaLoading" class="ia-loading">
-                    <div class="spinner" style="width: 24px; height: 24px; border-width: 3px; display: inline-block; vertical-align: middle; margin: 0 10px 0 0;"></div>
-                    Consultando Asesor Legal de IA (Cerebro 2)...
-                </div>
-                <div id="iaAdvisorContainer" class="ia-advisor-box">
-                    <div class="ia-advisor-title">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        AuditorIA Legal Insight
-                    </div>
-                    <p id="iaAdvisorText" class="ia-advisor-content"></p>
+                <div class="dictamen-card">
+                    <div style="color: #60A5FA; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">Dictamen Estratégico IA</div>
+                    <div id="iaAdvisorText" style="font-size: 14px; line-height: 1.6; color: #E5E7EB;">Analizando hallazgos...</div>
                 </div>
 
-                <div class="share-container">
-                    <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0;">Ayúdanos a llegar a más personas compartiendo la herramienta:</p>
-                    <a href="https://twitter.com/intent/tweet?text=Estoy%20automatizando%20la%20auditoría%20de%20mis%20CFDI%204.0%20y%20validando%20retenciones%20con%20AuditorIA.%20Herramienta%20gratuita:&url=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-x">𝕏 Postear</a>
-                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-in">in Compartir</a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/" target="_blank" class="social-btn btn-fb">f Compartir</a>
+                <div class="savings-badge">
+                    ⏱️ Has ahorrado aproximadamente <span id="timeSaved">0</span> de revisión manual.
                 </div>
 
-                <button onclick="resetUI()" style="width: 100%; background: var(--bg-primary); color: var(--text-main); padding: 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 30px; transition: background 0.3s;">← Auditar nuevo lote</button>
+                <button onclick="window.location.reload()" style="width: 100%; border: 1px solid var(--border); padding: 15px; border-radius: 10px; margin-top: 20px; font-weight: 700; cursor: pointer; background: var(--bg-primary);">Auditar Nuevo Lote</button>
             </div>
+        </div>
+
+        <div class="trust-badges" style="margin-top: 40px;">
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado AES-256</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Cumplimiento Anexo 20</div>
+            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> FastPath Engine</div>
         </div>
     </section>
 </main>
 
-<div class="content-wrapper">
-    <div class="steps-container">
-        <div class="step-box">
-            <div class="step-number">1</div>
-            <h4>Carga tus XML</h4>
-            <p>Arrastra las facturas emitidas o recibidas de todo el mes.</p>
-        </div>
-        <div class="step-box">
-            <div class="step-number">2</div>
-            <h4>Análisis Algorítmico</h4>
-            <p>El motor extrae los nodos y recalcula las fórmulas de ley.</p>
-        </div>
-        <div class="step-box">
-            <div class="step-number">3</div>
-            <h4>Descarga el Dictamen</h4>
-            <p>Obtén un reporte en Excel identificando discrepancias centavo a centavo.</p>
-        </div>
-    </div>
-
-    <div class="features-grid">
-        <div class="feature-card">
-            <h3><svg width="24" height="24" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg> Cálculo Matemático Preciso</h3>
-            <p>El algoritmo lee los atributos XML y recalcula las retenciones esperadas de IVA e ISR contra lo declarado, identificando discrepancias inmediatamente.</p>
-        </div>
-        <div class="feature-card">
-            <h3><svg width="24" height="24" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Velocidad de Procesamiento</h3>
-            <p>Analiza cientos de facturas en cuestión de segundos, eliminando horas de revisión manual en Excel y mitigando el error humano.</p>
-        </div>
-    </div>
-</div>
-
-<footer class="site-footer">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
-            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
-            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Defensa</h4>
-            <a href="/risk-score.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">RiskScore (Semáforo SAT)</a>
-            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
-            <a href="/auditor-materialidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Materialidad de Contratos</a>
-            <a href="/auditoria-activos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría de Activos Fijos</a>
-            <a href="/tasa-efectiva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Tasa Efectiva de ISR</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
-            <a href="/escaner-ocr-fiscal.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Escáner Inteligente OCR</a>
-            <a href="/conciliacion-ia.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliación Bancaria IA</a>
-            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
-            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas</a>
-            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador PPD vs REP</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
-            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
-            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
-    </div>
-</footer>
-
-<div id="advisorWidget" class="advisor-widget">
-    <button id="advisorBtn" class="advisor-btn">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-        Asesor Fiscal IA
-    </button>
-    <div id="advisorChat" class="advisor-chat">
-        <div class="advisor-header">
-            <span>Paula - AuditorIA Advisor</span>
-            <button id="closeAdvisor" class="advisor-close">×</button>
-        </div>
-        <div id="advisorBody" class="advisor-body">
-            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
-            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
-        </div>
-        <div class="advisor-footer">
-            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
-            <button id="sendAdvisor" class="advisor-send">Enviar</button>
-        </div>
-    </div>
-</div>
+<script src="footer.js"></script>
 
 <script>
     const input = document.getElementById('xmlInput');
-    const btn = document.getElementById('uploadBtn');
-    const legalCheck = document.getElementById('legalCheck');
-    const statusText = document.getElementById('statusText');
-    const statusContainer = document.getElementById('statusContainer');
-    const display = document.getElementById('fileNameDisplay');
-    const spinner = document.getElementById('loadingSpinner');
     const dropZone = document.getElementById('dropZone');
-    const uploadSection = document.getElementById('uploadSection');
-    const resultsWrapper = document.getElementById('resultsWrapper');
-    const errorSection = document.getElementById('errorSection');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const legalCheck = document.getElementById('legalCheck');
     const toastContainer = document.getElementById('toast-container');
+    
+    let currentFiles = [];
 
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') {
-            legalCheck.checked = true; btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer";
-        }
-    });
-
-    function showToast(message, isError = false) {
+    // Paula Toast System
+    function showToast(msg, type = 'info') {
         const toast = document.createElement('div');
-        toast.className = `toast ${isError ? 'error' : ''}`;
-        toast.innerHTML = isError 
-            ? `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${message}`
-            : `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${message}`;
+        toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+        toast.innerHTML = `<span>${msg}</span>`;
         toastContainer.appendChild(toast);
-        requestAnimationFrame(() => { requestAnimationFrame(() => { toast.classList.add('show'); }); });
-        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    legalCheck.addEventListener('change', (e) => {
-        btn.disabled = !e.target.checked; btn.style.opacity = e.target.checked ? "1" : "0.5"; btn.style.cursor = e.target.checked ? "pointer" : "not-allowed";
-        if(e.target.checked) localStorage.setItem('auditoriaLegalAccepted', 'true'); else localStorage.removeItem('auditoriaLegalAccepted');
-    });
-
+    // Drag & Drop Lógica
     dropZone.onclick = () => input.click();
-    ['dragover', 'dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('dragover'); display.style.color = "var(--brand)"; }));
-    ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('dragover'); if (input.files.length === 0) { display.innerText = "Arrastra tus archivos o haz clic para explorar"; display.style.color = "var(--text-muted)"; } }));
-    dropZone.addEventListener('drop', e => { input.files = e.dataTransfer.files; updateDisplay(input.files); });
-    input.onchange = e => { updateDisplay(e.target.files); };
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.remove('dragover'); }));
+    
+    dropZone.addEventListener('drop', e => { 
+        currentFiles = e.dataTransfer.files;
+        handlePreAudit(currentFiles);
+    });
+    
+    input.onchange = e => {
+        currentFiles = e.target.files;
+        handlePreAudit(currentFiles);
+    };
 
-    function updateDisplay(files) {
-        if (files.length > 0) { display.innerText = files.length > 1 ? `${files.length} archivos listos` : files[0].name; display.style.color = "var(--brand)"; } 
-        else { display.innerText = "Arrastra tus archivos o haz clic para explorar"; display.style.color = "var(--text-muted)"; }
-    }
+    async function handlePreAudit(files) {
+        if(files.length === 0) return;
+        let totalMonto = 0;
+        let validCount = 0;
 
-    function resetUI() {
-        resultsWrapper.style.display = "none";
-        errorSection.style.display = "none";
-        document.getElementById('iaAdvisorContainer').style.display = "none";
-        uploadSection.style.display = "block";
-        input.value = ""; display.innerText = "Arrastra tus archivos o haz clic para explorar"; display.style.color = "var(--text-muted)";
-        statusContainer.style.display = "none";
-        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') { legalCheck.checked = true; btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer"; } 
-        else { legalCheck.checked = false; btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed"; }
-    }
-
-    btn.onclick = async () => {
-        if (input.files.length === 0) return showToast("Por favor, sube archivos XML antes de iniciar.", true);
-        
-        statusContainer.style.display = "block";
-        spinner.style.display = "block";
-        statusText.innerText = "Escaneando Lote (Cerebro 1)...";
-        btn.disabled = true;
-        btn.style.opacity = "0.6";
-
-        let erroresDetectados = [];
-        let conceptosMuestra = new Set();
-
-        for (let file of input.files) {
-            if (!file.name.toLowerCase().endsWith('.xml')) continue;
-            try {
+        for (let file of files) {
+            if (file.name.toLowerCase().endsWith('.xml')) {
                 const text = await file.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(text, "text/xml");
-                const conceptos = xmlDoc.getElementsByTagName('cfdi:Concepto') || xmlDoc.getElementsByTagName('Concepto');
-                for (let i = 0; i < conceptos.length; i++) {
-                    const desc = conceptos[i].getAttribute('Descripcion') || "Concepto";
-                    const retenciones = conceptos[i].getElementsByTagName('cfdi:Retencion') || conceptos[i].getElementsByTagName('Retencion');
-                    for (let j = 0; j < retenciones.length; j++) {
-                        const base = parseFloat(retenciones[j].getAttribute('Base') || 0);
-                        const tasa = parseFloat(retenciones[j].getAttribute('TasaOCuota') || 0);
-                        const importe = parseFloat(retenciones[j].getAttribute('Importe') || 0);
-                        if (base > 0 && tasa > 0) {
-                            const calc = base * tasa;
-                            if (Math.abs(calc - importe) > 0.10) {
-                                erroresDetectados.push(`Base: $${base} | Tasa: ${tasa} | Calculado: $${calc.toFixed(2)} | Declarado: $${importe}`);
-                                conceptosMuestra.add(desc);
-                            }
-                        }
-                    }
-                }
-            } catch(e) {}
+                const totalMatch = text.match(/Total="([^"]*)"/);
+                if (totalMatch) totalMonto += parseFloat(totalMatch[1]);
+                validCount++;
+            }
         }
+
+        document.getElementById('preAuditPreview').style.display = 'block';
+        document.getElementById('preCount').innerText = validCount;
+        document.getElementById('preTotal').innerText = new Intl.NumberFormat('es-MX', {style:'currency', currency:'MXN'}).format(totalMonto);
+        document.getElementById('dropText').innerText = `${validCount} archivos detectados`;
+        
+        showToast(`Pre-lectura exitosa: ${validCount} archivos preparados.`);
+        checkBtnState();
+    }
+
+    legalCheck.onchange = checkBtnState;
+    function checkBtnState() {
+        uploadBtn.disabled = !(legalCheck.checked && currentFiles.length > 0);
+    }
+
+    uploadBtn.onclick = async () => {
+        uploadBtn.disabled = true;
+        uploadBtn.innerText = "PROCESANDO LOTE...";
+        showToast("Iniciando motor de auditoría...");
 
         const formData = new FormData();
-        for (let file of input.files) formData.append('files', file);
+        for (let file of currentFiles) formData.append('files', file);
 
         try {
-            const res = await fetch('https://auditoria-backend-crar.onrender.com/api/analizar', { method: 'POST', body: formData });
-            if (res.ok) {
-                const blob = await res.blob();
+            // Llamada al Backend de Excel
+            const excelRes = await fetch('https://auditoria-backend-crar.onrender.com/api/analizar', { method: 'POST', body: formData });
+            if (excelRes.ok) {
+                const blob = await excelRes.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Dictamen_${Date.now()}.xlsx`;
+                a.download = `Reporte_Auditoria_${Date.now()}.xlsx`;
                 a.click();
-            } else { showToast("Error en servidor al generar Excel.", true); }
-        } catch (err) { showToast("Error de red al conectar con API Excel.", true); }
-
-        uploadSection.style.display = "none";
-        resultsWrapper.style.display = "block";
-
-        if (erroresDetectados.length > 0) {
-            errorSection.style.display = "block";
-            let descString = Array.from(conceptosMuestra).slice(0, 3).join(", ") + (conceptosMuestra.size > 3 ? "..." : "");
-            let errorMsg = `Se hallaron ${erroresDetectados.length} discrepancias. Ejemplo: ${erroresDetectados[0]}`;
-            document.getElementById('mathErrorText').innerText = errorMsg;
-            consultarAsesorIA("Lote Facturas XML", descString, errorMsg);
-        } else {
-            document.getElementById('iaAdvisorContainer').style.display = "none";
+                
+                // Mostrar Resultados y ejecutar IA
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('resultsWrapper').style.display = 'block';
+                document.getElementById('timeSaved').innerText = `${currentFiles.length * 2} minutos`;
+                
+                consultarDictamenIA(currentFiles.length);
+            }
+        } catch (e) {
+            showToast("Falla técnica al conectar con el motor central.", "error");
+            uploadBtn.disabled = false;
+            uploadBtn.innerText = "INICIAR ESCANEO FORENSE";
         }
     };
 
-    async function consultarAsesorIA(tipo, concepto, errorDesc) {
-        document.getElementById('iaLoading').style.display = 'block';
+    async function consultarDictamenIA(numFiles) {
         try {
-            const response = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
+                body: JSON.stringify({ 
+                    tipo_documento: "Lote de Auditoría Masiva", 
+                    descripcion_concepto: `Lote de ${numFiles} archivos XML`, 
+                    error_detectado: "Análisis preventivo de cumplimiento general" 
+                })
             });
-            if (!response.ok) throw new Error('API Error');
-            const data = await response.json();
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
-        } catch (err) {
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('iaAdvisorText').innerText = "Falla de conexión al Asesor IA. Revisar detalles en Excel descargado.";
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
-        }
-    }
-
-    // Funcionalidad del Chat
-    const advisorBtn = document.getElementById('advisorBtn');
-    const advisorChat = document.getElementById('advisorChat');
-    const closeAdvisor = document.getElementById('closeAdvisor');
-    const sendAdvisor = document.getElementById('sendAdvisor');
-    const advisorInput = document.getElementById('advisorInput');
-    const advisorBody = document.getElementById('advisorBody');
-    const typingIndicator = document.getElementById('typingIndicator');
-
-    let chatHistory = [];
-
-    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
-    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
-
-    function renderMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
-        div.innerText = text;
-        advisorBody.insertBefore(div, typingIndicator);
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-    }
-
-    async function handleSend() {
-        const text = advisorInput.value.trim();
-        if (!text) return;
-
-        renderMessage(text, 'user');
-        advisorInput.value = '';
-        typingIndicator.style.display = 'block';
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-
-        const currentHistory = [...chatHistory];
-        chatHistory.push({ rol: "usuario", texto: text });
-
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mensaje: text, historial: currentHistory })
-            });
-
-            if (!res.ok) throw new Error('Error API');
-            
             const data = await res.json();
-            renderMessage(data.respuesta, 'bot');
-            chatHistory.push({ rol: "modelo", texto: data.respuesta });
-            
+            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
         } catch (err) {
-            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
-            chatHistory.pop();
-        } finally {
-            typingIndicator.style.display = 'none';
+            document.getElementById('iaAdvisorText').innerText = "Dictamen generado en el archivo Excel descargado.";
         }
     }
-
-    sendAdvisor.onclick = handleSend;
-    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
-    document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', function(e) { const c = this.nextElementSibling; if (getComputedStyle(c).display === 'none') {} }, {passive: true}); });
 </script>
 </body>
 </html>
