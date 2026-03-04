@@ -14,37 +14,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script src="despertador.js"></script>
+
     <style>
         :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --warning: #D97706;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
         
-        .header { background: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-        .header .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-        .header .logo-container img { width: 40px; height: 40px; object-fit: contain; }
-        .header .logo-text { font-weight: 800; font-size: 24px; letter-spacing: -0.5px; }
-        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-link:hover { color: #ffffff; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
+        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
 
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; }
-        .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: var(--bg-secondary); min-width: 900px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); z-index: 100; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; grid-template-columns: repeat(4, 1fr); padding: 20px; gap: 15px; text-align: left; }
-        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: var(--text-main); padding: 8px 10px; text-decoration: none; display: block; font-size: 12px; border-radius: 6px; transition: all 0.2s; font-weight: 500; }
-        .dropdown-content a:hover { background-color: var(--bg-primary); color: var(--brand); transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 10px 4px; font-size: 11px; text-transform: uppercase; color: var(--brand); font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
-
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 30px; }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.05); }
-
-        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .results-container { display: none; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        .alert-risk { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .alert-risk { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; }
         .risk-BAJO { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
         .risk-MEDIO { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
         .risk-ALTO { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
@@ -75,73 +58,12 @@
         .error-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--danger); display: flex; align-items: center; justify-content: center; gap: 10px;}
         .error-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
 
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; }
-
-        .site-footer { text-align: left; padding: 60px 20px 40px; background-color: #0F172A; color: #9CA3AF; font-size: 13px; margin-top: 60px; border-top: 1px solid #1E293B; }
-        .site-footer a { color: #CBD5E1; text-decoration: none; transition: 0.2s; display: block; margin-bottom: 10px; }
-        .site-footer a:hover { color: #ffffff; }
-
-        @media (max-width: 768px) { 
-            .header { padding: 15px 20px; justify-content: center; text-align: center; } 
-            .nav-right { display: none; }
-            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
-        }
+        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
     </style>
 </head>
 <body>
 
-<header class="header">
-    <a href="index.html" class="logo-container">
-        <img src="candado.png" alt="AuditorIA Logo">
-        <span class="logo-text">AuditorIA</span>
-    </a>
-    <div class="nav-right">
-        <a href="como-funciona.html" class="nav-link" style="color: #60A5FA; font-weight: bold;">Cómo Funciona</a>
-        <a href="index.html" class="nav-link">Auditoría Masiva</a>
-        <div class="dropdown">
-            <div class="dropdown-toggle">Suite de Herramientas ▾</div>
-            <div class="dropdown-content">
-                <div class="dropdown-column">
-                    <div class="menu-category">Auditoría y Riesgo</div>
-                    <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
-                    <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
-                    <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
-                    <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
-                    <a href="calculadora-recargos.html">Calculadora de Recargos</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Materialidad y Defensa</div>
-                    <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-                    <a href="prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
-                    <a href="auditoria-activos.html">Auditoría Visual de Activos Fijos</a>
-                    <a href="precios-aduana.html">Riesgo Aduanero (Subvaluación)</a>
-                    <a href="auditoria-viaticos.html">Auditoría Geoespacial Viáticos</a>
-                    <a href="defensa-legal.html">Generador de Defensa Legal</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Inteligencia y Bancos</div>
-                    <a href="analisis-proveedores.html">Análisis de Proveedores</a>
-                    <a href="proyector-iva.html">Proyector IVA Mensual</a>
-                    <a href="dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="conversor-bancario.html">Conversor PDF a CSV Bancario</a>
-                    <a href="validador-csf-32d.html">Analista Idoneidad (CSF/32-D)</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Operación Diaria</div>
-                    <a href="escaner-ocr-fiscal.html">Escáner OCR (Foto a Datos)</a>
-                    <a href="visor-xml.html">Visor y Decodificador XML</a>
-                    <a href="generador-polizas.html">Generador de Pólizas (Layout)</a>
-                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="buscador-conceptos.html">Buscador Forense en XML</a>
-                    <a href="conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+<script src="navbar.js"></script>
 
 <div class="modal-overlay" id="paywallModal">
     <div class="modal-content">
@@ -173,7 +95,8 @@
 
     <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
         <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <p style="font-weight: 600; margin: 0; font-size: 18px;" id="xmlText">Cargar Lote de Facturas de Importación (XML)</p>
+        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="xmlText">Cargar Factura de Importación (XML)</p>
+        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Debe contener complemento exterior o pedimento.</p>
         <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
     </div>
 
@@ -183,16 +106,17 @@
     </div>
 
     <div class="results-container" id="results">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-            <button onclick="window.location.reload()" style="background: var(--bg-primary); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">Analizar Nuevo Documento</button>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; gap: 10px;">
+            <button onclick="window.location.reload()" style="background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">Analizar Nuevo Documento</button>
+            <button onclick="descargarDictamenPDF()" style="background: #111827; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Descargar Dictamen (PDF)</button>
         </div>
 
         <div id="riskAlert" class="alert-risk"></div>
         
-        <h3 style="font-size: 14px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Análisis de Valoración Aduanera (Dictamen Predictivo)</h3>
-        <p id="resDictamen" style="font-size: 15px; line-height: 1.6; color: var(--text-main); margin-bottom: 30px;"></p>
-        
-        <button onclick="descargarDictamenPDF()" style="background: #111827; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; width: 100%;">Descargar Dictamen de Valoración (PDF)</button>
+        <div style="background: var(--bg-primary); border: 1px solid var(--border); padding: 25px; border-radius: 8px;">
+            <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Análisis de Valoración Aduanera</h3>
+            <p id="resDictamen" style="font-size: 15px; line-height: 1.6; color: var(--text-main); margin-bottom: 0; text-align: justify;"></p>
+        </div>
         
         <div class="share-container" id="shareContainer">
             <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
@@ -206,101 +130,10 @@
 
 <div id="hiddenPdfRender"></div>
 
-<footer class="site-footer">
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px;">
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="index.html">Auditoría Masiva XML</a>
-            <a href="despachos-contables.html">Para Despachos</a>
-            <a href="empresas.html">Para Empresas</a>
-            
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px; margin-top: 30px;">Legal y Contacto</h4>
-            <a href="privacidad.html">Aviso de Privacidad</a>
-            <a href="terminos.html">Términos de Servicio</a>
-            <a href="mailto:contacto@auditoriaxml.mx" style="color: #3B82F6; font-weight: 600;">contacto@auditoriaxml.mx</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Auditoría y Riesgo</h4>
-            <a href="index.html">Auditoría Masiva (Art. 30-B)</a>
-            <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
-            <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-            <a href="tasa-efectiva.html">Tasa Efectiva de ISR</a>
-            <a href="auditor-nomina.html">Auditor de Nómina (CFDI)</a>
-            <a href="calculadora-recargos.html">Calculadora Recargos</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Materialidad y Defensa</h4>
-            <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-            <a href="prueba-servicio.html">Prueba Servicio (Intangibles)</a>
-            <a href="auditoria-activos.html">Auditoría Visual Activos</a>
-            <a href="precios-aduana.html">Riesgo Aduanero</a>
-            <a href="auditoria-viaticos.html">Geoespacial Viáticos</a>
-            <a href="defensa-legal.html">Generador Defensa Legal</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Inteligencia y Bancos</h4>
-            <a href="analisis-proveedores.html">Análisis Proveedores</a>
-            <a href="proyector-iva.html">Proyector IVA Mensual</a>
-            <a href="dashboard-xml.html">Dashboard Financiero</a>
-            <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-            <a href="conversor-bancario.html">Conversor PDF a CSV</a>
-            <a href="validador-csf-32d.html">Analista CSF y 32-D</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación Diaria</h4>
-            <a href="escaner-ocr-fiscal.html">Escáner OCR (Fotos)</a>
-            <a href="visor-xml.html">Visor y Decodificador</a>
-            <a href="generador-polizas.html">Generador de Pólizas</a>
-            <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-            <a href="buscador-conceptos.html">Buscador Forense XML</a>
-            <a href="conversor-xml-pdf.html">Conversor Masivo PDF</a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px; margin-top: 40px; color: #9CA3AF; text-align: center;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
-    </div>
-</footer>
-
-<style>
-    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
-    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-    .advisor-btn:hover { transform: scale(1.05); }
-    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
-    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
-    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
-    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
-    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
-    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
-    .advisor-input:focus { border-color: var(--brand, #2563EB); }
-    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
-    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
-</style>
-<div id="advisorWidget" class="advisor-widget">
-    <button id="advisorBtn" class="advisor-btn">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-        Asesor Fiscal IA
-    </button>
-    <div id="advisorChat" class="advisor-chat">
-        <div class="advisor-header">
-            <span>Paula - AuditorIA Advisor</span>
-            <button id="closeAdvisor" class="advisor-close">×</button>
-        </div>
-        <div id="advisorBody" class="advisor-body">
-            <div class="msg-bot">Analista fiscal en línea. Ingresa tu consulta sobre CFDI, retenciones o normatividad del SAT.</div>
-            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
-        </div>
-        <div class="advisor-footer">
-            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
-            <button id="sendAdvisor" class="advisor-send">Enviar</button>
-        </div>
-    </div>
-</div>
+<script src="footer.js"></script>
 
 <script>
+    // CUOTA FREEMIUM
     function checkQuota() {
         let usos = localStorage.getItem('auditoria_usos');
         if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
@@ -308,8 +141,6 @@
         localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
         return true;
     }
-
-    document.querySelectorAll('.dropdown-toggle').forEach(t => { t.addEventListener('touchstart', e => {}, {passive: true}); });
 
     const inputXml = document.getElementById('xmlInput');
     const dropZone = document.getElementById('dropZone');
@@ -333,7 +164,7 @@
                 reader.onload = function(e) {
                     try {
                         const rawText = e.target.result;
-                        // Barrera Aduanera Estricta: Buscar nodos de comercio exterior o información aduanera.
+                        // Barrera Aduanera Estricta
                         if (rawText.includes('<cce11:ComercioExterior') || rawText.includes('<cfdi:InformacionAduanera')) {
                             tieneAduana = true;
                         }
@@ -368,7 +199,7 @@
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/precios-aduana", {
                 method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ conceptos: listaConceptos.slice(0, 50) }) // Evitar rebasar tokens IA
+                body: JSON.stringify({ conceptos: listaConceptos.slice(0, 50) }) // Evitar rebasar tokens
             });
 
             if(!res.ok) throw new Error("Error API");
@@ -383,14 +214,16 @@
 
             document.getElementById('resDictamen').innerText = data.analisis_valoracion;
             
+            // Guardar para exportación PDF
             dictamenDataGlobal = {
                 riesgo: data.nivel_riesgo_aduanero,
                 analisis: data.analisis_valoracion,
-                color: data.nivel_riesgo_aduanero === 'ALTO' ? '#DC2626' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#D97706' : '#059669')
+                color: data.nivel_riesgo_aduanero === 'ALTO' ? '#DC2626' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#D97706' : '#059669'),
+                bgStatus: data.nivel_riesgo_aduanero === 'ALTO' ? '#FEF2F2' : (data.nivel_riesgo_aduanero === 'MEDIO' ? '#FEF3C7' : '#ECFDF5')
             };
 
         } catch (e) {
-            alert("Error de conexión. Intente nuevamente.");
+            alert("Error de conexión con el servidor IA. Intente nuevamente.");
             window.location.reload();
         }
     }
@@ -400,25 +233,25 @@
         const renderContainer = document.getElementById('hiddenPdfRender');
         
         renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative;">
+            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white; page-break-inside: avoid;">
                 <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
                 
-                <div style="border-bottom: 2px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827;">Dictamen Predictivo de Valoración Aduanera</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280;">Análisis cruzado de XML de importación contra referencias internacionales.</p>
+                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
+                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Dictamen Predictivo de Valoración Aduanera</h1>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Análisis cruzado de XML de importación contra referencias internacionales.</p>
                 </div>
                 
-                <div style="background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; text-align: center; position: relative; z-index: 1;">
-                    <strong style="display: block; font-size: 12px; color: #6B7280; text-transform: uppercase;">Nivel de Riesgo por Subvaluación (ANAM/SAT)</strong>
-                    <span style="font-size: 24px; font-weight: bold; color: ${dictamenDataGlobal.color}; display: block; margin-top: 10px;">${dictamenDataGlobal.riesgo}</span>
+                <div style="background: ${dictamenDataGlobal.bgStatus}; padding: 20px; border: 1px solid ${dictamenDataGlobal.color}; border-radius: 6px; margin-bottom: 30px; text-align: center; position: relative; z-index: 1;">
+                    <strong style="display: block; font-size: 12px; color: ${dictamenDataGlobal.color}; text-transform: uppercase;">Nivel de Riesgo por Subvaluación (ANAM/SAT)</strong>
+                    <span style="font-size: 24px; font-weight: 900; color: ${dictamenDataGlobal.color}; display: block; margin-top: 10px;">${dictamenDataGlobal.riesgo}</span>
                 </div>
 
-                <div style="margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px;">Análisis Forense Detallado</h3>
-                    <p style="font-size: 13px; line-height: 1.6; text-align: justify;">${dictamenDataGlobal.analisis}</p>
+                <div style="margin-bottom: 30px; position: relative; z-index: 1; border: 1px solid #E5E7EB; padding: 20px; border-radius: 8px; background: #F9FAFB;">
+                    <h3 style="font-size: 14px; text-transform: uppercase; color: #4B5563; border-bottom: 1px solid #E5E7EB; padding-bottom: 5px; margin-top: 0;">Análisis Forense Detallado</h3>
+                    <p style="font-size: 13px; line-height: 1.6; text-align: justify; margin-bottom: 0;">${dictamenDataGlobal.analisis}</p>
                 </div>
                 
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px; font-family: monospace;">
                     Este documento es de carácter predictivo para mitigación de contingencias en Precios de Transferencia.<br>
                     Plataforma: AuditoriaXML.mx
                 </div>
@@ -435,57 +268,6 @@
 
         html2pdf().set(opt).from(renderContainer.firstElementChild).save();
     }
-
-    // Chat General
-    const advisorBtn = document.getElementById('advisorBtn');
-    const advisorChat = document.getElementById('advisorChat');
-    const closeAdvisor = document.getElementById('closeAdvisor');
-    const sendAdvisor = document.getElementById('sendAdvisor');
-    const advisorInput = document.getElementById('advisorInput');
-    const advisorBody = document.getElementById('advisorBody');
-    const typingIndicator = document.getElementById('typingIndicator');
-    let chatHistory = [];
-
-    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
-    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
-
-    function renderMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
-        div.innerText = text;
-        advisorBody.insertBefore(div, typingIndicator);
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-    }
-
-    async function handleSend() {
-        const text = advisorInput.value.trim();
-        if (!text) return;
-        renderMessage(text, 'user');
-        advisorInput.value = '';
-        typingIndicator.style.display = 'block';
-        advisorBody.scrollTop = advisorBody.scrollHeight;
-
-        const currentHistory = [...chatHistory];
-        chatHistory.push({ rol: "usuario", texto: text });
-
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mensaje: text, historial: currentHistory })
-            });
-            if (!res.ok) throw new Error('Error API');
-            const data = await res.json();
-            renderMessage(data.respuesta, 'bot');
-            chatHistory.push({ rol: "modelo", texto: data.respuesta });
-        } catch (err) {
-            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
-            chatHistory.pop();
-        } finally {
-            typingIndicator.style.display = 'none';
-        }
-    }
-    sendAdvisor.onclick = handleSend;
-    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 </script>
 </body>
 </html>
