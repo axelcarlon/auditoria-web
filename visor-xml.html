@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor y Decodificador XML | AuditorIA</title>
-    <meta name="description" content="Visualiza el contenido de tus XML al instante. Genera representaciones impresas en PDF (facturas) y exporta catálogos a Excel sin software adicional.">
+    <title>Microscopio XML a PDF | AuditorIA</title>
+    <meta name="description" content="Visualiza tus archivos XML al instante. Convierte facturas a PDF con código QR o extrae los datos a Excel sin usar software contable.">
     <link rel="canonical" href="https://auditoriaxml.mx/visor-xml.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -13,75 +13,67 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #6366F1; --brand-glow: rgba(99, 102, 241, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #F59E0B; --brand-glow: rgba(245, 158, 11, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
 
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
         .header-section { text-align: center; margin-bottom: 50px; }
-        .header-badge { display: inline-block; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--brand); color: #A5B4FC; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
+        .header-badge { display: inline-block; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--brand); color: #FCD34D; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(245, 158, 11, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
         .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
-        .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px; max-width: 400px; margin: 0 auto;}
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #4F46E5;}
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
-
-        .terminal-loader { display: none; font-family: monospace; color: #A5B4FC; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 150px; border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; max-width: 600px; margin: 20px auto 0;}
-        
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
-        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; display: flex; flex-direction: column; justify-content: center;}
-        .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px;}
-        .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+        .invoice-card { background: white; color: #111827; border-radius: 12px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 30px;}
+        .inv-header { display: flex; justify-content: space-between; border-bottom: 2px solid #E5E7EB; padding-bottom: 20px; margin-bottom: 20px;}
+        .inv-title { font-size: 24px; font-weight: 900; color: var(--brand); margin: 0 0 5px;}
+        .inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;}
+        .inv-label { font-size: 11px; text-transform: uppercase; color: #6B7280; font-weight: bold; margin-bottom: 5px;}
+        .inv-value { font-size: 14px; font-weight: bold; color: #111827; word-break: break-all;}
+        
+        .table-container { border: 1px solid #E5E7EB; border-radius: 8px; overflow: hidden; margin-bottom: 30px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #F3F4F6; padding: 12px; font-size: 12px; color: #374151; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #E5E7EB;}
+        td { padding: 12px; font-size: 13px; border-bottom: 1px solid #E5E7EB; color: #111827; }
 
-        /* Data Table para Visor Microscópico */
-        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 30px; max-height: 600px; scrollbar-width: thin; scrollbar-color: #4B5563 transparent;}
-        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
-        .table-container::-webkit-scrollbar-thumb { background-color: #4B5563; border-radius: 10px; }
-        
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 1000px;}
-        th { background: rgba(0,0,0,0.3); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
-        td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; vertical-align: middle;}
-        
-        .badge-tipo { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: rgba(255,255,255,0.1); color: white;}
-        .badge-I { border-left: 3px solid var(--success); }
-        .badge-E { border-left: 3px solid var(--danger); }
-        .badge-P { border-left: 3px solid var(--brand); }
-        
-        .btn-mini { background: transparent; color: var(--brand); border: 1px solid var(--brand); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; white-space: nowrap;}
-        .btn-mini:hover { background: var(--brand); color: white; }
+        .inv-totals { display: flex; justify-content: flex-end;}
+        .totals-box { width: 300px; border: 1px solid #E5E7EB; border-radius: 8px; padding: 15px; background: #F9FAFB;}
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;}
+        .total-row.grand { font-size: 18px; font-weight: 900; color: var(--brand); margin-top: 10px; border-top: 1px solid #D1D5DB; padding-top: 10px;}
 
         .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-action { background: var(--brand); color: #000; border: none; padding: 16px 24px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--brand-glow);}
+        .btn-action:hover { background: #D97706; transform: translateY(-2px); color: white;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        /* Cross-Selling CSS */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
-        .feature-icon { width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-icon { width: 48px; height: 48px; background: rgba(245, 158, 11, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
-        .bento-card:hover { transform: translateY(-5px); border-color: rgba(99, 102, 241, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
             .btn-toolbar { flex-direction: column; }
+            .inv-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -91,102 +83,125 @@
 
 <div class="container">
     <div class="header-section" id="headerSection">
-        <div class="header-badge">MOTOR DE EXTRACCIÓN DE DATOS</div>
-        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Decodificador XML a PDF</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga tus comprobantes crudos y visualiza su contenido estructurado al instante. Genera la representación gráfica (Factura PDF) de cualquier XML con un solo clic.</p>
+        <div class="header-badge">VISUALIZADOR FORENSE CFDI</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Microscopio XML a PDF</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Arrastra tu archivo XML para renderizar la factura instantáneamente. Descarga el PDF con Código QR oficial del SAT o extrae los conceptos a Excel.</p>
     </div>
 
     <div id="mainForm">
         <div class="upload-section" id="dropZone">
-            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-            <h3 style="margin: 0 0 10px; font-size: 20px;">Anexar Lote de Documentos</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Soporta CFDI 3.3 y 4.0 de Ingreso, Egreso y Pago.</p>
-            <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
-            <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
-        </div>
-
-        <div style="display: flex; justify-content: center;">
-            <button id="btnEjecutar" class="btn-action" onclick="iniciarDecodificacion()" disabled>
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                DECODIFICAR ESTRUCTURA
-            </button>
-        </div>
-
-        <div class="terminal-loader" id="terminalLoader">
-            > Conectando con Módulo Parser DOM...<br>
-            <span id="termStatus"></span>
+            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            <h3 style="margin: 0 0 10px; font-size: 20px;">Lanzar Archivo XML</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Soporta CFDI 3.3 y 4.0 (Ingreso, Egreso o Pago)</p>
+            <input type="file" id="inputFile" accept=".xml" style="display: none;">
         </div>
     </div>
 
     <div class="results-container" id="results">
         
-        <div class="kpi-grid">
-            <div class="kpi-box">
-                <div class="kpi-label">Documentos Procesados</div>
-                <div class="kpi-value" id="kpiDocs">0</div>
-            </div>
-            <div class="kpi-box" style="border-color: rgba(16, 185, 129, 0.3);">
-                <div class="kpi-label" style="color: var(--success);">Flujo Identificado (Total MXN)</div>
-                <div class="kpi-value" id="kpiFlujo" style="color: var(--success);">$0.00</div>
-            </div>
-            <div class="kpi-box">
-                <div class="kpi-label">Impuestos Extraídos</div>
-                <div class="kpi-value" id="kpiImpuestos">$0.00</div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tipo</th>
-                        <th>Fecha y Folio</th>
-                        <th>Emisor / Receptor</th>
-                        <th style="text-align: right;">Importe Total</th>
-                        <th style="text-align: center;">Acción Forense</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaDocumentos">
-                </tbody>
-            </table>
-        </div>
-
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Limpiar Visor</button>
-            <button onclick="descargarExcelLayout()" class="btn-secondary" style="background: #064E3B; color: #34D399; border-color: #065F46; flex: 2;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                EXPORTAR METADATOS (EXCEL)
+        <div class="btn-toolbar" style="margin-bottom: 20px;">
+            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Volver
             </button>
+            <button onclick="descargarExcelIndividual()" class="btn-secondary" style="border-color: #065F46; color: #34D399;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Tabla (Excel)
+            </button>
+            <button id="btnDescargarPDF" onclick="exportarPDF()" class="btn-action">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DESCARGAR PDF ORIGINAL (CON QR)
+            </button>
+        </div>
+
+        <div class="invoice-card" id="printArea">
+            <div class="inv-header">
+                <div>
+                    <h2 class="inv-title" id="valEmisorNombre">EMISOR S.A. DE C.V.</h2>
+                    <div class="inv-label">RFC EMISOR: <span class="inv-value" id="valEmisorRFC" style="font-weight:normal; color:#4B5563;"></span></div>
+                </div>
+                <div style="text-align: right;">
+                    <h3 style="margin: 0 0 5px; font-size: 16px; color: #374151;">FACTURA ELECTRÓNICA</h3>
+                    <div class="inv-label">FOLIO: <span class="inv-value" id="valFolio" style="color:var(--brand);"></span></div>
+                    <div class="inv-label">FECHA: <span class="inv-value" id="valFecha" style="font-weight:normal; color:#4B5563;"></span></div>
+                </div>
+            </div>
+
+            <div class="inv-grid">
+                <div>
+                    <div class="inv-label">RECEPTOR</div>
+                    <div class="inv-value" id="valReceptorNombre" style="margin-bottom: 5px;"></div>
+                    <div class="inv-label">RFC: <span class="inv-value" id="valReceptorRFC" style="font-weight:normal; color:#4B5563;"></span></div>
+                </div>
+                <div>
+                    <div class="inv-label">DATOS FISCALES</div>
+                    <div class="inv-label">UUID: <span class="inv-value" id="valUUID" style="font-family: monospace; font-size:11px;"></span></div>
+                    <div class="inv-label">USO CFDI: <span class="inv-value" id="valUso" style="font-weight:normal; color:#4B5563;"></span></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cant.</th>
+                            <th>Cve. SAT</th>
+                            <th>Descripción</th>
+                            <th style="text-align: right;">Precio U.</th>
+                            <th style="text-align: right;">Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaConceptos">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="inv-totals">
+                <div class="totals-box">
+                    <div class="total-row"><span>Subtotal:</span> <strong id="valSubtotal">$0.00</strong></div>
+                    <div class="total-row"><span>IVA Trasladado:</span> <strong id="valIVA">$0.00</strong></div>
+                    <div class="total-row" style="color:var(--danger);"><span>Retenciones:</span> <strong id="valRet">$0.00</strong></div>
+                    <div class="total-row grand"><span>TOTAL:</span> <span id="valTotal">$0.00</span></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #D1D5DB; display: flex; gap: 20px;">
+                <div id="qrContainer" style="width: 100px; height: 100px; background: #F3F4F6;"></div>
+                <div>
+                    <div style="font-size: 10px; font-weight: bold; color: #6B7280; margin-bottom: 5px;">SELLO DIGITAL DEL CFDI</div>
+                    <div id="valSello" style="font-size: 8px; font-family: monospace; color: #9CA3AF; word-break: break-all; line-height: 1.4;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
-            <h3 class="feature-title">Generación Dinámica de PDF</h3>
-            <p class="feature-desc">El motor reconstruye la factura original basándose puramente en los datos del XML, generando un PDF con estándar contable al instante.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
+            <h3 class="feature-title">Generación QR Oficial</h3>
+            <p class="feature-desc">El visor no solo te muestra los datos, sino que reconstruye el Código QR verificador del SAT para que la representación impresa (PDF) tenga validez técnica y material.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
-            <h3 class="feature-title">Extracción de Nivel Profundo</h3>
-            <p class="feature-desc">Captura UUID, conceptos individuales, impuestos desglosados y sellos digitales sin importar la versión de facturación del proveedor.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
+            <h3 class="feature-title">Extracción a Hoja de Cálculo</h3>
+            <p class="feature-desc">Si el XML tiene 50 conceptos, no los captures a mano. Un clic transfiere todas las filas de la factura a un archivo de Excel ordenado.</p>
         </div>
     </div>
 
     <h2 class="showcase-header">Soluciones Complementarias</h2>
     <div class="bento-grid">
-        <a href="dashboard-xml.html" class="bento-card">
+        <a href="conversor-xml-pdf.html" class="bento-card">
             <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg></div>
-                <h3 class="bento-title">Dashboard Financiero XML</h3>
-                <p class="bento-desc">Transforma la lista de facturas en métricas de inteligencia de negocios para medir liquidez y concentración de clientes.</p>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></div>
+                <h3 class="bento-title">Conversor Masivo a PDF</h3>
+                <p class="bento-desc">¿Tienes más de 10 facturas? Utiliza el motor batch para convertirlas todas a PDF con un solo clic.</p>
             </div>
         </a>
-        <a href="validador-efos.html" class="bento-card">
+        <a href="escaner-ocr-fiscal.html" class="bento-card">
             <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
-                <h3 class="bento-title">Prevención EFOS (Art. 69-B)</h3>
-                <p class="bento-desc">Verifica automáticamente si los emisores de esta lista de XMLs se encuentran en las listas negras de empresas simuladoras del SAT.</p>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg></div>
+                <h3 class="bento-title">Escáner de Tickets (OCR)</h3>
+                <p class="bento-desc">Si no tienes el XML, toma una foto del ticket. Nuestra IA extraerá el folio y el RFC para que puedas deducirlo.</p>
             </div>
         </a>
     </div>
@@ -201,17 +216,9 @@
         }
     });
 
-    let currentFiles = [];
-    let decodedDocs = []; // Base de datos maestra de los XML decodificados
-
+    let currentInvoiceData = null;
+    let qrDataURI = null;
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-    function getNodes(node, tagName) {
-        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
-               Array.from(node.getElementsByTagName(tagName)),
-               Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
-    }
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
@@ -219,278 +226,202 @@
     drop.onclick = () => input.click();
     ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
     ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
-    drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
-    input.addEventListener('change', e => processFiles(e.target.files));
+    drop.addEventListener('drop', e => processFile(e.dataTransfer.files[0]));
+    input.addEventListener('change', e => processFile(e.target.files[0]));
 
-    function processFiles(files) {
-        const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
-        if(validFiles.length === 0) return;
-
-        currentFiles = validFiles;
-        drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documentos crudos en memoria`;
-        document.getElementById('btnEjecutar').disabled = false;
+    function getNodes(node, tagName) {
+        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
+               Array.from(node.getElementsByTagName(tagName)),
+               Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
     }
 
-    async function iniciarDecodificacion() {
-        document.getElementById('headerSection').style.display = 'none';
-        document.getElementById('btnEjecutar').style.display = 'none';
-        drop.style.display = 'none';
-        
-        const term = document.getElementById('terminalLoader');
-        const status = document.getElementById('termStatus');
-        term.style.display = 'block';
-        
-        decodedDocs = [];
-        let flujoTotal = 0;
-        let impuestosTotales = 0;
-
-        for(let i=0; i<currentFiles.length; i++) {
-            if(i % 5 === 0) status.innerText = `> Parseando estructura profunda... ${((i/currentFiles.length)*100).toFixed(0)}%`;
-            
-            try {
-                const text = await currentFiles[i].text();
-                const xml = new DOMParser().parseFromString(text, "text/xml");
-                
-                const cfdi = getNodes(xml, 'Comprobante')[0];
-                if(!cfdi) continue;
-
-                const emisor = getNodes(xml, 'Emisor')[0];
-                const receptor = getNodes(xml, 'Receptor')[0];
-                const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
-                
-                const tipo = cfdi.getAttribute('TipoDeComprobante') || "I";
-                const total = parseFloat(cfdi.getAttribute('Total') || 0);
-                const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
-                const moneda = cfdi.getAttribute('Moneda') || "MXN";
-                const fecha = (cfdi.getAttribute('Fecha') || "").split('T')[0];
-                const folio = cfdi.getAttribute('Folio') || "S/F";
-                const uuid = timbre ? timbre.getAttribute('UUID') : "SIN-TIMBRE";
-
-                const emisorNombre = emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : "DESCONOCIDO";
-                const emisorRfc = emisor ? emisor.getAttribute('Rfc') : "";
-                
-                const receptorNombre = receptor ? (receptor.getAttribute('Nombre') || receptor.getAttribute('Rfc')) : "DESCONOCIDO";
-                const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
-
-                // Extracción de Conceptos para el PDF
-                const conceptosNodos = getNodes(xml, 'Concepto');
-                let conceptosArr = [];
-                conceptosNodos.forEach(c => {
-                    conceptosArr.push({
-                        cantidad: c.getAttribute('Cantidad'),
-                        descripcion: c.getAttribute('Descripcion'),
-                        valorUnitario: c.getAttribute('ValorUnitario'),
-                        importe: c.getAttribute('Importe')
-                    });
-                });
-
-                // Extracción de Impuestos para PDF y KPIs
-                let iva = 0;
-                let isrRet = 0;
-                let ivaRet = 0;
-                
-                const trasladosGlobales = getNodes(xml, 'Traslado');
-                trasladosGlobales.forEach(t => { 
-                    if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') {
-                        iva += parseFloat(t.getAttribute('Importe') || 0); 
-                    }
-                });
-
-                const retencionesGlobales = getNodes(xml, 'Retencion');
-                retencionesGlobales.forEach(r => {
-                    let imp = r.getAttribute('Impuesto');
-                    if(imp === '001' || imp === 'ISR') isrRet += parseFloat(r.getAttribute('Importe') || 0);
-                    if(imp === '002' || imp === 'IVA') ivaRet += parseFloat(r.getAttribute('Importe') || 0);
-                });
-
-                flujoTotal += total;
-                impuestosTotales += (iva + isrRet + ivaRet);
-
-                // Guardado de la radiografía del documento
-                decodedDocs.push({
-                    id: i,
-                    tipo: tipo,
-                    fecha: fecha,
-                    folio: folio,
-                    uuid: uuid,
-                    emisor: emisorNombre,
-                    emisorRfc: emisorRfc,
-                    receptor: receptorNombre,
-                    receptorRfc: receptorRfc,
-                    subtotal: subtotal,
-                    total: total,
-                    moneda: moneda,
-                    conceptos: conceptosArr,
-                    iva: iva,
-                    isrRet: isrRet,
-                    ivaRet: ivaRet,
-                    sello: timbre ? timbre.getAttribute('SelloSAT') : "N/A",
-                    certSAT: timbre ? timbre.getAttribute('NoCertificadoSAT') : "N/A"
-                });
-
-            } catch(e) { console.error("Archivo omitido", e); }
+    async function processFile(file) {
+        if(!file || !file.name.toLowerCase().endsWith('.xml')) {
+            if(typeof window.showToast === 'function') window.showToast("Solo archivos XML admitidos.", "error");
+            return;
         }
 
-        document.getElementById('terminalLoader').style.display = 'none';
-        document.getElementById('results').style.display = 'block';
-
-        document.getElementById('kpiDocs').innerText = decodedDocs.length;
-        document.getElementById('kpiFlujo').innerText = formatMoney(flujoTotal);
-        document.getElementById('kpiImpuestos').innerText = formatMoney(impuestosTotales);
-
-        renderizarTablaMicroscopica();
-        if (typeof window.showToast === 'function') window.showToast("Decodificación completada al 100%.", "success");
-    }
-
-    function renderizarTablaMicroscopica() {
-        const tbody = document.getElementById('tablaDocumentos');
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('mainForm').style.display = 'none';
         
-        tbody.innerHTML = decodedDocs.map(d => {
-            let tipoBadge = "badge-I"; let tipoText = "INGRESO";
-            if(d.tipo === 'E') { tipoBadge = "badge-E"; tipoText = "EGRESO"; }
-            else if(d.tipo === 'P') { tipoBadge = "badge-P"; tipoText = "PAGO"; }
-            else if(d.tipo === 'N') { tipoBadge = "badge-P"; tipoText = "NÓMINA"; }
-
-            return `
-            <tr>
-                <td><span class="badge-tipo ${tipoBadge}">${tipoText}</span></td>
-                <td>
-                    <div style="font-weight:bold; color:var(--text-main);">${d.fecha}</div>
-                    <div style="font-size:11px; color:var(--text-muted); font-family:monospace;">Folio: ${d.folio}</div>
-                </td>
-                <td>
-                    <div style="font-weight:bold; color:var(--brand); font-size:12px; line-height:1.2;">Emisor: ${d.emisor.substring(0,30)}</div>
-                    <div style="color:var(--text-muted); font-size:12px; line-height:1.2; margin-top:4px;">Receptor: ${d.receptor.substring(0,30)}</div>
-                </td>
-                <td style="text-align: right; font-family: monospace; font-size: 14px; font-weight: bold;">
-                    ${formatMoney(d.total)} <span style="font-size:10px; color:var(--text-muted);">${d.moneda}</span>
-                </td>
-                <td style="text-align: center;">
-                    <button class="btn-mini" onclick="generarPDFIndividual(${d.id})">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: text-bottom; margin-right:3px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        PDF
-                    </button>
-                </td>
-            </tr>
-            `;
-        }).join('');
-    }
-
-    // KILLER FEATURE: Generación de Factura PDF On-the-Fly
-    function generarPDFIndividual(id) {
-        const d = decodedDocs.find(x => x.id === id);
-        if(!d) return;
-
         try {
-            if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
+            const text = await file.text();
+            const xml = new DOMParser().parseFromString(text, "text/xml");
+            
+            const cfdi = getNodes(xml, 'Comprobante')[0];
+            const emisor = getNodes(xml, 'Emisor')[0];
+            const receptor = getNodes(xml, 'Receptor')[0];
+            const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
+            
+            if(!cfdi) throw new Error("Documento XML Inválido");
 
-            let conceptosRows = [
-                [{text: 'Cant.', style: 'th'}, {text: 'Descripción', style: 'th'}, {text: 'P. Unitario', style: 'th', alignment: 'right'}, {text: 'Importe', style: 'th', alignment: 'right'}]
-            ];
+            const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
+            const sello = cfdi.getAttribute('Sello') || "";
 
-            d.conceptos.forEach(c => {
-                conceptosRows.push([
-                    {text: parseFloat(c.cantidad).toFixed(2), fontSize: 9},
-                    {text: c.descripcion, fontSize: 9},
-                    {text: formatMoneyPDF(c.valorUnitario), fontSize: 9, alignment: 'right'},
-                    {text: formatMoneyPDF(c.importe), fontSize: 9, alignment: 'right'}
-                ]);
-            });
-
-            const docDefinition = {
-                pageSize: 'LETTER',
-                pageMargins: [40, 40, 40, 40],
-                content: [
-                    {
-                        columns: [
-                            {
-                                width: '50%',
-                                stack: [
-                                    { text: d.emisor, fontSize: 14, bold: true, color: '#111827' },
-                                    { text: `RFC: ${d.emisorRfc}`, fontSize: 10, color: '#4B5563', margin: [0, 4, 0, 0] }
-                                ]
-                            },
-                            {
-                                width: '50%',
-                                stack: [
-                                    { text: 'FACTURA ELECTRÓNICA', fontSize: 16, bold: true, color: '#6366F1', alignment: 'right' },
-                                    { text: `Folio: ${d.folio}`, fontSize: 11, alignment: 'right', bold: true, margin: [0, 5, 0, 0] },
-                                    { text: `Fecha: ${d.fecha}`, fontSize: 10, alignment: 'right', color: '#4B5563' }
-                                ]
-                            }
-                        ]
-                    },
-                    { canvas: [{ type: 'line', x1: 0, y1: 15, x2: 532, y2: 15, lineWidth: 2, lineColor: '#E2E8F0' }] },
-                    
-                    {
-                        margin: [0, 25, 0, 20],
-                        stack: [
-                            { text: 'RECEPTOR', fontSize: 10, bold: true, color: '#6366F1' },
-                            { text: d.receptor, fontSize: 12, bold: true, color: '#111827', margin: [0, 4, 0, 2] },
-                            { text: `RFC: ${d.receptorRfc}`, fontSize: 10, color: '#4B5563' }
-                        ]
-                    },
-
-                    {
-                        table: { headerRows: 1, widths: ['auto', '*', 'auto', 'auto'], body: conceptosRows },
-                        layout: 'lightHorizontalLines', margin: [0, 0, 0, 20]
-                    },
-
-                    {
-                        columns: [
-                            { width: '*', text: '' }, // Espaciador
-                            {
-                                width: '40%',
-                                table: {
-                                    widths: ['*', 'auto'],
-                                    body: [
-                                        [{ text: 'Subtotal:', alignment: 'right', fontSize: 10 }, { text: formatMoneyPDF(d.subtotal), alignment: 'right', fontSize: 10, bold: true }],
-                                        [{ text: 'IVA Trasladado:', alignment: 'right', fontSize: 10 }, { text: formatMoneyPDF(d.iva), alignment: 'right', fontSize: 10 }],
-                                        [{ text: 'Retenciones:', alignment: 'right', fontSize: 10 }, { text: formatMoneyPDF(d.isrRet + d.ivaRet), alignment: 'right', fontSize: 10, color: '#EF4444' }],
-                                        [{ text: 'TOTAL:', alignment: 'right', fontSize: 12, bold: true, color: '#6366F1' }, { text: formatMoneyPDF(d.total), alignment: 'right', fontSize: 12, bold: true }]
-                                    ]
-                                },
-                                layout: 'noBorders'
-                            }
-                        ]
-                    },
-
-                    { canvas: [{ type: 'line', x1: 0, y1: 15, x2: 532, y2: 15, lineWidth: 1, lineColor: '#E2E8F0' }] },
-                    
-                    {
-                        margin: [0, 25, 0, 0],
-                        stack: [
-                            { text: 'DATOS FISCALES DEL COMPROBANTE', fontSize: 9, bold: true, color: '#9CA3AF' },
-                            { text: `UUID: ${d.uuid}`, fontSize: 8, margin: [0, 4, 0, 2] },
-                            { text: `Certificado SAT: ${d.certSAT}`, fontSize: 8, margin: [0, 2, 0, 2] },
-                            { text: `Sello Digital (Fragmento): ${d.sello.substring(0,60)}...`, fontSize: 8, margin: [0, 2, 0, 0] }
-                        ]
-                    }
-                ],
-                styles: { th: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#6366F1', margin: [0, 4, 0, 4] } }
+            currentInvoiceData = {
+                folio: cfdi.getAttribute('Folio') || "S/F",
+                fecha: (cfdi.getAttribute('Fecha') || "").split('T')[0],
+                total: parseFloat(cfdi.getAttribute('Total') || 0),
+                subtotal: parseFloat(cfdi.getAttribute('SubTotal') || 0),
+                emisorNombre: emisor ? (emisor.getAttribute('Nombre') || "DESCONOCIDO") : "DESCONOCIDO",
+                emisorRfc: emisor ? emisor.getAttribute('Rfc') : "XAXX010101000",
+                receptorNombre: receptor ? (receptor.getAttribute('Nombre') || "DESCONOCIDO") : "DESCONOCIDO",
+                receptorRfc: receptor ? receptor.getAttribute('Rfc') : "XAXX010101000",
+                uuid: timbre ? timbre.getAttribute('UUID') : "NO-TIMBRADO",
+                uso: usoCFDI,
+                sello: sello,
+                conceptos: [],
+                iva: 0,
+                retenciones: 0
             };
 
-            pdfMake.createPdf(docDefinition).download(`Factura_Reconstruida_${d.folio||d.uuid.substring(0,8)}.pdf`);
+            const conceptosNodos = getNodes(xml, 'Concepto');
+            conceptosNodos.forEach(c => {
+                currentInvoiceData.conceptos.push({
+                    cant: parseFloat(c.getAttribute('Cantidad') || 0),
+                    cve: c.getAttribute('ClaveProdServ') || "",
+                    desc: c.getAttribute('Descripcion') || "",
+                    pu: parseFloat(c.getAttribute('ValorUnitario') || 0),
+                    importe: parseFloat(c.getAttribute('Importe') || 0)
+                });
+            });
+
+            const traslados = getNodes(xml, 'Traslado');
+            traslados.forEach(t => { if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') currentInvoiceData.iva += parseFloat(t.getAttribute('Importe') || 0); });
+            const retenciones = getNodes(xml, 'Retencion');
+            retenciones.forEach(r => { currentInvoiceData.retenciones += parseFloat(r.getAttribute('Importe') || 0); });
+
+            renderVista();
+
         } catch(e) {
             console.error(e);
-            if (typeof window.showToast === 'function') window.showToast("Error al renderizar PDF.", "error");
+            if(typeof window.showToast === 'function') window.showToast("Error de lectura XML.", "error");
+            setTimeout(() => window.location.reload(), 2000);
         }
     }
 
-    function descargarExcelLayout() {
-        const results = [["FECHA", "FOLIO", "TIPO", "RFC EMISOR", "NOMBRE EMISOR", "RFC RECEPTOR", "NOMBRE RECEPTOR", "SUBTOTAL", "IVA", "RETENCIONES", "TOTAL", "MONEDA", "UUID"]];
+    function renderVista() {
+        document.getElementById('results').style.display = 'block';
         
-        decodedDocs.forEach(d => {
-            const retenciones = d.isrRet + d.ivaRet;
-            results.push([d.fecha, d.folio, d.tipo, d.emisorRfc, d.emisor, d.receptorRfc, d.receptor, d.subtotal.toFixed(2), d.iva.toFixed(2), retenciones.toFixed(2), d.total.toFixed(2), d.moneda, d.uuid]);
-        });
+        const d = currentInvoiceData;
+        document.getElementById('valEmisorNombre').innerText = d.emisorNombre;
+        document.getElementById('valEmisorRFC').innerText = d.emisorRfc;
+        document.getElementById('valFolio').innerText = d.folio;
+        document.getElementById('valFecha').innerText = d.fecha;
+        document.getElementById('valReceptorNombre').innerText = d.receptorNombre;
+        document.getElementById('valReceptorRFC').innerText = d.receptorRfc;
+        document.getElementById('valUUID').innerText = d.uuid;
+        document.getElementById('valUso').innerText = d.uso;
+        document.getElementById('valSello').innerText = d.sello.substring(0, 150) + "...";
 
+        document.getElementById('valSubtotal').innerText = formatMoney(d.subtotal);
+        document.getElementById('valIVA').innerText = formatMoney(d.iva);
+        document.getElementById('valRet').innerText = formatMoney(d.retenciones);
+        document.getElementById('valTotal').innerText = formatMoney(d.total);
+
+        const tbody = document.getElementById('tablaConceptos');
+        tbody.innerHTML = d.conceptos.map(c => `
+            <tr>
+                <td>${c.cant.toFixed(2)}</td>
+                <td style="font-family:monospace; color:#6B7280;">${c.cve}</td>
+                <td><strong>${c.desc}</strong></td>
+                <td style="text-align: right;">${formatMoney(c.pu)}</td>
+                <td style="text-align: right; font-weight:bold;">${formatMoney(c.importe)}</td>
+            </tr>
+        `).join('');
+
+        // Generar QR Dinámico
+        try {
+            const selloCorto = d.sello ? d.sello.substring(d.sello.length - 8) : "";
+            const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${d.uuid}&re=${d.emisorRfc}&rr=${d.receptorRfc}&tt=${d.total}&fe=${selloCorto}`;
+            const qr = qrcode(0, 'M');
+            qr.addData(satUrl);
+            qr.make();
+            qrDataURI = qr.createDataURL(4, 0);
+            document.getElementById('qrContainer').innerHTML = `<img src="${qrDataURI}" style="width:100%; height:100%;">`;
+        } catch(e) { console.warn("QR Error:", e); }
+    }
+
+    function exportarPDF() {
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = `GENERANDO PDF...`;
+        btn.disabled = true;
+
+        setTimeout(() => {
+            try {
+                const d = currentInvoiceData;
+                let conceptosRows = [[{text: 'Cant.', style: 'th'}, {text: 'Cve SAT', style: 'th'}, {text: 'Descripción', style: 'th'}, {text: 'P. Unitario', style: 'th', alignment: 'right'}, {text: 'Importe', style: 'th', alignment: 'right'}]];
+                
+                d.conceptos.forEach(c => {
+                    conceptosRows.push([
+                        {text: c.cant.toFixed(2), fontSize: 9},
+                        {text: c.cve, fontSize: 9, color: '#6B7280'},
+                        {text: c.desc, fontSize: 9},
+                        {text: formatMoney(c.pu), fontSize: 9, alignment: 'right'},
+                        {text: formatMoney(c.importe), fontSize: 9, alignment: 'right'}
+                    ]);
+                });
+
+                let qrContent = qrDataURI ? { image: qrDataURI, width: 80, height: 80, alignment: 'center' } : { text: '' };
+
+                const docDefinition = {
+                    pageSize: 'LETTER', pageMargins: [40, 40, 40, 40],
+                    content: [
+                        {
+                            columns: [
+                                { width: '50%', stack: [ { text: d.emisorNombre, fontSize: 14, bold: true }, { text: `RFC: ${d.emisorRfc}`, fontSize: 10, color: '#4B5563' } ] },
+                                { width: '50%', stack: [ { text: 'FACTURA ELECTRÓNICA', fontSize: 16, bold: true, color: '#F59E0B', alignment: 'right' }, { text: `Folio: ${d.folio}`, fontSize: 11, alignment: 'right', bold: true }, { text: `Fecha: ${d.fecha}`, fontSize: 10, alignment: 'right', color: '#4B5563' } ] }
+                            ]
+                        },
+                        { canvas: [{ type: 'line', x1: 0, y1: 15, x2: 532, y2: 15, lineWidth: 2, lineColor: '#E2E8F0' }] },
+                        { margin: [0, 25, 0, 20], stack: [ { text: 'RECEPTOR', fontSize: 10, bold: true, color: '#F59E0B' }, { text: d.receptorNombre, fontSize: 12, bold: true, margin: [0, 4, 0, 2] }, { text: `RFC: ${d.receptorRfc} | Uso CFDI: ${d.uso}`, fontSize: 10, color: '#4B5563' } ] },
+                        { table: { headerRows: 1, widths: ['auto', 'auto', '*', 'auto', 'auto'], body: conceptosRows }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 20] },
+                        {
+                            columns: [
+                                { width: '*', text: '' },
+                                { width: '40%', table: { widths: ['*', 'auto'], body: [
+                                    [{ text: 'Subtotal:', alignment: 'right', fontSize: 10 }, { text: formatMoney(d.subtotal), alignment: 'right', fontSize: 10, bold: true }],
+                                    [{ text: 'IVA:', alignment: 'right', fontSize: 10 }, { text: formatMoney(d.iva), alignment: 'right', fontSize: 10 }],
+                                    [{ text: 'Retenciones:', alignment: 'right', fontSize: 10 }, { text: formatMoney(d.retenciones), alignment: 'right', fontSize: 10, color: '#EF4444' }],
+                                    [{ text: 'TOTAL:', alignment: 'right', fontSize: 12, bold: true, color: '#F59E0B' }, { text: formatMoney(d.total), alignment: 'right', fontSize: 12, bold: true }]
+                                ] }, layout: 'noBorders' }
+                            ]
+                        },
+                        { canvas: [{ type: 'line', x1: 0, y1: 15, x2: 532, y2: 15, lineWidth: 1, lineColor: '#E2E8F0' }] },
+                        { 
+                            margin: [0, 25, 0, 0], 
+                            columns: [
+                                { width: 100, stack: [ qrContent ] },
+                                { width: '*', margin: [15, 0, 0, 0], stack: [ 
+                                    { text: 'DATOS FISCALES DEL COMPROBANTE', fontSize: 9, bold: true, color: '#9CA3AF' }, 
+                                    { text: `UUID: ${d.uuid}`, fontSize: 8, margin: [0, 4, 0, 2] },
+                                    { text: 'Este documento es una representación impresa de un CFDI.', fontSize: 8, color: '#9CA3AF', italics: true, margin: [0, 10, 0, 0] }
+                                ] }
+                            ]
+                        }
+                    ],
+                    styles: { th: { bold: true, fontSize: 10, color: '#111827', fillColor: '#F3F4F6', margin: [0, 4, 0, 4] } }
+                };
+
+                pdfMake.createPdf(docDefinition).download(`CFDI_${d.emisorRfc}_${d.folio}.pdf`);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                btn.innerHTML = oldText; 
+                btn.disabled = false;
+            }
+        }, 500);
+    }
+
+    function descargarExcelIndividual() {
+        const d = currentInvoiceData;
+        const results = [["CANTIDAD", "CVE SAT", "DESCRIPCIÓN", "PRECIO UNITARIO", "IMPORTE"]];
+        d.conceptos.forEach(c => results.push([c.cant, c.cve, c.desc, c.pu, c.importe]));
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 12}, {wch: 15}, {wch: 5}, {wch: 15}, {wch: 35}, {wch: 15}, {wch: 35}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 8}, {wch: 38}];
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Base_XML_Extraida");
-        XLSX.writeFile(wb, `Extraccion_Masiva_XML_${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Conceptos");
+        XLSX.writeFile(wb, `Conceptos_${d.folio}.xlsx`);
     }
 </script>
 </body>
