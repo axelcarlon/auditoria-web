@@ -220,9 +220,11 @@
 <script src="footer.js"></script>
 
 <script>
-    if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-        pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
 </script>
 
 <script>
@@ -231,11 +233,8 @@
     let metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: 0, isFavor: false, montoFinal: 0 };
     let dataDictamen = "";
 
-    // Formateador Nativo de UI
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-    
-    // Formateador Seguro para PDFMake (Evita bug de espacio no divisible)
-    const formatMoneyPDF = (val) => "$" + parseFloat(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     function setupDropzone(idDrop, idInput, idStatus, isEmitida) {
         const drop = document.getElementById(idDrop);
@@ -267,14 +266,13 @@
         if (typeof window.showToast === 'function') window.showToast(`Lote cargado correctamente.`, "success");
     }
 
-    // Buscador omnisciente de nodos XML (Evita el bug del $0.00)
     function getNodes(node, tagName) {
         return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
                Array.from(node.getElementsByTagName(tagName)));
     }
 
     async function obtenerDictamenIA(retries = 3) {
-        const promptConcepto = `Análisis contable: ${metrics.totalFiles} XMLs procesados. IVA Trasladado (Cobrado): ${formatMoneyPDF(metrics.cobrado)}. IVA Acreditable (Pagado): ${formatMoneyPDF(metrics.pagado)}. IVA Retenido: ${formatMoneyPDF(metrics.retenido)}. Obligación de Prorrateo detectada: ${metrics.prorrateo ? 'SÍ' : 'NO'}. Resultado aritmético: ${formatMoneyPDF(metrics.montoFinal)}.`;
+        const promptConcepto = `Análisis contable: ${metrics.totalFiles} XMLs. Trasladado: ${formatMoneyPDF(metrics.cobrado)}. Acreditable: ${formatMoneyPDF(metrics.pagado)}. Retenido: ${formatMoneyPDF(metrics.retenido)}. Prorrateo detectado: ${metrics.prorrateo ? 'SÍ' : 'NO'}. Saldo final: ${formatMoneyPDF(metrics.montoFinal)}.`;
         
         for (let i = 0; i < retries; i++) {
             try {
@@ -282,9 +280,9 @@
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        tipo_documento: "Cálculo de IVA Transaccional", 
+                        tipo_documento: "Proyección IVA Transaccional", 
                         descripcion_concepto: promptConcepto, 
-                        error_detectado: "Emite un dictamen indicando si el IVA es a cargo o a favor y alerta sobre el riesgo de acreditamiento indebido si existe prorrateo." 
+                        error_detectado: "Emite un dictamen indicando si el saldo es a cargo o a favor y advierte sobre requisitos de deducibilidad." 
                     })
                 });
 
@@ -300,11 +298,9 @@
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        // Backup Matemático Seguro
-        let fallback = `El análisis matemático local confirma un resultado ${metrics.isFavor ? 'A FAVOR del contribuyente' : 'A CARGO (por pagar) al SAT'} por la cantidad de ${formatMoneyPDF(Math.abs(metrics.montoFinal))}. `;
-        if(metrics.prorrateo) fallback += `ALERTA ESTRATÉGICA: El motor detectó facturación de actos exentos o a Tasa 0%. Es obligatorio calcular la proporción de IVA acreditable conforme al Artículo 5 de la LIVA.`;
-        else fallback += `No se detectaron actos exentos. El IVA acreditado es procedente salvo comprobación de requisitos de materialidad.`;
-        
+        let fallback = `El motor aritmético interno certifica un resultado ${metrics.isFavor ? 'A FAVOR del contribuyente' : 'A CARGO (por pagar al SAT)'} por la cantidad de ${formatMoneyPDF(Math.abs(metrics.montoFinal))}. `;
+        if(metrics.prorrateo) fallback += `ALERTA CRÍTICA: Se ha detectado la presencia de actos exentos o a Tasa 0%. Es obligatorio el cálculo del Factor de Proporción según el Artículo 5 LIVA.`;
+        else fallback += `No se detectaron actos exentos. Proceda a la acreditación salvo revisión de requisitos estructurales.`;
         return fallback;
     }
 
@@ -327,7 +323,7 @@
         metrics.montoFinal = metrics.cobrado - metrics.pagado - metrics.retenido;
         metrics.isFavor = metrics.montoFinal < 0;
 
-        term.innerHTML += `<br>> Procesamiento matemático concluido.<br>> Estableciendo conexión segura con Red Neuronal IA...`;
+        term.innerHTML += `<br>> Extracción matemática concluida.<br>> Consultando motor IA Forense...`;
 
         dataDictamen = await obtenerDictamenIA();
         mostrarResultados();
@@ -335,12 +331,11 @@
 
     async function procesarLote(files, isEmitida, statusElement) {
         for(let i=0; i<files.length; i++) {
-            statusElement.innerText = `> Leyendo Nodo [${isEmitida ? 'EMISIÓN' : 'RECEPCIÓN'}] ${i+1}/${files.length}...`;
+            statusElement.innerText = `> Parseando XML [${isEmitida ? 'EMISIÓN' : 'RECEPCIÓN'}] ${i+1}/${files.length}...`;
             try {
                 const text = await files[i].text();
                 const xml = new DOMParser().parseFromString(text, "text/xml");
                 
-                // Buscar Prorrateo en Conceptos
                 const conceptos = getNodes(xml, 'Concepto');
                 for(let c of conceptos) {
                     const trasladosConcepto = getNodes(c, 'Traslado');
@@ -351,7 +346,6 @@
                     }
                 }
 
-                // Extraer Impuestos Globales Exactos
                 const impuestosTags = getNodes(xml, 'Impuestos');
                 const globalImpuestos = impuestosTags.length > 0 ? impuestosTags[impuestosTags.length - 1] : null;
 
@@ -373,7 +367,7 @@
                         }
                     }
                 }
-            } catch(e) { console.error("Error estructural en XML", e); }
+            } catch(e) {}
         }
     }
 
@@ -403,21 +397,23 @@
         }
 
         document.getElementById('resDictamen').innerText = dataDictamen;
-        if (typeof window.showToast === 'function') window.showToast("Cálculo Forense Completado.", "success");
+        if (typeof window.showToast === 'function') window.showToast("Cálculo Finalizado.", "success");
     }
 
+    // EL MOTOR DE EXPORTACIÓN REPARADO (Sin tablas anidadas y con rastreador de errores)
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
         if(!btn) return;
         
         const oldText = btn.innerHTML;
-        btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> COMPILANDO PDF...`;
+        btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> GENERANDO...`;
         btn.disabled = true;
 
         setTimeout(() => {
             try {
-                // Revalidación de fuentes de seguridad
-                if (typeof pdfMake === 'undefined' || typeof pdfMakeFonts === 'undefined') throw new Error("PDFMake no cargado.");
+                if (typeof pdfMake === 'undefined' || typeof pdfMakeFonts === 'undefined') {
+                    throw new Error("La librería PDFMake no fue cargada por su navegador.");
+                }
                 pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
 
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
@@ -428,34 +424,33 @@
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [50, 60, 50, 60],
-                    // ELIMINADA LA RESTRICCIÓN 'HELVETICA'. SE USA ROBOTO NATIVO.
-                    defaultStyle: { lineHeight: 1.5 },
                     content: [
                         { text: 'DICTAMEN TÉCNICO - PROYECCIÓN DE IVA', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
                         { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
                         
+                        // Tabla simplificada para evitar Error 500 interno del renderizador
                         {
                             margin: [0, 30, 0, 30],
                             table: {
                                 widths: ['*'],
-                                body: [[{
-                                    fillColor: colorRes, 
-                                    columns: [{
+                                body: [[
+                                    {
+                                        fillColor: colorRes,
                                         stack: [
                                             { text: `POSICIÓN FISCAL (IVA ${txtRes})`, fontSize: 10, bold: true, color: '#ffffff', margin: [0, 0, 0, 5] },
                                             { text: formatMoneyPDF(montoAbsoluto), fontSize: 26, bold: true, color: '#ffffff' }
-                                        ]
-                                    }],
-                                    margin: [20, 20, 20, 20],
-                                    alignment: 'center'
-                                }]]
+                                        ],
+                                        margin: [20, 20, 20, 20],
+                                        alignment: 'center'
+                                    }
+                                ]]
                             },
                             layout: 'noBorders'
                         },
 
-                        { text: '1. DESGLOSE CONTABLE', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10], borderBottom: true },
+                        { text: '1. DESGLOSE CONTABLE', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] },
                         {
-                            margin: [0, 10, 0, 20],
+                            margin: [0, 0, 0, 20],
                             table: {
                                 widths: ['40%', '60%'],
                                 body: [
@@ -478,8 +473,8 @@
                     docDefinition.content.push({ text: 'Se ha detectado la facturación de actos exentos o a Tasa 0%. La acreditación del 100% de los gastos es improcedente. El contribuyente está obligado a aplicar el factor de proporción matemática para determinar el IVA acreditable final, so pena de crédito fiscal.', fontSize: 11, alignment: 'justify', color: '#7F1D1D', margin: [0, 0, 0, 20] });
                 }
 
-                docDefinition.content.push({ text: '2. DICTAMEN ESTRATÉGICO IA', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
-                docDefinition.content.push({ text: dataDictamen || "Resolución matemática confirmada.", fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
+                docDefinition.content.push({ text: '\n2. DICTAMEN ESTRATÉGICO IA', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
+                docDefinition.content.push({ text: dataDictamen || "Resolución matemática validada.", fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
 
                 if (!isPro) {
                     docDefinition.background = function(currentPage, pageSize) {
@@ -490,15 +485,18 @@
                 pdfMake.createPdf(docDefinition).download(`Proyeccion_IVA_${Date.now()}.pdf`);
                 
             } catch (e) {
-                console.error("Error capturado por el blindaje:", e);
-                if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF.", "error");
+                // Rastreador forense revelado
+                if (typeof window.showToast === 'function') {
+                    window.showToast("Error crítico: " + e.message, "error");
+                } else {
+                    alert("Error: " + e.message);
+                }
             } finally {
                 btn.innerHTML = oldText; 
                 btn.disabled = false;
             }
-        }, 500);
+        }, 300);
     }
 </script>
 </body>
 </html>
-
