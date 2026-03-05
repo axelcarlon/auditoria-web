@@ -244,7 +244,42 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- FLUJO DIRECTO Y LIMPIO (El único que funciona con 100% de fiabilidad) ---
+    // COMPRESOR FORENSE (Mantiene Headers Nativos)
+    async function comprimirForense(file) {
+        if (file.type === 'application/pdf' || file.size < 1.5 * 1024 * 1024) return file;
+        
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1500;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > MAX_WIDTH) { 
+                        height *= MAX_WIDTH / width; 
+                        width = MAX_WIDTH; 
+                    }
+                    
+                    canvas.width = width; 
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    
+                    canvas.toBlob((blob) => {
+                        if (!blob) { resolve(file); return; }
+                        resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg', lastModified: Date.now() }));
+                    }, 'image/jpeg', 0.8);
+                };
+                img.onerror = () => resolve(file);
+                img.src = e.target.result;
+            };
+            reader.onerror = () => resolve(file);
+            reader.readAsDataURL(file);
+        });
+    }
+
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -257,10 +292,27 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Extrayendo vectores y estableciendo enlace con IA...<br>`;
+        try {
+            status.innerHTML = `> Verificando conexión de red con Render...<br>`;
+            const pingReq = await fetch("https://fastapi-susu.onrender.com/ping");
+            if(!pingReq.ok) throw new Error("Servidor Offline");
+        } catch(e) {
+            document.getElementById('scannerAnim').style.display = 'none';
+            term.innerHTML += `<br><strong style="color:var(--warning)">[ALERTA]: El servidor backend se encuentra en reinicio (Sleep Mode).</strong>`;
+            term.innerHTML += `<br><span style="color:#FCA5A5; font-size:12px;">Por favor, espere 1 a 2 minutos e intente de nuevo.</span>`;
+            term.innerHTML += `<br><br><button onclick="iniciarEscaneo()" class="btn-rescue" style="border-color:var(--brand); color:var(--brand);">REINTENTAR AHORA</button>`;
+            return;
+        }
+
+        status.innerHTML += `> Servidor Online. Optimizando matriz óptica...<br>`;
 
         const formData = new FormData();
-        currentFiles.forEach(f => formData.append("archivos", f));
+        for (let i = 0; i < currentFiles.length; i++) {
+            const fileOpt = await comprimirForense(currentFiles[i]);
+            formData.append("archivos", fileOpt);
+        }
+        
+        status.innerHTML += `> Vectorizando imagen e interpretando datos IA...`;
 
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
@@ -268,9 +320,7 @@
                 body: formData
             });
 
-            if (!res.ok) {
-                throw new Error(`Conexión rechazada o archivo demasiado pesado.`);
-            }
+            if (!res.ok) throw new Error(`Conexión rechazada o archivo demasiado pesado.`);
             
             const data = await res.json();
             
@@ -281,17 +331,12 @@
             procesarResultados(data);
 
         } catch (e) {
-            console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Falla de procesamiento IA.</strong>`;
+            term.innerHTML += `<br><br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Falla de procesamiento IA.</strong>`;
             term.innerHTML += `<br><span style="color:#FCA5A5; font-size:11px; font-family:monospace;">Razón: ${e.message}</span>`;
             term.innerHTML += `<br><br><button onclick="window.location.reload()" class="btn-rescue">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                REINTENTAR / SUBIR NUEVA FOTO
+                ESCANEAR NUEVO DOCUMENTO
             </button>`;
-            
-            if (typeof window.showToast === 'function') window.showToast("Extracción abortada.", "error");
         }
     }
 
@@ -364,8 +409,6 @@
                 <td style="text-align: center;"><span class="badge ${c.cssClass}">${c.estado}</span></td>
             </tr>
         `).join('');
-
-        if (typeof window.showToast === 'function') window.showToast("Extracción OCR Finalizada.", "success");
     }
 
     function descargarExcel() {
@@ -457,9 +500,6 @@
 
                 pdfMake.createPdf(docDefinition).download(`Dictamen_OCR_${Date.now()}.pdf`);
                 
-            } catch (e) {
-                console.error("Fallo local PDF:", e);
-                if (typeof window.showToast === 'function') window.showToast("Error crítico al renderizar PDF.", "error");
             } finally {
                 btn.innerHTML = oldText; 
                 btn.disabled = false;
