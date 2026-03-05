@@ -201,11 +201,6 @@
     }
 
     async function iniciarConversionMasiva() {
-        if (typeof JSZip === 'undefined' || typeof QRCode === 'undefined') {
-            if(typeof window.showToast === 'function') window.showToast("Librerías principales no cargadas.", "error");
-            return;
-        }
-
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('btnEjecutar').style.display = 'none';
         drop.style.display = 'none';
@@ -251,18 +246,26 @@
                 const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
                 const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
 
-                // PROMESA ESTRICTA: Generación de QR PNG sin DOM
+                // Yielding Asíncrono de Seguridad (Evita que el navegador colapse)
                 let qrDataURI = null;
                 if(uuid !== "NO-TIMBRADO") {
                     const selloCorto = sello ? sello.substring(sello.length - 8) : "";
                     const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${emisorRfc}&rr=${receptorRfc}&tt=${total}&fe=${selloCorto}`;
                     
-                    qrDataURI = await new Promise((resolve) => {
-                        QRCode.toDataURL(satUrl, { errorCorrectionLevel: 'M', width: 400, margin: 1 }, function (err, url) {
-                            if (err) resolve(null);
-                            else resolve(url);
+                    try {
+                        qrDataURI = await new Promise((resolve, reject) => {
+                            if (typeof QRCode !== 'undefined') {
+                                QRCode.toDataURL(satUrl, { errorCorrectionLevel: 'M', width: 400, margin: 1 }, function (err, url) {
+                                    if (err) resolve(null);
+                                    else resolve(url);
+                                });
+                            } else {
+                                resolve(null);
+                            }
                         });
-                    });
+                    } catch(err) {
+                        console.warn("Fallo leve en generación de QR. Procediendo sin QR.");
+                    }
                 }
 
                 let qrContent = qrDataURI ? { image: qrDataURI, width: 85, height: 85, alignment: 'center' } : { text: '' };
@@ -329,7 +332,10 @@
                 zip.file(`${emisorRfc}_${folio}_${uuid.substring(0,8)}.pdf`, pdfBlob);
                 
                 convertedCount++;
-            } catch(e) { errorCount++; }
+            } catch(e) { 
+                console.error(e);
+                errorCount++; 
+            }
         }
 
         status.innerHTML = `> Comprimiendo paquete ZIP...`;
@@ -363,4 +369,3 @@
 </script>
 </body>
 </html>
-
