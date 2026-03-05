@@ -321,76 +321,94 @@
 
     // MOTOR PDFMAKE (VECTORIAL BIG 4)
     function descargarReportePDF() {
-        const isPro = localStorage.getItem('auditoria_pro') === 'true';
-        
-        const colorRes = metrics.isFavor ? '#10B981' : '#EF4444';
-        const txtRes = metrics.isFavor ? 'A FAVOR' : 'A CARGO';
+        const btn = document.querySelector('.btn-action[onclick="descargarReportePDF()"]');
+        const oldText = btn.innerHTML;
+        btn.innerText = "Exportando...";
+        btn.disabled = true;
 
-        const docDefinition = {
-            pageSize: 'LETTER',
-            pageMargins: [50, 60, 50, 60],
-            defaultStyle: { font: 'Helvetica', lineHeight: 1.5 },
-            content: [
-                { text: 'DICTAMEN TÉCNICO - PROYECCIÓN DE IVA', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
-                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
-                
-                {
-                    margin: [0, 30, 0, 30],
-                    table: {
-                        widths: ['*'],
-                        body: [[{
-                            fillColor: '#F8FAFC',
-                            border: [true, true, true, true],
-                            borderColor: [colorRes, colorRes, colorRes, colorRes],
-                            columns: [{
-                                stack: [
-                                    { text: `POSICIÓN FISCAL (IVA ${txtRes})`, fontSize: 10, bold: true, color: colorRes, margin: [0, 0, 0, 5] },
-                                    { text: formatMoney(Math.abs(metrics.montoFinal)), fontSize: 26, bold: true, color: colorRes }
-                                ]
-                            }],
-                            margin: [20, 20, 20, 20],
-                            alignment: 'center'
-                        }]]
-                    }
-                },
-
-                { text: '1. DESGLOSE CONTABLE', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10], borderBottom: true },
-                {
-                    margin: [0, 10, 0, 20],
-                    table: {
-                        widths: ['40%', '60%'],
-                        body: [
-                            [{ text: 'CFDIs Procesados', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: String(metrics.totalFiles), margin: [5,8,5,8] }],
-                            [{ text: 'IVA Trasladado (Cobrado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.cobrado), margin: [5,8,5,8] }],
-                            [{ text: 'IVA Acreditable (Pagado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.pagado), margin: [5,8,5,8] }],
-                            [{ text: 'IVA Retenido (Sufrido)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.retenido), margin: [5,8,5,8] }]
-                        ]
-                    },
-                    layout: 'lightHorizontalLines'
+        setTimeout(() => {
+            try {
+                if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+                    pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
                 }
-            ],
-            footer: function(currentPage, pageCount) {
-                return { text: `AuditoriaXML.mx | Inteligencia Tributaria | Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
+
+                const isPro = localStorage.getItem('auditoria_pro') === 'true';
+                const colorRes = metrics.isFavor ? '#10B981' : '#EF4444';
+                const txtRes = metrics.isFavor ? 'A FAVOR' : 'A CARGO';
+
+                const docDefinition = {
+                    pageSize: 'LETTER',
+                    pageMargins: [50, 60, 50, 60],
+                    defaultStyle: { font: 'Helvetica', lineHeight: 1.5 },
+                    content: [
+                        { text: 'DICTAMEN TÉCNICO - PROYECCIÓN DE IVA', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
+                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
+                        
+                        {
+                            margin: [0, 30, 0, 30],
+                            table: {
+                                widths: ['*'],
+                                body: [[{
+                                    fillColor: '#F8FAFC',
+                                    border: [true, true, true, true],
+                                    borderColor: [colorRes, colorRes, colorRes, colorRes],
+                                    columns: [{
+                                        stack: [
+                                            { text: `POSICIÓN FISCAL (IVA ${txtRes})`, fontSize: 10, bold: true, color: colorRes, margin: [0, 0, 0, 5] },
+                                            { text: formatMoney(Math.abs(metrics.montoFinal)), fontSize: 26, bold: true, color: colorRes }
+                                        ]
+                                    }],
+                                    margin: [20, 20, 20, 20],
+                                    alignment: 'center'
+                                }]]
+                            }
+                        },
+
+                        { text: '1. DESGLOSE CONTABLE', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10], borderBottom: true },
+                        {
+                            margin: [0, 10, 0, 20],
+                            table: {
+                                widths: ['40%', '60%'],
+                                body: [
+                                    [{ text: 'CFDIs Procesados', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: String(metrics.totalFiles), margin: [5,8,5,8] }],
+                                    [{ text: 'IVA Trasladado (Cobrado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.cobrado), margin: [5,8,5,8] }],
+                                    [{ text: 'IVA Acreditable (Pagado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.pagado), margin: [5,8,5,8] }],
+                                    [{ text: 'IVA Retenido (Sufrido)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.retenido), margin: [5,8,5,8] }]
+                                ]
+                            },
+                            layout: 'lightHorizontalLines'
+                        }
+                    ],
+                    footer: function(currentPage, pageCount) {
+                        return { text: `AuditoriaXML.mx | Inteligencia Tributaria | Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
+                    }
+                };
+
+                if(metrics.prorrateo) {
+                    docDefinition.content.push({ text: 'ALERTA CRÍTICA: OBLIGACIÓN DE PRORRATEO (ART. 5 LIVA)', fontSize: 12, bold: true, color: '#EF4444', margin: [0, 10, 0, 10] });
+                    docDefinition.content.push({ text: 'Se ha detectado la facturación de actos exentos o a Tasa 0%. La acreditación del 100% de los gastos es improcedente. El contribuyente está obligado a aplicar el factor de proporción matemática para determinar el IVA acreditable final, so pena de crédito fiscal.', fontSize: 11, alignment: 'justify', color: '#7F1D1D', margin: [0, 0, 0, 20] });
+                }
+
+                docDefinition.content.push({ text: '2. DICTAMEN ESTRATÉGICO IA', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
+                docDefinition.content.push({ text: dataDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
+
+                if (!isPro) {
+                    docDefinition.background = function(currentPage, pageSize) {
+                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    };
+                }
+
+                pdfMake.createPdf(docDefinition).download(`Proyeccion_IVA_${Date.now()}.pdf`);
+                
+                setTimeout(() => { btn.innerHTML = oldText; btn.disabled = false; }, 1000);
+            } catch (e) {
+                console.error(e);
+                window.showToast("Error de renderizado PDF.", "error");
+                btn.innerHTML = oldText; btn.disabled = false;
             }
-        };
-
-        // Inyección Condicional de la Alerta de Prorrateo
-        if(metrics.prorrateo) {
-            docDefinition.content.push({ text: 'ALERTA CRÍTICA: OBLIGACIÓN DE PRORRATEO (ART. 5 LIVA)', fontSize: 12, bold: true, color: '#EF4444', margin: [0, 10, 0, 10] });
-            docDefinition.content.push({ text: 'Se ha detectado la facturación de actos exentos o a Tasa 0%. La acreditación del 100% de los gastos es improcedente. El contribuyente está obligado a aplicar el factor de proporción matemática para determinar el IVA acreditable final, so pena de crédito fiscal.', fontSize: 11, alignment: 'justify', color: '#7F1D1D', margin: [0, 0, 0, 20] });
-        }
-
-        docDefinition.content.push({ text: '2. DICTAMEN ESTRATÉGICO IA', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
-        docDefinition.content.push({ text: dataDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
-
-        if (!isPro) {
-            docDefinition.background = function(currentPage, pageSize) {
-                return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-            };
-        }
-
-        pdfMake.createPdf(docDefinition).download(`Proyeccion_IVA_${Date.now()}.pdf`);
+        }, 300);
     }
 </script>
 </body>
 </html>
+
