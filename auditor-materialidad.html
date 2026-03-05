@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auditoría Semántica y Razón de Negocios (Art. 5-A) | AuditorIA</title>
-    <meta name="description" content="Motor NLP que analiza las descripciones de tus XML para detectar conceptos genéricos y evaluar el riesgo de rechazo por falta de Razón de Negocios.">
+    <meta name="description" content="Motor algorítmico que analiza las descripciones de tus XML para detectar conceptos genéricos y evaluar el riesgo de rechazo por falta de Razón de Negocios.">
     <link rel="canonical" href="https://auditoriaxml.mx/auditor-materialidad.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -76,6 +76,15 @@
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
+        /* Clases Faltantes del Grid de Soluciones Complementarias */
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(99, 102, 241, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-icon { width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
+
         @media (max-width: 768px) {
             .btn-toolbar { flex-direction: column; }
             .score-banner { flex-direction: column; text-align: center; }
@@ -90,14 +99,14 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">AUDITORÍA SEMÁNTICA (NLP) - ART. 5-A</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Auditor de Razón de Negocios</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 800px; margin: 0 auto;">El SAT rechaza deducciones por descripciones genéricas. Nuestra Inteligencia Artificial lee tus facturas masivamente, detecta conceptos vagos ("Servicios prestados", "Asesoría") y califica tu riesgo de auditoría por falta de Materialidad.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 800px; margin: 0 auto;">El SAT rechaza deducciones por descripciones genéricas. Nuestro Algoritmo Forense procesa tus facturas masivamente, detecta conceptos vagos ("Servicios prestados", "Asesoría") y califica tu riesgo de auditoría por falta de Materialidad.</p>
     </div>
 
     <div id="mainForm">
         <div class="upload-section" id="dropZone">
             <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             <h3 style="margin: 0 0 10px; font-size: 20px;">Lote de Facturas (Gastos/Compras)</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus XML. Evaluaremos lingüísticamente qué tan defendibles son en un requerimiento.</p>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus XML. El motor evaluará lingüísticamente qué tan defendibles son en un requerimiento.</p>
             <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
@@ -147,7 +156,7 @@
                     <tr>
                         <th>Proveedor / Folio</th>
                         <th>Descripción Analizada (CFDI)</th>
-                        <th>Motivo del Algoritmo (NLP)</th>
+                        <th>Dictamen Forense (NLP)</th>
                         <th>Nivel de Riesgo (0-100)</th>
                         <th style="text-align: center;">Estatus 5-A</th>
                     </tr>
@@ -160,7 +169,7 @@
         <div class="btn-toolbar">
             <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">Analizar Otro Lote</button>
             <button onclick="descargarExcelSemantico()" class="btn-secondary" style="border-color: #059669; color: #10B981;">
-                SÁBANA NLP (EXCEL)
+                SÁBANA DATOS (EXCEL)
             </button>
             <button onclick="exportarDictamenRiesgoPDF()" class="btn-action" style="flex: 2;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -172,13 +181,13 @@
     <div class="features-grid">
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg></div>
-            <h3 class="feature-title">Algoritmo Lógico (NLP)</h3>
+            <h3 class="feature-title">Algoritmo Forense</h3>
             <p class="feature-desc">El motor detecta <strong>Vaguedad de Texto</strong> (conceptos cortos o genéricos como "servicios"), <strong>Falta de Especificidad</strong> (ausencia de fechas, folios o series) y <strong>Palabras Bandera</strong> altamente auditadas por el SAT.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg></div>
             <h3 class="feature-title">Dictamen Pericial PDF</h3>
-            <p class="feature-desc">Exporta un reporte de auditoría lingüística (como los que emiten las Big 4) para presentar en juntas de consejo y exigir a los proveedores que refacturen con el detalle legal necesario.</p>
+            <p class="feature-desc">Exporta un reporte de auditoría lingüística (como los que emiten las Firmas de Consultoría) para presentar en juntas de consejo y exigir a los proveedores que refacturen con el detalle legal necesario.</p>
         </div>
     </div>
 
@@ -241,7 +250,7 @@
             .concat(Array.from(node.getElementsByTagName(`pago20:${tagName}`)));
     }
 
-    // MOTOR DE PROCESAMIENTO DE LENGUAJE NATURAL (NLP Heurístico)
+    // MOTOR DE EVALUACIÓN HEURÍSTICA (NLP LIGERO)
     function evaluarSemantica(texto, claveSAT) {
         let score = 0;
         let motivos = [];
@@ -310,7 +319,7 @@
 
         try {
             for(let i=0; i<currentFiles.length; i++) {
-                if(i % 5 === 0) status.innerText = `> Evaluando sintaxis de conceptos (NLP)... ${((i/currentFiles.length)*100).toFixed(0)}%`;
+                if(i % 5 === 0) status.innerText = `> Evaluando sintaxis de conceptos... ${((i/currentFiles.length)*100).toFixed(0)}%`;
                 await new Promise(r => setTimeout(r, 5));
 
                 try {
@@ -431,7 +440,7 @@
     }
 
     function descargarExcelSemantico() {
-        const results = [["PROVEEDOR", "FOLIO CFDI", "DESCRIPCIÓN ORIGINAL", "MOTIVO DE RIESGO (NLP)", "SCORE (0-100)", "NIVEL RIESGO MATERIALIDAD"]];
+        const results = [["PROVEEDOR", "FOLIO CFDI", "DESCRIPCIÓN ORIGINAL", "DICTAMEN FORENSE (NLP)", "SCORE (0-100)", "NIVEL RIESGO MATERIALIDAD"]];
         
         analisisConceptos.forEach(c => {
             results.push([c.proveedor, c.folio, c.descripcion, c.motivo, c.score, c.nivel]);
@@ -456,7 +465,7 @@
             { text: 'Proveedor', style: 'th' },
             { text: 'Descripción Analizada', style: 'th' },
             { text: 'Score', style: 'th', alignment: 'center' },
-            { text: 'Motivo NLP', style: 'th' }
+            { text: 'Dictamen NLP', style: 'th' }
         ]];
 
         const limite = Math.min(analisisConceptos.length, 25);
@@ -484,7 +493,7 @@
                 { text: `Fecha de emisión: ${fechaImpresion}`, fontSize: 9, color: '#64748B', margin: [0, 15, 0, 20], alignment: 'right' },
                 
                 { text: 'I. EVALUACIÓN LINGÜÍSTICA DEL PORTAFOLIO (ART. 5-A CFF)', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
-                { text: 'Se ejecutó un motor de Procesamiento de Lenguaje Natural (NLP) sobre la matriz de comprobantes fiscales para detectar vaguedad semántica, descripciones genéricas y falta de especificidad, factores principales utilizados por el SAT para rechazar deducciones por falta de materialidad.', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 15] },
+                { text: 'Se ejecutó un motor algorítmico sobre la matriz de comprobantes fiscales para detectar vaguedad semántica, descripciones genéricas y falta de especificidad, factores principales utilizados por el SAT para rechazar deducciones por falta de materialidad.', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 15] },
                 
                 {
                     table: {
