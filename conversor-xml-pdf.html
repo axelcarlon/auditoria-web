@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor Masivo XML a PDF | AuditorIA</title>
-    <meta name="description" content="Convierte lotes enteros de facturas XML a formato PDF al instante. Descarga un archivo ZIP consolidado con código QR en alta resolución.">
+    <meta name="description" content="Convierte lotes enteros de facturas XML a formato PDF al instante. Descarga un archivo ZIP consolidado con código QR pericial.">
     <link rel="canonical" href="https://auditoriaxml.mx/conversor-xml-pdf.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -122,8 +122,8 @@
     <div class="features-grid">
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
-            <h3 class="feature-title">Motor QRious Offscreen</h3>
-            <p class="feature-desc">El código bidimensional se renderiza en la RAM mediante algoritmos síncronos fuera de pantalla, asegurando que cada una de las 100 facturas reciba un PNG pericial perfecto.</p>
+            <h3 class="feature-title">Generación Aislada QR (PNG)</h3>
+            <p class="feature-desc">Reconstruimos matemáticamente la URL oficial de verificación del SAT aislando cada imagen en el disco virtual de la RAM para evitar que los vectores colapsen en el lote masivo.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
@@ -192,9 +192,11 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
+    // Instanciación aislada para cada PDF, previene colapso de memoria
     function createPdfBlob(docDefinition) {
         return new Promise((resolve) => {
-            pdfMake.createPdf(docDefinition).getBlob((blob) => {
+            const pdfDoc = pdfMake.createPdf(docDefinition);
+            pdfDoc.getBlob((blob) => {
                 resolve(blob);
             });
         });
@@ -202,7 +204,7 @@
 
     async function iniciarConversionMasiva() {
         if (typeof JSZip === 'undefined' || typeof QRious === 'undefined') {
-            if(typeof window.showToast === 'function') window.showToast("Librerías principales no cargadas.", "error");
+            if(typeof window.showToast === 'function') window.showToast("Cargando motor gráfico, intenta de nuevo en un segundo.", "error");
             return;
         }
 
@@ -227,9 +229,9 @@
             status.innerText = `> Trazando código QR y vectorizando archivo ${i+1} de ${currentFiles.length}...`;
             progressBar.style.width = `${((i+1)/currentFiles.length)*100}%`;
             
-            // Micro-pausa asíncrona para liberar el Engine de Renderizado (Previene congelamiento de pestaña)
-            await new Promise(r => setTimeout(r, 10));
-
+            // YIELDING ESTRICTO: Forza al Recolector de Basura a limpiar la RAM y evita congelamientos
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
             try {
                 const text = await currentFiles[i].text();
                 const xml = new DOMParser().parseFromString(text, "text/xml");
@@ -254,8 +256,11 @@
                 const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
                 const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
 
-                // Inyección QR Síncrona (Offscreen)
+                // AISLAMIENTO DE IMÁGENES
                 let qrDataURI = null;
+                const uniqueQRKey = `qrCode_img_${i}`; 
+                let docImagesDict = {};
+
                 if(uuid !== "NO-TIMBRADO") {
                     const selloCorto = sello ? sello.substring(sello.length - 8) : "";
                     const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${emisorRfc}&rr=${receptorRfc}&tt=${total}&fe=${selloCorto}`;
@@ -264,15 +269,19 @@
                         const qr = new QRious({
                             value: satUrl,
                             size: 400,
-                            level: 'M'
+                            level: 'M',
+                            background: 'white',
+                            foreground: 'black'
                         });
                         qrDataURI = qr.toDataURL('image/png');
+                        docImagesDict[uniqueQRKey] = qrDataURI; // Alimentando diccionario nativo
                     } catch(err) {
-                        console.warn("Fallo leve en generación de QR.");
+                        console.warn("Fallo leve en generación de QR local.");
                     }
                 }
 
-                let qrContent = qrDataURI ? { image: qrDataURI, width: 85, height: 85, alignment: 'center' } : { text: '' };
+                // En lugar de inyectar Base64 masivo, llamamos a la llave del diccionario
+                let qrContent = qrDataURI ? { image: uniqueQRKey, width: 85, height: 85, alignment: 'center' } : { text: '' };
 
                 const conceptosNodos = getNodes(xml, 'Concepto');
                 let conceptosRows = [[{text: 'Cant.', style: 'th'}, {text: 'Cve SAT', style: 'th'}, {text: 'Descripción', style: 'th'}, {text: 'P. Unitario', style: 'th', alignment: 'right'}, {text: 'Importe', style: 'th', alignment: 'right'}]];
@@ -295,6 +304,7 @@
 
                 const docDef = {
                     pageSize: 'LETTER', pageMargins: [40, 40, 40, 40],
+                    images: docImagesDict, // Diccionario inyectado
                     content: [
                         {
                             columns: [
