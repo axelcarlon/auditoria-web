@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -251,25 +251,17 @@
                 const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
                 const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
 
-                // Yielding asíncrono para liberar el hilo y permitir renderizado del Canvas del QR
+                // PROMESA ESTRICTA: Generación de QR PNG sin DOM
                 let qrDataURI = null;
                 if(uuid !== "NO-TIMBRADO") {
                     const selloCorto = sello ? sello.substring(sello.length - 8) : "";
                     const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${emisorRfc}&rr=${receptorRfc}&tt=${total}&fe=${selloCorto}`;
                     
                     qrDataURI = await new Promise((resolve) => {
-                        let tempDiv = document.createElement("div");
-                        new QRCode(tempDiv, { 
-                            text: satUrl, 
-                            width: 400, 
-                            height: 400, 
-                            correctLevel: QRCode.CorrectLevel.M 
+                        QRCode.toDataURL(satUrl, { errorCorrectionLevel: 'M', width: 400, margin: 1 }, function (err, url) {
+                            if (err) resolve(null);
+                            else resolve(url);
                         });
-                        
-                        setTimeout(() => {
-                            let canvas = tempDiv.querySelector("canvas");
-                            resolve(canvas ? canvas.toDataURL("image/png") : null);
-                        }, 30);
                     });
                 }
 
