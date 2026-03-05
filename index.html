@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditorIA | Terminal de Inteligencia Fiscal y Auditoría CFDI</title>
-    <meta name="description" content="La terminal de auditoría masiva más potente de México. Detecta discrepancias, valida retenciones y genera dictámenes preventivos con IA en segundos.">
-    <meta name="robots" content="index, follow">
+    <title>AuditorIA | Suite Integral de Compliance y Auditoría Fiscal</title>
+    <meta name="description" content="Ecosistema algorítmico para prevención de riesgos 69-B, auditoría de nómina, análisis financiero y materialidad de operaciones.">
     <link rel="canonical" href="https://auditoriaxml.mx/" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
-    
     <script src="despertador.js"></script>
 
     <style>
@@ -25,332 +21,288 @@
             --text-main: #F8FAFC; 
             --text-muted: #94A3B8; 
             --border: rgba(255,255,255,0.1); 
-            --brand: #3B82F6; 
-            --brand-glow: rgba(59, 130, 246, 0.5); 
-            --success: #10B981;
-            --warning: #FCD34D;
+            
+            /* Colores de Módulos */
+            --color-fiscal: #EF4444; /* Rojo */
+            --color-legal: #0D9488;  /* Esmeralda/Cerceta */
+            --color-finance: #4F46E5; /* Indigo */
+            --color-rh: #E11D48; /* Rosa/Coral */
+            --color-core: #06B6D4; /* Cian */
+            --color-data: #F97316; /* Naranja */
         }
         
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
 
-        /* Hero Section Cinético */
-        .hero { padding: 80px 20px 60px; text-align: center; position: relative; overflow: hidden; }
-        .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, var(--brand-glow) 0%, transparent 60%); opacity: 0.15; z-index: 0; pointer-events: none; }
-        .hero-badge { display: inline-block; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--brand); color: #60A5FA; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; position: relative; z-index: 1; text-transform: uppercase;}
-        .hero h1 { font-size: 48px; font-weight: 900; margin: 0 0 20px 0; letter-spacing: -1.5px; position: relative; z-index: 1; }
-        .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6; position: relative; z-index: 1; }
-
-        /* Contenedor Principal */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; min-height: 80vh;}
         
-        /* Dropzone Operativo */
-        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px dashed rgba(59, 130, 246, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
+        /* Hero Section */
+        .hero-section { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.6s ease-out; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 20px; border-radius: 30px; font-size: 12px; font-weight: 800; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;}
+        .hero-badge .pulse { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite;}
+        .hero-title { font-size: 48px; font-weight: 900; margin: 0 0 20px; letter-spacing: -1.5px; line-height: 1.1;}
+        .hero-title span { background: linear-gradient(to right, #38BDF8, #818CF8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .hero-subtitle { color: var(--text-muted); font-size: 18px; max-width: 750px; margin: 0 auto; line-height: 1.6;}
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
+
+        /* Categorías del Dashboard */
+        .category-title { font-size: 14px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin: 50px 0 20px; display: flex; align-items: center; gap: 15px;}
+        .category-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+        /* Bento Grid */
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         
-        .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #2563EB;}
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        .tool-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden;}
+        .tool-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        
+        /* Efecto Glow en Hover basado en el color del módulo */
+        .tool-card.mod-fiscal:hover { border-color: var(--color-fiscal); }
+        .tool-card.mod-legal:hover { border-color: var(--color-legal); }
+        .tool-card.mod-finance:hover { border-color: var(--color-finance); }
+        .tool-card.mod-rh:hover { border-color: var(--color-rh); }
+        .tool-card.mod-core:hover { border-color: var(--color-core); }
+        .tool-card.mod-data:hover { border-color: var(--color-data); }
 
-        /* Terminal de Telemetría */
-        .terminal-loader { display: none; font-family: monospace; color: var(--success); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 180px; overflow-y: auto; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
-        .terminal-loader::-webkit-scrollbar { width: 6px; }
-        .terminal-loader::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 10px; }
+        .tool-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
+        .tool-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+        
+        .mod-fiscal .tool-icon { background: rgba(239, 68, 68, 0.1); color: var(--color-fiscal); }
+        .mod-legal .tool-icon { background: rgba(13, 148, 136, 0.1); color: var(--color-legal); }
+        .mod-finance .tool-icon { background: rgba(79, 70, 229, 0.1); color: var(--color-finance); }
+        .mod-rh .tool-icon { background: rgba(225, 29, 72, 0.1); color: var(--color-rh); }
+        .mod-core .tool-icon { background: rgba(6, 182, 212, 0.1); color: var(--color-core); }
+        .mod-data .tool-icon { background: rgba(249, 115, 22, 0.1); color: var(--color-data); }
 
-        /* Bento Box Grid */
-        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
-        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 80px; }
-        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
-        .bento-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
-        .bento-icon { width: 48px; height: 48px; background: rgba(59, 130, 246, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-        .bento-title { font-size: 18px; font-weight: 800; margin: 0 0 10px 0; color: var(--text-main);}
-        .bento-desc { font-size: 14px; color: var(--text-muted); margin: 0; line-height: 1.6; }
+        .tool-title { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
+        .tool-desc { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0; flex-grow: 1;}
+        
+        .tool-action { margin-top: 20px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; opacity: 0.7; transition: 0.3s;}
+        .tool-card:hover .tool-action { opacity: 1; gap: 8px;}
+        
+        .mod-fiscal .tool-action { color: var(--color-fiscal); }
+        .mod-legal .tool-action { color: var(--color-legal); }
+        .mod-finance .tool-action { color: var(--color-finance); }
+        .mod-rh .tool-action { color: var(--color-rh); }
+        .mod-core .tool-action { color: var(--color-core); }
+        .mod-data .tool-action { color: var(--color-data); }
 
         @media (max-width: 768px) {
-            .hero { padding: 40px 20px; }
-            .hero h1 { font-size: 32px; }
+            .hero-title { font-size: 36px; }
             .bento-grid { grid-template-columns: 1fr; }
         }
     </style>
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://auditoriaxml.mx/#organization",
-          "name": "AuditorIA",
-          "url": "https://auditoriaxml.mx",
-          "logo": { "@type": "ImageObject", "url": "https://auditoriaxml.mx/logo-oficial.png" },
-          "description": "Plataforma corporativa de auditoría forense, prevención de riesgos fiscales (Art. 69-B, EFOS) y análisis masivo de CFDI."
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://auditoriaxml.mx/#website",
-          "url": "https://auditoriaxml.mx",
-          "name": "AuditorIA | Terminal de Inteligencia Fiscal",
-          "publisher": { "@id": "https://auditoriaxml.mx/#organization" },
-          "inLanguage": "es-MX"
-        }
-      ]
-    }
-    </script>
 </head>
 <body>
 
 <script src="navbar.js"></script>
 
-<div class="hero">
-    <div class="hero-badge">MOTOR DE INGENIERÍA TRIBUTARIA</div>
-    <h1>Auditoría Fiscal en Tiempo Real</h1>
-    <p>Arrastra tus lotes de XML. Nuestra red neuronal detecta EFOS, descuadres matemáticos y anomalías de retención antes de que el SAT emita requerimientos.</p>
-</div>
-
 <div class="container">
-    <div class="upload-section" id="uploadSection" onclick="document.getElementById('xmlInput').click()">
-        <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-        <h2 style="margin: 0 0 10px; font-size: 24px; font-weight: 800;">Terminal de Escaneo Masivo</h2>
-        <p style="color: var(--text-muted); margin: 0 0 20px;">Sube facturas, comprobantes de pago (REP) o nóminas (Formato .XML)</p>
-        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
-        
-        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-top: 20px;">
-            <span style="display: flex; align-items: center; gap: 5px;"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg> Encriptación SSL 256-bit</span>
-            <span style="display: flex; align-items: center; gap: 5px;"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Arquitectura Zero-Retention</span>
+    
+    <div class="hero-section">
+        <div class="hero-badge">
+            <div class="pulse"></div>
+            Motor Analítico En Línea
         </div>
+        <h1 class="hero-title">Suite Integral de <span>Compliance Financiero</span></h1>
+        <p class="hero-subtitle">Selecciona el módulo pericial que deseas ejecutar. Todos los procesamientos algorítmicos se realizan en la memoria RAM local de tu equipo para garantizar el absoluto secreto fiscal de tu información.</p>
     </div>
 
-    <div style="text-align: center; display: none; margin-bottom: 60px;" id="btnContainer">
-        <button id="btnAnalizar" class="btn-action" onclick="iniciarAnalisis()">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            INICIAR EXTRACCIÓN FORENSE
-        </button>
-        <div class="terminal-loader" id="terminalLoader">
-            > Conectando a motor lógico de AuditorIA...<br>
-            > Inicializando escáner de nodos XML...<br>
-            <span id="termStatus"></span>
-        </div>
-    </div>
-
-    <h2 class="showcase-header">Ecosistema de Soluciones</h2>
+    <div class="category-title">I. Compliance y Riesgo Fiscal (SAT)</div>
     <div class="bento-grid">
-        <a href="validador-efos.html" class="bento-card">
-            <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
-                <h3 class="bento-title">Prevención EFOS (Art. 69-B)</h3>
-                <p class="bento-desc">Cruce automatizado de RFCs contra las listas negras definitivas del SAT. Genera constancias de debida diligencia instantáneas.</p>
+        <a href="validador-efos.html" class="tool-card mod-fiscal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 class="tool-title">Validador EFOS (Art. 69-B)</h3>
             </div>
+            <p class="tool-desc">Audita masivamente tu matriz de proveedores contra las listas negras definitivas del SAT. Genera el Dictamen de Cumplimiento Pericial.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
         </a>
-        <a href="visor-xml.html" class="bento-card">
-            <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
-                <h3 class="bento-title">Motor Decodificador XML</h3>
-                <p class="bento-desc">Convierte estructura cruda en representaciones gráficas auditables y genera reportes PDF vectoriales masivos.</p>
+
+        <a href="calculadora-recargos.html" class="tool-card mod-fiscal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Calculadora de Recargos</h3>
             </div>
+            <p class="tool-desc">Proyecta la actualización por INPC y recargos por mora. Evalúa matemáticamente el ahorro fiscal mediante la Corrección Espontánea (Art. 73).</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
         </a>
-        <a href="tasa-efectiva.html" class="bento-card">
-            <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
-                <h3 class="bento-title">Benchmarking Sectorial</h3>
-                <p class="bento-desc">Calcula tu Tasa Efectiva de ISR y emite alertas tempranas al compararla contra el Plan Maestro de Fiscalización.</p>
+
+        <a href="tasa-efectiva.html" class="tool-card mod-fiscal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2h3a2 2 0 002-2zm0 0V9a2 2 0 012-2h3a2 2 0 012 2v10m-7 0a2 2 0 002 2h3a2 2 0 002-2m0 0V5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditor de Tasa Efectiva</h3>
             </div>
-        </a>
-        <a href="escaner-ocr-fiscal.html" class="bento-card">
-            <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
-                <h3 class="bento-title">Escáner OCR Multimodal</h3>
-                <p class="bento-desc">¿Perdiste el XML? Sube fotos de tickets físicos. La IA extraerá los datos y validará su deducibilidad en segundos.</p>
-            </div>
+            <p class="tool-desc">Compara la rentabilidad fiscal de tu empresa contra los Parámetros de Riesgo del SAT antes de presentar tu Declaración Anual.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
         </a>
     </div>
+
+    <div class="category-title">II. Defensa Legal y Materialidad</div>
+    <div class="bento-grid">
+        <a href="prueba-servicio.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Expediente de Materialidad</h3>
+            </div>
+            <p class="tool-desc">Blinda tus operaciones. Fusiona tus XML con evidencia fotográfica comprimida para emitir anexos probatorios válidos ante revisiones.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="auditor-materialidad.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditor de Razón de Negocios</h3>
+            </div>
+            <p class="tool-desc">Evaluación Semántica. El motor detecta facturas con descripciones genéricas que el SAT podría rechazar por falta de sustento (Art. 5-A).</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="defensa-legal.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                </div>
+                <h3 class="tool-title">Defensa Legal (Oficios)</h3>
+            </div>
+            <p class="tool-desc">Genera automáticamente oficios de respuesta, aclaración o solicitud de reducción de multas (Art. 74) con base y fundamentación legal.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+    </div>
+
+    <div class="category-title">III. Inteligencia Financiera (CFO)</div>
+    <div class="bento-grid">
+        <a href="analisis-proveedores.html" class="tool-card mod-finance">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                </div>
+                <h3 class="tool-title">Estrategia de Proveedores</h3>
+            </div>
+            <p class="tool-desc">Motor algorítmico que clasifica tu gasto usando la Ley de Pareto (80/20) para revelar dependencias y riesgos en la cadena de suministro.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="dashboard-xml.html" class="tool-card mod-finance">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                </div>
+                <h3 class="tool-title">Dashboard Financiero</h3>
+            </div>
+            <p class="tool-desc">Cruza tus XML de ingresos y egresos para construir gráficas operativas al vuelo y revelar la Utilidad Bruta (EBITDA) real del periodo.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="conciliacion-ia.html" class="tool-card mod-finance">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                </div>
+                <h3 class="tool-title">Conciliación Bancaria</h3>
+            </div>
+            <p class="tool-desc">Cruza bancos contra facturación usando algoritmos de similitud de texto (Levenshtein). Detecta capital huérfano y pendientes de cobro.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+    </div>
+
+    <div class="category-title">IV. Carga Laboral (RRHH)</div>
+    <div class="bento-grid">
+        <a href="auditor-nomina.html" class="tool-card mod-rh">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditoría de Nómina (1.2)</h3>
+            </div>
+            <p class="tool-desc">Analiza los recibos de tus colaboradores. Detecta pasivos retenidos y calcula el castigo fiscal de no deducibilidad de viáticos/prestaciones (Art. 28 LISR).</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+    </div>
+
+    <div class="category-title">V. Herramientas Core y Minería</div>
+    <div class="bento-grid">
+        <a href="generador-polizas.html" class="tool-card mod-core">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                </div>
+                <h3 class="tool-title">Generador de Pólizas ERP</h3>
+            </div>
+            <p class="tool-desc">Auto-clasifica el gasto de los XML y genera el Layout con asientos de partida doble listos para inyectarse al sistema contable.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="buscador-conceptos.html" class="tool-card mod-data">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <h3 class="tool-title">Buscador y Variación Precios</h3>
+            </div>
+            <p class="tool-desc">Rastrea texto libre en toda la facturación. El motor detecta sobreprecios del mismo producto (inflación interna) y emite alertas de fraude.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="conversor-xml-pdf.html" class="tool-card mod-core">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                </div>
+                <h3 class="tool-title">Conversor XML a PDF</h3>
+            </div>
+            <p class="tool-desc">Transforma lotes masivos de facturas XML a representaciones impresas (PDF) inyectando el código QR de alta resolución del SAT. Empaquetado en ZIP.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="visor-xml.html" class="tool-card mod-core">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                </div>
+                <h3 class="tool-title">Visor Individual CFDI</h3>
+            </div>
+            <p class="tool-desc">Arrastra un XML unitario para desglosar sus nodos al instante, extraer su tabla de conceptos a Excel o reconstruir su PDF con QR validado.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="conversor-bancario.html" class="tool-card mod-data">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Extractor Bancario (OCR)</h3>
+            </div>
+            <p class="tool-desc">Si el banco solo te entregó PDF, extrae los movimientos financieros a formato Excel tabulado para su posterior análisis o conciliación.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="conciliador-pagos.html" class="tool-card mod-data">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                </div>
+                <h3 class="tool-title">Conciliador PPD / REP</h3>
+            </div>
+            <p class="tool-desc">Cruce de facturación a crédito. Enlaza masivamente las facturas madre (PPD) contra sus respectivos Complementos de Recepción de Pago.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+    </div>
+
 </div>
 
 <script src="footer.js"></script>
 
-<script>
-    let currentFiles = [];
-
-    const dropZone = document.getElementById('uploadSection');
-    const input = document.getElementById('xmlInput');
-    const btnContainer = document.getElementById('btnContainer');
-
-    // Prevención de apertura nativa del navegador
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; dropZone.style.background = "rgba(59, 130, 246, 0.1)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "rgba(59, 130, 246, 0.4)"; dropZone.style.background = "rgba(30, 41, 59, 0.5)"; }));
-    
-    dropZone.addEventListener('drop', e => processFiles(e.dataTransfer.files));
-    input.addEventListener('change', e => processFiles(e.target.files));
-
-    function processFiles(files) {
-        if(files.length === 0) return;
-        currentFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
-        
-        if (currentFiles.length > 0) {
-            dropZone.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <svg width="56" height="56" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <h3 style="color: var(--success); font-size: 24px; margin: 0; font-weight: 900;">${currentFiles.length} Nodos XML en caché local</h3>
-                    <p style="color: var(--text-muted); font-family: monospace; font-size: 13px; margin-top: 10px;">Validación estructural inicial... OK</p>
-                </div>`;
-            dropZone.style.borderColor = "var(--success)";
-            btnContainer.style.display = 'block';
-            
-            if (typeof window.showToast === 'function') {
-                window.showToast("Archivos listos para extracción forense.", "success");
-            }
-        } else {
-            if (typeof window.showToast === 'function') {
-                window.showToast("Formato no válido. Ingrese exclusivamente archivos XML.", "error");
-            } else {
-                alert("Formato no válido. Ingrese archivos XML.");
-            }
-        }
-    }
-
-    async function iniciarAnalisis() {
-        const btn = document.getElementById('btnAnalizar');
-        const term = document.getElementById('terminalLoader');
-        
-        btn.style.display = 'none';
-        term.style.display = 'block';
-        
-        // Simulación de delay para UX (sensación de conexión)
-        setTimeout(() => ejecutarLoteMasivo(), 600);
-    }
-
-    async function ejecutarLoteMasivo() {
-        const term = document.getElementById('terminalLoader');
-        const status = document.getElementById('termStatus');
-        
-        // Cabeceras Nivel Auditoría Big 4
-        const results = [["UUID", "RFC Emisor", "Nombre Emisor", "RFC Receptor", "Nombre Receptor", "Tipo Comprobante", "Fecha Emisión", "Moneda", "SubTotal", "IVA Trasladado", "ISR Retenido", "IVA Retenido", "Total", "Estatus de Procesamiento"]];
-        
-        let subtotalGlobal = 0;
-        let ivaGlobal = 0;
-        let isrGlobal = 0;
-        
-        for(let i = 0; i < currentFiles.length; i++) {
-            // Actualizar terminal en tiempo real
-            let porcentaje = ((i+1) / currentFiles.length * 100).toFixed(0);
-            status.innerHTML = `> Decodificando metadatos... ${porcentaje}%<br>> Archivo en proceso: ${currentFiles[i].name}`;
-            
-            const file = currentFiles[i];
-            const text = await file.text();
-            const xml = new DOMParser().parseFromString(text, "text/xml");
-            
-            try {
-                const cfdi = xml.getElementsByTagName('cfdi:Comprobante')[0] || xml.getElementsByTagName('Comprobante')[0];
-                const emisor = xml.getElementsByTagName('cfdi:Emisor')[0];
-                const receptor = xml.getElementsByTagName('cfdi:Receptor')[0];
-                const timbre = xml.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
-                
-                // Extracción Quirúrgica de Impuestos
-                let ivaTrasladado = 0, isrRet = 0, ivaRet = 0;
-                
-                const traslados = xml.getElementsByTagName('cfdi:Traslado');
-                for(let t of traslados) { 
-                    if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') {
-                        ivaTrasladado += parseFloat(t.getAttribute('Importe') || 0); 
-                    }
-                }
-                
-                const retenciones = xml.getElementsByTagName('cfdi:Retencion');
-                for(let r of retenciones) {
-                    const tipoImpuesto = r.getAttribute('Impuesto');
-                    if(tipoImpuesto === '001' || tipoImpuesto === 'ISR') isrRet += parseFloat(r.getAttribute('Importe') || 0);
-                    if(tipoImpuesto === '002' || tipoImpuesto === 'IVA') ivaRet += parseFloat(r.getAttribute('Importe') || 0);
-                }
-
-                const sub = parseFloat(cfdi ? (cfdi.getAttribute('SubTotal') || 0) : 0);
-                const total = parseFloat(cfdi ? (cfdi.getAttribute('Total') || 0) : 0);
-                
-                subtotalGlobal += sub;
-                ivaGlobal += ivaTrasladado;
-                isrGlobal += isrRet;
-
-                results.push([
-                    timbre ? timbre.getAttribute('UUID') : "NO_TIMBRADO",
-                    emisor ? emisor.getAttribute('Rfc') : "",
-                    emisor ? emisor.getAttribute('Nombre') : "",
-                    receptor ? receptor.getAttribute('Rfc') : "",
-                    receptor ? receptor.getAttribute('Nombre') : "",
-                    cfdi ? cfdi.getAttribute('TipoDeComprobante') : "",
-                    cfdi ? cfdi.getAttribute('Fecha') : "",
-                    cfdi ? cfdi.getAttribute('Moneda') : "MXN",
-                    sub.toFixed(2),
-                    ivaTrasladado.toFixed(2),
-                    isrRet.toFixed(2),
-                    ivaRet.toFixed(2),
-                    total.toFixed(2),
-                    "PROCESADO OK"
-                ]);
-            } catch(e) {
-                // Manejo de errores estructurales por fila
-                results.push([file.name, "", "", "", "", "", "", "", "0.00", "0.00", "0.00", "0.00", "0.00", "ERROR ESTRUCTURAL"]);
-            }
-        }
-        
-        // --- Generación del Papel de Trabajo Excel ---
-        status.innerHTML = `> Estructurando Papel de Trabajo Excel...`;
-        
-        const ws = XLSX.utils.aoa_to_sheet(results);
-        
-        // Auto-sizing de columnas para acabado profesional
-        const wscols = [
-            {wch:38}, {wch:15}, {wch:40}, {wch:15}, {wch:40}, 
-            {wch:15}, {wch:22}, {wch:10}, {wch:15}, {wch:15}, 
-            {wch:15}, {wch:15}, {wch:15}, {wch:25}
-        ];
-        ws['!cols'] = wscols;
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "AuditorIA_Extract");
-        XLSX.writeFile(wb, `Papel_de_Trabajo_AuditorIA_${Date.now()}.xlsx`);
-        
-        // --- Pintar Telemetría Final y Llamar IA ---
-        term.style.height = "auto";
-        term.innerHTML = `
-            > Exportación a Excel completada y descargada.<br>
-            > <span style="color: #60A5FA;">[TELEMETRÍA FINANCIERA]:</span><br>
-            > Documentos procesados: <strong style="color: white;">${currentFiles.length}</strong><br>
-            > Base Gravable Total: <strong style="color: white;">$${subtotalGlobal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong><br>
-            > IVA Identificado: <strong style="color: white;">$${ivaGlobal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong><br>
-            > ISR Retenido Total: <strong style="color: var(--warning);">$${isrGlobal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong><br>
-            > <br>
-            > Compilando reporte para envío a Red Neuronal...<br>
-            > Esperando Dictamen Preventivo...<br>
-            <span id="finalIAStatus" style="display:inline-block; margin-top:10px;"></span>
-        `;
-        
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    tipo_documento: "Lote de Digitalización Masiva", 
-                    descripcion_concepto: `Auditoría a ${currentFiles.length} XMLs. Subtotal acumulado: $${subtotalGlobal}. Retenciones detectadas: $${isrGlobal}.`, 
-                    error_detectado: "Análisis preventivo de cruce de retenciones e IVA." 
-                })
-            });
-            const data = await res.json();
-            
-            if (typeof window.showToast === 'function') {
-                window.showToast("Auditoría de IA Finalizada con éxito.", "success");
-            }
-            
-            document.getElementById('finalIAStatus').innerHTML = `
-                <div style="background: rgba(30, 41, 59, 0.8); padding: 15px; border-left: 4px solid var(--brand); border-radius: 6px; margin-top: 10px;">
-                    <strong style="color: #60A5FA; display:block; margin-bottom:5px;">[RESOLUCIÓN IA]:</strong>
-                    <span style="color: #E2E8F0; font-family: system-ui, sans-serif;">${data.analisis_legal}</span>
-                </div>
-            `;
-        } catch(e) {
-            if (typeof window.showToast === 'function') {
-                window.showToast("El Excel está listo, pero la red IA se encuentra saturada.", "warning");
-            }
-            document.getElementById('finalIAStatus').innerHTML = `<strong style="color: #EF4444;">[AVISO]:</strong> Análisis lógico offline. Consulte su archivo Excel descargado.`;
-        }
-    }
-</script>
 </body>
 </html>
