@@ -125,7 +125,7 @@
                 <div class="kpi-value small" id="kpiUUID">N/A</div>
             </div>
             <div class="kpi-box">
-                <div class="kpi-label">Imágenes Comprimidas</div>
+                <div class="kpi-label">Imágenes Procesadas</div>
                 <div class="kpi-value" id="kpiImgCount" style="color: var(--success);">0</div>
             </div>
         </div>
@@ -217,7 +217,8 @@
                 document.getElementById(idStatus).innerText = `Factura Cargada`;
             }
         } else {
-            const validImgs = Array.from(files).filter(f => f.type.startsWith('image/')).slice(0, 4); // Max 4 fotos
+            // Ampliación del filtro para aceptar formatos móviles sin extension estricta
+            const validImgs = Array.from(files).filter(f => f.type.match(/image/i) || f.name.match(/\.(jpg|jpeg|png)$/i)).slice(0, 4); 
             if(validImgs.length > 0) {
                 rawImgFiles = validImgs;
                 dropZone.classList.add('filled');
@@ -238,7 +239,7 @@
             .concat(Array.from(node.getElementsByTagName(`pago20:${tagName}`)));
     }
 
-    // MOTOR COMPRESOR DE IMÁGENES CLIENT-SIDE (Evita desbordamiento de RAM al compilar PDF)
+    // MOTOR COMPRESOR DE IMÁGENES CLIENT-SIDE BLINDADO
     function compressImage(file, maxWidth = 800) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -247,25 +248,30 @@
                 const img = new Image();
                 img.src = event.target.result;
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    if (width > maxWidth) {
-                        height = Math.round((height * maxWidth) / width);
-                        width = maxWidth;
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    } catch(e) {
+                        resolve(event.target.result); // Si el canvas falla, regresa la original
                     }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Comprimir a JPEG calidad 70%
-                    resolve(canvas.toDataURL('image/jpeg', 0.7));
                 };
+                img.onerror = () => resolve(event.target.result); // Deadlock breaker
             };
+            reader.onerror = () => resolve(null);
         });
     }
 
@@ -279,7 +285,7 @@
         term.style.display = 'block';
         
         try {
-            // 1. Parsear XML
+            // 1. Parsear XML (Tolerante a fallos)
             status.innerText = "> Desencriptando nodos fiscales...";
             const text = await rawXMLFile.text();
             const xml = new DOMParser().parseFromString(text, "text/xml");
@@ -289,17 +295,17 @@
             const receptor = getNodes(xml, 'Receptor')[0];
             const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
             
-            if(!cfdi || !emisor || !timbre) throw new Error("XML Inválido o sin Timbre Fiscal");
+            if(!cfdi) throw new Error("Archivo no es un CFDI válido.");
 
             xmlData = {
                 folio: cfdi.getAttribute('Folio') || "S/F",
                 fecha: (cfdi.getAttribute('Fecha') || "").split('T')[0],
                 total: parseFloat(cfdi.getAttribute('Total') || 0),
-                emisorNombre: emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc'),
-                emisorRfc: emisor.getAttribute('Rfc') || "",
+                emisorNombre: emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : "DESCONOCIDO",
+                emisorRfc: emisor ? emisor.getAttribute('Rfc') : "",
                 receptorNombre: receptor ? (receptor.getAttribute('Nombre') || receptor.getAttribute('Rfc')) : "DESCONOCIDO",
                 receptorRfc: receptor ? receptor.getAttribute('Rfc') : "",
-                uuid: timbre.getAttribute('UUID') || "",
+                uuid: timbre ? timbre.getAttribute('UUID') : "NO-TIMBRADO",
                 conceptos: []
             };
 
@@ -310,13 +316,18 @@
 
             // 2. Generar QR Oficial
             status.innerText = "> Estructurando identificador QRious...";
-            const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${xmlData.uuid}&re=${xmlData.emisorRfc}&rr=${xmlData.receptorRfc}&tt=${xmlData.total}`;
-            const qr = new QRious({ value: satUrl, size: 300, level: 'M', background: 'white', foreground: 'black' });
-            qrDataURI = qr.toDataURL('image/png');
+            if(xmlData.uuid !== "NO-TIMBRADO") {
+                try {
+                    const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${xmlData.uuid}&re=${xmlData.emisorRfc}&rr=${xmlData.receptorRfc}&tt=${xmlData.total}`;
+                    const qr = new QRious({ value: satUrl, size: 300, level: 'M', background: 'white', foreground: 'black' });
+                    qrDataURI = qr.toDataURL('image/png');
+                } catch(e) { qrDataURI = null; }
+            }
 
             // 3. Comprimir Imágenes Simultáneamente
             status.innerText = "> Aplicando algoritmos de compresión a la evidencia...";
-            base64Images = await Promise.all(rawImgFiles.map(file => compressImage(file)));
+            const compressed = await Promise.all(rawImgFiles.map(file => compressImage(file)));
+            base64Images = compressed.filter(img => img !== null); // Limpiar nulos por seguridad
 
             // 4. Render Visual
             setTimeout(() => { 
@@ -334,7 +345,13 @@
 
         } catch(e) {
             console.error(e);
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Fallo en la lectura. Factura incompleta.</strong>`;
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: ${e.message || "Fallo en la lectura."}</strong>`;
+            
+            // Reactivar botón en caso de error para permitir reintento
+            setTimeout(() => {
+                document.getElementById('btnEjecutar').style.display = 'inline-flex';
+                term.style.display = 'none';
+            }, 3000);
         }
     }
 
@@ -345,9 +362,10 @@
         
         // Estructura de Conceptos para la tabla
         let tablaConceptosBody = [['Descripción del Servicio / Bien (Según CFDI)']];
+        if(xmlData.conceptos.length === 0) tablaConceptosBody.push([{ text: "Sin conceptos legibles", color: '#94A3B8' }]);
         xmlData.conceptos.forEach(c => tablaConceptosBody.push([{ text: c, fontSize: 10, color: '#334155' }]));
 
-        // Estructura de Imágenes (Hasta 4 fotos max, renderizadas dinámicamente)
+        // Estructura de Imágenes Dinámicas
         let imageStack = [];
         base64Images.forEach((img, index) => {
             imageStack.push({
@@ -362,11 +380,13 @@
             });
         });
 
+        // Safe QR Inyect
+        let qrInyect = qrDataURI ? { image: qrDataURI, fit: [80, 80], alignment: 'right', margin: [10, 0, 0, 0] } : { text: '' };
+
         const docDefinition = {
             pageSize: 'LETTER',
             pageMargins: [50, 50, 50, 50],
             content: [
-                // PORTADA Y RESUMEN EJECUTIVO
                 {
                     columns: [
                         { width: '*', text: 'DICTAMEN DE MATERIALIDAD DE OPERACIONES', fontSize: 16, bold: true, color: '#0D9488' },
@@ -396,18 +416,15 @@
                 {
                     columns: [
                         { width: '*', table: { widths: ['*'], body: tablaConceptosBody }, layout: 'lightHorizontalLines' },
-                        { width: 100, image: qrDataURI, fit: [80, 80], alignment: 'right', margin: [10, 0, 0, 0] }
+                        { width: 100, stack: [ qrInyect ] }
                     ], margin: [0, 0, 0, 30]
                 },
 
-                // SALTO DE PÁGINA: ANEXO FOTOGRÁFICO
                 { text: 'III. ANEXO FOTOGRÁFICO Y MATERIALIDAD', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B', pageBreak: 'before' },
                 { text: 'Las siguientes imágenes documentan la prestación efectiva del servicio y/o la entrega del bien, validando la infraestructura, capacidad y existencia real del proveedor en la ejecución de la operación facturada.', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 15] },
                 
-                // Inyectar imágenes dinámicamente
                 ...imageStack,
 
-                // CIERRE LEGAL (Línea irrompible)
                 {
                     unbreakable: true,
                     margin: [0, 40, 0, 0],
