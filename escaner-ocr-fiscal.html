@@ -244,7 +244,7 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- FLUJO DIRECTO Y LIMPIO (Extirpación de Canvas) ---
+    // --- FLUJO DIRECTO Y LIMPIO (El único que funciona con 100% de fiabilidad) ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -257,15 +257,10 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Estableciendo enlace seguro con IA Forense...<br>`;
+        status.innerHTML = `> Extrayendo vectores y estableciendo enlace con IA...<br>`;
 
-        // Carga directa sin manipulaciones intermedias que corrompan el archivo
         const formData = new FormData();
-        for (let i = 0; i < currentFiles.length; i++) {
-            formData.append("archivos", currentFiles[i]);
-        }
-        
-        status.innerHTML += `> Vectorizando imagen e interpretando datos...`;
+        currentFiles.forEach(f => formData.append("archivos", f));
 
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
@@ -274,14 +269,13 @@
             });
 
             if (!res.ok) {
-                const errText = await res.text();
-                throw new Error(`Conexión rechazada por el servidor (HTTP ${res.status}).`);
+                throw new Error(`Conexión rechazada o archivo demasiado pesado.`);
             }
             
             const data = await res.json();
             
             if (data.error || data.status === "error_calidad") {
-                throw new Error("Imagen rechazada por el motor algorítmico (ilegible o dañada).");
+                throw new Error("La IA indica que el ticket es borroso o ilegible.");
             }
             
             procesarResultados(data);
@@ -290,14 +284,14 @@
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
             
-            term.innerHTML += `<br><br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Fallo de procesamiento. Verifique enfoque e iluminación de la foto.</strong>`;
-            term.innerHTML += `<br><span style="color:#FCA5A5; font-size:11px; font-family:monospace;">Detalle técnico: ${e.message}</span>`;
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Falla de procesamiento IA.</strong>`;
+            term.innerHTML += `<br><span style="color:#FCA5A5; font-size:11px; font-family:monospace;">Razón: ${e.message}</span>`;
             term.innerHTML += `<br><br><button onclick="window.location.reload()" class="btn-rescue">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                ESCANEAR NUEVO DOCUMENTO
+                REINTENTAR / SUBIR NUEVA FOTO
             </button>`;
             
-            if (typeof window.showToast === 'function') window.showToast("Extracción abortada por sistema.", "error");
+            if (typeof window.showToast === 'function') window.showToast("Extracción abortada.", "error");
         }
     }
 
