@@ -244,48 +244,7 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    async function comprimirImagen(file) {
-        if (file.type === 'application/pdf' || file.size < 2 * 1024 * 1024) return file;
-
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        const MAX_SIZE = 2000;
-                        
-                        if (width > height && width > MAX_SIZE) {
-                            height *= MAX_SIZE / width;
-                            width = MAX_SIZE;
-                        } else if (height > MAX_SIZE) {
-                            width *= MAX_SIZE / height;
-                            height = MAX_SIZE;
-                        }
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        canvas.toBlob((blob) => {
-                            if (!blob) { resolve(file); return; }
-                            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' }));
-                        }, 'image/jpeg', 0.8);
-                    } catch (e) { resolve(file); }
-                };
-                img.onerror = () => resolve(file);
-            };
-            reader.onerror = () => resolve(file);
-        });
-    }
-
-    // --- REPARACIÓN FORENSE: formData SE CONSTRUYE DENTRO DEL LOOP ---
+    // --- FLUJO DIRECTO Y LIMPIO (Extirpación de Canvas) ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -298,54 +257,29 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Analizando densidad óptica...<br>`;
+        status.innerHTML = `> Estableciendo enlace seguro con IA Forense...<br>`;
 
-        // Primero comprimimos los archivos una sola vez y los guardamos en un arreglo temporal
-        let optimizedFiles = [];
+        // Carga directa sin manipulaciones intermedias que corrompan el archivo
+        const formData = new FormData();
         for (let i = 0; i < currentFiles.length; i++) {
-            status.innerHTML += `> Optimizando resolución de imagen [${i+1}/${currentFiles.length}]...<br>`;
-            optimizedFiles.push(await comprimirImagen(currentFiles[i]));
+            formData.append("archivos", currentFiles[i]);
         }
         
-        status.innerHTML += `> Transfiriendo matriz a Motor Visión IA...`;
+        status.innerHTML += `> Vectorizando imagen e interpretando datos...`;
 
         try {
-            let res;
-            let data;
-            let fetchError = null;
+            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
+                method: 'POST',
+                body: formData
+            });
 
-            // Loop de Resiliencia de Red (3 intentos)
-            for (let i = 0; i < 3; i++) {
-                try {
-                    // CRÍTICO: El FormData debe crearse de nuevo en cada ciclo para evitar el "Buffer Vacío"
-                    const formData = new FormData();
-                    optimizedFiles.forEach(f => formData.append("archivos", f));
-
-                    res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (res.ok) {
-                        data = await res.json();
-                        break; // Éxito, salimos del loop
-                    } else {
-                        fetchError = `Error HTTP ${res.status}`;
-                    }
-                } catch (e) {
-                    fetchError = e.message;
-                }
-                
-                // Si falla, esperamos 2 segundos antes del siguiente intento
-                if (i < 2) {
-                    status.innerHTML = `> Servidor en suspensión. Forzando conexión IA (Intento ${i+2}/3)...`;
-                    await new Promise(r => setTimeout(r, 2000));
-                }
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`Conexión rechazada por el servidor (HTTP ${res.status}).`);
             }
-
-            if (!data) throw new Error(fetchError || "Servidor IA inalcanzable tras múltiples intentos.");
             
-            // Capturar error devuelto explícitamente por el backend (ej. imagen negra o borrosa)
+            const data = await res.json();
+            
             if (data.error || data.status === "error_calidad") {
                 throw new Error("Imagen rechazada por el motor algorítmico (ilegible o dañada).");
             }
