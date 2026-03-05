@@ -181,7 +181,7 @@
             <button onclick="exportarDictamenActivosPDF()" class="btn-action" style="flex: 1.5;">
                 DICTAMEN DE CAPITALIZACIÓN (PDF)
             </button>
-            <button onclick="generarEtiquetasQR()" class="btn-action" style="flex: 2; background: #0F172A; border: 1px solid var(--brand);">
+            <button onclick="generarEtiquetasQR()" class="btn-action" style="flex: 2; background: #0F172A; border: 1px solid var(--brand);" id="btnEtiquetas">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
                 IMPRIMIR ETIQUETAS QR DE INVENTARIO
             </button>
@@ -522,79 +522,87 @@
         if(typeof window.showToast === 'function') window.showToast("Dictamen PDF generado.", "success");
     }
 
-    // ARREGLO LETAL: DIBUJO ESTRUCTURAL CON TABLAS PARA EVITAR COLAPSO DEL RENDERIZADOR
+    // EL BLINDAJE CONTRA EL "PDF FANTASMA"
     function generarEtiquetasQR() {
-        if (typeof pdfMake === 'undefined') return;
-        if (dbActivos.length === 0) {
-            if(typeof window.showToast === 'function') window.showToast("No hay activos válidos.", "warning");
-            return;
-        }
+        const btn = document.getElementById('btnEtiquetas');
+        btn.innerHTML = 'ENSAMBLANDO ETIQUETAS...';
+        btn.disabled = true;
 
-        let bodyTable = [];
-        let row = [];
+        setTimeout(() => {
+            try {
+                if (typeof pdfMake === 'undefined') throw new Error("Motor PDF no cargado.");
+                if (dbActivos.length === 0) throw new Error("No hay activos para imprimir.");
 
-        dbActivos.forEach((a) => {
-            if(!a.qrBase64) return;
+                let bodyTable = [];
+                let row = [];
 
-            let tagCell = {
-                stack: [
-                    { text: 'PROPIEDAD DE LA EMPRESA', fontSize: 7, bold: true, alignment: 'center', color: '#ffffff', background: '#0F172A', margin: [0,0,0,5] },
-                    { text: a.descripcion.substring(0, 35), fontSize: 8, bold: true, alignment: 'center' },
-                    { text: `ID: ${a.uuid.substring(0,8)}`, fontSize: 7, font: 'monospace', alignment: 'center', color: '#64748B', margin: [0,2,0,5] },
-                    { image: a.qrBase64, width: 80, alignment: 'center' },
-                    { text: `Adquisición: ${a.fecha}`, fontSize: 6, alignment: 'center', color: '#64748B', margin: [0,5,0,0] }
-                ],
-                margin: [5, 10, 5, 10],
-                fillColor: '#F8FAFC' // Fondo gris muy tenue para la etiqueta
-            };
+                dbActivos.forEach((a) => {
+                    if(!a.qrBase64) return;
 
-            row.push(tagCell);
+                    let tagCell = {
+                        stack: [
+                            { text: 'PROPIEDAD DE LA EMPRESA', fontSize: 7, bold: true, alignment: 'center', color: '#ffffff', background: '#0F172A', margin: [0,0,0,5] },
+                            { text: a.descripcion.substring(0, 35), fontSize: 8, bold: true, alignment: 'center' },
+                            // AQUÍ ESTABA LA BALA PERDIDA: SE ELIMINÓ font: 'monospace'
+                            { text: `ID: ${a.uuid.substring(0,8)}`, fontSize: 7, alignment: 'center', color: '#64748B', margin: [0,2,0,5], bold: true },
+                            { image: a.qrBase64, width: 80, alignment: 'center' },
+                            { text: `Adquisición: ${a.fecha}`, fontSize: 6, alignment: 'center', color: '#64748B', margin: [0,5,0,0] }
+                        ],
+                        margin: [5, 10, 5, 10],
+                        fillColor: '#F8FAFC' 
+                    };
 
-            // Cada 3 etiquetas cerramos la fila
-            if(row.length === 3) {
-                bodyTable.push(row);
-                row = [];
-            }
-        });
+                    row.push(tagCell);
 
-        // Si sobran etiquetas (no completan fila de 3), rellenamos con celdas vacías sin bordes
-        if(row.length > 0) {
-            while(row.length < 3) {
-                row.push({ text: '', border: [false, false, false, false] });
-            }
-            bodyTable.push(row);
-        }
-
-        if(bodyTable.length === 0) return;
-
-        const docDefinition = {
-            pageSize: 'LETTER',
-            pageMargins: [30, 30, 30, 30],
-            content: [
-                { text: 'ETIQUETAS PATRIMONIALES PARA INVENTARIO FÍSICO (MATERIALIDAD SAT)', fontSize: 14, bold: true, alignment: 'center', margin: [0,0,0,10], color: '#1E293B' },
-                { text: 'Instrucciones: Imprima este documento en papel adherible. Recorte cada etiqueta y fíjela en un lugar visible del activo físico. En caso de auditoría, el código QR vincula la existencia física con el XML correspondiente.', fontSize: 9, alignment: 'center', color: '#64748B', margin: [0,0,0,20] },
-                {
-                    table: {
-                        widths: ['*', '*', '*'],
-                        body: bodyTable
-                    },
-                    layout: {
-                        hLineWidth: function (i, node) { return 1; },
-                        vLineWidth: function (i, node) { return 1; },
-                        hLineColor: function (i, node) { return '#CBD5E1'; }, // Bordes sutiles para recortar
-                        vLineColor: function (i, node) { return '#CBD5E1'; }
+                    if(row.length === 3) {
+                        bodyTable.push(row);
+                        row = [];
                     }
-                }
-            ]
-        };
+                });
 
-        try {
-            pdfMake.createPdf(docDefinition).download(`Etiquetas_QR_Inventario_${Date.now()}.pdf`);
-            if(typeof window.showToast === 'function') window.showToast("Hoja de Etiquetas Lista para Imprimir.", "success");
-        } catch(e) {
-            console.error(e);
-            if(typeof window.showToast === 'function') window.showToast("Fallo al generar el PDF.", "error");
-        }
+                if(row.length > 0) {
+                    while(row.length < 3) {
+                        row.push({ text: '', border: [false, false, false, false] });
+                    }
+                    bodyTable.push(row);
+                }
+
+                if(bodyTable.length === 0) throw new Error("Fallo en generación de QRs.");
+
+                const docDefinition = {
+                    pageSize: 'LETTER',
+                    pageMargins: [30, 30, 30, 30],
+                    content: [
+                        { text: 'ETIQUETAS PATRIMONIALES PARA INVENTARIO FÍSICO (MATERIALIDAD SAT)', fontSize: 14, bold: true, alignment: 'center', margin: [0,0,0,10], color: '#1E293B' },
+                        { text: 'Instrucciones: Imprima este documento en papel adherible. Recorte cada etiqueta y fíjela en un lugar visible del activo físico. En caso de auditoría, el código QR vincula la existencia física con el XML correspondiente.', fontSize: 9, alignment: 'center', color: '#64748B', margin: [0,0,0,20] },
+                        {
+                            table: {
+                                widths: ['*', '*', '*'],
+                                body: bodyTable
+                            },
+                            layout: {
+                                hLineWidth: function () { return 1; },
+                                vLineWidth: function () { return 1; },
+                                hLineColor: function () { return '#CBD5E1'; }, 
+                                vLineColor: function () { return '#CBD5E1'; }
+                            }
+                        }
+                    ]
+                };
+
+                // El método de callback garantiza que el éxito solo se muestre si el PDF nace realmente.
+                pdfMake.createPdf(docDefinition).download(`Etiquetas_QR_Inventario_${Date.now()}.pdf`, () => {
+                    if(typeof window.showToast === 'function') window.showToast("Hoja de Etiquetas Lista para Imprimir.", "success");
+                });
+
+            } catch(e) {
+                console.error(e);
+                if(typeof window.showToast === 'function') window.showToast(e.message, "error");
+            } finally {
+                btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg> IMPRIMIR ETIQUETAS QR DE INVENTARIO`;
+                btn.disabled = false;
+            }
+        }, 500); // Pequeño retraso para permitir que la interfaz cambie a "Ensamblando"
     }
 </script>
 </body>
