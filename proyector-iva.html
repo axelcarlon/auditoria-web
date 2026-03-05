@@ -10,7 +10,6 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
@@ -67,6 +66,19 @@
         .btn-toolbar { display: flex; gap: 15px; margin-top: 30px;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+
+        /* Bloques de UI Adicionales (Ventajas y Ecosistema) */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
+        .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(59, 130, 246, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
+
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
             .grid-dropzones, .dashboard-layout, .kpi-grid { grid-template-columns: 1fr; }
@@ -166,17 +178,52 @@
 
         <div class="btn-toolbar">
             <button onclick="window.location.reload()" class="btn-secondary">Limpiar Memoria RAM</button>
-            <button onclick="descargarReportePDF()" class="btn-action" style="flex: 2;">
+            <button id="btnDescargarPDF" onclick="descargarReportePDF()" class="btn-action" style="flex: 2;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Exportar Dictamen PDF (Vectorial)
+                ExportAR DICTAMEN PDF
             </button>
         </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+            <h3 class="feature-title">Filtro de Prorrateo Automático</h3>
+            <p class="feature-desc">Detecta facturas a tasa 0% o exentas, protegiéndote de un acreditamiento indebido de IVA que el SAT podría cobrarte con recargos.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+            <h3 class="feature-title">Procesamiento Local Seguro</h3>
+            <p class="feature-desc">La suma de los CFDI se hace en la memoria RAM de tu navegador. Tu facturación nunca es almacenada en nuestras bases de datos.</p>
+        </div>
+    </div>
+
+    <h2 class="showcase-header">Soluciones Recomendadas</h2>
+    <div class="bento-grid">
+        <a href="dashboard-xml.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg></div>
+                <h3 class="bento-title">Dashboard Financiero XML</h3>
+                <p class="bento-desc">Convierte tus comprobantes en gráficas operativas. Mide la salud financiera, ingresos netos y retenciones de manera visual.</p>
+            </div>
+        </a>
+        <a href="conciliador-pagos.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg></div>
+                <h3 class="bento-title">Conciliador PPD vs REP</h3>
+                <p class="bento-desc">Cruza masivamente facturas a crédito con sus complementos de pago para detectar saldos pendientes al instante.</p>
+            </div>
+        </a>
     </div>
 </div>
 
 <script src="footer.js"></script>
 
 <script>
+    if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+        pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+    }
+
     let filesEmitidas = [];
     let filesRecibidas = [];
     let metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: 0, isFavor: false, montoFinal: 0 };
@@ -230,7 +277,6 @@
         await procesarLote(filesEmitidas, true, status);
         await procesarLote(filesRecibidas, false, status);
 
-        // Cálculo Final
         metrics.montoFinal = metrics.cobrado - metrics.pagado - metrics.retenido;
         metrics.isFavor = metrics.montoFinal < 0;
 
@@ -240,12 +286,12 @@
             const promptConcepto = `Análisis de ${metrics.totalFiles} XMLs. IVA Trasladado: ${metrics.cobrado}. IVA Acreditable: ${metrics.pagado}. IVA Retenido: ${metrics.retenido}. Detección de actos exentos (Prorrateo): ${metrics.prorrateo}. Posición final: ${metrics.montoFinal}.`;
             const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: "Cálculo de IVA Transaccional", descripcion_concepto: promptConcepto, error_detectado: "Emite un dictamen indicando si el IVA es a cargo o a favor y menciona el riesgo de acreditamiento indebido si existe prorrateo." })
+                body: JSON.stringify({ tipo_documento: "Cálculo de IVA Transaccional", descripcion_concepto: promptConcepto, error_detectado: "Emite un dictamen indicando si el IVA es a cargo o a favor y menciona el riesgo de acreditamiento si existe prorrateo." })
             });
             const data = await res.json();
             dataDictamen = data.analisis_legal.replace(/[*#_]/g, '');
         } catch (e) {
-            dataDictamen = "El análisis aritmético local ha concluido con éxito. El motor IA de redacción se encuentra saturado, por favor guíese por las métricas en pantalla.";
+            dataDictamen = "El análisis aritmético local ha concluido con éxito. El motor IA de redacción se encuentra en estado de hibernación de servidor, por favor guíese por las métricas visuales mostradas en pantalla.";
         }
 
         mostrarResultados();
@@ -258,20 +304,16 @@
                 const text = await files[i].text();
                 const xml = new DOMParser().parseFromString(text, "text/xml");
                 
-                // Buscar Prorrateo (Tasa 0 o Exento)
                 const conceptos = xml.getElementsByTagName('cfdi:Concepto');
                 for(let c of conceptos) {
                     const trasladosConcepto = c.getElementsByTagName('cfdi:Traslado');
                     for(let t of trasladosConcepto) {
                         const tasa = t.getAttribute('TasaOCuota');
                         const factor = t.getAttribute('TipoFactor');
-                        if (tasa === "0.000000" || factor === "Exento") {
-                            metrics.prorrateo = true;
-                        }
+                        if (tasa === "0.000000" || factor === "Exento") metrics.prorrateo = true;
                     }
                 }
 
-                // Sumar IVA Global
                 const traslados = xml.getElementsByTagName('cfdi:Traslado');
                 for(let t of traslados) {
                     if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') {
@@ -319,19 +361,16 @@
         if (typeof window.showToast === 'function') window.showToast("Cálculo Forense Completado.", "success");
     }
 
-    // MOTOR PDFMAKE (VECTORIAL BIG 4)
     function descargarReportePDF() {
-        const btn = document.querySelector('.btn-action[onclick="descargarReportePDF()"]');
+        const btn = document.getElementById('btnDescargarPDF');
+        if(!btn) return;
+        
         const oldText = btn.innerHTML;
-        btn.innerText = "Exportando...";
+        btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> EXPORTANDO...`;
         btn.disabled = true;
 
         setTimeout(() => {
             try {
-                if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-                    pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-                }
-
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 const colorRes = metrics.isFavor ? '#10B981' : '#EF4444';
                 const txtRes = metrics.isFavor ? 'A FAVOR' : 'A CARGO';
@@ -400,15 +439,15 @@
 
                 pdfMake.createPdf(docDefinition).download(`Proyeccion_IVA_${Date.now()}.pdf`);
                 
-                setTimeout(() => { btn.innerHTML = oldText; btn.disabled = false; }, 1000);
             } catch (e) {
                 console.error(e);
-                window.showToast("Error de renderizado PDF.", "error");
-                btn.innerHTML = oldText; btn.disabled = false;
+                if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF.", "error");
+            } finally {
+                btn.innerHTML = oldText; 
+                btn.disabled = false;
             }
         }, 300);
     }
 </script>
 </body>
 </html>
-
