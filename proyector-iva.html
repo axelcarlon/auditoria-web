@@ -428,7 +428,8 @@
                 const docDefinition = {
                     pageSize: 'LETTER',
                     pageMargins: [50, 60, 50, 60],
-                    defaultStyle: { font: 'Helvetica', lineHeight: 1.5 },
+                    // ELIMINADA LA RESTRICCIÓN 'HELVETICA'. SE USA ROBOTO NATIVO.
+                    defaultStyle: { lineHeight: 1.5 },
                     content: [
                         { text: 'DICTAMEN TÉCNICO - PROYECCIÓN DE IVA', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
                         { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
@@ -489,7 +490,7 @@
                 pdfMake.createPdf(docDefinition).download(`Proyeccion_IVA_${Date.now()}.pdf`);
                 
             } catch (e) {
-                console.error(e);
+                console.error("Error capturado por el blindaje:", e);
                 if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF.", "error");
             } finally {
                 btn.innerHTML = oldText; 
@@ -500,3 +501,4 @@
 </script>
 </body>
 </html>
+
