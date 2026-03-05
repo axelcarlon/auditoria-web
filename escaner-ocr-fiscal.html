@@ -36,7 +36,6 @@
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #0891B2; color: white;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        /* Scanner Line Animation */
         .scanner-container { position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; display: none;}
         .scanner-img-placeholder { width: 100%; height: 100px; background: repeating-linear-gradient(45deg, #1E293B, #1E293B 10px, #0F172A 10px, #0F172A 20px); border: 1px solid var(--border); border-radius: 12px;}
         .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--brand); box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); animation: scan 1.5s linear infinite; }
@@ -52,7 +51,6 @@
         .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
         .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
 
-        /* Data Table */
         .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 30px;}
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border);}
@@ -66,7 +64,6 @@
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        /* Cross-Selling CSS */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
@@ -148,7 +145,7 @@
                     </tr>
                 </thead>
                 <tbody id="tablaConceptos">
-                    </tbody>
+                </tbody>
             </table>
         </div>
 
@@ -244,6 +241,54 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
+    // --- BYPASS BASE64: COMPRESIÓN INDESTRUCTIBLE ---
+    function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+        return new File([u8arr], filename, {type:mime});
+    }
+
+    async function comprimirImagenBase64(file) {
+        if (file.type === 'application/pdf') return file;
+
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const MAX_SIZE = 1500; 
+
+                    if (width > height && width > MAX_SIZE) {
+                        height *= MAX_SIZE / width;
+                        width = MAX_SIZE;
+                    } else if (height > MAX_SIZE) {
+                        width *= MAX_SIZE / height;
+                        height = MAX_SIZE;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Transformación a Base64 puro y reconstrucción manual
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedFile = dataURLtoFile(dataUrl, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+                    resolve(compressedFile);
+                };
+                img.onerror = () => resolve(file);
+            };
+            reader.onerror = () => resolve(file);
+        });
+    }
+
+    // --- EJECUCIÓN DEL FLUJO CON COMPRESIÓN SEGURA ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -256,10 +301,15 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Empaquetando matriz de imágenes...<br>> Transfiriendo a Motor Visión IA...`;
+        status.innerHTML = `> Empaquetando y optimizando matriz de imágenes...<br>`;
 
         const formData = new FormData();
-        currentFiles.forEach(f => formData.append("archivos", f));
+        for (let i = 0; i < currentFiles.length; i++) {
+            const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
+            formData.append("archivos", optimizedFile);
+        }
+
+        status.innerHTML += `> Transfiriendo a Motor Visión IA...`;
 
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
@@ -267,7 +317,7 @@
                 body: formData
             });
 
-            if (!res.ok) throw new Error("Fallo en el servidor de IA.");
+            if (!res.ok) throw new Error("Fallo en el servidor de IA. Posible saturación.");
             
             const data = await res.json();
             procesarResultados(data);
@@ -275,12 +325,11 @@
         } catch (e) {
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Motor de visión saturado o archivo dañado.</strong>`;
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Servidor saturado. Intente de nuevo en un momento.</strong>`;
             if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
         }
     }
 
-    // LISTA NEGRA DE PALABRAS (Filtro Forense)
     const blackList = ["propina", "servicio", "tip", "bebida", "alcohol", "cerveza", "vino", "licor", "donativo", "tequila", "mezcal"];
 
     function esNoDeducible(descripcion) {
@@ -290,7 +339,6 @@
 
     function procesarResultados(data) {
         let docs = [];
-        // Normalizar respuesta (Lote o Individual)
         if(data.status === "success_lote") {
             data.resultados_lote.forEach(r => { if(r.status === "success") docs.push(r.datos); });
         } else if (data.conceptos) {
@@ -323,12 +371,11 @@
             }
         });
 
-        // Auditoría Matemática (Cuadre de Ticket)
         const sumaCalculada = auditoriaDatos.baseDeducible + auditoriaDatos.totalNoDeducible;
         const diferencia = Math.abs(auditoriaDatos.totalImpreso - sumaCalculada);
         let mensajeCuadre = "";
 
-        if (diferencia > 1) { // Tolerancia de redondeo 1 peso
+        if (diferencia > 1) { 
             mensajeCuadre = `<div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 15px; border-radius: 6px; margin-bottom: 20px; color: #FDE68A; font-size: 13px;"><strong>ALERTA DE INTEGRIDAD:</strong> La suma de los conceptos extraídos (${formatMoney(sumaCalculada)}) no coincide con el Total Impreso detectado (${formatMoney(auditoriaDatos.totalImpreso)}). El documento podría estar arrugado, borroso o alterado. Sugerimos revisión manual.</div>`;
         }
 
@@ -388,7 +435,6 @@
 
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 
-                // Preparar cuerpo de tabla dinámica
                 const bodyTabla = [
                     [{text: 'Concepto', style: 'tableHeader'}, {text: 'Importe', style: 'tableHeader', alignment: 'right'}, {text: 'Resolución', style: 'tableHeader', alignment: 'center'}]
                 ];
