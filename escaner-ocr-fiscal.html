@@ -36,7 +36,6 @@
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #0891B2; color: white;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        /* Scanner Line Animation */
         .scanner-container { position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; display: none;}
         .scanner-img-placeholder { width: 100%; height: 100px; background: repeating-linear-gradient(45deg, #1E293B, #1E293B 10px, #0F172A 10px, #0F172A 20px); border: 1px solid var(--border); border-radius: 12px;}
         .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--brand); box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); animation: scan 1.5s linear infinite; }
@@ -52,7 +51,6 @@
         .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
         .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
 
-        /* Data Table */
         .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 30px;}
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border);}
@@ -66,10 +64,9 @@
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
         
-        .btn-rescue { background: transparent; border: 1px solid var(--danger); color: #FCA5A5; padding: 12px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px;}
+        .btn-rescue { background: transparent; border: 1px solid var(--danger); color: #FCA5A5; padding: 12px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%;}
         .btn-rescue:hover { background: rgba(239, 68, 68, 0.1); color: white; }
 
-        /* Cross-Selling CSS */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
@@ -151,7 +148,7 @@
                     </tr>
                 </thead>
                 <tbody id="tablaConceptos">
-                    </tbody>
+                </tbody>
             </table>
         </div>
 
@@ -180,7 +177,7 @@
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
             <h3 class="feature-title">Auditoría Matemática</h3>
-            <p class="feature-desc">Verifica que la suma de los conceptos extraídos coincida exactamente con el total impreso en la imagen, alertando sobre tickets alterados.</p>
+            <p class="feature-desc">Verifica que la suma de los conceptos extraídos coincida exactamente con el total impreso en la imagen, alertando sobre tickets alterados o mal sumados.</p>
         </div>
     </div>
 
@@ -206,7 +203,6 @@
 <script src="footer.js"></script>
 
 <script>
-    // Inicialización del Motor de Fuentes PDFMake
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
             pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
@@ -216,11 +212,9 @@
     let currentFiles = [];
     let auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
 
-    // Formateadores de Moneda
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
     const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-    // Lógica Drag & Drop
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
     
@@ -250,9 +244,8 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- ALGORITMO FORENSE DE COMPRESIÓN DE IMÁGENES ---
+    // --- MOTOR DE COMPRESIÓN A PRUEBA DE FALLOS ---
     async function comprimirImagen(file) {
-        // Ignorar PDFs y archivos ligeros (< 2MB)
         if (file.type === 'application/pdf' || file.size < 2 * 1024 * 1024) return file;
 
         return new Promise((resolve) => {
@@ -262,35 +255,40 @@
                 const img = new Image();
                 img.src = event.target.result;
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
+                    try {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const MAX_SIZE = 2000;
+                        
+                        if (width > height && width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
 
-                    // Límite de resolución para OCR Google (2000px)
-                    const MAX_SIZE = 2000;
-                    if (width > height && width > MAX_SIZE) {
-                        height *= MAX_SIZE / width;
-                        width = MAX_SIZE;
-                    } else if (height > MAX_SIZE) {
-                        width *= MAX_SIZE / height;
-                        height = MAX_SIZE;
+                        canvas.toBlob((blob) => {
+                            if (!blob) { resolve(file); return; } // Si falla el blob, devuelve original
+                            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' }));
+                        }, 'image/jpeg', 0.8);
+                    } catch (e) {
+                        resolve(file); // Si el navegador bloquea Canvas, devuelve original
                     }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    // Reempaquetar a JPEG (calidad 80%)
-                    canvas.toBlob((blob) => {
-                        resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' }));
-                    }, 'image/jpeg', 0.8);
                 };
+                img.onerror = () => resolve(file); // Si la imagen es corrupta, devuelve original
             };
+            reader.onerror = () => resolve(file); // Si la lectura falla, devuelve original
         });
     }
 
-    // --- EJECUCIÓN DE ESCANEO Y MANEJO DE ERRORES ---
+    // --- SISTEMA FORENSE DE 3 REINTENTOS ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -303,31 +301,52 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Analizando densidad de archivos...<br>`;
+        status.innerHTML = `> Analizando densidad óptica...<br>`;
 
         const formData = new FormData();
         
         for (let i = 0; i < currentFiles.length; i++) {
-            status.innerHTML += `> Optimizando estructura óptica [${i+1}/${currentFiles.length}]...<br>`;
+            status.innerHTML += `> Optimizando resolución de imagen [${i+1}/${currentFiles.length}]...<br>`;
             const fileOpt = await comprimirImagen(currentFiles[i]);
             formData.append("archivos", fileOpt);
         }
         
-        status.innerHTML += `> Transfiriendo paquete al Motor IA...`;
+        status.innerHTML += `> Transfiriendo matriz a Motor Visión IA...`;
 
         try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
-                method: 'POST',
-                body: formData
-            });
+            let res;
+            let data;
+            let fetchError = null;
 
-            if (!res.ok) throw new Error("Sobrecarga en el servidor o imagen irlegible.");
+            // Loop de Resiliencia de Red (3 intentos)
+            for (let i = 0; i < 3; i++) {
+                try {
+                    res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (res.ok) {
+                        data = await res.json();
+                        break; 
+                    } else {
+                        fetchError = `Error HTTP ${res.status}`;
+                    }
+                } catch (e) {
+                    fetchError = e.message;
+                }
+                
+                if (i < 2) {
+                    status.innerHTML = `> Servidor ocupado. Forzando reconexión IA (Intento ${i+2}/3)...`;
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+            }
+
+            if (!data) throw new Error(fetchError || "Servidor IA inalcanzable tras 3 intentos.");
             
-            const data = await res.json();
-            
-            // Verificación del error propio que devuelve el backend si el ticket es basura
+            // Capturar error devuelto explícitamente por el backend
             if (data.error || data.status === "error_calidad") {
-                throw new Error("Imagen rechazada por el motor de visión (ilegible).");
+                throw new Error("Imagen rechazada por calidad insuficiente o ticket ilegible.");
             }
             
             procesarResultados(data);
@@ -336,14 +355,15 @@
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
             
-            // Impresión del Error y Botón de Rescate
-            term.innerHTML += `<br><br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Fallo de red neuronal. Verifique que la imagen esté enfocada y bien iluminada.</strong>`;
+            // Impresión del Error Exacto y Botón de Rescate Rojo
+            term.innerHTML += `<br><br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Fallo de procesamiento. Verifique enfoque e iluminación de la foto.</strong>`;
+            term.innerHTML += `<br><span style="color:#FCA5A5; font-size:11px; font-family:monospace;">Detalle técnico: ${e.message}</span>`;
             term.innerHTML += `<br><br><button onclick="window.location.reload()" class="btn-rescue">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 ESCANEAR NUEVO DOCUMENTO
             </button>`;
             
-            if (typeof window.showToast === 'function') window.showToast("Extracción fallida. Ticket irreconocible.", "error");
+            if (typeof window.showToast === 'function') window.showToast("Extracción fallida.", "error");
         }
     }
 
@@ -362,7 +382,7 @@
         } else if (data.conceptos) {
             docs.push(data);
         } else {
-            throw new Error("Estructura JSON irreconocible.");
+            throw new Error("Estructura JSON devuelta por la IA está corrupta.");
         }
 
         auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
@@ -453,7 +473,7 @@
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 
                 const bodyTabla = [
-                    [{text: 'Concepto Extratído', style: 'tableHeader'}, {text: 'Importe', style: 'tableHeader', alignment: 'right'}, {text: 'Resolución', style: 'tableHeader', alignment: 'center'}]
+                    [{text: 'Concepto Extraído', style: 'tableHeader'}, {text: 'Importe', style: 'tableHeader', alignment: 'right'}, {text: 'Resolución', style: 'tableHeader', alignment: 'center'}]
                 ];
 
                 auditoriaDatos.conceptos.forEach(c => {
