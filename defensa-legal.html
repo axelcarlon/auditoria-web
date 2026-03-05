@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Defensa Legal SAT | AuditorIA</title>
-    <meta name="description" content="Redacta automáticamente oficios de aclaración, respuesta a cartas invitación y solicitudes de desbloqueo de sellos con fundamentación legal exacta.">
+    <meta name="description" content="Redacta automáticamente oficios de aclaración y respuesta a requerimientos. Extrae los datos directamente del PDF del SAT.">
     <link rel="canonical" href="https://auditoriaxml.mx/defensa-legal.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
@@ -27,6 +28,11 @@
         .header-section { text-align: center; margin-bottom: 50px; }
         .header-badge { display: inline-block; background: rgba(96, 165, 250, 0.1); border: 1px solid var(--brand-light); color: var(--brand-light); padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
+        /* Dropzone para IA Documental */
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(96, 165, 250, 0.4); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 30px;}
+        .upload-section:hover { border-color: var(--brand-light); background: rgba(30, 41, 59, 0.8); }
+        .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+
         .form-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
         
         .section-title { font-size: 14px; font-weight: 800; color: var(--brand-light); text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; border-bottom: 1px solid rgba(96, 165, 250, 0.3); padding-bottom: 10px;}
@@ -37,6 +43,7 @@
         .form-label { font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
         
         .form-input, .form-select { background: #0F172A; border: 1px solid var(--border); color: white; padding: 14px 15px; border-radius: 8px; font-size: 14px; font-family: monospace; transition: 0.3s; width: 100%; outline: none;}
+        .form-input.highlight { border-color: var(--success); box-shadow: 0 0 10px rgba(16,185,129,0.2); }
         .form-input:focus, .form-select:focus { border-color: var(--brand-light); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2); }
         
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #3B82F6;}
@@ -59,7 +66,6 @@
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        /* Bloques de UI Integrados */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand-light); transform: translateY(-5px); }
@@ -86,7 +92,15 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">LITIGIO Y DEFENSA FISCAL</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Asistente de Escritos SAT</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Genera la respuesta jurídica exacta para requerimientos de autoridad, cartas invitación o bloqueos de sellos digitales. Basado en el Código Fiscal de la Federación (CFF).</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga el requerimiento original del SAT en PDF. El motor extraerá la autoridad, el folio y el RFC, y redactará automáticamente el oficio de defensa con la fundamentación jurídica aplicable.</p>
+    </div>
+
+    <div class="upload-section" id="dropZoneSAT">
+        <svg width="48" height="48" fill="none" stroke="var(--brand-light)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+        <h3 style="margin: 0 0 5px; font-size: 18px; color: var(--brand-light);">Auto-Completar desde Oficio SAT</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Sube el PDF del Requerimiento o Carta Invitación para extraer Oficio y Autoridad.</p>
+        <input type="file" id="inputPDFSAT" accept=".pdf" style="display: none;">
+        <div id="statusPDFSAT" style="margin-top: 10px; font-weight: bold; font-size: 12px;"></div>
     </div>
 
     <div id="mainForm" class="form-card">
@@ -102,14 +116,14 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Autoridad Emisora</label>
-                <input type="text" id="inpAutoridad" class="form-input" placeholder="Ej. Administración Desconcentrada..." value="Administración Desconcentrada de Recaudación">
+                <input type="text" id="inpAutoridad" class="form-input" placeholder="Ej. Administración Desconcentrada...">
             </div>
             <div class="form-group">
                 <label class="form-label">Número de Oficio / Folio</label>
                 <input type="text" id="inpOficio" class="form-input" placeholder="Ej. 500-74-00-2026-1234">
             </div>
             <div class="form-group">
-                <label class="form-label">Fecha de Notificación</label>
+                <label class="form-label">Fecha de Notificación (Buzón)</label>
                 <input type="date" id="inpFechaNot" class="form-input">
             </div>
         </div>
@@ -117,7 +131,7 @@
         <div class="section-title">Datos del Contribuyente</div>
         <div class="form-grid">
             <div class="form-group">
-                <label class="form-label">Razón Social</label>
+                <label class="form-label">Razón Social / Nombre</label>
                 <input type="text" id="inpEmpresa" class="form-input" placeholder="Ej. Comercializadora ABC SA de CV">
             </div>
             <div class="form-group">
@@ -126,7 +140,7 @@
             </div>
             <div class="form-group full">
                 <label class="form-label">Nombre del Representante Legal</label>
-                <input type="text" id="inpRepLegal" class="form-input" placeholder="Nombre completo">
+                <input type="text" id="inpRepLegal" class="form-input" placeholder="Opcional para P. Morales">
             </div>
         </div>
 
@@ -142,7 +156,6 @@
     </div>
 
     <div class="results-container" id="results">
-        
         <div id="alertBox" class="alert-box">
             <div>
                 <div class="alert-title">Aviso de Responsabilidad Profesional</div>
@@ -197,18 +210,82 @@
 <script src="footer.js"></script>
 
 <script>
+    // Inicializar worker de PDF.js local
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
     document.addEventListener("DOMContentLoaded", function() {
         if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
             pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
         }
     });
 
-    let docJuridico = {
-        asunto: "",
-        cuerpo: "",
-        leyes: ""
-    };
+    // SISTEMA DE EXTRACCIÓN PDF SAT
+    const dropSAT = document.getElementById('dropZoneSAT');
+    const inputSAT = document.getElementById('inputPDFSAT');
+    const statusSAT = document.getElementById('statusPDFSAT');
+    
+    dropSAT.onclick = () => inputSAT.click();
+    ['dragover', 'dragenter'].forEach(e => dropSAT.addEventListener(e, ev => { ev.preventDefault(); dropSAT.style.transform = "scale(1.02)"; }));
+    ['dragleave', 'drop'].forEach(e => dropSAT.addEventListener(e, ev => { ev.preventDefault(); dropSAT.style.transform = "scale(1)"; }));
+    dropSAT.addEventListener('drop', e => processPDFSAT(e.dataTransfer.files[0]));
+    inputSAT.addEventListener('change', e => processPDFSAT(e.target.files[0]));
 
+    async function processPDFSAT(file) {
+        if(!file || !file.name.toLowerCase().endsWith('.pdf')) return;
+        
+        statusSAT.innerText = "Extrayendo vectores...";
+        statusSAT.style.color = "var(--warning)";
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+            
+            let fullText = "";
+            for(let i = 1; i <= Math.min(pdf.numPages, 3); i++) { // Solo checamos primeras 3 hojas para eficiencia
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(item => item.str).join(' ') + " ";
+            }
+
+            // Expresiones Regulares Forenses (SAT)
+            // Extraer Oficio (Estructura clásica: 500-74-00-2023-1234 o similar)
+            const regexOficio = /(\d{3}-\d{2,3}-\d{2}-\d{4}-\d{4,6})|([A-Z0-9\-]{10,20})/i;
+            const matchOficio = fullText.match(/(?:Oficio|Número de Oficio|Num\. Oficio)[\s\:\.]*([A-Z0-9\-]+)/i) || fullText.match(/(\d{3}-\d{2}-\d{2}-\d{2,4}-\d{4,6})/);
+            
+            if(matchOficio) {
+                const ofi = matchOficio[1] || matchOficio[0];
+                document.getElementById('inpOficio').value = ofi.replace(/\s/g, '');
+                document.getElementById('inpOficio').classList.add('highlight');
+            }
+
+            // Extraer Autoridad Emisora
+            const matchAuto = fullText.match(/(ADMINISTRACI[OÓ]N [A-Z\s]+?RECAUDACI[OÓ]N|ADMINISTRACI[OÓ]N [A-Z\s]+?AUDITOR[IÍ]A|ADMINISTRACI[OÓ]N GENERAL[A-Z\s]+)/i);
+            if(matchAuto) {
+                document.getElementById('inpAutoridad').value = matchAuto[0].trim();
+                document.getElementById('inpAutoridad').classList.add('highlight');
+            }
+
+            // Extraer RFC (Patrón: 3 o 4 letras + 6 números + 3 alfanuméricos)
+            const matchRFC = fullText.match(/([A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3})/i);
+            if(matchRFC) {
+                document.getElementById('inpRFC').value = matchRFC[0].toUpperCase();
+                document.getElementById('inpRFC').classList.add('highlight');
+            }
+
+            dropSAT.classList.add('filled');
+            statusSAT.innerText = "Datos extraídos. Verifica los campos iluminados.";
+            statusSAT.style.color = "var(--success)";
+            if(typeof window.showToast === 'function') window.showToast("Metadatos cargados con éxito.", "success");
+
+        } catch (e) {
+            console.error(e);
+            statusSAT.innerText = "Error leyendo PDF. Llena los datos manuales.";
+            statusSAT.style.color = "var(--danger)";
+        }
+    }
+
+
+    let docJuridico = { asunto: "", cuerpo: "", leyes: "" };
     let formData = {};
 
     function generarEscrito() {
@@ -222,8 +299,8 @@
             repLegal: document.getElementById('inpRepLegal').value.toUpperCase()
         };
 
-        if(!formData.autoridad || !formData.oficio || !formData.empresa || !formData.rfc || !formData.repLegal) {
-            if(typeof window.showToast === 'function') window.showToast("Complete todos los campos obligatorios.", "error");
+        if(!formData.autoridad || !formData.oficio || !formData.empresa || !formData.rfc) {
+            if(typeof window.showToast === 'function') window.showToast("Oficio, Autoridad, Empresa y RFC son obligatorios.", "error");
             return;
         }
 
@@ -236,17 +313,17 @@
         if(formData.tipo === 'carta_invitacion') {
             docJuridico.asunto = "SE ATIENDE CARTA INVITACIÓN Y SE REALIZAN ACLARACIONES";
             docJuridico.leyes = "Artículos 18, 18-A y 33 del Código Fiscal de la Federación (CFF).";
-            docJuridico.cuerpo = `Que por medio del presente escrito y con fundamento en los ${docJuridico.leyes}, comparezco ante esta H. Autoridad para dar atención en tiempo y forma a la Carta Invitación contenida en el Oficio No. ${formData.oficio}, notificada a mi representada en fecha ${formData.fechaNot}.\n\nAl respecto, manifiesto que las presuntas diferencias o discrepancias señaladas por la autoridad respecto a los ingresos declarados contra los comprobantes fiscales digitales por internet (CFDI) emitidos, quedan plenamente aclaradas y desvirtuadas con la documentación contable y fiscal que se anexa al presente ocurso, demostrando el correcto cumplimiento de las obligaciones fiscales de mi representada.`;
+            docJuridico.cuerpo = `Que por medio del presente escrito y con fundamento en los ${docJuridico.leyes}, comparezco ante esta H. Autoridad para dar atención en tiempo y forma a la Carta Invitación contenida en el Oficio No. ${formData.oficio}${formData.fechaNot ? ', notificada a mi representada en fecha ' + formData.fechaNot : ''}.\n\nAl respecto, manifiesto que las presuntas diferencias o discrepancias señaladas por la autoridad respecto a los ingresos declarados contra los comprobantes fiscales digitales por internet (CFDI) emitidos, quedan plenamente aclaradas y desvirtuadas con la documentación contable y fiscal que se anexa al presente ocurso, demostrando el correcto cumplimiento de las obligaciones fiscales de mi representada.`;
         } 
         else if (formData.tipo === 'sello_digital') {
             docJuridico.asunto = "SOLICITUD DE ACLARACIÓN PARA SUBSANAR IRREGULARIDADES Y RESTABLECER EL USO DEL CERTIFICADO DE SELLO DIGITAL";
             docJuridico.leyes = "Artículos 17-H, 17-H Bis, 18 y 18-A del Código Fiscal de la Federación.";
-            docJuridico.cuerpo = `Que mediante el presente ocurso, con fundamento en el artículo 17-H Bis del Código Fiscal de la Federación, vengo a presentar solicitud de aclaración tendiente a subsanar las presuntas irregularidades detectadas mediante el Oficio de Restricción Temporal No. ${formData.oficio}, notificado el ${formData.fechaNot}.\n\nBajo protesta de decir verdad, manifiesto que mi representada ha dado cabal cumplimiento a las obligaciones omitidas y desvirtúa categóricamente las causales que motivaron la restricción del Certificado de Sello Digital. Se adjuntan las documentales públicas y privadas que soportan el dicho de la contribuyente, solicitando se levante la restricción temporal al día hábil siguiente a la presentación de este escrito, conforme a derecho.`;
+            docJuridico.cuerpo = `Que mediante el presente ocurso, con fundamento en el artículo 17-H Bis del Código Fiscal de la Federación, vengo a presentar solicitud de aclaración tendiente a subsanar las presuntas irregularidades detectadas mediante el Oficio de Restricción Temporal No. ${formData.oficio}${formData.fechaNot ? ', notificado el ' + formData.fechaNot : ''}.\n\nBajo protesta de decir verdad, manifiesto que mi representada ha dado cabal cumplimiento a las obligaciones omitidas y desvirtúa categóricamente las causales que motivaron la restricción del Certificado de Sello Digital. Se adjuntan las documentales públicas y privadas que soportan el dicho de la contribuyente, solicitando se levante la restricción temporal al día hábil siguiente a la presentación de este escrito, conforme a derecho.`;
         }
         else if (formData.tipo === 'efos') {
             docJuridico.asunto = "SE APORTAN PRUEBAS Y SE FORMULAN ALEGATOS PARA DESVIRTUAR LA PRESUNCIÓN DE INEXISTENCIA DE OPERACIONES (ART. 69-B CFF)";
             docJuridico.leyes = "Artículos 18, 18-A y 69-B del Código Fiscal de la Federación.";
-            docJuridico.cuerpo = `Con fundamento en el octavo párrafo del artículo 69-B del Código Fiscal de la Federación, acudo en tiempo y forma a dar contestación al requerimiento No. ${formData.oficio}, notificado el ${formData.fechaNot}, mediante el cual esa Autoridad requiere información para acreditar la efectiva materialidad de las operaciones celebradas con terceros.\n\nPara tal efecto, exhibo y aporto en este acto el expediente integrado por contratos, evidencia fotográfica, registros contables, comprobantes de pago (transferencias bancarias) y entregables físicos que acreditan fehacientemente la materialidad de los bienes adquiridos y/o servicios recibidos. Queda de manifiesto que las operaciones amparadas por los CFDI respectivos existieron real y materialmente, desvirtuando así cualquier presunción en contrario.`;
+            docJuridico.cuerpo = `Con fundamento en el octavo párrafo del artículo 69-B del Código Fiscal de la Federación, acudo en tiempo y forma a dar contestación al requerimiento No. ${formData.oficio}${formData.fechaNot ? ', notificado el ' + formData.fechaNot : ''}, mediante el cual esa Autoridad requiere información para acreditar la efectiva materialidad de las operaciones celebradas con terceros.\n\nPara tal efecto, exhibo y aporto en este acto el expediente integrado por contratos, evidencia fotográfica, registros contables, comprobantes de pago (transferencias bancarias) y entregables físicos que acreditan fehacientemente la materialidad de los bienes adquiridos y/o servicios recibidos. Queda de manifiesto que las operaciones amparadas por los CFDI respectivos existieron real y materialmente, desvirtuando así cualquier presunción en contrario.`;
         }
 
         setTimeout(() => { mostrarResultados(fechaActual); }, 800);
@@ -256,17 +333,20 @@
         document.getElementById('terminalLoader').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
+        const repLegalText = formData.repLegal ? `<strong>${formData.repLegal}</strong>, actuando en mi carácter de Representante Legal de la persona moral denominada ` : `Por mi propio derecho, en representación de la empresa `;
+        const firmaText = formData.repLegal ? `<br><strong>${formData.repLegal}</strong><br>Representante Legal de ${formData.empresa}` : `<br><strong>${formData.empresa}</strong>`;
+
         const preview = document.getElementById('docPreview');
         preview.innerHTML = `
             <h4><strong>ASUNTO:</strong> ${docJuridico.asunto}</h4>
             <p><strong>C. ADMINISTRADOR DE LA ${formData.autoridad}</strong><br>PRESENTE.</p>
-            <p><strong>${formData.repLegal}</strong>, actuando en mi carácter de Representante Legal de la persona moral denominada <strong>${formData.empresa}</strong>, con Registro Federal de Contribuyentes <strong>${formData.rfc}</strong>, personalidad que tengo debidamente acreditada ante esa H. Autoridad; señalando como domicilio fiscal para oír y recibir todo tipo de notificaciones el registrado en el RFC, y autorizando para recibirlas a través del Buzón Tributario, comparezco con el debido respeto para exponer:</p>
+            <p>${repLegalText}<strong>${formData.empresa}</strong>, con Registro Federal de Contribuyentes <strong>${formData.rfc}</strong>, personalidad que tengo debidamente acreditada ante esa H. Autoridad; señalando como domicilio fiscal para oír y recibir todo tipo de notificaciones el registrado en el RFC, y autorizando para recibirlas a través del Buzón Tributario, comparezco con el debido respeto para exponer:</p>
             <p>${docJuridico.cuerpo}</p>
             <p>Por lo antes expuesto y fundado, a esa H. Autoridad Fiscal, atentamente pido se sirva:</p>
             <p><strong>ÚNICO.-</strong> Tenerme por presentado en los términos del presente escrito, exhibiendo las pruebas documentales señaladas, acordando de conformidad lo solicitado por estar apegado a estricto derecho.</p>
             <p style="text-align: center; margin-top: 40px;"><strong>PROTESTO LO NECESARIO</strong></p>
             <p style="text-align: center; margin-top: 10px;">Lugar de emisión a ${fecha}.</p>
-            <p style="text-align: center; margin-top: 50px;">___________________________________<br><strong>${formData.repLegal}</strong><br>Representante Legal de ${formData.empresa}</p>
+            <p style="text-align: center; margin-top: 50px;">___________________________________${firmaText}</p>
         `;
 
         if (typeof window.showToast === 'function') window.showToast("Borrador legal sintetizado.", "success");
@@ -283,6 +363,7 @@
                 if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
                 
                 let fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+                const repLegalTextPDF = formData.repLegal ? `${formData.repLegal}, actuando en mi carácter de Representante Legal de la persona moral denominada ` : `Por mi propio derecho, en representación de la empresa `;
 
                 const docDefinition = {
                     pageSize: 'LETTER',
@@ -292,7 +373,7 @@
                         { text: `C. ADMINISTRADOR DE LA ${formData.autoridad}`, bold: true, fontSize: 11, margin: [0, 0, 0, 2] },
                         { text: 'P R E S E N T E.', bold: true, fontSize: 11, margin: [0, 0, 0, 20] },
                         
-                        { text: `${formData.repLegal}, actuando en mi carácter de Representante Legal de la persona moral denominada ${formData.empresa}, con Registro Federal de Contribuyentes ${formData.rfc}, personalidad que tengo debidamente acreditada ante esa H. Autoridad; señalando como domicilio fiscal para oír y recibir todo tipo de notificaciones el registrado en el RFC, y autorizando para recibirlas a través del Buzón Tributario, comparezco con el debido respeto para exponer:`, alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 15], lineHeight: 1.5 },
+                        { text: `${repLegalTextPDF}${formData.empresa}, con Registro Federal de Contribuyentes ${formData.rfc}, personalidad que tengo debidamente acreditada ante esa H. Autoridad; señalando como domicilio fiscal para oír y recibir todo tipo de notificaciones el registrado en el RFC, y autorizando para recibirlas a través del Buzón Tributario, comparezco con el debido respeto para exponer:`, alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 15], lineHeight: 1.5 },
                         
                         { text: docJuridico.cuerpo, alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 15], lineHeight: 1.5 },
                         
@@ -304,8 +385,8 @@
                         { text: `A ${fechaActual}.`, alignment: 'center', fontSize: 11, margin: [0, 0, 0, 60] },
                         
                         { canvas: [{ type: 'line', x1: 150, y1: 0, x2: 350, y2: 0, lineWidth: 1 }] },
-                        { text: formData.repLegal, alignment: 'center', bold: true, fontSize: 11, margin: [0, 5, 0, 0] },
-                        { text: `Representante Legal de ${formData.empresa}`, alignment: 'center', fontSize: 10, margin: [0, 2, 0, 0] }
+                        { text: formData.repLegal || formData.empresa, alignment: 'center', bold: true, fontSize: 11, margin: [0, 5, 0, 0] },
+                        { text: formData.repLegal ? `Representante Legal de ${formData.empresa}` : "", alignment: 'center', fontSize: 10, margin: [0, 2, 0, 0] }
                     ]
                 };
 
