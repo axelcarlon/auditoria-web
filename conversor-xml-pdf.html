@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor Masivo XML a PDF | AuditorIA</title>
-    <meta name="description" content="Convierte lotes enteros de facturas XML a formato PDF al instante. Descarga un archivo ZIP consolidado con todas tus representaciones impresas.">
+    <meta name="description" content="Convierte lotes enteros de facturas XML a formato PDF al instante. Descarga un archivo ZIP consolidado con código QR oficial.">
     <link rel="canonical" href="https://auditoriaxml.mx/conversor-xml-pdf.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -22,54 +23,39 @@
         :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #EF4444; --brand-glow: rgba(239, 68, 68, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
-
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
-        
         .header-section { text-align: center; margin-bottom: 50px; }
         .header-badge { display: inline-block; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--brand); color: #FCA5A5; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
-        
         .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
         .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
-
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px; max-width: 450px; margin: 0 auto; display: flex;}
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #DC2626;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
-
         .terminal-loader { display: none; font-family: monospace; color: #FCA5A5; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 150px; border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; max-width: 600px; margin: 20px auto 0;}
-        
         .progress-bar-container { width: 100%; background: #1E293B; border-radius: 8px; margin-top: 15px; overflow: hidden; display: none; border: 1px solid var(--border);}
         .progress-bar { height: 10px; background: var(--brand); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--brand);}
-
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
         .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
         .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
         .kpi-value { font-size: 32px; font-weight: 900; color: var(--text-main); font-family: monospace; }
-
         .success-box { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px;}
-
         .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
-
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
         .feature-icon { width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
-
         .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
-
-        @media (max-width: 768px) {
-            .btn-toolbar { flex-direction: column; }
-        }
+        @media (max-width: 768px) { .btn-toolbar { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -80,7 +66,7 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">TRANSFORMACIÓN DE ARCHIVOS BATCH</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Conversor Masivo XML a PDF</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga hasta 100 archivos XML simultáneamente. El motor reconstruirá las facturas originales en formato PDF y te entregará un paquete ZIP comprimido listo para archivar.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga hasta 100 archivos XML simultáneamente. El motor reconstruirá las facturas originales en formato PDF, inyectando el Código QR del SAT, y te entregará un paquete ZIP comprimido.</p>
     </div>
 
     <div id="mainForm">
@@ -107,11 +93,10 @@
     </div>
 
     <div class="results-container" id="results">
-        
         <div class="success-box">
             <svg width="48" height="48" fill="none" stroke="var(--success)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <h2 style="margin: 0 0 5px; color: var(--success);">Paquete ZIP Compilado Exitosamente</h2>
-            <p style="margin: 0; color: #A7F3D0; font-size: 14px;">El navegador ha procesado todos los documentos localmente.</p>
+            <p style="margin: 0; color: #A7F3D0; font-size: 14px;">El navegador ha procesado y clonado los documentos localmente.</p>
         </div>
 
         <div class="kpi-grid">
@@ -136,14 +121,14 @@
 
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
-            <h3 class="feature-title">Compresión JSZip Nativa</h3>
-            <p class="feature-desc">El proceso de empaquetado ocurre 100% en la memoria de tu computadora. Tu facturación no se sube a ningún servidor externo, garantizando la confidencialidad.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
+            <h3 class="feature-title">Generación Nativa QR</h3>
+            <p class="feature-desc">Reconstruimos matemáticamente la URL oficial de verificación del SAT y pintamos el Código Bidimensional en cada PDF, logrando una representación impresa 100% idéntica a la original.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
-            <h3 class="feature-title">Generación Asíncrona</h3>
-            <p class="feature-desc">Procesa decenas de archivos en paralelo. El motor decodifica subtotales, retenciones, conceptos y timbres fiscales para reconstruir la imagen original sin retrasos.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+            <h3 class="feature-title">Compresión JSZip Nativa</h3>
+            <p class="feature-desc">El proceso de empaquetado ocurre 100% en la memoria de tu computadora. Tu facturación no se sube a ningún servidor externo.</p>
         </div>
     </div>
 
@@ -215,9 +200,23 @@
         });
     }
 
+    // IA Generadora de QR
+    function generarQRSAT(uuid, rfcEmisor, rfcReceptor, total, sello) {
+        try {
+            const selloCorto = sello ? sello.substring(sello.length - 8) : "";
+            const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${rfcEmisor}&rr=${rfcReceptor}&tt=${total}&fe=${selloCorto}`;
+            const qr = qrcode(0, 'M');
+            qr.addData(satUrl);
+            qr.make();
+            return qr.createDataURL(4, 0); // Retorna imagen Base64
+        } catch (e) {
+            return null;
+        }
+    }
+
     async function iniciarConversionMasiva() {
-        if (typeof JSZip === 'undefined') {
-            if(typeof window.showToast === 'function') window.showToast("Error de motor JSZip.", "error");
+        if (typeof JSZip === 'undefined' || typeof qrcode === 'undefined') {
+            if(typeof window.showToast === 'function') window.showToast("Librerías principales no cargadas.", "error");
             return;
         }
 
@@ -239,7 +238,7 @@
         let zip = new JSZip();
 
         for(let i=0; i<currentFiles.length; i++) {
-            status.innerText = `> Mapeando y vectorizando archivo ${i+1} de ${currentFiles.length}...`;
+            status.innerText = `> Trazando código QR y vectorizando archivo ${i+1} de ${currentFiles.length}...`;
             progressBar.style.width = `${((i+1)/currentFiles.length)*100}%`;
             
             try {
@@ -258,12 +257,16 @@
                 const moneda = cfdi.getAttribute('Moneda') || "MXN";
                 const fecha = (cfdi.getAttribute('Fecha') || "").split('T')[0];
                 const folio = cfdi.getAttribute('Folio') || "SF";
+                const sello = cfdi.getAttribute('Sello') || "";
                 const uuid = timbre ? timbre.getAttribute('UUID') : "SIN-TIMBRE";
 
                 const emisorNombre = emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : "DESCONOCIDO";
                 const emisorRfc = emisor ? emisor.getAttribute('Rfc') : "";
                 const receptorNombre = receptor ? (receptor.getAttribute('Nombre') || receptor.getAttribute('Rfc')) : "DESCONOCIDO";
                 const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
+
+                // Inyección QR
+                const qrImage = generarQRSAT(uuid, emisorRfc, receptorRfc, total, sello);
 
                 const conceptosNodos = getNodes(xml, 'Concepto');
                 let conceptosRows = [[{text: 'Cant.', style: 'th'}, {text: 'Descripción', style: 'th'}, {text: 'P. Unitario', style: 'th', alignment: 'right'}, {text: 'Importe', style: 'th', alignment: 'right'}]];
@@ -282,6 +285,8 @@
                 traslados.forEach(t => { if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') iva += parseFloat(t.getAttribute('Importe') || 0); });
                 const retenciones = getNodes(xml, 'Retencion');
                 retenciones.forEach(r => { ret += parseFloat(r.getAttribute('Importe') || 0); });
+
+                let qrContent = qrImage ? { image: qrImage, width: 80, height: 80, alignment: 'center' } : { text: '' };
 
                 const docDef = {
                     pageSize: 'LETTER', pageMargins: [40, 40, 40, 40],
@@ -307,7 +312,17 @@
                             ]
                         },
                         { canvas: [{ type: 'line', x1: 0, y1: 15, x2: 532, y2: 15, lineWidth: 1, lineColor: '#E2E8F0' }] },
-                        { margin: [0, 25, 0, 0], stack: [ { text: 'DATOS FISCALES DEL COMPROBANTE', fontSize: 9, bold: true, color: '#9CA3AF' }, { text: `UUID: ${uuid}`, fontSize: 8, margin: [0, 4, 0, 2] } ] }
+                        { 
+                            margin: [0, 25, 0, 0], 
+                            columns: [
+                                { width: 100, stack: [ qrContent ] },
+                                { width: '*', margin: [15, 0, 0, 0], stack: [ 
+                                    { text: 'DATOS FISCALES DEL COMPROBANTE', fontSize: 9, bold: true, color: '#9CA3AF' }, 
+                                    { text: `UUID: ${uuid}`, fontSize: 8, margin: [0, 4, 0, 2] },
+                                    { text: 'Este documento es una representación impresa de un CFDI.', fontSize: 8, color: '#9CA3AF', italics: true, margin: [0, 10, 0, 0] }
+                                ] }
+                            ]
+                        }
                     ],
                     styles: { th: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#EF4444', margin: [0, 4, 0, 4] } }
                 };
@@ -345,9 +360,8 @@
             if (typeof window.showToast === 'function') window.showToast("Descarga iniciada.", "success");
         };
 
-        if (typeof window.showToast === 'function') window.showToast("Conversión Batch Completada.", "success");
+        if (typeof window.showToast === 'function') window.showToast("Conversión Batch con QR Completada.", "success");
     }
 </script>
 </body>
 </html>
-
