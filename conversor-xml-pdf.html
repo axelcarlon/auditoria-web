@@ -251,19 +251,27 @@
                 const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
                 const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
 
-                // Inyección QR Canvas síncrona
+                // Yielding asíncrono para liberar el hilo y permitir renderizado del Canvas del QR
                 let qrDataURI = null;
-                try {
-                    if(uuid !== "NO-TIMBRADO") {
-                        const selloCorto = sello ? sello.substring(sello.length - 8) : "";
-                        const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${emisorRfc}&rr=${receptorRfc}&tt=${total}&fe=${selloCorto}`;
-                        
+                if(uuid !== "NO-TIMBRADO") {
+                    const selloCorto = sello ? sello.substring(sello.length - 8) : "";
+                    const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${emisorRfc}&rr=${receptorRfc}&tt=${total}&fe=${selloCorto}`;
+                    
+                    qrDataURI = await new Promise((resolve) => {
                         let tempDiv = document.createElement("div");
-                        new QRCode(tempDiv, { text: satUrl, width: 400, height: 400, correctLevel: QRCode.CorrectLevel.M });
-                        let canvas = tempDiv.querySelector("canvas");
-                        if(canvas) qrDataURI = canvas.toDataURL("image/png");
-                    }
-                } catch(e) {}
+                        new QRCode(tempDiv, { 
+                            text: satUrl, 
+                            width: 400, 
+                            height: 400, 
+                            correctLevel: QRCode.CorrectLevel.M 
+                        });
+                        
+                        setTimeout(() => {
+                            let canvas = tempDiv.querySelector("canvas");
+                            resolve(canvas ? canvas.toDataURL("image/png") : null);
+                        }, 30);
+                    });
+                }
 
                 let qrContent = qrDataURI ? { image: qrDataURI, width: 85, height: 85, alignment: 'center' } : { text: '' };
 
