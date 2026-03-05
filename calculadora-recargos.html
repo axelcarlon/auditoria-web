@@ -227,7 +227,6 @@
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
     
-    // Objeto global para almacenar los datos matemáticos y usarlos en el PDF
     let datosPDF = {};
 
     function mesesDeRetraso(fechaVencimiento, fechaPago) {
@@ -272,14 +271,12 @@
         const totalPagar = montoActualizado + recargos;
         const multaBase = Math.round(montoActualizado * 0.55);
 
-        // Guardar para el PDF
         datosPDF = {
             montoHistorico, fechaVencimiento, fechaPago, inpcAntiguo, inpcReciente,
             factor, montoActualizado, parteActualizacion, mesesMora,
             tasaRecargos, recargos, totalPagar, multaBase
         };
 
-        // Renderizado
         document.getElementById('results').style.display = 'block';
         document.getElementById('resActualizado').innerText = formatMoney(montoActualizado);
         document.getElementById('resRecargos').innerText = formatMoney(recargos);
@@ -327,7 +324,7 @@
                 {
                     columns: [
                         { width: '*', text: 'DICTAMEN PERICIAL DE IMPUESTOS', fontSize: 16, bold: true, color: '#8B5CF6' },
-                        { width: 'auto', text: 'AuditorIA App', fontSize: 16, bold: true, alignment: 'right', color: '#1E293B' }
+                        { width: 'auto', text: 'AuditorIA', fontSize: 16, bold: true, alignment: 'right', color: '#1E293B' }
                     ]
                 },
                 { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#E2E8F0' }] },
@@ -369,7 +366,15 @@
                 { text: 'III. EVALUACIÓN DE RIESGO Y AHORRO FISCAL', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#10B981' },
                 { text: `Si la autoridad fiscal hubiera iniciado facultades de comprobación antes de este pago, se habría impuesto una multa de fondo del 55% sobre el impuesto actualizado (Art. 76 CFF), equivalente a ${formatMoney(d.multaBase)}.\n\nAl realizarse el pago de forma voluntaria, resulta aplicable el beneficio de la Corrección Espontánea previsto en el Artículo 73 del Código Fiscal de la Federación, eximiendo al contribuyente del pago de dicha multa y generando un ahorro financiero a la empresa.`, fontSize: 10, alignment: 'justify', lineHeight: 1.5 },
 
-                { text: '____________________________________\nFIRMA DE REVISIÓN Y AUTORIZACIÓN', alignment: 'center', fontSize: 10, margin: [0, 80, 0, 0] }
+                {
+                    unbreakable: true,
+                    margin: [0, 50, 0, 0],
+                    alignment: 'center',
+                    stack: [
+                        { text: '____________________________________' },
+                        { text: 'FIRMA DE REVISIÓN Y AUTORIZACIÓN', fontSize: 10, margin: [0, 5, 0, 0] }
+                    ]
+                }
             ]
         };
 
