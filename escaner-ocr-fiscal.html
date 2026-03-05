@@ -36,12 +36,13 @@
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #0891B2; color: white;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
+        /* Scanner Line Animation */
         .scanner-container { position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; display: none;}
         .scanner-img-placeholder { width: 100%; height: 100px; background: repeating-linear-gradient(45deg, #1E293B, #1E293B 10px, #0F172A 10px, #0F172A 20px); border: 1px solid var(--border); border-radius: 12px;}
         .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--brand); box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); animation: scan 1.5s linear infinite; }
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
-        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 150px; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 150px; overflow-y: auto; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
         
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -51,6 +52,7 @@
         .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
         .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
 
+        /* Data Table */
         .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 30px;}
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border);}
@@ -63,10 +65,8 @@
         .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
-        
-        .btn-rescue { background: transparent; border: 1px solid var(--danger); color: #FCA5A5; padding: 12px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; width: 100%;}
-        .btn-rescue:hover { background: rgba(239, 68, 68, 0.1); color: white; }
 
+        /* Cross-Selling CSS */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
@@ -148,7 +148,7 @@
                     </tr>
                 </thead>
                 <tbody id="tablaConceptos">
-                </tbody>
+                    </tbody>
             </table>
         </div>
 
@@ -177,7 +177,7 @@
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
             <h3 class="feature-title">Auditoría Matemática</h3>
-            <p class="feature-desc">Verifica que la suma de los conceptos extraídos coincida exactamente con el total impreso en la imagen, alertando sobre tickets alterados o mal sumados.</p>
+            <p class="feature-desc">Verifica que la suma de los conceptos extraídos coincida exactamente con el total impreso en la imagen, alertando sobre tickets alterados.</p>
         </div>
     </div>
 
@@ -244,42 +244,6 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // COMPRESOR FORENSE (Mantiene Headers Nativos)
-    async function comprimirForense(file) {
-        if (file.type === 'application/pdf' || file.size < 1.5 * 1024 * 1024) return file;
-        
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1500;
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    if (width > MAX_WIDTH) { 
-                        height *= MAX_WIDTH / width; 
-                        width = MAX_WIDTH; 
-                    }
-                    
-                    canvas.width = width; 
-                    canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    
-                    canvas.toBlob((blob) => {
-                        if (!blob) { resolve(file); return; }
-                        resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg', lastModified: Date.now() }));
-                    }, 'image/jpeg', 0.8);
-                };
-                img.onerror = () => resolve(file);
-                img.src = e.target.result;
-            };
-            reader.onerror = () => resolve(file);
-            reader.readAsDataURL(file);
-        });
-    }
-
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -292,27 +256,10 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        try {
-            status.innerHTML = `> Verificando conexión de red con Render...<br>`;
-            const pingReq = await fetch("https://fastapi-susu.onrender.com/ping");
-            if(!pingReq.ok) throw new Error("Servidor Offline");
-        } catch(e) {
-            document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--warning)">[ALERTA]: El servidor backend se encuentra en reinicio (Sleep Mode).</strong>`;
-            term.innerHTML += `<br><span style="color:#FCA5A5; font-size:12px;">Por favor, espere 1 a 2 minutos e intente de nuevo.</span>`;
-            term.innerHTML += `<br><br><button onclick="iniciarEscaneo()" class="btn-rescue" style="border-color:var(--brand); color:var(--brand);">REINTENTAR AHORA</button>`;
-            return;
-        }
-
-        status.innerHTML += `> Servidor Online. Optimizando matriz óptica...<br>`;
+        status.innerHTML = `> Empaquetando matriz de imágenes...<br>> Transfiriendo a Motor Visión IA...`;
 
         const formData = new FormData();
-        for (let i = 0; i < currentFiles.length; i++) {
-            const fileOpt = await comprimirForense(currentFiles[i]);
-            formData.append("archivos", fileOpt);
-        }
-        
-        status.innerHTML += `> Vectorizando imagen e interpretando datos IA...`;
+        currentFiles.forEach(f => formData.append("archivos", f));
 
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
@@ -320,26 +267,20 @@
                 body: formData
             });
 
-            if (!res.ok) throw new Error(`Conexión rechazada o archivo demasiado pesado.`);
+            if (!res.ok) throw new Error("Fallo en el servidor de IA.");
             
             const data = await res.json();
-            
-            if (data.error || data.status === "error_calidad") {
-                throw new Error("La IA indica que el ticket es borroso o ilegible.");
-            }
-            
             procesarResultados(data);
 
         } catch (e) {
+            console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Falla de procesamiento IA.</strong>`;
-            term.innerHTML += `<br><span style="color:#FCA5A5; font-size:11px; font-family:monospace;">Razón: ${e.message}</span>`;
-            term.innerHTML += `<br><br><button onclick="window.location.reload()" class="btn-rescue">
-                ESCANEAR NUEVO DOCUMENTO
-            </button>`;
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Motor de visión saturado o archivo dañado.</strong>`;
+            if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
         }
     }
 
+    // LISTA NEGRA DE PALABRAS (Filtro Forense)
     const blackList = ["propina", "servicio", "tip", "bebida", "alcohol", "cerveza", "vino", "licor", "donativo", "tequila", "mezcal"];
 
     function esNoDeducible(descripcion) {
@@ -349,12 +290,13 @@
 
     function procesarResultados(data) {
         let docs = [];
+        // Normalizar respuesta (Lote o Individual)
         if(data.status === "success_lote") {
             data.resultados_lote.forEach(r => { if(r.status === "success") docs.push(r.datos); });
         } else if (data.conceptos) {
             docs.push(data);
         } else {
-            throw new Error("Estructura JSON devuelta por la IA está corrupta.");
+            throw new Error("Estructura JSON irreconocible.");
         }
 
         auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
@@ -381,12 +323,13 @@
             }
         });
 
+        // Auditoría Matemática (Cuadre de Ticket)
         const sumaCalculada = auditoriaDatos.baseDeducible + auditoriaDatos.totalNoDeducible;
         const diferencia = Math.abs(auditoriaDatos.totalImpreso - sumaCalculada);
         let mensajeCuadre = "";
 
-        if (diferencia > 1) { 
-            mensajeCuadre = `<div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 15px; border-radius: 6px; margin-bottom: 20px; color: #FDE68A; font-size: 13px;"><strong>ALERTA DE INTEGRIDAD:</strong> La suma de los conceptos extraídos (${formatMoney(sumaCalculada)}) no coincide con el Total Impreso detectado (${formatMoney(auditoriaDatos.totalImpreso)}). El documento podría estar arrugado o alterado.</div>`;
+        if (diferencia > 1) { // Tolerancia de redondeo 1 peso
+            mensajeCuadre = `<div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 15px; border-radius: 6px; margin-bottom: 20px; color: #FDE68A; font-size: 13px;"><strong>ALERTA DE INTEGRIDAD:</strong> La suma de los conceptos extraídos (${formatMoney(sumaCalculada)}) no coincide con el Total Impreso detectado (${formatMoney(auditoriaDatos.totalImpreso)}). El documento podría estar arrugado, borroso o alterado. Sugerimos revisión manual.</div>`;
         }
 
         document.getElementById('scannerAnim').style.display = 'none';
@@ -395,7 +338,9 @@
         const resContainer = document.getElementById('results');
         resContainer.style.display = 'block';
 
-        if(mensajeCuadre !== "") resContainer.insertAdjacentHTML('afterbegin', mensajeCuadre);
+        if(mensajeCuadre !== "") {
+            resContainer.insertAdjacentHTML('afterbegin', mensajeCuadre);
+        }
 
         document.getElementById('kpiTotalTicket').innerText = formatMoney(auditoriaDatos.totalImpreso);
         document.getElementById('kpiNoDeducible').innerText = formatMoney(auditoriaDatos.totalNoDeducible);
@@ -409,6 +354,8 @@
                 <td style="text-align: center;"><span class="badge ${c.cssClass}">${c.estado}</span></td>
             </tr>
         `).join('');
+
+        if (typeof window.showToast === 'function') window.showToast("Extracción OCR Finalizada.", "success");
     }
 
     function descargarExcel() {
@@ -441,8 +388,9 @@
 
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 
+                // Preparar cuerpo de tabla dinámica
                 const bodyTabla = [
-                    [{text: 'Concepto Extraído', style: 'tableHeader'}, {text: 'Importe', style: 'tableHeader', alignment: 'right'}, {text: 'Resolución', style: 'tableHeader', alignment: 'center'}]
+                    [{text: 'Concepto', style: 'tableHeader'}, {text: 'Importe', style: 'tableHeader', alignment: 'right'}, {text: 'Resolución', style: 'tableHeader', alignment: 'center'}]
                 ];
 
                 auditoriaDatos.conceptos.forEach(c => {
@@ -500,6 +448,9 @@
 
                 pdfMake.createPdf(docDefinition).download(`Dictamen_OCR_${Date.now()}.pdf`);
                 
+            } catch (e) {
+                console.error("Fallo local PDF:", e);
+                if (typeof window.showToast === 'function') window.showToast("Error crítico al renderizar PDF.", "error");
             } finally {
                 btn.innerHTML = oldText; 
                 btn.disabled = false;
