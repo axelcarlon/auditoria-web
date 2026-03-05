@@ -72,6 +72,15 @@
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
+        /* Clases para Ecosistema de Soluciones Faltantes */
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(217, 119, 6, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-icon { width: 48px; height: 48px; background: rgba(217, 119, 6, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
+
         @media (max-width: 768px) {
             .btn-toolbar { flex-direction: column; }
             .shield-banner { flex-direction: column; text-align: center; }
@@ -191,6 +200,25 @@
             <p class="feature-desc">Lee la Clave SAT de la factura y clasifica instantáneamente si el bien pertenece a Equipo de Cómputo (30%), Transporte (25%) o Mobiliario (10%), calculando el escudo fiscal máximo para tu cierre anual.</p>
         </div>
     </div>
+
+    <h2 class="showcase-header">Soluciones Complementarias</h2>
+    <div class="bento-grid">
+        <a href="auditoria-masiva.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg></div>
+                <h3 class="bento-title">Auditoría Masiva (Data Lake)</h3>
+                <p class="bento-desc">Analiza estas facturas con la Ley de Benford para detectar si alguna inversión se encuentra fuera de los parámetros del mercado.</p>
+            </div>
+        </a>
+        <a href="prueba-servicio.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                <h3 class="bento-title">Expediente de Materialidad</h3>
+                <p class="bento-desc">Además de pegarles la etiqueta QR, anexa fotos de la factura y de la computadora física para un blindaje al 100%.</p>
+            </div>
+        </a>
+    </div>
+
 </div>
 
 <script src="footer.js"></script>
@@ -344,11 +372,17 @@
 
             status.innerText = `> Vectorizando códigos QR para etiquetas físicas...`;
             
-            // Pre-generar URIs de QR para uso inmediato (Sin estresar memoria, max 200)
+            // Pre-generar URIs de QR para uso inmediato (Sin estresar memoria, max 300)
             dbActivos.forEach((activo, index) => {
                 if(index < 300) {
                     try {
-                        const qr = new QRious({ value: `UUID:${activo.uuid} | MOI:${activo.moi}`, size: 250, level: 'M' });
+                        const qr = new QRious({ 
+                            value: `UUID:${activo.uuid} | MOI:${activo.moi}`, 
+                            size: 250, 
+                            level: 'M',
+                            background: 'white',
+                            foreground: 'black'
+                        });
                         activo.qrBase64 = qr.toDataURL('image/png');
                     } catch(e) { activo.qrBase64 = null; }
                 }
@@ -488,20 +522,21 @@
         if(typeof window.showToast === 'function') window.showToast("Dictamen PDF generado.", "success");
     }
 
-    // LA SÚPER FUNCIÓN: GENERADOR DE ETIQUETAS FÍSICAS QR (IMPRESIÓN EN CUADRÍCULA)
+    // ARREGLO LETAL: DIBUJO ESTRUCTURAL CON TABLAS PARA EVITAR COLAPSO DEL RENDERIZADOR
     function generarEtiquetasQR() {
-        if (typeof pdfMake === 'undefined' || dbActivos.length === 0) return;
+        if (typeof pdfMake === 'undefined') return;
+        if (dbActivos.length === 0) {
+            if(typeof window.showToast === 'function') window.showToast("No hay activos válidos.", "warning");
+            return;
+        }
 
-        let contentArray = [];
-        
-        // Crear matriz de 3 columnas para las etiquetas
-        let columns = [];
-        let count = 0;
+        let bodyTable = [];
+        let row = [];
 
         dbActivos.forEach((a) => {
             if(!a.qrBase64) return;
 
-            let tagCard = {
+            let tagCell = {
                 stack: [
                     { text: 'PROPIEDAD DE LA EMPRESA', fontSize: 7, bold: true, alignment: 'center', color: '#ffffff', background: '#0F172A', margin: [0,0,0,5] },
                     { text: a.descripcion.substring(0, 35), fontSize: 8, bold: true, alignment: 'center' },
@@ -509,39 +544,57 @@
                     { image: a.qrBase64, width: 80, alignment: 'center' },
                     { text: `Adquisición: ${a.fecha}`, fontSize: 6, alignment: 'center', color: '#64748B', margin: [0,5,0,0] }
                 ],
-                margin: [10, 10, 10, 10],
-                border: [true, true, true, true]
+                margin: [5, 10, 5, 10],
+                fillColor: '#F8FAFC' // Fondo gris muy tenue para la etiqueta
             };
 
-            columns.push(tagCard);
-            count++;
+            row.push(tagCell);
 
             // Cada 3 etiquetas cerramos la fila
-            if(columns.length === 3) {
-                contentArray.push({ columns: columns, margin: [0, 0, 0, 20] });
-                columns = [];
+            if(row.length === 3) {
+                bodyTable.push(row);
+                row = [];
             }
         });
 
-        // Si sobran etiquetas (no completan fila de 3), se meten
-        if(columns.length > 0) {
-            // Rellenar con vacíos para cuadrar
-            while(columns.length < 3) columns.push({ text: '', margin: [10, 10, 10, 10] });
-            contentArray.push({ columns: columns, margin: [0, 0, 0, 20] });
+        // Si sobran etiquetas (no completan fila de 3), rellenamos con celdas vacías sin bordes
+        if(row.length > 0) {
+            while(row.length < 3) {
+                row.push({ text: '', border: [false, false, false, false] });
+            }
+            bodyTable.push(row);
         }
+
+        if(bodyTable.length === 0) return;
 
         const docDefinition = {
             pageSize: 'LETTER',
             pageMargins: [30, 30, 30, 30],
             content: [
-                { text: 'ETIQUETAS PATRIMONIALES PARA INVENTARIO FÍSICO (MATERIALIDAD SAT)', fontSize: 14, bold: true, alignment: 'center', margin: [0,0,0,20], color: '#1E293B' },
-                { text: 'Instrucciones: Imprima este documento en papel adherible. Recorte cada etiqueta y fíjela en un lugar visible del activo físico. En caso de auditoría, el código QR vincula la existencia física con el XML correspondiente.', fontSize: 9, alignment: 'center', color: '#64748B', margin: [0,0,0,30] },
-                ...contentArray
+                { text: 'ETIQUETAS PATRIMONIALES PARA INVENTARIO FÍSICO (MATERIALIDAD SAT)', fontSize: 14, bold: true, alignment: 'center', margin: [0,0,0,10], color: '#1E293B' },
+                { text: 'Instrucciones: Imprima este documento en papel adherible. Recorte cada etiqueta y fíjela en un lugar visible del activo físico. En caso de auditoría, el código QR vincula la existencia física con el XML correspondiente.', fontSize: 9, alignment: 'center', color: '#64748B', margin: [0,0,0,20] },
+                {
+                    table: {
+                        widths: ['*', '*', '*'],
+                        body: bodyTable
+                    },
+                    layout: {
+                        hLineWidth: function (i, node) { return 1; },
+                        vLineWidth: function (i, node) { return 1; },
+                        hLineColor: function (i, node) { return '#CBD5E1'; }, // Bordes sutiles para recortar
+                        vLineColor: function (i, node) { return '#CBD5E1'; }
+                    }
+                }
             ]
         };
 
-        pdfMake.createPdf(docDefinition).download(`Etiquetas_QR_Inventario_${Date.now()}.pdf`);
-        if(typeof window.showToast === 'function') window.showToast("Hoja de Etiquetas QR Lista para Impresión.", "success");
+        try {
+            pdfMake.createPdf(docDefinition).download(`Etiquetas_QR_Inventario_${Date.now()}.pdf`);
+            if(typeof window.showToast === 'function') window.showToast("Hoja de Etiquetas Lista para Imprimir.", "success");
+        } catch(e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Fallo al generar el PDF.", "error");
+        }
     }
 </script>
 </body>
