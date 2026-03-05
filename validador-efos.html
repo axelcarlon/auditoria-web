@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validador EFOS (Art. 69-B) | AuditorIA</title>
-    <meta name="description" content="Audita masivamente tus facturas XML contra las listas negras del SAT (Artículo 69-B) de forma local y sin comprometer tus datos.">
+    <meta name="description" content="Audita masivamente tus facturas XML contra las listas negras del SAT (Artículo 69-B) de forma local. Descarga el Dictamen de Cumplimiento en PDF.">
     <link rel="canonical" href="https://auditoriaxml.mx/validador-efos.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -90,7 +92,7 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">COMPLIANCE Y AUDITORÍA FISCAL</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Validador EFOS (Art. 69-B)</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Audita instantáneamente tu red de proveedores contra el listado definitivo del SAT. Detecta Empresas Facturadoras de Operaciones Simuladas (EFOS) antes de que la autoridad rechace tus deducciones.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Audita instantáneamente tu red de proveedores contra el listado definitivo del SAT. Descarga un Dictamen de Cumplimiento en PDF para blindar tu contabilidad.</p>
     </div>
 
     <div class="db-status-bar">
@@ -154,10 +156,13 @@
         </div>
 
         <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Limpiar Auditoría</button>
-            <button onclick="descargarExcelEFOS()" class="btn-action" style="flex: 2; background: #064E3B; border-color: #059669;">
+            <button onclick="window.location.reload()" class="btn-secondary">Volver</button>
+            <button onclick="descargarExcelEFOS()" class="btn-secondary" style="border-color: #059669; color: #10B981;">
+                EXCEL (DATOS)
+            </button>
+            <button onclick="exportarDictamenPDF()" class="btn-action" style="flex: 2;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR REPORTE DE RIESGO (EXCEL)
+                DESCARGAR DICTAMEN DE COMPLIANCE (PDF)
             </button>
         </div>
     </div>
@@ -170,8 +175,8 @@
         </div>
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
-            <h3 class="feature-title">Prevención de Multas</h3>
-            <p class="feature-desc">Deducir una factura de un EFO sin demostrar la materialidad resulta en el rechazo de la deducción, cobro del impuesto omitido, actualizaciones, recargos y multas de hasta el 75%.</p>
+            <h3 class="feature-title">Dictamen Pericial</h3>
+            <p class="feature-desc">Emite un documento legal que acredita tu revisión de proveedores, protegiendo a la empresa contra presunciones de operaciones simuladas frente a la autoridad.</p>
         </div>
     </div>
 
@@ -197,15 +202,11 @@
 <script src="footer.js"></script>
 
 <script>
-    let currentFiles = [];
-    let dbProveedores = {}; // { RFC: { nombre: '', monto: 0, docs: 0, isEFO: false } }
-    let blacklistSAT = new Set();
-    let dbLoaded = false;
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
 
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-
-    // Conexión al JSON Local
-    document.addEventListener("DOMContentLoaded", () => {
         fetch('efos.json')
             .then(res => {
                 if(!res.ok) throw new Error("HTTP Status " + res.status);
@@ -235,6 +236,13 @@
                 document.getElementById('countDB').innerText = "0 RFCs";
             });
     });
+
+    let currentFiles = [];
+    let dbProveedores = {}; 
+    let blacklistSAT = new Set();
+    let dbLoaded = false;
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
@@ -300,12 +308,10 @@
 
         status.innerText = `> Cruzando matriz de proveedores contra Lista Negra (efos.json)...`;
 
-        // Motor de Cruce 69-B
         Object.keys(dbProveedores).forEach(rfc => {
             if (blacklistSAT.has(rfc)) {
                 dbProveedores[rfc].isEFO = true;
             } else if (!dbLoaded && rfc === "XAXX010101000") {
-                // Heurística de respaldo si no hay BD: Marcar Público en General como advertencia
                 dbProveedores[rfc].isEFO = "WARN"; 
             }
         });
@@ -321,7 +327,6 @@
         let totalSeguro = 0;
         let totalRiesgo = 0;
 
-        // Ordenar por Riesgo primero, luego por Monto
         const arrProv = Object.entries(dbProveedores).map(([rfc, data]) => ({ rfc, ...data }));
         arrProv.sort((a, b) => {
             if (a.isEFO === true && b.isEFO !== true) return -1;
@@ -379,6 +384,74 @@
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Proveedores");
         XLSX.writeFile(wb, `Reporte_Auditoria_69B_${Date.now()}.xlsx`);
+    }
+
+    function exportarDictamenPDF() {
+        if (typeof pdfMake === 'undefined') return;
+
+        let fechaImpresion = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+        let totalRiesgo = 0;
+        let totalSeguro = 0;
+        let totalEfos = 0;
+
+        const arrProv = Object.entries(dbProveedores).map(([rfc, data]) => ({ rfc, ...data }));
+        arrProv.forEach(p => {
+            if(p.isEFO === true) {
+                totalRiesgo += p.monto;
+                totalEfos++;
+            } else {
+                totalSeguro += p.monto;
+            }
+        });
+
+        let veredictoTexto = totalEfos > 0 ? 'PELIGRO: SE DETECTARON OPERACIONES CON EFOS (ART. 69-B)' : 'DICTAMEN LIMPIO: CERO RIESGO 69-B DETECTADO';
+        let veredictoColor = totalEfos > 0 ? '#EF4444' : '#10B981';
+
+        const docDefinition = {
+            pageSize: 'LETTER',
+            pageMargins: [50, 50, 50, 50],
+            content: [
+                {
+                    columns: [
+                        { width: '*', text: 'CERTIFICADO DE AUDITORÍA DE PROVEEDORES (ART. 69-B CFF)', fontSize: 14, bold: true, color: '#EF4444' },
+                        { width: 'auto', text: 'AuditorIA', fontSize: 16, bold: true, alignment: 'right', color: '#1E293B' }
+                    ]
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#E2E8F0' }] },
+                { text: `Fecha de emisión: ${fechaImpresion}`, fontSize: 9, color: '#64748B', margin: [0, 15, 0, 20], alignment: 'right' },
+                
+                { text: 'I. RESUMEN EJECUTIVO', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                {
+                    table: {
+                        widths: ['50%', '50%'],
+                        body: [
+                            [{ text: 'Proveedores Analizados:', bold: true, fillColor: '#F8FAFC', border: [false, true, false, true] }, { text: arrProv.length.toString(), border: [false, true, false, true] }],
+                            [{ text: 'Operaciones Seguras (MXN):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(totalSeguro), color: '#10B981', border: [false, false, false, true] }],
+                            [{ text: 'Operaciones de Riesgo EFO (MXN):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(totalRiesgo), color: '#EF4444', bold: true, border: [false, false, false, true] }]
+                        ]
+                    }, margin: [0, 0, 0, 20]
+                },
+
+                { text: 'II. DICTAMEN FINAL DEL SISTEMA', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                { text: veredictoTexto, fontSize: 14, bold: true, color: veredictoColor, margin: [0, 0, 0, 30], alignment: 'center' },
+
+                { text: 'III. PROCEDIMIENTO APLICADO', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                { text: 'Se realizó un cruce masivo de los RFC contenidos en los comprobantes fiscales digitales por internet (CFDI) proporcionados, contrastándolos contra el listado definitivo de Empresas Facturadoras de Operaciones Simuladas (EFOS) emitido por el Servicio de Administración Tributaria en términos del Artículo 69-B del CFF.\n\nEste documento sirve como evidencia de debida diligencia fiscal.', fontSize: 10, alignment: 'justify', lineHeight: 1.5, margin: [0, 0, 0, 40] },
+
+                {
+                    unbreakable: true,
+                    margin: [0, 20, 0, 0],
+                    alignment: 'center',
+                    stack: [
+                        { text: '____________________________________' },
+                        { text: 'FIRMA DEL AUDITOR RESPONSABLE', fontSize: 10, margin: [0, 5, 0, 0] }
+                    ]
+                }
+            ]
+        };
+
+        pdfMake.createPdf(docDefinition).download(`Dictamen_EFOS_${Date.now()}.pdf`);
+        if(typeof window.showToast === 'function') window.showToast("Dictamen PDF generado.", "success");
     }
 </script>
 </body>
