@@ -3,84 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auditor Masivo de Nómina (CFDI 1.2) | AuditorIA</title>
-    <meta name="description" content="Extrae deducciones, percepciones e ISR retenido de miles de recibos de nómina XML simultáneamente. Agrupa por empleado para cuadrar SUA.">
+    <title>Auditoría de Nómina y Carga Fiscal | AuditorIA</title>
+    <meta name="description" content="Audita masivamente tus recibos de nómina (CFDI 1.2). Proyecta tu riesgo de no deducibilidad (Art. 28 LISR) y extrae el reporte gerencial en PDF.">
     <link rel="canonical" href="https://auditoriaxml.mx/auditor-nomina.html" />
     
-    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
-    <link rel="apple-touch-icon" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #E11D48; --brand-glow: rgba(225, 29, 72, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444; --accent: #F43F5E;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
+        .header-section { text-align: center; margin-bottom: 50px; }
+        .header-badge { display: inline-block; background: rgba(225, 29, 72, 0.1); border: 1px solid var(--brand); color: #FDA4AF; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(225, 29, 72, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
+        .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
+        .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+
+        .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #BE123C;}
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
+
+        .terminal-loader { display: none; font-family: monospace; color: #FDA4AF; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 120px; border: 1px solid rgba(225, 29, 72, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Banner Alerta Deducción */
+        .tax-banner { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 25px 30px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
+        .tax-icon { background: rgba(245, 158, 11, 0.2); padding: 15px; border-radius: 50%; color: var(--warning); display: flex;}
+        .tax-amount { font-size: 32px; font-weight: 900; color: var(--warning); font-family: monospace; text-align: right;}
+
+        /* Banner Success */
+        .success-banner { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 20px; border-radius: 12px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;}
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
+        .kpi-value { font-size: 26px; font-weight: 900; color: var(--text-main); font-family: monospace; }
         
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
+        .kpi-box.highlight { border-color: rgba(225, 29, 72, 0.4); background: rgba(225, 29, 72, 0.05); }
+        .kpi-box.highlight .kpi-value { color: var(--accent); }
 
-        .results-container { display: none; }
-        
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; padding: 15px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border);}
-        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;}
-        .btn-restart:hover { background: #e2e8f0; }
-        .btn-export { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-export:hover { opacity: 0.9; }
-        .btn-export-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-export-excel:hover { opacity: 0.9; }
+        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 30px; max-height: 400px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 900px;}
+        th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
+        td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; vertical-align: middle;}
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .metric-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
-        .metric-value { font-size: 30px; font-weight: 900; color: var(--text-main); font-family: monospace;}
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        .table-container { background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border); overflow-x: auto; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 600px;}
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 700; text-transform: uppercase; position: sticky; top: 0; box-shadow: 0 1px 0 var(--border); z-index: 10;}
-        tr:hover { background: #F9FAFB; }
-        .amount { text-align: right; font-family: monospace; font-size: 14px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
+        .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(225, 29, 72, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
-        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid var(--brand); padding: 20px; margin-bottom: 30px; border-radius: 4px; display: none; text-align: left; }
-        .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-transform: uppercase;}
-        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-bottom: 30px; text-align: center; }
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Botones Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .btn-wa { background-color: #25D366; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
-
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(225, 29, 72, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
-            .metrics-grid { grid-template-columns: 1fr; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar button { width: 100%; justify-content: center; }
+            .btn-toolbar { flex-direction: column; }
+            .tax-banner { flex-direction: column; text-align: center; }
+            .tax-amount { text-align: center; }
         }
     </style>
 </head>
@@ -88,343 +89,435 @@
 
 <script src="navbar.js"></script>
 
-<div class="modal-overlay" id="paywallModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus evaluaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para procesar nóminas masivamente, agrupar empleados y exportar a Excel sin restricciones.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
-    </div>
-</div>
-
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">ANÁLISIS DE SUELDOS Y SALARIOS</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Auditor Masivo de Nómina (CFDI 1.2)</h1>
-        <p style="color: var(--text-muted);">Extrae deducciones, percepciones e ISR retenido de miles de recibos simultáneamente. El sistema agrupa los montos por empleado para cuadrar fácilmente contra el SUA.</p>
+    <div class="header-section" id="headerSection">
+        <div class="header-badge">ESTRATEGIA FISCAL Y RH</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Auditoría de Nómina y Riesgos</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Extrae la radiografía financiera de tu plantilla laboral. Descubre fugas fiscales por pagos exentos no deducibles (Art. 28 LISR) y consolida tu carga tributaria en un dictamen PDF.</p>
     </div>
 
-    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Recibos de Nómina (XML)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesa miles de archivos. Se omitirán facturas que no sean CFDI Tipo N.</p>
-        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
-        
-        <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Agrupación de Nodos</div>
+    <div id="mainForm">
+        <div class="upload-section" id="dropZone">
+            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <h3 style="margin: 0 0 10px; font-size: 20px;">Lote de Recibos de Nómina (CFDI 1.2)</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Selecciona múltiples archivos XML de los sueldos timbrados en el mes/año.</p>
+            <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
+            <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
-    </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
-        <div class="spinner"></div> Analizando complementos de nómina y sumando importes por empleado...
+        <button id="btnEjecutar" class="btn-action" onclick="iniciarAuditoriaNomina()" disabled>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            EJECUTAR AUDITORÍA Y CALCULAR CASTIGO FISCAL
+        </button>
+
+        <div class="terminal-loader" id="terminalLoader">
+            > Parseando complementos de Nómina 1.2...<br>
+            <span id="termStatus"></span>
+        </div>
     </div>
 
     <div class="results-container" id="results">
-        <div class="toolbar">
-            <div>
-                <button class="btn-restart" onclick="window.location.reload()">Cargar Nuevo Lote</button>
-            </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-export-excel" onclick="descargarCSV_Nomina()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    A Excel (CSV)
-                </button>
-                <button class="btn-export" onclick="descargarReportePDF()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Reporte PDF
-                </button>
+        
+        <div class="success-banner">
+            <svg width="24" height="24" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div style="font-size: 14px; font-weight: bold; color: var(--success);">
+                Radiografía Laboral Compilada Exitosamente.
             </div>
         </div>
 
-        <div id="iaLoading" class="ia-loading">
-            <div class="spinner" style="width: 20px; height: 20px; border-width: 3px;"></div> Evaluando irregularidades en retenciones...
-        </div>
-        <div id="iaAdvisorContainer" class="ia-advisor-box">
-            <div class="ia-advisor-title">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                AuditorIA Legal Insight
+        <div class="tax-banner">
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <div class="tax-icon">
+                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <div>
+                    <h2 style="margin: 0 0 5px; color: var(--warning); font-size: 18px;">Riesgo de No Deducibilidad (Art. 28 LISR Fracc. XXX)</h2>
+                    <p style="margin: 0; color: #FDE68A; font-size: 13px; max-width: 500px;">El SAT castiga a las empresas que otorgan prestaciones exentas. Estimamos que este monto de tu nómina <strong>NO será deducible</strong>, aumentando tu pago de ISR corporativo al cierre del año.</p>
+                </div>
             </div>
-            <p id="iaAdvisorText" class="ia-advisor-content"></p>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-title">Recibos (XML) Analizados</div>
-                <div class="metric-value" id="valNominaCount">0</div>
-            </div>
-            <div class="metric-card" style="border-bottom: 4px solid var(--success);">
-                <div class="metric-title">Sueldo Neto Pagado</div>
-                <div class="metric-value" style="color: var(--success);" id="valNeto">$0.00</div>
-            </div>
-            <div class="metric-card" style="border-bottom: 4px solid var(--danger);">
-                <div class="metric-title">ISR Retenido (Total)</div>
-                <div class="metric-value" style="color: var(--danger);" id="valISR">$0.00</div>
-            </div>
-            <div class="metric-card" style="border-bottom: 4px solid var(--warning);">
-                <div class="metric-title">Otras Deducciones (IMSS, etc)</div>
-                <div class="metric-value" style="color: var(--warning);" id="valDeducciones">$0.00</div>
+            <div class="tax-amount">
+                <div style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Castigo Estimado (47% del Exento)</div>
+                <span id="kpiCastigoFiscal">$0.00</span>
             </div>
         </div>
 
+        <div class="kpi-grid">
+            <div class="kpi-box">
+                <div class="kpi-label">Empleados (RFC Únicos)</div>
+                <div class="kpi-value" id="kpiEmpleados">0</div>
+            </div>
+            <div class="kpi-box highlight">
+                <div class="kpi-label" style="color: var(--accent);">Costo Laboral Bruto</div>
+                <div class="kpi-value" id="kpiBruto">$0</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Parte Gravada (Deducible 100%)</div>
+                <div class="kpi-value" id="kpiGravado" style="color: var(--success);">$0</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Parte Exenta (Riesgo Art 28)</div>
+                <div class="kpi-value" id="kpiExento" style="color: var(--warning);">$0</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">ISR Retenido a Pagar (SAT)</div>
+                <div class="kpi-value" id="kpiISR">$0</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Neto Pagado al Bolsillo</div>
+                <div class="kpi-value" id="kpiNeto">$0</div>
+            </div>
+        </div>
+
+        <div class="section-title" style="font-size: 16px; font-weight: 800; margin: 40px 0 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Desglose Analítico por Empleado</div>
         <div class="table-container">
-            <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-main);">Desglose Consolidado por Empleado</h3>
-            <table id="nominaTable">
+            <table>
                 <thead>
                     <tr>
-                        <th>No. Empleado / CURP</th>
-                        <th>Nombre Completo</th>
-                        <th class="amount">Percepciones Totales</th>
-                        <th class="amount">ISR Retenido</th>
-                        <th class="amount">Otras Deducciones</th>
-                        <th class="amount" style="color: var(--success);">Pago Neto (Bancos)</th>
+                        <th>Colaborador</th>
+                        <th style="text-align: right;">Salario Bruto</th>
+                        <th style="text-align: right;">Ingreso Exento</th>
+                        <th style="text-align: right;">ISR Retenido</th>
+                        <th style="text-align: right;">Neto a Pagar</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="tablaNomina">
+                </tbody>
             </table>
         </div>
 
-        <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20auditar%20miles%20de%20recibos%20de%20nómina%20masivamente%20con%20AuditorIA:&url=https://auditoriaxml.mx/auditor-nomina.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/auditor-nomina.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/auditor-nomina.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20auditar%20miles%20de%20recibos%20de%20nómina%20masivamente%20con%20AuditorIA:%20https://auditoriaxml.mx/auditor-nomina.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">Analizar Nuevo Mes</button>
+            <button onclick="descargarExcelNomina()" class="btn-secondary" style="border-color: #059669; color: #10B981;">
+                SÁBANA DATOS (EXCEL)
+            </button>
+            <button onclick="exportarDictamenNominaPDF()" class="btn-action" style="flex: 2;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DESCARGAR DICTAMEN DE COSTO LABORAL (PDF)
+            </button>
         </div>
     </div>
-</div>
 
-<div id="hiddenPdfRender"></div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2h3a2 2 0 002-2zm0 0V9a2 2 0 012-2h3a2 2 0 012 2v10m-7 0a2 2 0 002 2h3a2 2 0 002-2m0 0V5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2z"></path></svg></div>
+            <h3 class="feature-title">Inteligencia Deducible</h3>
+            <p class="feature-desc">El algoritmo disecciona las etiquetas <code>TotalGravado</code> y <code>TotalExento</code> del CFDI 1.2 para proyectar matemáticamente cuánto dinero perderás en deducciones por otorgar prestaciones libres de impuestos.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
+            <h3 class="feature-title">Depuración de Plantilla</h3>
+            <p class="feature-desc">Agrupa automáticamente los recibos quincenales o semanales mediante el RFC del empleado, entregándote el costo real integrado de cada trabajador en el periodo analizado.</p>
+        </div>
+    </div>
+
+    <h2 class="showcase-header">Soluciones Complementarias</h2>
+    <div class="bento-grid">
+        <a href="dashboard-xml.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg></div>
+                <h3 class="bento-title">Dashboard Financiero</h3>
+                <p class="bento-desc">Cruza el costo de tu nómina contra los XML de tus ventas para descubrir la utilidad bruta (EBITDA) real de tu empresa.</p>
+            </div>
+        </a>
+        <a href="calculadora-recargos.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
+                <h3 class="bento-title">Calculadora SAT</h3>
+                <p class="bento-desc">Si olvidaste pagar las retenciones de ISR extraídas en esta auditoría, calcula inmediatamente las multas y recargos a pagar.</p>
+            </div>
+        </a>
+    </div>
+</div>
 
 <script src="footer.js"></script>
 
 <script>
-    function checkQuota() {
-        let usos = localStorage.getItem('auditoria_usos');
-        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
-        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
-        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
-        return true;
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
 
-    const inputXml = document.getElementById('xmlInput');
-    const dropZone = document.getElementById('dropZone');
+    let currentFiles = [];
+    let empleadosDb = {}; 
+    let arrayEmpleados = []; 
     
-    let htmlTablaExport = "";
-    let csvExportData = [];
-    let dataReporte = {};
+    // Metadatos Globales de la Auditoría
+    let metaNomina = {
+        totalBruto: 0,
+        totalGravado: 0,
+        totalExento: 0,
+        totalISR: 0,
+        totalNeto: 0,
+        castigoEstimado: 0
+    };
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; dropZone.style.background = "var(--bg-secondary)"; }));
-    dropZone.addEventListener('drop', (e) => { inputXml.files = e.dataTransfer.files; document.getElementById('fileCountText').innerText = `${e.dataTransfer.files.length} archivos en cola`; processFiles(e.dataTransfer.files); });
-    inputXml.addEventListener('change', (e) => { document.getElementById('fileCountText').innerText = `${e.target.files.length} archivos en cola`; processFiles(e.target.files); });
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
+    const drop = document.getElementById('dropZone');
+    const input = document.getElementById('inputFile');
+    
+    drop.onclick = () => input.click();
+    ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
+    ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
+    drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', e => processFiles(e.target.files));
 
-    async function processFiles(files) {
-        if (files.length === 0) return;
-        if (!checkQuota()) return;
-        
-        document.getElementById('headerSection').style.display = 'none';
-        dropZone.style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
-        
-        let empleados = {}; 
-        let totales = { count: 0, percepciones: 0, isr: 0, deducciones: 0, neto: 0 };
-        let errorNominaDetectado = null;
+    function processFiles(files) {
+        const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+        if(validFiles.length === 0) return;
 
-        const promises = Array.from(files).map(file => {
-            return new Promise((resolve) => {
-                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
-                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
-                        if (!cfdi) { resolve(); return; }
-
-                        const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
-                        if (tipo !== 'N') { resolve(); return; } // Ignorar facturas normales
-
-                        const nomina = xmlDoc.getElementsByTagName('nomina12:Nomina')[0];
-                        const receptor = xmlDoc.getElementsByTagName('nomina12:Receptor')[0];
-                        
-                        if (!nomina || !receptor) { resolve(); return; }
-
-                        const idEmpleado = receptor.getAttribute('NumEmpleado') || receptor.getAttribute('Curp') || 'Sin ID';
-                        const nombre = xmlDoc.getElementsByTagName('cfdi:Receptor')[0].getAttribute('Nombre') || 'Desconocido';
-                        
-                        const percepciones = parseFloat(nomina.getAttribute('TotalPercepciones') || 0);
-                        const deducciones = parseFloat(nomina.getAttribute('TotalDeducciones') || 0);
-                        const neto = parseFloat(cfdi.getAttribute('Total') || 0);
-                        
-                        let isr = 0;
-                        const nodosDeduccion = xmlDoc.getElementsByTagName('nomina12:Deduccion');
-                        for(let i=0; i<nodosDeduccion.length; i++) {
-                            if(nodosDeduccion[i].getAttribute('TipoDeduccion') === '002') {
-                                isr += parseFloat(nodosDeduccion[i].getAttribute('Importe') || 0);
-                            }
-                        }
-
-                        // Algoritmo Forense de Alertas
-                        if (neto < 0) {
-                            errorNominaDetectado = "Se detectó un recibo de nómina con Pago Neto negativo. Las deducciones superan a las percepciones de forma anómala (Verifica préstamos excedidos).";
-                        } else if (percepciones > 15000 && isr === 0) {
-                            errorNominaDetectado = "Se detectó un recibo de nómina con altas percepciones (> $15,000) sin retención de ISR (Clave 002). Posible omisión de impuestos al salario.";
-                        }
-
-                        if (!empleados[idEmpleado]) {
-                            empleados[idEmpleado] = { nombre: nombre, percepciones: 0, isr: 0, deducciones: 0, neto: 0 };
-                        }
-
-                        empleados[idEmpleado].percepciones += percepciones;
-                        empleados[idEmpleado].isr += isr;
-                        empleados[idEmpleado].deducciones += (deducciones - isr); 
-                        empleados[idEmpleado].neto += neto;
-
-                        totales.count++;
-                        totales.percepciones += percepciones;
-                        totales.isr += isr;
-                        totales.deducciones += (deducciones - isr);
-                        totales.neto += neto;
-
-                    } catch (err) {}
-                    resolve();
-                };
-                reader.readAsText(file);
-            });
-        });
-
-        await Promise.all(promises);
-        renderNomina(empleados, totales, errorNominaDetectado);
+        currentFiles = validFiles;
+        drop.classList.add('filled');
+        document.getElementById('statusFile').innerText = `${currentFiles.length} recibos de nómina listos`;
+        document.getElementById('btnEjecutar').disabled = false;
     }
 
-    function renderNomina(empleados, totales, errorDetectado) {
-        const ids = Object.keys(empleados);
-        if (ids.length === 0) return alert("No se encontraron comprobantes de Nómina (Tipo N) en el lote cargado.");
+    // Buscador tolerante de Nodos (Con o sin namespaces)
+    function getNodoRobusto(xmlDoc, tagBase) {
+        let nodos = Array.from(xmlDoc.getElementsByTagName(`nomina12:${tagBase}`));
+        if (nodos.length === 0) nodos = Array.from(xmlDoc.getElementsByTagName(`nomina:${tagBase}`));
+        if (nodos.length === 0) nodos = Array.from(xmlDoc.getElementsByTagName(tagBase));
+        return nodos;
+    }
 
-        const tbody = document.querySelector('#nominaTable tbody');
-        tbody.innerHTML = '';
-        htmlTablaExport = '';
-        csvExportData = [];
+    function getCfdiNode(xmlDoc, tagBase) {
+        let nodos = Array.from(xmlDoc.getElementsByTagName(`cfdi:${tagBase}`));
+        if (nodos.length === 0) nodos = Array.from(xmlDoc.getElementsByTagName(tagBase));
+        return nodos;
+    }
 
-        ids.forEach(id => {
-            const data = empleados[id];
-            
-            const trHTML = `
-                <tr style="page-break-inside: avoid;">
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; font-size: 11px; font-family: monospace;">${id}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; font-size: 12px; color: #111827; font-weight: bold;">${data.nombre.substring(0, 35)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; font-size: 12px; font-family: monospace; text-align: right;">${formatMoney(data.percepciones)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; font-size: 12px; font-family: monospace; text-align: right; color: #DC2626;">${formatMoney(data.isr)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; font-size: 12px; font-family: monospace; text-align: right;">${formatMoney(data.deducciones)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; font-size: 12px; font-family: monospace; text-align: right; color: #059669; font-weight: bold;">${formatMoney(data.neto)}</td>
-                </tr>
-            `;
-            tbody.innerHTML += trHTML;
-            htmlTablaExport += trHTML;
+    async function iniciarAuditoriaNomina() {
+        const elHeader = document.getElementById('headerSection');
+        const elForm = document.getElementById('mainForm');
+        const term = document.getElementById('terminalLoader');
+        const status = document.getElementById('termStatus');
 
-            csvExportData.push(`"${id}","${data.nombre}",${data.percepciones.toFixed(2)},${data.isr.toFixed(2)},${data.deducciones.toFixed(2)},${data.neto.toFixed(2)}`);
-        });
-
-        document.getElementById('valNominaCount').innerText = totales.count;
-        document.getElementById('valNeto').innerText = formatMoney(totales.neto);
-        document.getElementById('valISR').innerText = formatMoney(totales.isr);
-        document.getElementById('valDeducciones').innerText = formatMoney(totales.deducciones);
-
-        dataReporte = { count: totales.count, neto: totales.neto, isr: totales.isr, deducciones: totales.deducciones };
-
-        document.getElementById('loadingState').style.display = 'none';
-        document.getElementById('results').style.display = 'block';
-        document.getElementById('shareContainer').style.display = 'block';
-
-        if (errorDetectado) {
-            consultarAlertaIA("Nómina CFDI 1.2", "Auditoría de Sueldos y Salarios", errorDetectado);
-        } else {
-            document.getElementById('iaAdvisorContainer').style.display = 'none';
+        if(elHeader) elHeader.style.display = 'none';
+        if(elForm) {
+            elForm.style.display = 'none'; 
+            document.querySelector('.container').insertBefore(term, document.getElementById('results'));
         }
-    }
+        
+        term.style.display = 'block';
+        
+        empleadosDb = {};
+        metaNomina = { totalBruto: 0, totalGravado: 0, totalExento: 0, totalISR: 0, totalNeto: 0, castigoEstimado: 0 };
 
-    async function consultarAlertaIA(tipo, concepto, errorDesc) {
-        document.getElementById('iaLoading').style.display = 'block';
         try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
-            });
-            const data = await res.json();
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
-        } catch (err) {
-            document.getElementById('iaLoading').style.display = 'none';
+            for(let i=0; i<currentFiles.length; i++) {
+                if(i % 5 === 0) status.innerText = `> Analizando matrices de percepciones y deducciones... ${((i/currentFiles.length)*100).toFixed(0)}%`;
+                await new Promise(r => setTimeout(r, 5));
+
+                try {
+                    const text = await currentFiles[i].text();
+                    const xml = new DOMParser().parseFromString(text, "text/xml");
+                    
+                    const cfdi = getCfdiNode(xml, 'Comprobante')[0];
+                    const receptor = getCfdiNode(xml, 'Receptor')[0];
+                    const nominaNode = getNodoRobusto(xml, 'Nomina')[0];
+                    
+                    // Si no es nómina, se salta silenciosamente
+                    if(!cfdi || !receptor || !nominaNode) continue;
+
+                    const rfc = receptor.getAttribute('Rfc').trim().toUpperCase();
+                    const nombre = receptor.getAttribute('Nombre') || rfc;
+                    
+                    // Extracción Financiera CFDI Puros
+                    const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
+                    const totalNeto = parseFloat(cfdi.getAttribute('Total') || 0);
+
+                    // Extracción Complemento Nómina 1.2
+                    let percepciones = 0, gravado = 0, exento = 0, isr = 0;
+
+                    const nodoPercepciones = getNodoRobusto(xml, 'Percepciones')[0];
+                    if (nodoPercepciones) {
+                        percepciones = parseFloat(nodoPercepciones.getAttribute('TotalSueldos') || nodoPercepciones.getAttribute('TotalGravado') || subtotal);
+                        gravado = parseFloat(nodoPercepciones.getAttribute('TotalGravado') || 0);
+                        exento = parseFloat(nodoPercepciones.getAttribute('TotalExento') || 0);
+                    }
+
+                    const nodosDeduccionesDetalle = getNodoRobusto(xml, 'Deduccion');
+                    nodosDeduccionesDetalle.forEach(ded => {
+                        const tipo = ded.getAttribute('TipoDeduccion');
+                        // 002 es la clave oficial del SAT para ISR
+                        if (tipo === '002') {
+                            isr += parseFloat(ded.getAttribute('Importe') || 0);
+                        }
+                    });
+
+                    // Si el empleado no existe en BD, lo crea
+                    if(!empleadosDb[rfc]) {
+                        empleadosDb[rfc] = { rfc: rfc, nombre: nombre, bruto: 0, gravado: 0, exento: 0, isr: 0, neto: 0, recibos: 0 };
+                    }
+
+                    // Acumuladores
+                    empleadosDb[rfc].bruto += percepciones;
+                    empleadosDb[rfc].gravado += gravado;
+                    empleadosDb[rfc].exento += exento;
+                    empleadosDb[rfc].isr += isr;
+                    empleadosDb[rfc].neto += totalNeto;
+                    empleadosDb[rfc].recibos += 1;
+
+                    // Metadatos Globales
+                    metaNomina.totalBruto += percepciones;
+                    metaNomina.totalGravado += gravado;
+                    metaNomina.totalExento += exento;
+                    metaNomina.totalISR += isr;
+                    metaNomina.totalNeto += totalNeto;
+
+                } catch(e) {} 
+            }
+
+            status.innerText = `> Calculando factor de castigo de no deducibilidad (Art 28)...`;
+
+            // LÓGICA DE CASTIGO (Factor conservador SAT 0.47 no deducible del exento)
+            metaNomina.castigoEstimado = metaNomina.totalExento * 0.47;
+
+            // Transformar a Array y Ordenar por quien cobra más neto
+            arrayEmpleados = Object.values(empleadosDb).sort((a, b) => b.neto - a.neto);
+
+            setTimeout(() => { renderResultados(); }, 800);
+
+        } catch(e) {
+            console.error(e);
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Fallo estructural en el lote.</strong>`;
+            setTimeout(() => { window.location.reload(); }, 3000);
         }
     }
 
-    function descargarCSV_Nomina() {
-        if (csvExportData.length === 0) return;
-        const headers = ['No_Empleado_CURP', 'Nombre_Completo', 'Total_Percepciones', 'ISR_Retenido', 'Otras_Deducciones', 'Pago_Neto'];
-        const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + csvExportData.join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Acumulado_Nomina_${Date.now()}.csv`);
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    function renderResultados() {
+        document.getElementById('terminalLoader').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+
+        // Llenar Dashboards
+        document.getElementById('kpiEmpleados').innerText = arrayEmpleados.length;
+        document.getElementById('kpiBruto').innerText = formatMoney(metaNomina.totalBruto);
+        document.getElementById('kpiGravado').innerText = formatMoney(metaNomina.totalGravado);
+        document.getElementById('kpiExento').innerText = formatMoney(metaNomina.totalExento);
+        document.getElementById('kpiISR').innerText = formatMoney(metaNomina.totalISR);
+        document.getElementById('kpiNeto').innerText = formatMoney(metaNomina.totalNeto);
+        
+        document.getElementById('kpiCastigoFiscal').innerText = formatMoney(metaNomina.castigoEstimado);
+
+        const tbody = document.getElementById('tablaNomina');
+        tbody.innerHTML = arrayEmpleados.map(emp => {
+            return `
+            <tr>
+                <td>
+                    <div style="font-weight:bold; font-size: 12px; color:var(--text-main);">${emp.nombre.substring(0,40)}</div>
+                    <div style="font-family: monospace; font-size: 11px; color:var(--text-muted); margin-top:2px;">${emp.rfc} | ${emp.recibos} CFDIs</div>
+                </td>
+                <td style="text-align: right; color: var(--text-main); font-family: monospace;">${formatMoney(emp.bruto)}</td>
+                <td style="text-align: right; color: var(--warning); font-family: monospace;">${formatMoney(emp.exento)}</td>
+                <td style="text-align: right; color: var(--danger); font-family: monospace;">${formatMoney(emp.isr)}</td>
+                <td style="text-align: right; color: var(--success); font-family: monospace; font-weight: bold; font-size: 14px;">${formatMoney(emp.neto)}</td>
+            </tr>
+            `;
+        }).join('');
+
+        if(typeof window.showToast === 'function') window.showToast("Auditoría Finalizada.", "success");
     }
 
-    function descargarReportePDF() {
-        if (!htmlTablaExport) return;
-        const renderContainer = document.getElementById('hiddenPdfRender');
+    function descargarExcelNomina() {
+        const results = [["RFC EMPLEADO", "NOMBRE DE COLABORADOR", "SALARIO BRUTO", "PARTE GRAVADA", "PARTE EXENTA", "ISR RETENIDO", "NETO PAGADO", "RECIBOS COMPUTADOS"]];
         
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
-                
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Auditoría Masiva de Nómina CFDI 1.2</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Concentrado de Empleados extraído desde XML.</p>
-                </div>
-                
-                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block;">${dataReporte.count}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">CFDIs Analizados</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #DC2626; font-family: monospace;">${formatMoney(dataReporte.isr)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">ISR Retenido</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #D97706; font-family: monospace;">${formatMoney(dataReporte.deducciones)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase;">Otras Deducciones</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 24px; display: block; color: #059669; font-family: monospace;">${formatMoney(dataReporte.neto)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase; font-weight: bold;">Pago Neto</span></div>
-                </div>
+        arrayEmpleados.forEach(emp => {
+            results.push([emp.rfc, emp.nombre, emp.bruto, emp.gravado, emp.exento, emp.isr, emp.neto, emp.recibos]);
+        });
 
-                <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <thead style="background: #111827; color: white;">
-                        <tr>
-                            <th style="padding: 10px 8px; text-align: left; text-transform: uppercase; font-size: 10px;">No. Emp / CURP</th>
-                            <th style="padding: 10px 8px; text-align: left; text-transform: uppercase; font-size: 10px;">Nombre Completo</th>
-                            <th style="padding: 10px 8px; text-align: right; text-transform: uppercase; font-size: 10px;">Percepciones</th>
-                            <th style="padding: 10px 8px; text-align: right; text-transform: uppercase; font-size: 10px;">ISR Retenido</th>
-                            <th style="padding: 10px 8px; text-align: right; text-transform: uppercase; font-size: 10px;">Otras Ded.</th>
-                            <th style="padding: 10px 8px; text-align: right; text-transform: uppercase; font-size: 10px;">Neto a Pagar</th>
-                        </tr>
-                    </thead>
-                    <tbody>${htmlTablaExport}</tbody>
-                </table>
-                
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace;">
-                    Herramienta de control interno para cuadre contra plataformas SUA/SIPARE. <br>
-                    Plataforma: AuditoriaXML.mx
-                </div>
-            </div>
-        `;
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 15}, {wch: 45}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 18}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Nomina");
+        XLSX.writeFile(wb, `Sabana_Costo_Laboral_${Date.now()}.xlsx`);
+    }
 
-        const opt = {
-            margin:       10,
-            filename:     `Auditoria_Nomina_Agrupada_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    function exportarDictamenNominaPDF() {
+        if (typeof pdfMake === 'undefined') return;
+
+        let fechaImpresion = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        let topBody = [[
+            { text: 'Colaborador', style: 'th' },
+            { text: 'Sueldo Bruto', style: 'th', alignment: 'right' },
+            { text: 'ISR', style: 'th', alignment: 'right' },
+            { text: 'Neto Recibido', style: 'th', alignment: 'right' }
+        ]];
+
+        const limite = Math.min(arrayEmpleados.length, 15);
+        for(let i=0; i<limite; i++) {
+            let e = arrayEmpleados[i];
+            topBody.push([
+                { text: e.nombre.substring(0,35), fontSize: 9 },
+                { text: formatMoney(e.bruto), fontSize: 9, alignment: 'right' },
+                { text: formatMoney(e.isr), fontSize: 9, alignment: 'right', color: '#E11D48' },
+                { text: formatMoney(e.neto), fontSize: 9, alignment: 'right', bold: true, color: '#10B981' }
+            ]);
+        }
+
+        const docDefinition = {
+            pageSize: 'LETTER',
+            pageMargins: [50, 50, 50, 50],
+            content: [
+                {
+                    columns: [
+                        { width: '*', text: 'DICTAMEN DE COSTO LABORAL Y CARGA TRIBUTARIA', fontSize: 14, bold: true, color: '#E11D48' },
+                        { width: 'auto', text: 'AuditorIA', fontSize: 16, bold: true, alignment: 'right', color: '#1E293B' }
+                    ]
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#E2E8F0' }] },
+                { text: `Fecha de emisión: ${fechaImpresion}`, fontSize: 9, color: '#64748B', margin: [0, 15, 0, 20], alignment: 'right' },
+                
+                { text: 'I. RADIOGRAFÍA FINANCIERA DEL PERIODO', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                {
+                    table: {
+                        widths: ['50%', '50%'],
+                        body: [
+                            [{ text: 'Plantilla Analizada:', bold: true, fillColor: '#F8FAFC', border: [false, true, false, true] }, { text: `${arrayEmpleados.length} Colaboradores`, border: [false, true, false, true] }],
+                            [{ text: 'Costo Laboral Bruto:', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(metaNomina.totalBruto), border: [false, false, false, true] }],
+                            [{ text: 'Total ISR Retenido (Pasivo):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(metaNomina.totalISR), color: '#E11D48', bold: true, border: [false, false, false, true] }],
+                            [{ text: 'Total Flujo Neto Pagado:', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(metaNomina.totalNeto), color: '#10B981', bold: true, border: [false, false, false, true] }]
+                        ]
+                    }, margin: [0, 0, 0, 30]
+                },
+
+                { text: 'II. RIESGO ESTRATÉGICO: GASTO NO DEDUCIBLE (ART. 28 LISR)', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                { text: 'Con base en la fracción XXX del Artículo 28 de la Ley del Impuesto Sobre la Renta (LISR), los pagos que a su vez sean ingresos exentos para el trabajador no son deducibles al 100% para el patrón. El algoritmo ha detectado la siguiente fuga fiscal:', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
+                
+                {
+                    table: {
+                        widths: ['50%', '50%'],
+                        body: [
+                            [{ text: 'Total Ingresos Exentos Pagados:', bold: true, fillColor: '#FFFBEB', color: '#B45309', border: [false, true, false, true] }, { text: formatMoney(metaNomina.totalExento), bold: true, color: '#B45309', border: [false, true, false, true] }],
+                            [{ text: 'Gasto NO Deducible Estimado (47%):', bold: true, fillColor: '#FEF2F2', color: '#E11D48', border: [false, false, false, true] }, { text: formatMoney(metaNomina.castigoEstimado), bold: true, color: '#E11D48', border: [false, false, false, true] }]
+                        ]
+                    }, margin: [0, 0, 0, 30]
+                },
+
+                { text: 'III. TOP COLABORADORES POR COSTO FINANCIERO', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                {
+                    table: {
+                        widths: ['*', 'auto', 'auto', 'auto'],
+                        body: topBody
+                    }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 40]
+                },
+
+                {
+                    unbreakable: true,
+                    margin: [0, 20, 0, 0],
+                    alignment: 'center',
+                    stack: [
+                        { text: '____________________________________' },
+                        { text: 'FIRMA DE AUTORIZACIÓN (DIRECCIÓN DE RRHH / FINANZAS)', fontSize: 10, margin: [0, 5, 0, 0] }
+                    ]
+                }
+            ],
+            styles: { th: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#E11D48', margin: [0, 4, 0, 4] } }
         };
 
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+        pdfMake.createPdf(docDefinition).download(`Dictamen_Carga_Laboral_${Date.now()}.pdf`);
+        if(typeof window.showToast === 'function') window.showToast("Reporte Gerencial PDF generado.", "success");
     }
 </script>
 </body>
