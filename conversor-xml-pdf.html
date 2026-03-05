@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor Masivo XML a PDF | AuditorIA</title>
-    <meta name="description" content="Convierte lotes enteros de facturas XML a formato PDF al instante. Descarga un archivo ZIP consolidado con código QR oficial.">
+    <meta name="description" content="Convierte lotes enteros de facturas XML a formato PDF al instante. Descarga un archivo ZIP consolidado con código QR en alta resolución.">
     <link rel="canonical" href="https://auditoriaxml.mx/conversor-xml-pdf.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -66,7 +66,7 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">TRANSFORMACIÓN DE ARCHIVOS BATCH</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Conversor Masivo XML a PDF</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga hasta 100 archivos XML simultáneamente. El motor reconstruirá las facturas originales en formato PDF, inyectando el Código QR del SAT, y te entregará un paquete ZIP comprimido.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga hasta 100 archivos XML simultáneamente. El motor reconstruirá las facturas originales en formato PDF, inyectando el Código QR del SAT en Alta Resolución, y te entregará un paquete ZIP comprimido.</p>
     </div>
 
     <div id="mainForm">
@@ -122,8 +122,8 @@
     <div class="features-grid">
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
-            <h3 class="feature-title">Generación Nativa QR</h3>
-            <p class="feature-desc">Reconstruimos matemáticamente la URL oficial de verificación del SAT y pintamos el Código Bidimensional en cada PDF, logrando una representación impresa 100% idéntica a la original.</p>
+            <h3 class="feature-title">Generación Nativa QR (PNG)</h3>
+            <p class="feature-desc">Reconstruimos matemáticamente la URL oficial de verificación del SAT y pintamos el Código Bidimensional en cada PDF como una imagen PNG de alta densidad, logrando una nitidez pericial.</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
@@ -200,22 +200,8 @@
         });
     }
 
-    // IA Generadora de QR
-    function generarQRSAT(uuid, rfcEmisor, rfcReceptor, total, sello) {
-        try {
-            const selloCorto = sello ? sello.substring(sello.length - 8) : "";
-            const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${rfcEmisor}&rr=${rfcReceptor}&tt=${total}&fe=${selloCorto}`;
-            const qr = qrcode(0, 'M');
-            qr.addData(satUrl);
-            qr.make();
-            return qr.createDataURL(4, 0); // Retorna imagen Base64
-        } catch (e) {
-            return null;
-        }
-    }
-
     async function iniciarConversionMasiva() {
-        if (typeof JSZip === 'undefined' || typeof qrcode === 'undefined') {
+        if (typeof JSZip === 'undefined' || typeof QRCode === 'undefined') {
             if(typeof window.showToast === 'function') window.showToast("Librerías principales no cargadas.", "error");
             return;
         }
@@ -254,26 +240,40 @@
                 
                 const total = parseFloat(cfdi.getAttribute('Total') || 0);
                 const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
-                const moneda = cfdi.getAttribute('Moneda') || "MXN";
                 const fecha = (cfdi.getAttribute('Fecha') || "").split('T')[0];
                 const folio = cfdi.getAttribute('Folio') || "SF";
                 const sello = cfdi.getAttribute('Sello') || "";
-                const uuid = timbre ? timbre.getAttribute('UUID') : "SIN-TIMBRE";
+                const uuid = timbre ? timbre.getAttribute('UUID') : "NO-TIMBRADO";
 
                 const emisorNombre = emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : "DESCONOCIDO";
                 const emisorRfc = emisor ? emisor.getAttribute('Rfc') : "";
                 const receptorNombre = receptor ? (receptor.getAttribute('Nombre') || receptor.getAttribute('Rfc')) : "DESCONOCIDO";
                 const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
+                const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
 
-                // Inyección QR
-                const qrImage = generarQRSAT(uuid, emisorRfc, receptorRfc, total, sello);
+                // Inyección QR Canvas síncrona
+                let qrDataURI = null;
+                try {
+                    if(uuid !== "NO-TIMBRADO") {
+                        const selloCorto = sello ? sello.substring(sello.length - 8) : "";
+                        const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${uuid}&re=${emisorRfc}&rr=${receptorRfc}&tt=${total}&fe=${selloCorto}`;
+                        
+                        let tempDiv = document.createElement("div");
+                        new QRCode(tempDiv, { text: satUrl, width: 400, height: 400, correctLevel: QRCode.CorrectLevel.M });
+                        let canvas = tempDiv.querySelector("canvas");
+                        if(canvas) qrDataURI = canvas.toDataURL("image/png");
+                    }
+                } catch(e) {}
+
+                let qrContent = qrDataURI ? { image: qrDataURI, width: 85, height: 85, alignment: 'center' } : { text: '' };
 
                 const conceptosNodos = getNodes(xml, 'Concepto');
-                let conceptosRows = [[{text: 'Cant.', style: 'th'}, {text: 'Descripción', style: 'th'}, {text: 'P. Unitario', style: 'th', alignment: 'right'}, {text: 'Importe', style: 'th', alignment: 'right'}]];
+                let conceptosRows = [[{text: 'Cant.', style: 'th'}, {text: 'Cve SAT', style: 'th'}, {text: 'Descripción', style: 'th'}, {text: 'P. Unitario', style: 'th', alignment: 'right'}, {text: 'Importe', style: 'th', alignment: 'right'}]];
 
                 conceptosNodos.forEach(c => {
                     conceptosRows.push([
                         {text: parseFloat(c.getAttribute('Cantidad') || 0).toFixed(2), fontSize: 9},
+                        {text: c.getAttribute('ClaveProdServ') || "", fontSize: 9, color: '#6B7280'},
                         {text: c.getAttribute('Descripcion') || "", fontSize: 9},
                         {text: formatMoneyPDF(c.getAttribute('ValorUnitario')), fontSize: 9, alignment: 'right'},
                         {text: formatMoneyPDF(c.getAttribute('Importe')), fontSize: 9, alignment: 'right'}
@@ -286,8 +286,6 @@
                 const retenciones = getNodes(xml, 'Retencion');
                 retenciones.forEach(r => { ret += parseFloat(r.getAttribute('Importe') || 0); });
 
-                let qrContent = qrImage ? { image: qrImage, width: 80, height: 80, alignment: 'center' } : { text: '' };
-
                 const docDef = {
                     pageSize: 'LETTER', pageMargins: [40, 40, 40, 40],
                     content: [
@@ -298,8 +296,8 @@
                             ]
                         },
                         { canvas: [{ type: 'line', x1: 0, y1: 15, x2: 532, y2: 15, lineWidth: 2, lineColor: '#E2E8F0' }] },
-                        { margin: [0, 25, 0, 20], stack: [ { text: 'RECEPTOR', fontSize: 10, bold: true, color: '#EF4444' }, { text: receptorNombre, fontSize: 12, bold: true, margin: [0, 4, 0, 2] }, { text: `RFC: ${receptorRfc}`, fontSize: 10, color: '#4B5563' } ] },
-                        { table: { headerRows: 1, widths: ['auto', '*', 'auto', 'auto'], body: conceptosRows }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 20] },
+                        { margin: [0, 25, 0, 20], stack: [ { text: 'RECEPTOR', fontSize: 10, bold: true, color: '#EF4444' }, { text: receptorNombre, fontSize: 12, bold: true, margin: [0, 4, 0, 2] }, { text: `RFC: ${receptorRfc} | Uso CFDI: ${usoCFDI}`, fontSize: 10, color: '#4B5563' } ] },
+                        { table: { headerRows: 1, widths: ['auto', 'auto', '*', 'auto', 'auto'], body: conceptosRows }, layout: 'lightHorizontalLines', margin: [0, 0, 0, 20] },
                         {
                             columns: [
                                 { width: '*', text: '' },
@@ -324,7 +322,7 @@
                             ]
                         }
                     ],
-                    styles: { th: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#EF4444', margin: [0, 4, 0, 4] } }
+                    styles: { th: { bold: true, fontSize: 10, color: '#111827', fillColor: '#F3F4F6', margin: [0, 4, 0, 4] } }
                 };
 
                 const pdfBlob = await createPdfBlob(docDef);
