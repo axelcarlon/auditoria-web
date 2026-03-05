@@ -192,7 +192,7 @@
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
             <h3 class="feature-title">Motor de Etiquetas Patrimoniales</h3>
-            <p class="feature-desc">El botón de impresión genera una matriz en PDF con Etiquetas QR. Imprímela en papel adhesivo, pega el QR en la computadora/vehículo, y si el SAT te audita, escanean el equipo para validar la existencia física (Materialidad) contra el UUID fiscal.</p>
+            <p class="feature-desc">El botón de impresión genera una matriz en PDF con Etiquetas QR con verificación oficial del SAT. Imprímela en papel adhesivo, pega el QR en la computadora/vehículo, y si el SAT te audita, escanean el equipo para validar la existencia física (Materialidad).</p>
         </div>
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2h3a2 2 0 002-2zm0 0V9a2 2 0 012-2h3a2 2 0 012 2v10m-7 0a2 2 0 002 2h3a2 2 0 002-2m0 0V5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2z"></path></svg></div>
@@ -266,7 +266,6 @@
             .concat(Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
     }
 
-    // MAPA LÓGICO DE TASAS LISR
     function clasificarActivo(clave, descripcion, monto) {
         let c = clave.toString();
         let desc = descripcion.toLowerCase();
@@ -274,27 +273,21 @@
         let categoria = null;
         let tasa = 0;
 
-        // Cómputo (43210000 series)
         if(c.startsWith('4321') || desc.includes('computadora') || desc.includes('laptop') || desc.includes('servidor')) {
             categoria = "Equipo de Cómputo"; tasa = 0.30;
         }
-        // Vehículos (25100000 series)
         else if(c.startsWith('2510') || desc.includes('automovil') || desc.includes('camioneta') || desc.includes('vehiculo')) {
             categoria = "Equipo de Transporte"; tasa = 0.25;
         }
-        // Mobiliario (56100000 series)
         else if(c.startsWith('5610') || c.startsWith('5611') || desc.includes('escritorio') || desc.includes('silla') || desc.includes('archivero')) {
             categoria = "Mobiliario y Equipo"; tasa = 0.10;
         }
-        // Maquinaria (24100000 series)
         else if(c.startsWith('2410') || desc.includes('maquina') || desc.includes('industrial')) {
             categoria = "Maquinaria"; tasa = 0.10;
         }
-        // Herramientas
         else if(c.startsWith('2711') || desc.includes('herramienta')) {
             categoria = "Dados, Troqueles y Herramientas"; tasa = 0.35;
         }
-        // Heurística de Respaldo: Si cuesta más de 15,000 y no es servicio, asume Mobiliario base.
         else if (monto >= 15000 && !desc.includes('servicio') && !desc.includes('honorario') && !c.startsWith('8')) {
             categoria = "Activo Fijo Genérico"; tasa = 0.10;
         }
@@ -329,12 +322,16 @@
                     const cfdi = getNodes(xml, 'Comprobante')[0];
                     const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
                     const emisor = getNodes(xml, 'Emisor')[0];
+                    const receptor = getNodes(xml, 'Receptor')[0];
                     
-                    if(!cfdi || cfdi.getAttribute('TipoDeComprobante') !== 'I') continue; // Solo compras
+                    if(!cfdi || cfdi.getAttribute('TipoDeComprobante') !== 'I') continue; 
 
                     const fecha = (cfdi.getAttribute('Fecha') || "").split('T')[0];
                     const uuid = timbre ? timbre.getAttribute('UUID') : "NO-TIMBRADO";
                     const proveedor = emisor ? (emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc')) : "N/A";
+                    const emisorRfc = emisor ? emisor.getAttribute('Rfc') : "";
+                    const receptorRfc = receptor ? receptor.getAttribute('Rfc') : "";
+                    const totalFactura = parseFloat(cfdi.getAttribute('Total') || 0);
 
                     const nodosC = getNodes(xml, 'Concepto');
                     nodosC.forEach(c => {
@@ -342,7 +339,6 @@
                         const desc = c.getAttribute('Descripcion') || "";
                         const importe = parseFloat(c.getAttribute('Importe') || 0);
 
-                        // Filtro: Solo pasar los que el clasificador considere Activos
                         const evalActivo = clasificarActivo(clave, desc, importe);
 
                         if(evalActivo.categoria !== null) {
@@ -352,6 +348,9 @@
                                 uuid: uuid,
                                 fecha: fecha,
                                 proveedor: proveedor,
+                                emisorRfc: emisorRfc,
+                                receptorRfc: receptorRfc,
+                                totalFactura: totalFactura,
                                 descripcion: desc,
                                 claveSAT: clave,
                                 categoria: evalActivo.categoria,
@@ -370,15 +369,22 @@
                 } catch(e) {} 
             }
 
-            status.innerText = `> Vectorizando códigos QR para etiquetas físicas...`;
+            status.innerText = `> Vectorizando URLs del SAT para etiquetas físicas...`;
             
-            // Pre-generar URIs de QR para uso inmediato (Sin estresar memoria, max 300)
+            // INYECCIÓN DE LA URL OFICIAL DE VERIFICACIÓN SAT AL CÓDIGO QR
             dbActivos.forEach((activo, index) => {
                 if(index < 300) {
                     try {
+                        let qrValue = "";
+                        if(activo.uuid !== "NO-TIMBRADO") {
+                            qrValue = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${activo.uuid}&re=${activo.emisorRfc}&rr=${activo.receptorRfc}&tt=${activo.totalFactura}`;
+                        } else {
+                            qrValue = `Activo Interno | MOI: ${activo.moi}`;
+                        }
+
                         const qr = new QRious({ 
-                            value: `UUID:${activo.uuid} | MOI:${activo.moi}`, 
-                            size: 250, 
+                            value: qrValue, 
+                            size: 300, 
                             level: 'M',
                             background: 'white',
                             foreground: 'black'
@@ -522,7 +528,6 @@
         if(typeof window.showToast === 'function') window.showToast("Dictamen PDF generado.", "success");
     }
 
-    // EL BLINDAJE CONTRA EL "PDF FANTASMA"
     function generarEtiquetasQR() {
         const btn = document.getElementById('btnEtiquetas');
         btn.innerHTML = 'ENSAMBLANDO ETIQUETAS...';
@@ -543,7 +548,6 @@
                         stack: [
                             { text: 'PROPIEDAD DE LA EMPRESA', fontSize: 7, bold: true, alignment: 'center', color: '#ffffff', background: '#0F172A', margin: [0,0,0,5] },
                             { text: a.descripcion.substring(0, 35), fontSize: 8, bold: true, alignment: 'center' },
-                            // AQUÍ ESTABA LA BALA PERDIDA: SE ELIMINÓ font: 'monospace'
                             { text: `ID: ${a.uuid.substring(0,8)}`, fontSize: 7, alignment: 'center', color: '#64748B', margin: [0,2,0,5], bold: true },
                             { image: a.qrBase64, width: 80, alignment: 'center' },
                             { text: `Adquisición: ${a.fecha}`, fontSize: 6, alignment: 'center', color: '#64748B', margin: [0,5,0,0] }
@@ -574,7 +578,7 @@
                     pageMargins: [30, 30, 30, 30],
                     content: [
                         { text: 'ETIQUETAS PATRIMONIALES PARA INVENTARIO FÍSICO (MATERIALIDAD SAT)', fontSize: 14, bold: true, alignment: 'center', margin: [0,0,0,10], color: '#1E293B' },
-                        { text: 'Instrucciones: Imprima este documento en papel adherible. Recorte cada etiqueta y fíjela en un lugar visible del activo físico. En caso de auditoría, el código QR vincula la existencia física con el XML correspondiente.', fontSize: 9, alignment: 'center', color: '#64748B', margin: [0,0,0,20] },
+                        { text: 'Instrucciones: Imprima este documento en papel adherible. Recorte cada etiqueta y fíjela en un lugar visible del activo físico. En caso de auditoría, el código QR (verificación oficial) vincula la existencia física con el XML correspondiente.', fontSize: 9, alignment: 'center', color: '#64748B', margin: [0,0,0,20] },
                         {
                             table: {
                                 widths: ['*', '*', '*'],
@@ -590,7 +594,6 @@
                     ]
                 };
 
-                // El método de callback garantiza que el éxito solo se muestre si el PDF nace realmente.
                 pdfMake.createPdf(docDefinition).download(`Etiquetas_QR_Inventario_${Date.now()}.pdf`, () => {
                     if(typeof window.showToast === 'function') window.showToast("Hoja de Etiquetas Lista para Imprimir.", "success");
                 });
@@ -602,7 +605,7 @@
                 btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg> IMPRIMIR ETIQUETAS QR DE INVENTARIO`;
                 btn.disabled = false;
             }
-        }, 500); // Pequeño retraso para permitir que la interfaz cambie a "Ensamblando"
+        }, 500); 
     }
 </script>
 </body>
