@@ -231,7 +231,11 @@
     let metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: 0, isFavor: false, montoFinal: 0 };
     let dataDictamen = "";
 
+    // Formateador Nativo de UI
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+    
+    // Formateador Seguro para PDFMake (Evita bug de espacio no divisible)
+    const formatMoneyPDF = (val) => "$" + parseFloat(val).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     function setupDropzone(idDrop, idInput, idStatus, isEmitida) {
         const drop = document.getElementById(idDrop);
@@ -263,9 +267,14 @@
         if (typeof window.showToast === 'function') window.showToast(`Lote cargado correctamente.`, "success");
     }
 
-    // LÓGICA DE REINTENTOS PARA EVITAR CAÍDAS DE LA IA
+    // Buscador omnisciente de nodos XML (Evita el bug del $0.00)
+    function getNodes(node, tagName) {
+        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
+               Array.from(node.getElementsByTagName(tagName)));
+    }
+
     async function obtenerDictamenIA(retries = 3) {
-        const promptConcepto = `Análisis contable: ${metrics.totalFiles} XMLs procesados. IVA Trasladado (Cobrado): ${formatMoney(metrics.cobrado)}. IVA Acreditable (Pagado): ${formatMoney(metrics.pagado)}. IVA Retenido: ${formatMoney(metrics.retenido)}. Obligación de Prorrateo detectada: ${metrics.prorrateo ? 'SÍ' : 'NO'}. Resultado aritmético: ${formatMoney(metrics.montoFinal)}.`;
+        const promptConcepto = `Análisis contable: ${metrics.totalFiles} XMLs procesados. IVA Trasladado (Cobrado): ${formatMoneyPDF(metrics.cobrado)}. IVA Acreditable (Pagado): ${formatMoneyPDF(metrics.pagado)}. IVA Retenido: ${formatMoneyPDF(metrics.retenido)}. Obligación de Prorrateo detectada: ${metrics.prorrateo ? 'SÍ' : 'NO'}. Resultado aritmético: ${formatMoneyPDF(metrics.montoFinal)}.`;
         
         for (let i = 0; i < retries; i++) {
             try {
@@ -286,19 +295,16 @@
                     }
                 }
             } catch (e) {
-                console.log(`Intento de conexión IA ${i+1} fallido. Reintentando...`);
+                console.log(`Intento IA ${i+1} fallido.`);
             }
-            // Espera 1 segundo antes del reintento
             await new Promise(r => setTimeout(r, 1000));
         }
 
-        // BACKUP HÍBRIDO (Garantiza que el PDF nunca se quede sin dictamen)
-        let fallback = `El análisis matemático local confirma un resultado ${metrics.isFavor ? 'A FAVOR del contribuyente' : 'A CARGO (por pagar) al SAT'} por la cantidad de ${formatMoney(Math.abs(metrics.montoFinal))}. `;
-        if(metrics.prorrateo) {
-            fallback += `ALERTA ESTRATÉGICA: El motor detectó facturación de actos exentos o a Tasa 0%. Es obligatorio calcular la proporción de IVA acreditable conforme al Artículo 5 de la LIVA.`;
-        } else {
-            fallback += `No se detectaron actos exentos. El IVA acreditado es procedente salvo comprobación de requisitos de deducibilidad estructural.`;
-        }
+        // Backup Matemático Seguro
+        let fallback = `El análisis matemático local confirma un resultado ${metrics.isFavor ? 'A FAVOR del contribuyente' : 'A CARGO (por pagar) al SAT'} por la cantidad de ${formatMoneyPDF(Math.abs(metrics.montoFinal))}. `;
+        if(metrics.prorrateo) fallback += `ALERTA ESTRATÉGICA: El motor detectó facturación de actos exentos o a Tasa 0%. Es obligatorio calcular la proporción de IVA acreditable conforme al Artículo 5 de la LIVA.`;
+        else fallback += `No se detectaron actos exentos. El IVA acreditado es procedente salvo comprobación de requisitos de materialidad.`;
+        
         return fallback;
     }
 
@@ -334,9 +340,10 @@
                 const text = await files[i].text();
                 const xml = new DOMParser().parseFromString(text, "text/xml");
                 
-                const conceptos = xml.getElementsByTagName('cfdi:Concepto');
+                // Buscar Prorrateo en Conceptos
+                const conceptos = getNodes(xml, 'Concepto');
                 for(let c of conceptos) {
-                    const trasladosConcepto = c.getElementsByTagName('cfdi:Traslado');
+                    const trasladosConcepto = getNodes(c, 'Traslado');
                     for(let t of trasladosConcepto) {
                         const tasa = t.getAttribute('TasaOCuota');
                         const factor = t.getAttribute('TipoFactor');
@@ -344,21 +351,29 @@
                     }
                 }
 
-                const traslados = xml.getElementsByTagName('cfdi:Traslado');
-                for(let t of traslados) {
-                    if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') {
-                        if (isEmitida) metrics.cobrado += parseFloat(t.getAttribute('Importe') || 0);
-                        else metrics.pagado += parseFloat(t.getAttribute('Importe') || 0);
-                    }
-                }
+                // Extraer Impuestos Globales Exactos
+                const impuestosTags = getNodes(xml, 'Impuestos');
+                const globalImpuestos = impuestosTags.length > 0 ? impuestosTags[impuestosTags.length - 1] : null;
 
-                const retenciones = xml.getElementsByTagName('cfdi:Retencion');
-                for(let r of retenciones) {
-                    if(r.getAttribute('Impuesto') === '002' || r.getAttribute('Impuesto') === 'IVA') {
-                        if (isEmitida) metrics.retenido += parseFloat(r.getAttribute('Importe') || 0);
+                if (globalImpuestos) {
+                    const traslados = getNodes(globalImpuestos, 'Traslado');
+                    for(let t of traslados) {
+                        const imp = t.getAttribute('Impuesto');
+                        if(imp === '002' || imp === 'IVA') {
+                            if (isEmitida) metrics.cobrado += parseFloat(t.getAttribute('Importe') || 0);
+                            else metrics.pagado += parseFloat(t.getAttribute('Importe') || 0);
+                        }
+                    }
+
+                    const retenciones = getNodes(globalImpuestos, 'Retencion');
+                    for(let r of retenciones) {
+                        const imp = r.getAttribute('Impuesto');
+                        if(imp === '002' || imp === 'IVA') {
+                            if (isEmitida) metrics.retenido += parseFloat(r.getAttribute('Importe') || 0);
+                        }
                     }
                 }
-            } catch(e) {}
+            } catch(e) { console.error("Error estructural en XML", e); }
         }
     }
 
@@ -402,16 +417,12 @@
         setTimeout(() => {
             try {
                 // Revalidación de fuentes de seguridad
-                if (typeof pdfMake === 'undefined' || typeof pdfMakeFonts === 'undefined') {
-                    throw new Error("Librerías PDFMake no cargadas.");
-                }
+                if (typeof pdfMake === 'undefined' || typeof pdfMakeFonts === 'undefined') throw new Error("PDFMake no cargado.");
                 pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
 
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 const colorRes = metrics.isFavor ? '#10B981' : '#EF4444';
                 const txtRes = metrics.isFavor ? 'A FAVOR' : 'A CARGO';
-                
-                // Evitamos NaN por seguridad matemática
                 const montoAbsoluto = isNaN(metrics.montoFinal) ? 0 : Math.abs(metrics.montoFinal);
 
                 const docDefinition = {
@@ -427,19 +438,18 @@
                             table: {
                                 widths: ['*'],
                                 body: [[{
-                                    fillColor: '#F8FAFC',
-                                    border: [true, true, true, true],
-                                    borderColor: [colorRes, colorRes, colorRes, colorRes],
+                                    fillColor: colorRes, 
                                     columns: [{
                                         stack: [
-                                            { text: `POSICIÓN FISCAL (IVA ${txtRes})`, fontSize: 10, bold: true, color: colorRes, margin: [0, 0, 0, 5] },
-                                            { text: formatMoney(montoAbsoluto), fontSize: 26, bold: true, color: colorRes }
+                                            { text: `POSICIÓN FISCAL (IVA ${txtRes})`, fontSize: 10, bold: true, color: '#ffffff', margin: [0, 0, 0, 5] },
+                                            { text: formatMoneyPDF(montoAbsoluto), fontSize: 26, bold: true, color: '#ffffff' }
                                         ]
                                     }],
                                     margin: [20, 20, 20, 20],
                                     alignment: 'center'
                                 }]]
-                            }
+                            },
+                            layout: 'noBorders'
                         },
 
                         { text: '1. DESGLOSE CONTABLE', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10], borderBottom: true },
@@ -449,9 +459,9 @@
                                 widths: ['40%', '60%'],
                                 body: [
                                     [{ text: 'CFDIs Procesados', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: String(metrics.totalFiles), margin: [5,8,5,8] }],
-                                    [{ text: 'IVA Trasladado (Cobrado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.cobrado), margin: [5,8,5,8] }],
-                                    [{ text: 'IVA Acreditable (Pagado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.pagado), margin: [5,8,5,8] }],
-                                    [{ text: 'IVA Retenido (Sufrido)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoney(metrics.retenido), margin: [5,8,5,8] }]
+                                    [{ text: 'IVA Trasladado (Cobrado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoneyPDF(metrics.cobrado), margin: [5,8,5,8] }],
+                                    [{ text: 'IVA Acreditable (Pagado)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoneyPDF(metrics.pagado), margin: [5,8,5,8] }],
+                                    [{ text: 'IVA Retenido (Sufrido)', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoneyPDF(metrics.retenido), margin: [5,8,5,8] }]
                                 ]
                             },
                             layout: 'lightHorizontalLines'
@@ -480,7 +490,7 @@
                 
             } catch (e) {
                 console.error(e);
-                if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF. Intente recargar la página.", "error");
+                if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF.", "error");
             } finally {
                 btn.innerHTML = oldText; 
                 btn.disabled = false;
