@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validador EFOS Art. 69-B | AuditorIA</title>
-    <meta name="description" content="Cruza automáticamente el RFC de tus proveedores y clientes. Detecta operaciones con Empresas Facturadoras de Operaciones Simuladas.">
+    <title>Validador EFOS (Art. 69-B) | AuditorIA</title>
+    <meta name="description" content="Audita masivamente tus facturas XML contra las listas negras del SAT (Artículo 69-B) de forma local y sin comprometer tus datos.">
     <link rel="canonical" href="https://auditoriaxml.mx/validador-efos.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
@@ -19,25 +17,31 @@
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #E11D48; --brand-glow: rgba(225, 29, 72, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #EF4444; --brand-glow: rgba(239, 68, 68, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
 
         .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
         .header-section { text-align: center; margin-bottom: 50px; }
-        .header-badge { display: inline-block; background: rgba(225, 29, 72, 0.1); border: 1px solid var(--brand); color: #FDA4AF; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
+        .header-badge { display: inline-block; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--brand); color: #FCA5A5; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(225, 29, 72, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
         .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
+        .db-status-bar { background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; font-family: monospace; font-size: 13px;}
+        .db-indicator { display: flex; align-items: center; gap: 10px; }
+        .pulse-dot { width: 10px; height: 10px; background: var(--warning); border-radius: 50%; box-shadow: 0 0 10px var(--warning); animation: pulse 1.5s infinite;}
+        .pulse-dot.active { background: var(--success); box-shadow: 0 0 10px var(--success);}
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
+
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #BE123C;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #DC2626;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        .terminal-loader { display: none; font-family: monospace; color: #FDA4AF; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 160px; overflow-y: auto; border: 1px solid rgba(225, 29, 72, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
-        
+        .terminal-loader { display: none; font-family: monospace; color: #FCA5A5; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 120px; border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -46,14 +50,16 @@
         .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
         .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
 
-        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 30px; max-height: 400px;}
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 700px;}
-        th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
-        td { padding: 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; }
+        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 30px; max-height: 500px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 900px;}
+        th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
+        td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; vertical-align: middle;}
         
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block;}
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block;}
         .badge-ok { background: rgba(16, 185, 129, 0.1); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);}
-        .badge-warn { background: rgba(245, 158, 11, 0.1); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3);}
+        .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); animation: pulseAlert 2s infinite;}
+        
+        @keyframes pulseAlert { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
         .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
@@ -62,14 +68,14 @@
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
-        .feature-icon { width: 48px; height: 48px; background: rgba(225, 29, 72, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-icon { width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
-        .bento-card:hover { transform: translateY(-5px); border-color: rgba(225, 29, 72, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
             .btn-toolbar { flex-direction: column; }
@@ -82,45 +88,52 @@
 
 <div class="container">
     <div class="header-section" id="headerSection">
-        <div class="header-badge">CUMPLIMIENTO DE COMPLIANCE (ART. 69-B)</div>
-        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Auditoría de Proveedores</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga la facturación del periodo. El motor agrupará a los emisores y receptores, generando una matriz de riesgo y una constancia de debida diligencia de tu cadena de suministro.</p>
+        <div class="header-badge">COMPLIANCE Y AUDITORÍA FISCAL</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Validador EFOS (Art. 69-B)</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Audita instantáneamente tu red de proveedores contra el listado definitivo del SAT. Detecta Empresas Facturadoras de Operaciones Simuladas (EFOS) antes de que la autoridad rechace tus deducciones.</p>
+    </div>
+
+    <div class="db-status-bar">
+        <div class="db-indicator">
+            <div class="pulse-dot" id="dotDB"></div>
+            <span id="textDB">Conectando con efos.json local...</span>
+        </div>
+        <div id="countDB" style="color: var(--text-muted);">Esperando carga</div>
     </div>
 
     <div id="mainForm">
         <div class="upload-section" id="dropZone">
-            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            <h3 style="margin: 0 0 10px; font-size: 20px;">Lote Transaccional</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Arrastra los archivos XML de compras o ventas.</p>
+            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <h3 style="margin: 0 0 10px; font-size: 20px;">Anexar XMLs de Gastos</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus facturas recibidas (compras y gastos) para extraer los RFC de tus proveedores.</p>
             <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="iniciarExtraccion()" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="ejecutarAuditoriaEFOS()" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            AUDITAR CADENA DE SUMINISTRO
+            CORRER AUDITORÍA 69-B
         </button>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Desplegando Motor de Extracción de Terceros...<br>
+            > Procesando minería de datos XML...<br>
             <span id="termStatus"></span>
         </div>
     </div>
 
     <div class="results-container" id="results">
-        
         <div class="kpi-grid">
             <div class="kpi-box">
-                <div class="kpi-label">Entidades Únicas</div>
-                <div class="kpi-value" id="kpiEntidades">0</div>
+                <div class="kpi-label">Proveedores Analizados</div>
+                <div class="kpi-value" id="kpiProv">0</div>
             </div>
             <div class="kpi-box" style="border-color: rgba(16, 185, 129, 0.3);">
-                <div class="kpi-label" style="color: var(--success);">Transacciones Validadas</div>
-                <div class="kpi-value" id="kpiTransacciones" style="color: var(--success);">0</div>
+                <div class="kpi-label" style="color: var(--success);">Operaciones Seguras</div>
+                <div class="kpi-value" id="kpiSeguros" style="color: var(--success);">$0</div>
             </div>
-            <div class="kpi-box" style="border-color: rgba(225, 29, 72, 0.3);">
-                <div class="kpi-label" style="color: var(--brand);">Alertas de Riesgo</div>
-                <div class="kpi-value" id="kpiAlertas" style="color: var(--brand);">0</div>
+            <div class="kpi-box" style="border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+                <div class="kpi-label" style="color: var(--danger);">Riesgo 69-B (EFOS)</div>
+                <div class="kpi-value" id="kpiRiesgo" style="color: var(--danger);">$0</div>
             </div>
         </div>
 
@@ -128,58 +141,54 @@
             <table>
                 <thead>
                     <tr>
-                        <th>RFC Identificado</th>
+                        <th>RFC Proveedor</th>
                         <th>Razón Social</th>
-                        <th style="text-align: center;">Operaciones</th>
-                        <th style="text-align: right;">Volumen Acumulado</th>
-                        <th style="text-align: center;">Dictamen Base</th>
+                        <th style="text-align: right;">Volumen Operaciones (MXN)</th>
+                        <th>Facturas</th>
+                        <th style="text-align: center;">Dictamen SAT (Art 69-B)</th>
                     </tr>
                 </thead>
-                <tbody id="tablaProveedores">
+                <tbody id="tablaEFOS">
                 </tbody>
             </table>
         </div>
 
         <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Limpiar RAM</button>
-            <button onclick="descargarExcel()" class="btn-secondary" style="background: #064E3B; color: #34D399; border-color: #065F46;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Matriz de Proveedores (Excel)
-            </button>
-            <button id="btnDescargarPDF" onclick="descargarConstanciaPDF()" class="btn-action" style="flex: 2;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                EMITIR CONSTANCIA DE DEBIDA DILIGENCIA
+            <button onclick="window.location.reload()" class="btn-secondary">Limpiar Auditoría</button>
+            <button onclick="descargarExcelEFOS()" class="btn-action" style="flex: 2; background: #064E3B; border-color: #059669;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DESCARGAR REPORTE DE RIESGO (EXCEL)
             </button>
         </div>
     </div>
 
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
-            <h3 class="feature-title">Materialidad Preventiva</h3>
-            <p class="feature-desc">El PDF generado sirve como documento de control interno demostrando que la empresa revisa la validez de sus proveedores periódicamente.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg></div>
+            <h3 class="feature-title">Listas Negras Locales</h3>
+            <p class="feature-desc">El motor se alimenta de tu archivo <code>efos.json</code> en el servidor local. La validación se ejecuta en la RAM sin hacer peticiones a APIs externas que comprometan el secreto fiscal.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>
-            <h3 class="feature-title">Análisis de Concentración</h3>
-            <p class="feature-desc">Suma matemáticamente todas las operaciones por proveedor, revelando dependencias financieras críticas ocultas en la facturación.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+            <h3 class="feature-title">Prevención de Multas</h3>
+            <p class="feature-desc">Deducir una factura de un EFO sin demostrar la materialidad resulta en el rechazo de la deducción, cobro del impuesto omitido, actualizaciones, recargos y multas de hasta el 75%.</p>
         </div>
     </div>
 
     <h2 class="showcase-header">Soluciones Complementarias</h2>
     <div class="bento-grid">
-        <a href="tasa-efectiva.html" class="bento-card">
+        <a href="defensa-legal.html" class="bento-card">
             <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg></div>
-                <h3 class="bento-title">Benchmarking Tasa Efectiva</h3>
-                <p class="bento-desc">Calcula si tu pago de ISR está por debajo del rango de tu industria según el Plan Maestro del SAT.</p>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
+                <h3 class="bento-title">Defensa Legal SAT</h3>
+                <p class="bento-desc">Si detectas un EFO y ya fuiste notificado, genera automáticamente el escrito de aclaración con la fundamentación del Artículo 69-B.</p>
             </div>
         </a>
-        <a href="visor-xml.html" class="bento-card">
+        <a href="prueba-servicio.html" class="bento-card">
             <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
-                <h3 class="bento-title">Motor Decodificador XML</h3>
-                <p class="bento-desc">Convierte estructuras crudas en representaciones gráficas auditables y genera reportes PDF vectoriales masivos.</p>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+                <h3 class="bento-title">Expediente de Materialidad</h3>
+                <p class="bento-desc">Blinda tus operaciones de alto riesgo documentando fotográficamente la existencia real de los servicios adquiridos.</p>
             </div>
         </a>
     </div>
@@ -188,19 +197,44 @@
 <script src="footer.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-        }
-    });
-
     let currentFiles = [];
-    let dbEntidades = {}; 
-    let totalDocs = 0;
-    let totalAlertas = 0;
+    let dbProveedores = {}; // { RFC: { nombre: '', monto: 0, docs: 0, isEFO: false } }
+    let blacklistSAT = new Set();
+    let dbLoaded = false;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // Conexión al JSON Local
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch('efos.json')
+            .then(res => {
+                if(!res.ok) throw new Error("HTTP Status " + res.status);
+                return res.json();
+            })
+            .then(data => {
+                data.forEach(item => {
+                    if (typeof item === 'string') {
+                        blacklistSAT.add(item.toUpperCase());
+                    } else if (item.RFC) {
+                        blacklistSAT.add(item.RFC.toUpperCase());
+                    } else if (item.rfc) {
+                        blacklistSAT.add(item.rfc.toUpperCase());
+                    }
+                });
+                
+                document.getElementById('dotDB').classList.add('active');
+                document.getElementById('textDB').innerText = "Motor 69-B en Línea (JSON Local)";
+                document.getElementById('textDB').style.color = "var(--success)";
+                document.getElementById('countDB').innerText = `${blacklistSAT.size.toLocaleString()} RFCs en RAM`;
+                dbLoaded = true;
+            })
+            .catch(e => {
+                console.warn("No se encontró efos.json. Operando en modo heurístico.");
+                document.getElementById('textDB').innerText = "Lista negra no encontrada. Operación limitada.";
+                document.getElementById('textDB').style.color = "var(--warning)";
+                document.getElementById('countDB').innerText = "0 RFCs";
+            });
+    });
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
@@ -208,7 +242,6 @@
     drop.onclick = () => input.click();
     ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
     ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
-    
     drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
     input.addEventListener('change', e => processFiles(e.target.files));
 
@@ -218,16 +251,17 @@
 
         currentFiles = validFiles;
         drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documentos listos`;
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documentos crudos en memoria`;
         document.getElementById('btnEjecutar').disabled = false;
     }
 
     function getNodes(node, tagName) {
         return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
-               Array.from(node.getElementsByTagName(tagName)));
+               Array.from(node.getElementsByTagName(tagName)),
+               Array.from(node.getElementsByTagName(`pago20:${tagName}`)));
     }
 
-    async function iniciarExtraccion() {
+    async function ejecutarAuditoriaEFOS() {
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('btnEjecutar').style.display = 'none';
         drop.style.display = 'none';
@@ -236,191 +270,115 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        dbEntidades = {};
-        totalDocs = currentFiles.length;
-        totalAlertas = 0;
-
-        // Base/Propietario del RFC para no auto-evaluarse
-        let rfcPropietario = "";
+        dbProveedores = {};
 
         for(let i=0; i<currentFiles.length; i++) {
-            if(i % 10 === 0) status.innerText = `> Leyendo firmas digitales... ${((i/currentFiles.length)*100).toFixed(0)}%`;
+            if(i % 10 === 0) status.innerText = `> Analizando Emisores e indexando RFCs... ${((i/currentFiles.length)*100).toFixed(0)}%`;
             
             try {
                 const text = await currentFiles[i].text();
                 const xml = new DOMParser().parseFromString(text, "text/xml");
                 
-                const cfdi = xml.getElementsByTagName('cfdi:Comprobante')[0] || xml.getElementsByTagName('Comprobante')[0];
-                const emisor = xml.getElementsByTagName('cfdi:Emisor')[0] || xml.getElementsByTagName('Emisor')[0];
-                const receptor = xml.getElementsByTagName('cfdi:Receptor')[0] || xml.getElementsByTagName('Receptor')[0];
+                const cfdi = getNodes(xml, 'Comprobante')[0];
+                const emisor = getNodes(xml, 'Emisor')[0];
+                
+                if(!cfdi || !emisor) continue;
 
-                if(!cfdi || !emisor || !receptor) continue;
-
-                // Definimos heurística: El que más se repite en los XMLs suele ser el dueño
-                const tipo = cfdi.getAttribute('TipoDeComprobante');
+                const rfc = emisor.getAttribute('Rfc').trim().toUpperCase();
+                const nombre = emisor.getAttribute('Nombre') || "DESCONOCIDO";
                 const total = parseFloat(cfdi.getAttribute('Total') || 0);
                 
-                let rfcTarget = "";
-                let nomTarget = "";
-
-                if (tipo === 'I' || tipo === 'E') {
-                    // Si es ingreso o egreso, almacenamos ambos, o priorizamos al tercero.
-                    // Para un barrido completo, extraemos al que NO sea la empresa principal.
-                    rfcTarget = emisor.getAttribute('Rfc');
-                    nomTarget = emisor.getAttribute('Nombre') || "SIN RAZÓN SOCIAL";
+                if(!dbProveedores[rfc]) {
+                    dbProveedores[rfc] = { nombre: nombre, monto: 0, docs: 0, isEFO: false };
                 }
 
-                if(rfcTarget) {
-                    if(!dbEntidades[rfcTarget]) {
-                        dbEntidades[rfcTarget] = { nombre: nomTarget, operaciones: 0, volumen: 0, estatus: "ACTIVO", css: "badge-ok" };
-                        
-                        // Lógica Heurística de Riesgo
-                        if(rfcTarget === "XAXX010101000") {
-                            dbEntidades[rfcTarget].estatus = "PÚBLICO GRAL";
-                            dbEntidades[rfcTarget].css = "badge-warn";
-                            totalAlertas++;
-                        } else if(rfcTarget === "XEXX010101000") {
-                            dbEntidades[rfcTarget].estatus = "EXTRANJERO";
-                            dbEntidades[rfcTarget].css = "badge-warn";
-                            totalAlertas++;
-                        }
-                    }
-                    dbEntidades[rfcTarget].operaciones++;
-                    dbEntidades[rfcTarget].volumen += total;
-                }
+                dbProveedores[rfc].monto += total;
+                dbProveedores[rfc].docs += 1;
+
             } catch(e) {}
         }
 
-        mostrarResultados();
+        status.innerText = `> Cruzando matriz de proveedores contra Lista Negra (efos.json)...`;
+
+        // Motor de Cruce 69-B
+        Object.keys(dbProveedores).forEach(rfc => {
+            if (blacklistSAT.has(rfc)) {
+                dbProveedores[rfc].isEFO = true;
+            } else if (!dbLoaded && rfc === "XAXX010101000") {
+                // Heurística de respaldo si no hay BD: Marcar Público en General como advertencia
+                dbProveedores[rfc].isEFO = "WARN"; 
+            }
+        });
+
+        setTimeout(() => { renderResultados(); }, 800);
     }
 
-    function mostrarResultados() {
+    function renderResultados() {
         document.getElementById('terminalLoader').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
-        const entidadesArr = Object.keys(dbEntidades).map(rfc => {
-            return { rfc: rfc, ...dbEntidades[rfc] };
-        }).sort((a, b) => b.volumen - a.volumen); // Ordenar por volumen financiero
+        let countProv = 0;
+        let totalSeguro = 0;
+        let totalRiesgo = 0;
 
-        document.getElementById('kpiEntidades').innerText = entidadesArr.length;
-        document.getElementById('kpiTransacciones').innerText = totalDocs;
-        document.getElementById('kpiAlertas').innerText = totalAlertas;
+        // Ordenar por Riesgo primero, luego por Monto
+        const arrProv = Object.entries(dbProveedores).map(([rfc, data]) => ({ rfc, ...data }));
+        arrProv.sort((a, b) => {
+            if (a.isEFO === true && b.isEFO !== true) return -1;
+            if (b.isEFO === true && a.isEFO !== true) return 1;
+            return b.monto - a.monto;
+        });
 
-        const tbody = document.getElementById('tablaProveedores');
-        tbody.innerHTML = entidadesArr.map(e => `
+        const tbody = document.getElementById('tablaEFOS');
+        tbody.innerHTML = arrProv.map(p => {
+            countProv++;
+            
+            let statusBadge = `<span class="badge badge-ok">ACTIVO / SEGURO</span>`;
+            let colorMonto = "var(--text-main)";
+
+            if (p.isEFO === true) {
+                totalRiesgo += p.monto;
+                statusBadge = `<span class="badge badge-bad">LISTA NEGRA (69-B DEFINITIVO)</span>`;
+                colorMonto = "var(--danger)";
+            } else {
+                totalSeguro += p.monto;
+            }
+
+            return `
             <tr>
-                <td style="font-family: monospace; font-weight: bold; color: var(--brand);">${e.rfc}</td>
-                <td><strong>${e.nombre.substring(0,40)}</strong></td>
-                <td style="text-align: center;">${e.operaciones}</td>
-                <td style="text-align: right; font-family: monospace;">${formatMoney(e.volumen)}</td>
-                <td style="text-align: center;"><span class="badge ${e.css}">${e.estatus}</span></td>
+                <td style="color:var(--brand-light); font-weight:bold; font-family: monospace;">${p.rfc}</td>
+                <td><strong style="font-size: 12px;">${p.nombre.substring(0,45)}</strong></td>
+                <td style="text-align: right; color: ${colorMonto}; font-family: monospace;">${formatMoney(p.monto)}</td>
+                <td style="font-family: monospace; text-align: center;">${p.docs} CFDI</td>
+                <td style="text-align: center;">${statusBadge}</td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
+
+        document.getElementById('kpiProv').innerText = countProv;
+        document.getElementById('kpiSeguros').innerText = formatMoney(totalSeguro);
+        document.getElementById('kpiRiesgo').innerText = formatMoney(totalRiesgo);
+
+        if(totalRiesgo > 0) {
+            if (typeof window.showToast === 'function') window.showToast("¡PELIGRO! EFOS DETECTADOS EN LA MATRIZ.", "error");
+        } else {
+            if (typeof window.showToast === 'function') window.showToast("Auditoría Limpia. Cero Riesgos 69-B.", "success");
+        }
     }
 
-    function descargarExcel() {
-        const results = [["RFC TERCERO", "RAZÓN SOCIAL", "CANTIDAD TRANSACCIONES", "VOLUMEN FINANCIERO MXN", "DICTAMEN SISTEMA"]];
+    function descargarExcelEFOS() {
+        const results = [["RFC PROVEEDOR", "RAZÓN SOCIAL", "VOLUMEN FACTURADO (MXN)", "CANTIDAD CFDI", "DICTAMEN SAT (69-B)"]];
         
-        const entidadesArr = Object.keys(dbEntidades).map(rfc => { return { rfc: rfc, ...dbEntidades[rfc] }; }).sort((a, b) => b.volumen - a.volumen);
-
-        entidadesArr.forEach(e => {
-            results.push([e.rfc, e.nombre, e.operaciones, e.volumen.toFixed(2), e.estatus]);
+        Object.entries(dbProveedores).forEach(([rfc, p]) => {
+            let dictamen = p.isEFO === true ? "LISTA NEGRA 69-B DEFINITIVO" : "LIMPIO";
+            results.push([rfc, p.nombre, p.monto, p.docs, dictamen]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 15}, {wch: 45}, {wch: 25}, {wch: 25}, {wch: 20}];
+        ws['!cols'] = [{wch: 15}, {wch: 50}, {wch: 20}, {wch: 15}, {wch: 30}];
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Matriz_Riesgo_Proveedores");
-        XLSX.writeFile(wb, `Matriz_Proveedores_${Date.now()}.xlsx`);
-    }
-
-    function descargarConstanciaPDF() {
-        const btn = document.getElementById('btnDescargarPDF');
-        const oldText = btn.innerHTML;
-        btn.innerHTML = `EMITIENDO CONSTANCIA...`;
-        btn.disabled = true;
-
-        setTimeout(() => {
-            try {
-                if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
-                const isPro = localStorage.getItem('auditoria_pro') === 'true';
-                
-                const entidadesArr = Object.keys(dbEntidades).map(rfc => { return { rfc: rfc, ...dbEntidades[rfc] }; }).sort((a, b) => b.volumen - a.volumen);
-
-                const bodyTabla = [
-                    [{text: 'RFC', style: 'th'}, {text: 'Razón Social', style: 'th'}, {text: 'Ops.', style: 'th', alignment: 'center'}, {text: 'Volumen Base', style: 'th', alignment: 'right'}, {text: 'Evaluación', style: 'th', alignment: 'center'}]
-                ];
-
-                const limit = Math.min(entidadesArr.length, 300);
-                for(let i=0; i<limit; i++) {
-                    let e = entidadesArr[i];
-                    bodyTabla.push([
-                        {text: e.rfc, fontSize: 9, bold: true},
-                        {text: e.nombre.substring(0,35), fontSize: 9},
-                        {text: e.operaciones.toString(), fontSize: 9, alignment: 'center'},
-                        {text: formatMoneyPDF(e.volumen), fontSize: 9, alignment: 'right'},
-                        {text: e.estatus, fontSize: 8, bold: true, color: e.estatus === 'ACTIVO' ? '#10B981' : '#F59E0B', alignment: 'center'}
-                    ]);
-                }
-
-                if(entidadesArr.length > 300) {
-                    bodyTabla.push([{text: `Lista truncada. Existen ${entidadesArr.length - 300} proveedores adicionales en la matriz original.`, colSpan: 5, alignment: 'center', fontSize: 9, margin: [0,5,0,5], italics: true}, {},{},{},{}]);
-                }
-
-                const docDefinition = {
-                    pageSize: 'LETTER',
-                    pageMargins: [40, 50, 40, 50],
-                    content: [
-                        { text: 'CONSTANCIA DE DEBIDA DILIGENCIA Y MATERIALIDAD', alignment: 'center', color: '#111827', fontSize: 13, bold: true, margin: [0, 0, 0, 15], letterSpacing: 1 },
-                        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 532, y2: 0, lineWidth: 2, lineColor: '#E11D48' }] },
-                        
-                        {
-                            margin: [0, 15, 0, 20],
-                            text: 'El presente documento avala que la facturación descrita ha sido procesada mediante algoritmos de extracción estructurada, con el fin de auditar la concentración de proveedores y validar la existencia de operaciones acorde al marco de prevención del Artículo 69-B del CFF.',
-                            fontSize: 10, alignment: 'justify', color: '#4B5563', lineHeight: 1.4
-                        },
-
-                        {
-                            columns: [
-                                { text: `Documentos Escaneados: ${totalDocs}`, fontSize: 10, bold: true },
-                                { text: `Entidades Únicas Extraídas: ${entidadesArr.length}`, fontSize: 10, alignment: 'right', bold: true }
-                            ],
-                            margin: [0, 0, 0, 15]
-                        },
-
-                        {
-                            table: {
-                                headerRows: 1,
-                                widths: ['auto', '*', 'auto', 'auto', 'auto'],
-                                body: bodyTabla
-                            },
-                            layout: 'lightHorizontalLines'
-                        }
-                    ],
-                    styles: {
-                        th: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#E11D48', margin: [0, 4, 0, 4] }
-                    },
-                    footer: function(currentPage, pageCount) {
-                        return { text: `Motor de Extracción Cadena de Suministro | AuditorIA | Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
-                    }
-                };
-
-                if (!isPro) {
-                    docDefinition.background = function(currentPage, pageSize) {
-                        return { text: 'AuditorIA - Evaluación Técnica', color: '#9CA3AF', opacity: 0.1, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-                    };
-                }
-
-                pdfMake.createPdf(docDefinition).download(`Constancia_Debida_Diligencia_${Date.now()}.pdf`);
-                
-            } catch (e) {
-                console.error(e);
-                if (typeof window.showToast === 'function') window.showToast("Error renderizando PDF.", "error");
-            } finally {
-                btn.innerHTML = oldText; 
-                btn.disabled = false;
-            }
-        }, 300);
+        XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Proveedores");
+        XLSX.writeFile(wb, `Reporte_Auditoria_69B_${Date.now()}.xlsx`);
     }
 </script>
 </body>
