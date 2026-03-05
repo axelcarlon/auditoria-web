@@ -184,7 +184,7 @@
     });
 
     let xmlData = null;
-    let base64Images = []; // Almacena fotos optimizadas
+    let base64Images = []; 
     let qrDataURI = null;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
@@ -230,8 +230,12 @@
         }
     }
 
+    // ARREGLO LETAL: Se inyectan todos los namespaces fiscales conocidos.
     function getNodes(node, tagName) {
-        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(Array.from(node.getElementsByTagName(tagName)));
+        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`))
+            .concat(Array.from(node.getElementsByTagName(tagName)))
+            .concat(Array.from(node.getElementsByTagName(`tfd:${tagName}`)))
+            .concat(Array.from(node.getElementsByTagName(`pago20:${tagName}`)));
     }
 
     // MOTOR COMPRESOR DE IMÁGENES CLIENT-SIDE (Evita desbordamiento de RAM al compilar PDF)
@@ -285,16 +289,16 @@
             const receptor = getNodes(xml, 'Receptor')[0];
             const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
             
-            if(!cfdi || !timbre) throw new Error("XML Inválido o sin Timbre Fiscal");
+            if(!cfdi || !emisor || !timbre) throw new Error("XML Inválido o sin Timbre Fiscal");
 
             xmlData = {
                 folio: cfdi.getAttribute('Folio') || "S/F",
                 fecha: (cfdi.getAttribute('Fecha') || "").split('T')[0],
                 total: parseFloat(cfdi.getAttribute('Total') || 0),
-                emisorNombre: emisor.getAttribute('Nombre') || "DESCONOCIDO",
+                emisorNombre: emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc'),
                 emisorRfc: emisor.getAttribute('Rfc') || "",
-                receptorNombre: receptor.getAttribute('Nombre') || "DESCONOCIDO",
-                receptorRfc: receptor.getAttribute('Rfc') || "",
+                receptorNombre: receptor ? (receptor.getAttribute('Nombre') || receptor.getAttribute('Rfc')) : "DESCONOCIDO",
+                receptorRfc: receptor ? receptor.getAttribute('Rfc') : "",
                 uuid: timbre.getAttribute('UUID') || "",
                 conceptos: []
             };
@@ -307,7 +311,7 @@
             // 2. Generar QR Oficial
             status.innerText = "> Estructurando identificador QRious...";
             const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${xmlData.uuid}&re=${xmlData.emisorRfc}&rr=${xmlData.receptorRfc}&tt=${xmlData.total}`;
-            const qr = new QRious({ value: satUrl, size: 300, level: 'M' });
+            const qr = new QRious({ value: satUrl, size: 300, level: 'M', background: 'white', foreground: 'black' });
             qrDataURI = qr.toDataURL('image/png');
 
             // 3. Comprimir Imágenes Simultáneamente
@@ -403,7 +407,7 @@
                 // Inyectar imágenes dinámicamente
                 ...imageStack,
 
-                // CIERRE LEGAL
+                // CIERRE LEGAL (Línea irrompible)
                 {
                     unbreakable: true,
                     margin: [0, 40, 0, 0],
