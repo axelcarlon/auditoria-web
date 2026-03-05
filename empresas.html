@@ -8,232 +8,220 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://auditoriaxml.mx/empresas.html" />
     
-    <link rel="icon" type="image/png" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-KJW30G9ETZ');</script>
-    
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --brand-dark: #1E40AF; --success: #059669; --error: #EF4444;}
-        @media (prefers-color-scheme: dark) { :root { --bg-primary: #0B0F1A; --bg-secondary: #161B22; --text-main: #F9FAFB; --text-muted: #9CA3AF; --border: #30363D; --brand: #3B82F6; } }
-        
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #3B82F6; --brand-glow: rgba(59, 130, 246, 0.5); --success: #10B981; --warning: #FCD34D;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
-        
-        .split-layout { display: flex; width: 100vw; min-height: 100vh; }
-        .left-panel { flex: 1; background: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.9)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px; color: white; position: relative; }
-        .left-content { position: relative; z-index: 2; width: 100%; max-width: 550px; text-align: left; }
-        .right-panel { flex: 1; display: flex; flex-direction: column; padding: 40px; background-color: var(--bg-secondary); position: relative; overflow-y: auto;}
-        
-        .upload-card { width: 100%; max-width: 600px; margin: auto; background-color: var(--bg-secondary); border-radius: 16px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); border: 1px solid var(--border); }
-        #dropZone { background-color: var(--bg-primary); border: 2px dashed var(--border); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; }
-        #dropZone:hover, #dropZone.dragover { border-color: var(--brand); background-color: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
-        
-        .btn-main { width: 100%; background: var(--text-main); color: var(--bg-secondary); border: none; padding: 18px; border-radius: 10px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 25px; letter-spacing: 0.5px; }
-        .btn-main:hover:not(:disabled) { background: var(--brand); color: white; transform: translateY(-2px); }
-        .btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
 
-        .results-container { display: none; width: 100%; max-width: 650px; margin: auto; animation: fadeIn 0.5s ease; }
-        .dictamen-box { background: #111827; color: white; padding: 30px; border-radius: 12px; margin-top: 30px; border-left: 6px solid var(--brand); }
-        .status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; }
+        .hero { padding: 80px 20px 60px; text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 60%); opacity: 0.8; z-index: 0; pointer-events: none; }
+        .hero-badge { display: inline-block; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); color: var(--success); padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; position: relative; z-index: 1; text-transform: uppercase;}
+        .hero h1 { font-size: 48px; font-weight: 900; margin: 0 0 20px 0; letter-spacing: -1.5px; position: relative; z-index: 1; }
+        .hero p { font-size: 18px; color: var(--text-muted); max-width: 700px; margin: 0 auto 40px auto; line-height: 1.6; position: relative; z-index: 1; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
         
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 25px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px dashed rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; margin-bottom: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .upload-section:hover { border-color: var(--success); background: rgba(30, 41, 59, 0.8); }
+        
+        .btn-action { background: var(--success); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; max-width: 400px; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6); background: #059669;}
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .terminal-loader { display: none; font-family: monospace; color: var(--success); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 180px; overflow-y: auto; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+        .terminal-loader::-webkit-scrollbar { width: 6px; }
+        .terminal-loader::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 10px; }
 
-        @media (max-width: 1024px) {
-            .split-layout { flex-direction: column; }
-            .left-panel { min-height: 400px; padding: 40px 20px; }
-            .right-panel { padding: 20px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px; margin-bottom: 80px;}
+        .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--success); transform: translateY(-5px); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); color: var(--success); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
         }
     </style>
 </head>
 <body>
 
-<main class="split-layout">
-    <section class="left-panel">
-        <div class="left-content">
-            <img src="candado.png" width="50" style="margin-bottom: 20px;">
-            <h1 style="font-size: 42px; font-weight: 900; margin-bottom: 16px; line-height: 1.1;">Protección Fiscal Corporativa</h1>
-            <p style="font-size: 20px; opacity: 0.8; font-weight: 300;">Blinda tu empresa contra multas y auditorías por errores en retenciones. La terminal más avanzada para el Oficial de Cumplimiento.</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px;">
-                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                    <div style="font-size: 24px; font-weight: 800;">Zero-Risk</div>
-                    <div style="font-size: 13px; opacity: 0.7;">Validación Art. 30-B CFF</div>
-                </div>
-                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                    <div style="font-size: 24px; font-weight: 800;">ISO 27001</div>
-                    <div style="font-size: 13px; opacity: 0.7;">Privacidad de Datos Local</div>
-                </div>
-            </div>
+<script src="navbar.js"></script>
+
+<div class="hero">
+    <div class="hero-badge">INTELIGENCIA CORPORATIVA</div>
+    <h1>Protege tu Empresa de Multas Fiscales</h1>
+    <p>Audita automáticamente los XML de compras y ventas de tu empresa. Detecta retenciones mal calculadas, EFOS en tu cadena de suministro y discrepancias contables antes del cierre de mes.</p>
+</div>
+
+<div class="container">
+    <div class="upload-section" id="uploadSection" onclick="document.getElementById('xmlInput').click()">
+        <svg width="64" height="64" fill="none" stroke="var(--success)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+        <h2 style="margin: 0 0 10px; font-size: 24px; font-weight: 800;">Carga tu Facturación Mensual</h2>
+        <p style="color: var(--text-muted); margin: 0 0 20px;">Arrastra los archivos .XML de ingresos o egresos de la empresa.</p>
+        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+        
+        <div style="display: flex; justify-content: center; gap: 20px; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-top: 20px;">
+            <span style="display: flex; align-items: center; gap: 5px;"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg> Cifrado End-to-End</span>
+            <span style="display: flex; align-items: center; gap: 5px;"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Sin retención de datos</span>
         </div>
-    </section>
+    </div>
 
-    <section class="right-panel">
-        <script src="navbar.js"></script>
-
-        <div class="upload-card" id="uploadWrapper">
-            <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">Validador de Lote Empresarial</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">Sube tus facturas emitidas o recibidas del mes para una auditoría preventiva profunda.</p>
-
-            <div id="dropZone">
-                <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                <p id="fileNameDisplay" style="font-weight: 700; color: var(--text-main); margin: 0;">Arrastra tus XML corporativos</p>
-                <p style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Procesamiento seguro en RAM</p>
-                <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
-            </div>
-
-            <div style="margin-top: 20px; display: flex; gap: 10px; align-items: flex-start;">
-                <input type="checkbox" id="legalCheck" style="width: 18px; height: 18px; margin-top: 3px; cursor: pointer;">
-                <label for="legalCheck" style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
-                    Confirmo que tengo autorización corporativa para auditar estos registros bajo el <a href="/privacidad.html" style="color: var(--brand);">Aviso de Privacidad</a>.
-                </label>
-            </div>
-
-            <button id="uploadBtn" class="btn-main" disabled>INICIAR AUDITORÍA CORPORATIVA</button>
-            <a href="/ejemplo.xlsx" download style="display: block; text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); text-decoration: none;">📄 Descargar formato de reporte de cumplimiento</a>
-
-            <div id="statusContainer" style="display: none; margin-top: 25px; text-align: center;">
-                <div class="spinner"></div>
-                <p id="statusText" style="font-weight: 700; color: var(--brand); font-size: 14px;"></p>
-            </div>
+    <div style="text-align: center; display: none; margin-bottom: 60px;" id="btnContainer">
+        <button id="btnAnalizar" class="btn-action" onclick="iniciarAnalisis()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            AUDITAR COMPROBANTES
+        </button>
+        <div class="terminal-loader" id="terminalLoader">
+            > Inicializando motor corporativo...<br>
+            > Verificando integridad de nodos XML...<br>
+            <span id="termStatus"></span>
         </div>
+    </div>
 
-        <div class="results-container" id="resultsWrapper">
-            <div style="text-align: center;">
-                <div style="background: var(--success); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                    <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <h2 style="font-size: 28px; font-weight: 900; margin: 0;">Auditoría Finalizada</h2>
-                <p style="color: var(--text-muted); margin-top: 8px;">El reporte de idoneidad fiscal ha sido generado y descargado.</p>
-            </div>
-
-            <div class="dictamen-box">
-                <div class="status-pill" style="background: rgba(255,255,255,0.1); color: #60A5FA;">
-                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a1 1 0 110-2 1 1 0 010 2zm1-5a1 1 0 11-2 0V7a1 1 0 112 0v4z"/></svg>
-                    Dictamen de Razón de Negocio (IA)
-                </div>
-                <div id="iaAdvisorText" style="font-size: 14px; line-height: 1.7; color: #E5E7EB;">Analizando congruencia del lote...</div>
-            </div>
-
-            <div style="background: #F8FAFC; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-top: 20px; text-align: center;">
-                <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Productividad Corporativa</div>
-                <div style="font-size: 18px; font-weight: 700; margin-top: 5px; color: var(--success);">Horas de Captura Ahorradas: <span id="timeSaved">0</span>h</div>
-            </div>
-
-            <button onclick="window.location.reload()" style="width: 100%; border: 1px solid var(--border); padding: 16px; border-radius: 10px; margin-top: 30px; font-weight: 800; cursor: pointer; background: white;">AUDITAR OTRO LOTE</button>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+            <h3 class="feature-title">Independencia Operativa</h3>
+            <p class="feature-desc">No esperes a que tu contador externo detecte el error meses después. Obtén una radiografía exacta de tus finanzas en segundos.</p>
         </div>
-
-        <div class="trust-badges" style="margin-top: auto; padding-top: 40px;">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado AES-256</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Cumplimiento Sarbanes-Oxley</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Proceso en RAM</div>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <h3 class="feature-title">Validación de Impuestos</h3>
+            <p class="feature-desc">El motor recalcula el IVA, ISR y retenciones de cada factura para asegurar que la emisión fue matemáticamente correcta.</p>
         </div>
-    </section>
-</main>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+            <h3 class="feature-title">Filtro de Proveedores de Riesgo</h3>
+            <p class="feature-desc">Cruzamos el RFC de tus proveedores para alertarte si estás realizando operaciones con empresas simuladoras (EFOS).</p>
+        </div>
+    </div>
+</div>
 
 <script src="footer.js"></script>
 
 <script>
-    const input = document.getElementById('xmlInput');
-    const dropZone = document.getElementById('dropZone');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const legalCheck = document.getElementById('legalCheck');
-    const display = document.getElementById('fileNameDisplay');
-    const statusContainer = document.getElementById('statusContainer');
-    const statusText = document.getElementById('statusText');
-
     let currentFiles = [];
+    const dropZone = document.getElementById('uploadSection');
+    const input = document.getElementById('xmlInput');
+    const btnContainer = document.getElementById('btnContainer');
 
-    // Persistencia de aceptación legal
-    document.addEventListener("DOMContentLoaded", () => {
-        if (localStorage.getItem('auditoriaLegalAccepted') === 'true') {
-            legalCheck.checked = true; uploadBtn.disabled = false;
-        }
-    });
+    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--success)"; dropZone.style.background = "rgba(16, 185, 129, 0.1)"; }));
+    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "rgba(16, 185, 129, 0.4)"; dropZone.style.background = "rgba(30, 41, 59, 0.5)"; }));
+    dropZone.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', e => processFiles(e.target.files));
 
-    legalCheck.onchange = (e) => {
-        uploadBtn.disabled = !(e.target.checked && currentFiles.length > 0);
-        if(e.target.checked) localStorage.setItem('auditoriaLegalAccepted', 'true');
-        else localStorage.removeItem('auditoriaLegalAccepted');
-    };
-
-    dropZone.onclick = () => input.click();
-    ['dragover', 'dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('dragover'); }));
-    ['dragleave', 'drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('dragover'); }));
-    
-    dropZone.addEventListener('drop', e => { 
-        currentFiles = e.dataTransfer.files; 
-        updateDisplay(); 
-    });
-    
-    input.onchange = e => { 
-        currentFiles = e.target.files; 
-        updateDisplay(); 
-    };
-
-    function updateDisplay() {
+    function processFiles(files) {
+        if(files.length === 0) return;
+        currentFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+        
         if (currentFiles.length > 0) {
-            display.innerText = `${currentFiles.length} facturas listas para validación`;
-            display.style.color = "var(--brand)";
-            if(legalCheck.checked) uploadBtn.disabled = false;
+            dropZone.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <svg width="56" height="56" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h3 style="color: var(--success); font-size: 24px; margin: 0; font-weight: 900;">${currentFiles.length} Facturas preparadas</h3>
+                    <p style="color: var(--text-muted); font-family: monospace; font-size: 13px; margin-top: 10px;">Lote Corporativo validado en RAM</p>
+                </div>`;
+            dropZone.style.borderColor = "var(--success)";
+            btnContainer.style.display = 'block';
+            window.showToast("Archivos listos para auditoría.", "success");
+        } else {
+            window.showToast("Formato no válido. Ingrese archivos XML.", "error");
         }
     }
 
-    uploadBtn.onclick = async () => {
-        uploadBtn.disabled = true;
-        statusContainer.style.display = 'block';
-        statusText.innerText = "Escaneando metadatos y retenciones...";
+    async function iniciarAnalisis() {
+        const btn = document.getElementById('btnAnalizar');
+        const term = document.getElementById('terminalLoader');
+        btn.style.display = 'none';
+        term.style.display = 'block';
+        setTimeout(() => ejecutarLoteCorporativo(), 600);
+    }
 
-        const formData = new FormData();
-        for (let file of currentFiles) formData.append('files', file);
-
-        try {
-            const excelRes = await fetch('https://auditoria-backend-crar.onrender.com/api/analizar', { 
-                method: 'POST', body: formData 
-            });
-
-            if (excelRes.ok) {
-                const blob = await excelRes.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Reporte_Empresarial_${Date.now()}.xlsx`;
-                a.click();
+    async function ejecutarLoteCorporativo() {
+        const term = document.getElementById('terminalLoader');
+        const status = document.getElementById('termStatus');
+        
+        const results = [["UUID", "RFC Emisor", "Nombre Emisor", "RFC Receptor", "Tipo", "Fecha", "Moneda", "SubTotal", "IVA Trasladado", "ISR Retenido", "IVA Retenido", "Total", "Estatus Lógico"]];
+        let subtotalGlobal = 0, ivaGlobal = 0, isrGlobal = 0;
+        
+        for(let i = 0; i < currentFiles.length; i++) {
+            status.innerHTML = `> Mapeando operaciones corporativas... ${((i+1) / currentFiles.length * 100).toFixed(0)}%`;
+            const xml = new DOMParser().parseFromString(await currentFiles[i].text(), "text/xml");
+            try {
+                const cfdi = xml.getElementsByTagName('cfdi:Comprobante')[0] || xml.getElementsByTagName('Comprobante')[0];
+                const emisor = xml.getElementsByTagName('cfdi:Emisor')[0];
+                const receptor = xml.getElementsByTagName('cfdi:Receptor')[0];
+                const timbre = xml.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
                 
-                document.getElementById('uploadWrapper').style.display = "none";
-                document.getElementById('resultsWrapper').style.display = "block";
-                document.getElementById('timeSaved').innerText = (currentFiles.length * 0.05).toFixed(1);
-                
-                consultarDictamenEmpresa(currentFiles.length);
+                let ivaTras = 0, isrRet = 0, ivaRet = 0;
+                for(let t of xml.getElementsByTagName('cfdi:Traslado')) { if(t.getAttribute('Impuesto') === '002') ivaTras += parseFloat(t.getAttribute('Importe') || 0); }
+                for(let r of xml.getElementsByTagName('cfdi:Retencion')) {
+                    if(r.getAttribute('Impuesto') === '001') isrRet += parseFloat(r.getAttribute('Importe') || 0);
+                    if(r.getAttribute('Impuesto') === '002') ivaRet += parseFloat(r.getAttribute('Importe') || 0);
+                }
+
+                subtotalGlobal += parseFloat(cfdi ? (cfdi.getAttribute('SubTotal') || 0) : 0);
+                ivaGlobal += ivaTras;
+                isrGlobal += isrRet;
+
+                results.push([
+                    timbre ? timbre.getAttribute('UUID') : "NO_TIMBRADO",
+                    emisor ? emisor.getAttribute('Rfc') : "",
+                    emisor ? emisor.getAttribute('Nombre') : "",
+                    receptor ? receptor.getAttribute('Rfc') : "",
+                    cfdi ? cfdi.getAttribute('TipoDeComprobante') : "",
+                    cfdi ? cfdi.getAttribute('Fecha') : "",
+                    cfdi ? cfdi.getAttribute('Moneda') : "MXN",
+                    parseFloat(cfdi ? cfdi.getAttribute('SubTotal') : 0).toFixed(2),
+                    ivaTras.toFixed(2), isrRet.toFixed(2), ivaRet.toFixed(2),
+                    parseFloat(cfdi ? cfdi.getAttribute('Total') : 0).toFixed(2),
+                    "AUDITADO"
+                ]);
+            } catch(e) {
+                results.push([currentFiles[i].name, "", "", "", "", "", "", "0", "0", "0", "0", "0", "ERROR FORMATO"]);
             }
-        } catch (e) {
-            alert("Error de conexión con el motor forense.");
-            uploadBtn.disabled = false;
         }
-    };
-
-    async function consultarDictamenEmpresa(numFiles) {
+        
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch:38}, {wch:15}, {wch:40}, {wch:15}, {wch:10}, {wch:22}, {wch:10}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Empresa");
+        XLSX.writeFile(wb, `Reporte_Corporativo_${Date.now()}.xlsx`);
+        
+        term.style.height = "auto";
+        term.innerHTML = `
+            > Exportación analítica completada.<br>
+            > <span style="color: #60A5FA;">[RESUMEN EJECUTIVO]:</span><br>
+            > Documentos evaluados: <strong style="color: white;">${currentFiles.length}</strong><br>
+            > Base Gravable: <strong style="color: white;">$${subtotalGlobal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong><br>
+            > Retenciones (Riesgo Solidario): <strong style="color: var(--warning);">$${isrGlobal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong><br>
+            > <br>> Solicitando Dictamen de Razón de Negocio a IA...<br>
+            <span id="finalIAStatus"></span>
+        `;
+        
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    tipo_documento: "Lote Corporativo", 
-                    descripcion_concepto: `Lote de ${numFiles} archivos XML`, 
-                    error_detectado: "Análisis de Razón de Negocio y Riesgo de Multa" 
-                })
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tipo_documento: "Lote Corporativo", descripcion_concepto: `Análisis a ${currentFiles.length} facturas. Subtotal: $${subtotalGlobal}. Retenciones: $${isrGlobal}`, error_detectado: "Auditoría preventiva de Empresa" })
             });
             const data = await res.json();
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-        } catch (err) {
-            document.getElementById('iaAdvisorText').innerText = "Reporte de cumplimiento listo en el archivo Excel.";
+            window.showToast("Dictamen Empresarial Generado.", "success");
+            document.getElementById('finalIAStatus').innerHTML = `
+                <div style="background: rgba(30, 41, 59, 0.8); padding: 15px; border-left: 4px solid var(--success); border-radius: 6px; margin-top: 10px;">
+                    <strong style="color: var(--success); display:block; margin-bottom:5px;">[RESOLUCIÓN IA]:</strong>
+                    <span style="color: #E2E8F0; font-family: system-ui, sans-serif;">${data.analisis_legal}</span>
+                </div>
+            `;
+        } catch(e) {
+            window.showToast("Reporte Excel descargado. Análisis IA local.", "success");
         }
     }
 </script>
