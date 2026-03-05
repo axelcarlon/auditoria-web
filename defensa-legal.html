@@ -3,83 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Defensa Legal Autómata | AuditorIA</title>
-    <meta name="description" content="Sube tu requerimiento o Carta Invitación del SAT. La IA redactará automáticamente un oficio de aclaración o recurso de revocación profesional.">
+    <title>Generador de Defensa Legal SAT | AuditorIA</title>
+    <meta name="description" content="Redacta automáticamente oficios de aclaración, respuesta a cartas invitación y solicitudes de desbloqueo de sellos con fundamentación legal exacta.">
     <link rel="canonical" href="https://auditoriaxml.mx/defensa-legal.html" />
     
-    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
-    <link rel="apple-touch-icon" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
-    
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --success: #059669;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #1E3A8A; --brand-light: #60A5FA; --brand-glow: rgba(30, 58, 138, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
+        .header-section { text-align: center; margin-bottom: 50px; }
+        .header-badge { display: inline-block; background: rgba(96, 165, 250, 0.1); border: 1px solid var(--brand-light); color: var(--brand-light); padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .config-panel { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-        .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg-primary); outline: none; }
-        .form-group select:focus { border-color: var(--brand); }
-
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+        .form-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
         
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 15px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
+        .section-title { font-size: 14px; font-weight: 800; color: var(--brand-light); text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; border-bottom: 1px solid rgba(96, 165, 250, 0.3); padding-bottom: 10px;}
 
-        .results-container { display: none; margin-top: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;}
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
         
-        .toolbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); padding: 15px 20px; border-radius: 12px 12px 0 0; border: 1px solid var(--border); border-bottom: none; }
-        .toolbar-title { font-weight: 700; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
-        .editable-badge { background: #ECFDF5; color: #065F46; font-size: 11px; padding: 4px 8px; border-radius: 4px; border: 1px solid #6EE7B7; text-transform: uppercase; letter-spacing: 0.5px;}
+        .form-input, .form-select { background: #0F172A; border: 1px solid var(--border); color: white; padding: 14px 15px; border-radius: 8px; font-size: 14px; font-family: monospace; transition: 0.3s; width: 100%; outline: none;}
+        .form-input:focus, .form-select:focus { border-color: var(--brand-light); box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2); }
+        
+        .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px; border: 1px solid #3B82F6;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #1E40AF;}
 
-        /* Editor Legal Paper */
-        .legal-document-wrapper { background: #E5E7EB; padding: 40px 20px; border-radius: 0 0 12px 12px; border: 1px solid var(--border); max-height: 800px; overflow-y: auto; }
-        .legal-document { background: #ffffff; padding: 60px 80px; border: 1px solid #d1d5db; font-family: "Times New Roman", Times, serif; font-size: 15px; line-height: 1.8; color: #000; white-space: pre-wrap; text-align: justify; box-shadow: 0 10px 25px rgba(0,0,0,0.1); outline: none; max-width: 800px; margin: 0 auto; }
-        .legal-document:focus { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3); border-color: var(--brand); }
+        .terminal-loader { display: none; font-family: monospace; color: var(--brand-light); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 120px; border: 1px solid rgba(96, 165, 250, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .btn-action { background: #111827; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-action:hover { background: var(--brand); }
-        .btn-secondary { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 14px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-secondary:hover { background: var(--bg-primary); }
+        .legal-preview { background: #F8FAFC; color: #0F172A; padding: 40px; border-radius: 8px; font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.6; height: 350px; overflow-y: auto; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);}
+        .legal-preview h4 { text-align: right; margin: 0 0 20px 0; font-size: 14px;}
+        .legal-preview p { margin: 0 0 15px 0; text-align: justify; }
+        
+        .alert-box { padding: 20px; border-radius: 8px; display: flex; align-items: flex-start; gap: 15px; margin-bottom: 30px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .alert-title { font-weight: 900; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; color: var(--warning);}
+        .alert-desc { font-size: 13px; line-height: 1.5; margin: 0; color: #FDE68A;}
 
-        /* Botones Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px; display: none;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .btn-wa { background-color: #25D366; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block;}
-
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
         @media (max-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .legal-document { padding: 30px 20px; font-size: 14px; }
-            .toolbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .btn-toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -87,193 +69,214 @@
 
 <script src="navbar.js"></script>
 
-<div class="modal-overlay" id="paywallModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus redacciones legales gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para generar oficios de defensa ilimitados y sin marcas de agua.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
-    </div>
-</div>
-
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">DEFENSA FISCAL AUTOMATIZADA</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Generador de Defensa Legal</h1>
-        <p style="color: var(--text-muted);">Sube el PDF del Requerimiento o Carta Invitación del SAT. Configura tu estrategia y la IA redactará un oficio de contestación profesional editable y listo para firma.</p>
+    <div class="header-section" id="headerSection">
+        <div class="header-badge">LITIGIO Y DEFENSA FISCAL</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Asistente de Escritos SAT</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Genera la respuesta jurídica exacta para requerimientos de autoridad, cartas invitación o bloqueos de sellos digitales. Basado en el Código Fiscal de la Federación (CFF).</p>
     </div>
 
-    <div class="config-panel" id="configPanel">
-        <div class="grid-2">
-            <div class="form-group">
-                <label>Origen del Acto de Autoridad</label>
-                <select id="tipoDocumento">
-                    <option value="Carta Invitación">Carta Invitación (Vigilancia Profunda)</option>
-                    <option value="Requerimiento de Información">Requerimiento de Información</option>
-                    <option value="Resolución Determinante de Multa">Resolución Determinante de Multa</option>
-                    <option value="Rechazo de Devolución de IVA">Rechazo de Devolución de IVA</option>
+    <div id="mainForm" class="form-card">
+        <div class="section-title">Clasificación del Acto de Autoridad</div>
+        <div class="form-grid">
+            <div class="form-group full">
+                <label class="form-label">Tipo de Recurso / Escrito</label>
+                <select id="inpTipo" class="form-select">
+                    <option value="carta_invitacion">Aclaración de Carta Invitación (Discrepancia Fiscal)</option>
+                    <option value="sello_digital">Solicitud de Aclaración para Desbloqueo de CSD (Art. 17-H Bis)</option>
+                    <option value="efos">Contestación de Requerimiento de Materialidad (Art. 69-B)</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Estrategia / Tono de Defensa</label>
-                <select id="tonoDefensa">
-                    <option value="Aclaratorio y Conciliatorio">Oficio Aclaratorio (Conciliatorio)</option>
-                    <option value="Recurso de Revocación">Recurso de Revocación (Técnico/Estricto)</option>
-                    <option value="Solicitud de Prórroga">Solicitud de Prórroga</option>
-                </select>
+                <label class="form-label">Autoridad Emisora</label>
+                <input type="text" id="inpAutoridad" class="form-input" placeholder="Ej. Administración Desconcentrada..." value="Administración Desconcentrada de Recaudación">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Número de Oficio / Folio</label>
+                <input type="text" id="inpOficio" class="form-input" placeholder="Ej. 500-74-00-2026-1234">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fecha de Notificación</label>
+                <input type="date" id="inpFechaNot" class="form-input">
             </div>
         </div>
-    </div>
 
-    <div class="upload-section" id="dropZone" onclick="document.getElementById('pdfInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);">Cargar Documento del SAT (PDF/Imagen)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">El motor IA analizará los artículos y folios citados.</p>
-        <input type="file" id="pdfInput" accept=".pdf,image/*" style="display: none;">
-        
-        <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention Model</div>
+        <div class="section-title">Datos del Contribuyente</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Razón Social</label>
+                <input type="text" id="inpEmpresa" class="form-input" placeholder="Ej. Comercializadora ABC SA de CV">
+            </div>
+            <div class="form-group">
+                <label class="form-label">RFC</label>
+                <input type="text" id="inpRFC" class="form-input" placeholder="Ej. CABC123456789" maxlength="13">
+            </div>
+            <div class="form-group full">
+                <label class="form-label">Nombre del Representante Legal</label>
+                <input type="text" id="inpRepLegal" class="form-input" placeholder="Nombre completo">
+            </div>
         </div>
-    </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Analizando acto de autoridad y fundamentos legales...</p>
-        <p style="font-size: 13px; color: var(--text-muted);">Redactando recurso legal. Por favor, espera...</p>
+        <button id="btnEjecutar" class="btn-action" onclick="generarEscrito()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            SINTETIZAR ESCRITO LEGAL
+        </button>
+
+        <div class="terminal-loader" id="terminalLoader">
+            > Compilando fundamentación jurídica...<br>
+            <span id="termStatus"></span>
+        </div>
     </div>
 
     <div class="results-container" id="results">
-        <div class="toolbar">
-            <div class="toolbar-title">
-                Borrador de Contestación Legal
-                <span class="editable-badge">Formato Editable</span>
+        
+        <div id="alertBox" class="alert-box">
+            <div>
+                <div class="alert-title">Aviso de Responsabilidad Profesional</div>
+                <p class="alert-desc">Este documento es una proforma automatizada basada en el CFF vigente. El contador o representante legal debe anexar las pruebas documentales (facturas, estados de cuenta, materialidad) mencionadas en el texto antes de ingresarlo a la Oficialía de Partes o Buzón Tributario.</p>
             </div>
         </div>
-        
-        <div class="legal-document-wrapper">
-            <div class="legal-document" id="resDocumento" contenteditable="true" spellcheck="false"></div>
-        </div>
 
-        <div class="action-grid">
-            <button onclick="copiarTexto()" class="btn-secondary">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                Copiar Texto
-            </button>
-            <button onclick="descargarOficioPDF()" class="btn-action" style="background: var(--brand);">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Descargar Oficio PDF
-            </button>
-            <button onclick="window.location.reload()" class="btn-secondary">
-                Redactar Nueva Defensa
-            </button>
-        </div>
+        <div class="legal-preview" id="docPreview">
+            </div>
 
-        <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20generar%20mi%20defensa%20legal%20contra%20un%20requerimiento%20del%20SAT%20automáticamente%20con%20AuditorIA:&url=https://auditoriaxml.mx/defensa-legal.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/defensa-legal.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/defensa-legal.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20generar%20mi%20defensa%20legal%20contra%20un%20requerimiento%20del%20SAT%20automáticamente%20con%20AuditorIA:%20https://auditoriaxml.mx/defensa-legal.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">Ajustar Datos</button>
+            <button id="btnDescargarPDF" onclick="exportarEscritoPDF()" class="btn-action" style="flex: 2;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DESCARGAR OFICIO EN FORMATO PDF
+            </button>
         </div>
     </div>
 </div>
-
-<div id="hiddenPdfRender"></div>
 
 <script src="footer.js"></script>
 
 <script>
-    function checkQuota() {
-        let usos = localStorage.getItem('auditoria_usos');
-        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
-        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
-        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
-        return true;
-    }
-
-    const inputPdf = document.getElementById('pdfInput');
-    const dropZone = document.getElementById('dropZone');
-
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.background = "var(--bg-secondary)"; }));
-    
-    dropZone.addEventListener('drop', e => processFile(e.dataTransfer.files[0]));
-    inputPdf.addEventListener('change', e => processFile(e.target.files[0]));
-
-    async function processFile(file) {
-        if(!file) return;
-        if(!checkQuota()) return;
-
-        const tipoDoc = document.getElementById('tipoDocumento').value;
-        const tonoDoc = document.getElementById('tonoDefensa').value;
-
-        document.getElementById('headerSection').style.display = 'none';
-        document.getElementById('configPanel').style.display = 'none';
-        dropZone.style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
-
-        const formData = new FormData();
-        formData.append("documento", file);
-        formData.append("tipo_defensa", tipoDoc);
-        formData.append("tono_defensa", tonoDoc);
-
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/defensa-legal", {
-                method: "POST", body: formData
-            });
-
-            if(!res.ok) throw new Error("Error API");
-            const data = await res.json();
-
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('shareContainer').style.display = 'block';
-            
-            // Renderizado en contenedor editable
-            document.getElementById('resDocumento').innerText = data.oficio_legal;
-
-        } catch (err) {
-            alert("Error generando la redacción legal. Asegúrate de subir un archivo legible.");
-            window.location.reload();
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
         }
-    }
+    });
 
-    function copiarTexto() {
-        const texto = document.getElementById('resDocumento').innerText;
-        navigator.clipboard.writeText(texto);
-        alert("Oficio legal copiado al portapapeles exitosamente.");
-    }
+    let docJuridico = {
+        asunto: "",
+        cuerpo: "",
+        leyes: ""
+    };
 
-    function descargarOficioPDF() {
-        const textoEditado = document.getElementById('resDocumento').innerText;
-        if (!textoEditado) return;
+    let formData = {};
 
-        const renderContainer = document.getElementById('hiddenPdfRender');
-        
-        // Conversión de saltos de línea para HTML PDF
-        const formattedText = textoEditado.replace(/\n/g, '<br>');
-
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 60px 80px; font-family: 'Times New Roman', Times, serif; font-size: 15px; position: relative; background: white; text-align: justify; line-height: 1.8; color: #000; word-wrap: break-word;">
-                <div style="position: absolute; top: 45%; left: 5%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none; font-family: sans-serif;">Generado por AuditorIA - Versión Gratuita</div>
-                
-                <div style="position: relative; z-index: 1;">
-                    ${formattedText}
-                </div>
-            </div>
-        `;
-
-        const opt = {
-            margin:       [20, 15, 20, 15],
-            filename:     `Oficio_Defensa_SAT_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+    function generarEscrito() {
+        formData = {
+            tipo: document.getElementById('inpTipo').value,
+            autoridad: document.getElementById('inpAutoridad').value.toUpperCase(),
+            oficio: document.getElementById('inpOficio').value.toUpperCase(),
+            fechaNot: document.getElementById('inpFechaNot').value,
+            empresa: document.getElementById('inpEmpresa').value.toUpperCase(),
+            rfc: document.getElementById('inpRFC').value.toUpperCase(),
+            repLegal: document.getElementById('inpRepLegal').value.toUpperCase()
         };
 
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+        if(!formData.autoridad || !formData.oficio || !formData.empresa || !formData.rfc || !formData.repLegal) {
+            if(typeof window.showToast === 'function') window.showToast("Complete todos los campos obligatorios.", "error");
+            return;
+        }
+
+        document.getElementById('btnEjecutar').style.display = 'none';
+        const term = document.getElementById('terminalLoader');
+        term.style.display = 'block';
+
+        // MOTOR LÓGICO DE REDACCIÓN
+        let fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+
+        if(formData.tipo === 'carta_invitacion') {
+            docJuridico.asunto = "SE ATIENDE CARTA INVITACIÓN Y SE REALIZAN ACLARACIONES";
+            docJuridico.leyes = "Artículos 18, 18-A y 33 del Código Fiscal de la Federación (CFF).";
+            docJuridico.cuerpo = `Que por medio del presente escrito y con fundamento en los ${docJuridico.leyes}, comparezco ante esta H. Autoridad para dar atención en tiempo y forma a la Carta Invitación contenida en el Oficio No. ${formData.oficio}, notificada a mi representada en fecha ${formData.fechaNot}.\n\nAl respecto, manifiesto que las presuntas diferencias o discrepancias señaladas por la autoridad respecto a los ingresos declarados contra los comprobantes fiscales digitales por internet (CFDI) emitidos, quedan plenamente aclaradas y desvirtuadas con la documentación contable y fiscal que se anexa al presente ocurso, demostrando el correcto cumplimiento de las obligaciones fiscales de mi representada.`;
+        } 
+        else if (formData.tipo === 'sello_digital') {
+            docJuridico.asunto = "SOLICITUD DE ACLARACIÓN PARA SUBSANAR IRREGULARIDADES Y RESTABLECER EL USO DEL CERTIFICADO DE SELLO DIGITAL";
+            docJuridico.leyes = "Artículos 17-H, 17-H Bis, 18 y 18-A del Código Fiscal de la Federación.";
+            docJuridico.cuerpo = `Que mediante el presente ocurso, con fundamento en el artículo 17-H Bis del Código Fiscal de la Federación, vengo a presentar solicitud de aclaración tendiente a subsanar las presuntas irregularidades detectadas mediante el Oficio de Restricción Temporal No. ${formData.oficio}, notificado el ${formData.fechaNot}.\n\nBajo protesta de decir verdad, manifiesto que mi representada ha dado cabal cumplimiento a las obligaciones omitidas y desvirtúa categóricamente las causales que motivaron la restricción del Certificado de Sello Digital. Se adjuntan las documentales públicas y privadas que soportan el dicho de la contribuyente, solicitando se levante la restricción temporal al día hábil siguiente a la presentación de este escrito, conforme a derecho.`;
+        }
+        else if (formData.tipo === 'efos') {
+            docJuridico.asunto = "SE APORTAN PRUEBAS Y SE FORMULAN ALEGATOS PARA DESVIRTUAR LA PRESUNCIÓN DE INEXISTENCIA DE OPERACIONES (ART. 69-B CFF)";
+            docJuridico.leyes = "Artículos 18, 18-A y 69-B del Código Fiscal de la Federación.";
+            docJuridico.cuerpo = `Con fundamento en el octavo párrafo del artículo 69-B del Código Fiscal de la Federación, acudo en tiempo y forma a dar contestación al requerimiento No. ${formData.oficio}, notificado el ${formData.fechaNot}, mediante el cual esa Autoridad requiere información para acreditar la efectiva materialidad de las operaciones celebradas con terceros.\n\nPara tal efecto, exhibo y aporto en este acto el expediente integrado por contratos, evidencia fotográfica, registros contables, comprobantes de pago (transferencias bancarias) y entregables físicos que acreditan fehacientemente la materialidad de los bienes adquiridos y/o servicios recibidos. Queda de manifiesto que las operaciones amparadas por los CFDI respectivos existieron real y materialmente, desvirtuando así cualquier presunción en contrario.`;
+        }
+
+        setTimeout(() => { mostrarResultados(fechaActual); }, 800);
+    }
+
+    function mostrarResultados(fecha) {
+        document.getElementById('terminalLoader').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+
+        const preview = document.getElementById('docPreview');
+        preview.innerHTML = `
+            <h4><strong>ASUNTO:</strong> ${docJuridico.asunto}</h4>
+            <p><strong>C. ADMINISTRADOR DE LA ${formData.autoridad}</strong><br>PRESENTE.</p>
+            <p><strong>${formData.repLegal}</strong>, actuando en mi carácter de Representante Legal de la persona moral denominada <strong>${formData.empresa}</strong>, con Registro Federal de Contribuyentes <strong>${formData.rfc}</strong>, personalidad que tengo debidamente acreditada ante esa H. Autoridad; señalando como domicilio fiscal para oír y recibir todo tipo de notificaciones el registrado en el RFC, y autorizando para recibirlas a través del Buzón Tributario, comparezco con el debido respeto para exponer:</p>
+            <p>${docJuridico.cuerpo}</p>
+            <p>Por lo antes expuesto y fundado, a esa H. Autoridad Fiscal, atentamente pido se sirva:</p>
+            <p><strong>ÚNICO.-</strong> Tenerme por presentado en los términos del presente escrito, exhibiendo las pruebas documentales señaladas, acordando de conformidad lo solicitado por estar apegado a estricto derecho.</p>
+            <p style="text-align: center; margin-top: 40px;"><strong>PROTESTO LO NECESARIO</strong></p>
+            <p style="text-align: center; margin-top: 10px;">Lugar de emisión a ${fecha}.</p>
+            <p style="text-align: center; margin-top: 50px;">___________________________________<br><strong>${formData.repLegal}</strong><br>Representante Legal de ${formData.empresa}</p>
+        `;
+
+        if (typeof window.showToast === 'function') window.showToast("Borrador legal sintetizado.", "success");
+    }
+
+    function exportarEscritoPDF() {
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = `COMPILANDO OFICIO...`;
+        btn.disabled = true;
+
+        setTimeout(() => {
+            try {
+                if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
+                
+                let fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+
+                const docDefinition = {
+                    pageSize: 'LETTER',
+                    // Márgenes legales: Izquierdo más ancho para archivo (encuadernación)
+                    pageMargins: [70, 50, 50, 50],
+                    content: [
+                        { text: `ASUNTO: ${docJuridico.asunto}`, alignment: 'right', bold: true, fontSize: 10, margin: [0, 0, 0, 20] },
+                        { text: `C. ADMINISTRADOR DE LA ${formData.autoridad}`, bold: true, fontSize: 11, margin: [0, 0, 0, 2] },
+                        { text: 'P R E S E N T E.', bold: true, fontSize: 11, margin: [0, 0, 0, 20] },
+                        
+                        { text: `${formData.repLegal}, actuando en mi carácter de Representante Legal de la persona moral denominada ${formData.empresa}, con Registro Federal de Contribuyentes ${formData.rfc}, personalidad que tengo debidamente acreditada ante esa H. Autoridad; señalando como domicilio fiscal para oír y recibir todo tipo de notificaciones el registrado en el RFC, y autorizando para recibirlas a través del Buzón Tributario, comparezco con el debido respeto para exponer:`, alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 15], lineHeight: 1.5 },
+                        
+                        { text: docJuridico.cuerpo, alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 15], lineHeight: 1.5 },
+                        
+                        { text: 'Por lo antes expuesto y fundado, a esa H. Autoridad Fiscal, atentamente pido se sirva:', alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 15] },
+                        
+                        { text: 'ÚNICO.- Tenerme por presentado en los términos del presente escrito, exhibiendo las pruebas documentales señaladas, acordando de conformidad lo solicitado por estar apegado a estricto derecho.', alignment: 'justify', fontSize: 11, margin: [0, 0, 0, 30], lineHeight: 1.5 },
+                        
+                        { text: 'PROTESTO LO NECESARIO', alignment: 'center', bold: true, fontSize: 11, margin: [0, 0, 0, 5] },
+                        { text: `A ${fechaActual}.`, alignment: 'center', fontSize: 11, margin: [0, 0, 0, 60] },
+                        
+                        { canvas: [{ type: 'line', x1: 150, y1: 0, x2: 350, y2: 0, lineWidth: 1 }] },
+                        { text: formData.repLegal, alignment: 'center', bold: true, fontSize: 11, margin: [0, 5, 0, 0] },
+                        { text: `Representante Legal de ${formData.empresa}`, alignment: 'center', fontSize: 10, margin: [0, 2, 0, 0] }
+                    ]
+                };
+
+                pdfMake.createPdf(docDefinition).download(`Escrito_Legal_${formData.rfc}_${Date.now()}.pdf`);
+                
+            } catch (e) {
+                console.error(e);
+                if (typeof window.showToast === 'function') window.showToast("Error al generar PDF.", "error");
+            } finally {
+                btn.innerHTML = oldText; 
+                btn.disabled = false;
+            }
+        }, 500);
     }
 </script>
 </body>
