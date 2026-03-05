@@ -25,6 +25,7 @@
 
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
+        /* EL ID FALTANTE IBA AQUÍ */
         .header-section { text-align: center; margin-bottom: 50px; }
         .header-badge { display: inline-block; background: rgba(13, 148, 136, 0.1); border: 1px solid var(--brand); color: #5EEAD4; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
@@ -81,14 +82,14 @@
 <script src="navbar.js"></script>
 
 <div class="container">
-    <div class="header-section">
+    <div class="header-section" id="headerSection">
         <div class="header-badge">CUMPLIMIENTO NORMATIVO (ART. 5-A / 69-B)</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Expediente de Materialidad</h1>
         <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">El SAT rechaza deducciones por falta de evidencia visual. Fusiona tu factura XML con pruebas fotográficas para generar un Dictamen Pericial irrefutable.</p>
     </div>
 
     <div id="mainForm" class="form-card">
-        <div class="grid-dropzones">
+        <div class="grid-dropzones" id="dropzonesArea">
             <div class="upload-section" id="dropXML">
                 <svg width="48" height="48" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 <h3 style="margin: 0 0 5px; font-size: 18px;">1. Cargar Factura (XML)</h3>
@@ -189,7 +190,6 @@
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    // Setup Dropzones
     function setupDropzone(idDrop, idInput, idStatus, isImage) {
         const drop = document.getElementById(idDrop);
         const input = document.getElementById(idInput);
@@ -217,7 +217,6 @@
                 document.getElementById(idStatus).innerText = `Factura Cargada`;
             }
         } else {
-            // Ampliación del filtro para aceptar formatos móviles sin extension estricta
             const validImgs = Array.from(files).filter(f => f.type.match(/image/i) || f.name.match(/\.(jpg|jpeg|png)$/i)).slice(0, 4); 
             if(validImgs.length > 0) {
                 rawImgFiles = validImgs;
@@ -231,7 +230,6 @@
         }
     }
 
-    // ARREGLO LETAL: Se inyectan todos los namespaces fiscales conocidos.
     function getNodes(node, tagName) {
         return Array.from(node.getElementsByTagName(`cfdi:${tagName}`))
             .concat(Array.from(node.getElementsByTagName(tagName)))
@@ -239,7 +237,6 @@
             .concat(Array.from(node.getElementsByTagName(`pago20:${tagName}`)));
     }
 
-    // MOTOR COMPRESOR DE IMÁGENES CLIENT-SIDE BLINDADO
     function compressImage(file, maxWidth = 800) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -266,27 +263,32 @@
                         
                         resolve(canvas.toDataURL('image/jpeg', 0.7));
                     } catch(e) {
-                        resolve(event.target.result); // Si el canvas falla, regresa la original
+                        resolve(event.target.result); 
                     }
                 };
-                img.onerror = () => resolve(event.target.result); // Deadlock breaker
+                img.onerror = () => resolve(event.target.result); 
             };
             reader.onerror = () => resolve(null);
         });
     }
 
     async function procesarExpediente() {
-        document.getElementById('headerSection').style.display = 'none';
-        document.getElementById('btnEjecutar').style.display = 'none';
-        document.querySelector('.grid-dropzones').style.display = 'none';
-        
+        // Blindaje visual: si falla algo, podemos restaurar la vista
+        const elHeader = document.getElementById('headerSection');
+        const elBtn = document.getElementById('btnEjecutar');
+        const elDrop = document.getElementById('dropzonesArea');
         const term = document.getElementById('terminalLoader');
         const status = document.getElementById('termStatus');
+
+        if(elHeader) elHeader.style.display = 'none';
+        if(elBtn) elBtn.style.display = 'none';
+        if(elDrop) elDrop.style.display = 'none';
+        
         term.style.display = 'block';
+        status.innerHTML = "> Inicializando motor de fusión...<br>";
         
         try {
-            // 1. Parsear XML (Tolerante a fallos)
-            status.innerText = "> Desencriptando nodos fiscales...";
+            status.innerHTML += "> Desencriptando nodos fiscales...<br>";
             const text = await rawXMLFile.text();
             const xml = new DOMParser().parseFromString(text, "text/xml");
             
@@ -314,8 +316,7 @@
                 xmlData.conceptos.push(c.getAttribute('Descripcion'));
             });
 
-            // 2. Generar QR Oficial
-            status.innerText = "> Estructurando identificador QRious...";
+            status.innerHTML += "> Estructurando identificador QRious...<br>";
             if(xmlData.uuid !== "NO-TIMBRADO") {
                 try {
                     const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${xmlData.uuid}&re=${xmlData.emisorRfc}&rr=${xmlData.receptorRfc}&tt=${xmlData.total}`;
@@ -324,12 +325,10 @@
                 } catch(e) { qrDataURI = null; }
             }
 
-            // 3. Comprimir Imágenes Simultáneamente
-            status.innerText = "> Aplicando algoritmos de compresión a la evidencia...";
+            status.innerHTML += "> Aplicando algoritmos de compresión a la evidencia...<br>";
             const compressed = await Promise.all(rawImgFiles.map(file => compressImage(file)));
-            base64Images = compressed.filter(img => img !== null); // Limpiar nulos por seguridad
+            base64Images = compressed.filter(img => img !== null); 
 
-            // 4. Render Visual
             setTimeout(() => { 
                 term.style.display = 'none';
                 document.getElementById('results').style.display = 'block';
@@ -347,9 +346,10 @@
             console.error(e);
             term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: ${e.message || "Fallo en la lectura."}</strong>`;
             
-            // Reactivar botón en caso de error para permitir reintento
             setTimeout(() => {
-                document.getElementById('btnEjecutar').style.display = 'inline-flex';
+                if(elBtn) elBtn.style.display = 'inline-flex';
+                if(elHeader) elHeader.style.display = 'block';
+                if(elDrop) elDrop.style.display = 'grid';
                 term.style.display = 'none';
             }, 3000);
         }
@@ -360,12 +360,10 @@
 
         let fechaImpresion = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
         
-        // Estructura de Conceptos para la tabla
         let tablaConceptosBody = [['Descripción del Servicio / Bien (Según CFDI)']];
         if(xmlData.conceptos.length === 0) tablaConceptosBody.push([{ text: "Sin conceptos legibles", color: '#94A3B8' }]);
         xmlData.conceptos.forEach(c => tablaConceptosBody.push([{ text: c, fontSize: 10, color: '#334155' }]));
 
-        // Estructura de Imágenes Dinámicas
         let imageStack = [];
         base64Images.forEach((img, index) => {
             imageStack.push({
@@ -380,7 +378,6 @@
             });
         });
 
-        // Safe QR Inyect
         let qrInyect = qrDataURI ? { image: qrDataURI, fit: [80, 80], alignment: 'right', margin: [10, 0, 0, 0] } : { text: '' };
 
         const docDefinition = {
