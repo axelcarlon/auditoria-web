@@ -3,73 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escáner Inteligente de Tickets y PDFs | AuditorIA</title>
-    <meta name="description" content="¿Perdiste el XML? Nuestra IA multimodal extrae datos de fotos de tickets, valida impuestos, detecta duplicados y genera layouts contables.">
+    <title>Escáner OCR Fiscal y Anti-Deducibles | AuditorIA</title>
+    <meta name="description" content="Digitaliza tickets y facturas impresas. Nuestra IA extrae los montos y detecta automáticamente propinas y alcohol para calcular tu base deducible real.">
     <link rel="canonical" href="https://auditoriaxml.mx/escaner-ocr-fiscal.html" />
     
-    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
-    <link rel="apple-touch-icon" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #06B6D4; --brand-glow: rgba(6, 182, 212, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 60px 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); margin-bottom: 30px;}
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
-
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
-
-        .results-container { display: none; margin-top: 30px; }
+        .header-section { text-align: center; margin-bottom: 50px; }
+        .header-badge { display: inline-block; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--brand); color: #67E8F9; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; padding: 15px; background: white; border-radius: 10px; border: 1px solid var(--border); position: sticky; top: 10px; z-index: 100;}
-        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;}
-        .btn-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px;}
-        .btn-xml { background: var(--brand); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px;}
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(6, 182, 212, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
+        .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
+        .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
-        /* Dashboard Global */
-        .macro-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .macro-card { background: var(--bg-secondary); padding: 25px; border-radius: 12px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .macro-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .macro-value { font-size: 26px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+        .btn-action { background: var(--brand); color: #083344; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #0891B2; color: white;}
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        /* Lote Cards */
-        .lote-grid { display: grid; grid-template-columns: 1fr; gap: 25px; margin-bottom: 40px; }
-        .lote-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); border-left: 6px solid var(--brand); }
-        .lote-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .lote-filename { font-weight: 800; font-size: 16px; color: var(--text-main); }
+        /* Scanner Line Animation */
+        .scanner-container { position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; display: none;}
+        .scanner-img-placeholder { width: 100%; height: 100px; background: repeating-linear-gradient(45deg, #1E293B, #1E293B 10px, #0F172A 10px, #0F172A 20px); border: 1px solid var(--border); border-radius: 12px;}
+        .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--brand); box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); animation: scan 1.5s linear infinite; }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+
+        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 150px; overflow-y: auto; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
         
-        .badge-status { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .badge-success { background: #D1FAE5; color: #065F46; }
-        .badge-danger { background: #FEE2E2; color: #991B1B; }
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .data-box { background: var(--bg-primary); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
-        .data-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 5px; }
-        .data-value { font-size: 14px; color: var(--text-main); font-weight: 700; word-break: break-all; }
-        .data-value.accounting { color: var(--brand); font-style: italic; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
+        .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
 
-        .table-mini { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px; background: white; border-radius: 6px; overflow: hidden; }
-        .table-mini th { background: #F3F4F6; padding: 10px; text-align: left; color: var(--text-muted); text-transform: uppercase; font-size: 10px; }
-        .table-mini td { padding: 10px; border-bottom: 1px solid #F3F4F6; }
+        /* Data Table */
+        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 30px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border);}
+        td { padding: 15px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;}
+        .badge-ok { background: rgba(16, 185, 129, 0.1); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);}
+        .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); animation: pulseAlert 2s infinite;}
+        @keyframes pulseAlert { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 40px; height: 40px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
+        /* Cross-Selling CSS */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
+        .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(6, 182, 212, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
+
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(6, 182, 212, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
-            .macro-summary { grid-template-columns: 1fr 1fr; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar button { width: 100%; }
+            .btn-toolbar { flex-direction: column; }
+            td, th { padding: 10px; font-size: 12px;}
         }
     </style>
 </head>
@@ -77,250 +89,373 @@
 
 <script src="navbar.js"></script>
 
-<div class="modal-overlay" id="paywallModal">
-    <div class="modal-content">
-        <button class="modal-close" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:24px; cursor:pointer;" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">Potencia tu Auditoría</h2>
-        <p style="color: var(--text-muted); margin-bottom: 25px;">Has alcanzado el límite gratuito. Actualiza a <strong>Pro</strong> para procesar lotes de 100+ tickets, exportar a Excel/JSON y descargar XMLs estructurados para tu ERP.</p>
-        <a href="planes.html" class="btn-upgrade" style="background: var(--brand); color:white; padding: 15px 30px; border-radius: 8px; text-decoration:none; font-weight:bold; display:inline-block;">Subir a Pro</a>
-    </div>
-</div>
-
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 1px;">SISTEMA FORENSE OCR 2026</span>
-        <h1 style="font-size: 34px; margin-bottom: 10px; margin-top: 15px;">Escáner Inteligente de Tickets y PDFs</h1>
-        <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto;">Recupera la deducibilidad de tus tickets físicos. Nuestra IA extrae datos, asigna cuentas contables, detecta duplicados y valida la matemática fiscal automáticamente.</p>
+    <div class="header-section" id="headerSection">
+        <div class="header-badge">VISIÓN ARTIFICIAL FORENSE</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Escáner OCR de Tickets</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Sube fotografías de tickets de consumo (JPG, PNG) o facturas impresas en PDF. La IA extraerá los datos, validará la suma matemática y descontará automáticamente conceptos no deducibles como propinas o alcohol.</p>
     </div>
 
-    <div class="upload-section" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <svg width="56" height="56" color="var(--brand)" style="margin-bottom: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        <p style="font-weight: 800; margin: 0; font-size: 22px; color: var(--text-main);">Cargar Lote de Comprobantes</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Suelta tus imágenes (JPG/PNG) o PDFs aquí. La IA hará el resto.</p>
-        <input type="file" id="fileInput" accept="image/*,.pdf" multiple style="display: none;">
-        
-        <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Anti-Duplicados</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Auto-Accounting</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado Grado Bancario</div>
+    <div id="mainForm">
+        <div class="upload-section" id="dropZone">
+            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <h3 style="margin: 0 0 10px; font-size: 20px;">Carga Evidencia Gráfica</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Formatos soportados: JPG, PNG, PDF</p>
+            <input type="file" id="inputFile" accept=".jpg,.jpeg,.png,.pdf" multiple style="display: none;">
+            <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
-    </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
-        <div class="spinner"></div>
-        <p style="font-weight: 700; color: var(--brand); font-size: 18px;">Cerebro Multimodal IA analizando el lote...</p>
-        <p style="font-size: 14px; color: var(--text-muted);">Estamos identificando RFCs, extrayendo conceptos y validando sumas matemáticas.</p>
+        <button id="btnEjecutar" class="btn-action" onclick="iniciarEscaneo()" disabled>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            INICIAR VECTORIZACIÓN OCR
+        </button>
+
+        <div class="scanner-container" id="scannerAnim">
+            <div class="scanner-img-placeholder"></div>
+            <div class="scanner-line"></div>
+        </div>
+
+        <div class="terminal-loader" id="terminalLoader">
+            > Conectando con Motor de Visión IA...<br>
+            <span id="termStatus"></span>
+        </div>
     </div>
 
     <div class="results-container" id="results">
         
-        <div class="macro-summary">
-            <div class="macro-card">
-                <div class="macro-title">Documentos Validados</div>
-                <div class="macro-value" id="macroDocs">0</div>
+        <div class="kpi-grid">
+            <div class="kpi-box">
+                <div class="kpi-label">Total Impreso (Ticket)</div>
+                <div class="kpi-value" id="kpiTotalTicket">$0.00</div>
             </div>
-            <div class="macro-card">
-                <div class="macro-title">Base Gravable (Subtotal)</div>
-                <div class="macro-value" id="macroSubtotal">$0.00</div>
+            <div class="kpi-box" style="border-color: rgba(239, 68, 68, 0.3);">
+                <div class="kpi-label" style="color: var(--danger);">Gastos No Deducibles</div>
+                <div class="kpi-value" id="kpiNoDeducible" style="color: var(--danger);">$0.00</div>
             </div>
-            <div class="macro-card">
-                <div class="macro-title">IVA / Impuestos</div>
-                <div class="macro-value" id="macroImpuestos" style="color: var(--danger);">$0.00</div>
-            </div>
-            <div class="macro-card" style="border-color: var(--success); background: #ECFDF5;">
-                <div class="macro-title" style="color: var(--success);">Total Digitalizado</div>
-                <div class="macro-value" id="macroTotal" style="color: var(--success);">$0.00</div>
+            <div class="kpi-box" style="border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);">
+                <div class="kpi-label" style="color: var(--success);">Base Estrictamente Deducible</div>
+                <div class="kpi-value" id="kpiBaseDeducible" style="color: var(--success);">$0.00</div>
             </div>
         </div>
 
-        <div class="toolbar">
-            <div style="font-weight: 800; font-size: 16px;">Matriz Forense de Resultados</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button onclick="window.location.reload()" class="btn-restart">Limpiar Escáner</button>
-                <button onclick="exportarExcel()" class="btn-excel">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Layout Excel
-                </button>
-                <button onclick="descargarXML_Batch()" class="btn-xml">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                    Generar XMLs (ERP)
-                </button>
-            </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descripción del Concepto</th>
+                        <th style="text-align: right;">Importe</th>
+                        <th style="text-align: center;">Estatus Fiscal</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaConceptos">
+                    </tbody>
+            </table>
         </div>
 
-        <div class="lote-grid" id="loteContainer"></div>
-
-        <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">¿Te ahorramos horas de trabajo? Comparte la herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20digitalizar%20mis%20gastos%20físicos%20en%20segundos%20con%20la%20IA%20de%20AuditorIA:&url=https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Digitaliza%20tus%20tickets%20con%20IA:%20https://auditoriaxml.mx/escaner-ocr-fiscal.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Escanear Nuevo Lote
+            </button>
+            <button onclick="descargarExcel()" class="btn-secondary" style="background: #064E3B; color: #34D399; border-color: #065F46;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Layout Excel
+            </button>
+            <button id="btnDescargarPDF" onclick="descargarReportePDF()" class="btn-action" style="flex: 2;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Exportar Dictamen PDF
+            </button>
         </div>
     </div>
-</div>
 
-<div id="hiddenPdfRender"></div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <h3 class="feature-title">Filtro Anti-Deducibilidad</h3>
+            <p class="feature-desc">El motor aísla de la suma total conceptos como Propinas, Bebidas Alcohólicas o Donativos, protegiendo tu contabilidad de rechazos del SAT.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg></div>
+            <h3 class="feature-title">Auditoría Matemática</h3>
+            <p class="feature-desc">Verifica que la suma de los conceptos extraídos coincida exactamente con el total impreso en la imagen, alertando sobre tickets alterados.</p>
+        </div>
+    </div>
+
+    <h2 class="showcase-header">Soluciones Recomendadas</h2>
+    <div class="bento-grid">
+        <a href="generador-polizas.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+                <h3 class="bento-title">Generador de Pólizas Automático</h3>
+                <p class="bento-desc">Si ya tienes los XML, conviértelos instantáneamente en layouts contables compatibles con CONTPAQi, COI o SAP.</p>
+            </div>
+        </a>
+        <a href="prueba-servicio.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+                <h3 class="bento-title">Prueba de Servicio (Materialidad)</h3>
+                <p class="bento-desc">Cruza la evidencia fotográfica o documental de tus gastos contra las facturas para blindarte ante auditorías del Art. 69-B.</p>
+            </div>
+        </a>
+    </div>
+</div>
 
 <script src="footer.js"></script>
 
 <script>
-    function checkQuota() {
-        let usos = localStorage.getItem('auditoria_usos');
-        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
-        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
-        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
-        return true;
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
+
+    let currentFiles = [];
+    let auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const drop = document.getElementById('dropZone');
+    const input = document.getElementById('inputFile');
+    
+    drop.onclick = () => input.click();
+    
+    ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
+    ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
+    
+    drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', e => processFiles(e.target.files));
+
+    function processFiles(files) {
+        const validExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        const validFiles = Array.from(files).filter(f => {
+            const ext = f.name.split('.').pop().toLowerCase();
+            return validExtensions.includes(ext);
+        });
+
+        if(validFiles.length === 0) {
+            if (typeof window.showToast === 'function') window.showToast("Formato inválido. Use JPG, PNG o PDF.", "error");
+            return;
+        }
+
+        currentFiles = validFiles;
+        drop.classList.add('filled');
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM`;
+        document.getElementById('btnEjecutar').disabled = false;
     }
 
-    const input = document.getElementById('fileInput');
-    const dropZone = document.getElementById('dropZone');
-    
-    let datosEscaneados = [];
-    let globales = { docs: 0, subtotal: 0, impuestos: 0, total: 0 };
-
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
-
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
-    
-    dropZone.addEventListener('drop', e => { 
-        input.files = e.dataTransfer.files; 
-        processBatch(e.dataTransfer.files); 
-    });
-    input.addEventListener('change', e => { 
-        processBatch(e.target.files); 
-    });
-
-    async function processBatch(files) {
-        if (files.length === 0) return;
-        if (!checkQuota()) return;
+    async function iniciarEscaneo() {
+        if(currentFiles.length === 0) return;
         
         document.getElementById('headerSection').style.display = 'none';
-        dropZone.style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
+        document.getElementById('btnEjecutar').style.display = 'none';
+        drop.style.display = 'none';
         
-        datosEscaneados = [];
-        globales = { docs: 0, subtotal: 0, impuestos: 0, total: 0 };
-        document.getElementById('loteContainer').innerHTML = '';
+        document.getElementById('scannerAnim').style.display = 'block';
+        const term = document.getElementById('terminalLoader');
+        const status = document.getElementById('termStatus');
+        term.style.display = 'block';
+        
+        status.innerHTML = `> Empaquetando matriz de imágenes...<br>> Transfiriendo a Motor Visión IA...`;
 
         const formData = new FormData();
-        // Procesamos máximo 50 por lote por seguridad de memoria
-        const limit = Math.min(files.length, 50);
-        for(let i=0; i<limit; i++) { formData.append("archivos", files[i]); }
+        currentFiles.forEach(f => formData.append("archivos", f));
 
         try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", { method: "POST", body: formData });
-            if (!res.ok) throw new Error("Server Error");
-            const data = await res.json();
-            
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('results').style.display = 'block';
-
-            const arrayResultados = data.resultados_lote || [data];
-            datosEscaneados = arrayResultados;
-
-            arrayResultados.forEach((item, index) => {
-                const d = item.datos || item;
-                const card = document.createElement('div');
-                card.className = 'lote-card';
-                
-                if (item.status === 'success') {
-                    globales.docs++;
-                    globales.subtotal += parseFloat(d.subtotal || 0);
-                    globales.impuestos += parseFloat(d.total_traslados || 0);
-                    globales.total += parseFloat(d.total || 0);
-
-                    let rows = d.conceptos.map(c => `<tr><td>${c.descripcion}</td><td class="amount">${formatMoney(c.importe)}</td></tr>`).join('');
-
-                    card.innerHTML = `
-                        <div class="lote-header">
-                            <span class="lote-filename">${item.archivo || `Ticket_${index+1}`}</span>
-                            <span class="badge-status badge-success">Validado ✓</span>
-                        </div>
-                        <div class="data-grid">
-                            <div class="data-box"><div class="data-label">RFC Emisor</div><div class="data-value">${d.rfc_emisor || 'No detectado'}</div></div>
-                            <div class="data-box"><div class="data-label">Cuenta Contable Sugerida</div><div class="data-value accounting">${d.cuenta_sugerida || 'Gasto General'}</div></div>
-                            <div class="data-box"><div class="data-label">Fecha</div><div class="data-value">${d.fecha || 'N/A'}</div></div>
-                            <div class="data-box"><div class="data-label">Método Pago</div><div class="data-value">${d.metodo_pago || 'Efectivo'}</div></div>
-                        </div>
-                        <div class="data-grid" style="grid-template-columns: 1fr 1fr 1fr 1.5fr;">
-                            <div class="data-box"><div class="data-label">Subtotal</div><div class="data-value">${formatMoney(d.subtotal)}</div></div>
-                            <div class="data-box"><div class="data-label">IVA</div><div class="data-value">${formatMoney(d.total_traslados)}</div></div>
-                            <div class="data-box"><div class="data-label">Propinas/Otros</div><div class="data-value">${formatMoney(d.otros_cargos || 0)}</div></div>
-                            <div class="data-box" style="background:#EFF6FF; border-color:var(--brand);"><div class="data-label" style="color:var(--brand)">Total Final</div><div class="data-value" style="font-size:18px;">${formatMoney(d.total)}</div></div>
-                        </div>
-                        <table class="table-mini"><thead><tr><th>Concepto</th><th class="amount">Monto</th></tr></thead><tbody>${rows}</tbody></table>
-                    `;
-                } else {
-                    card.style.borderLeftColor = 'var(--danger)';
-                    card.innerHTML = `
-                        <div class="lote-header">
-                            <span class="lote-filename">${item.archivo}</span>
-                            <span class="badge-status badge-danger">Rechazado ✕</span>
-                        </div>
-                        <div class="alert-box alert-error"><strong>Falla Crítica:</strong> ${item.mensaje || 'Error en lectura de ecuación contable.'}</div>
-                    `;
-                }
-                document.getElementById('loteContainer').appendChild(card);
+            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
+                method: 'POST',
+                body: formData
             });
 
-            // Update Macros
-            document.getElementById('macroDocs').innerText = globales.docs;
-            document.getElementById('macroSubtotal').innerText = formatMoney(globales.subtotal);
-            document.getElementById('macroImpuestos').innerText = formatMoney(globales.impuestos);
-            document.getElementById('macroTotal').innerText = formatMoney(globales.total);
+            if (!res.ok) throw new Error("Fallo en el servidor de IA.");
+            
+            const data = await res.json();
+            procesarResultados(data);
 
         } catch (e) {
-            alert("Error al procesar el lote. Intenta subir menos archivos o fotos más claras.");
-            window.location.reload();
+            console.error(e);
+            document.getElementById('scannerAnim').style.display = 'none';
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Motor de visión saturado o archivo dañado.</strong>`;
+            if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
         }
     }
 
-    function exportarExcel() {
-        if(datosEscaneados.length === 0) return;
-        const headers = ['Archivo', 'RFC_Emisor', 'Fecha', 'Cuenta_IA', 'Subtotal', 'IVA', 'Propinas', 'Total', 'Metodo'];
-        const rows = datosEscaneados.filter(x => x.status === 'success').map(x => {
-            const d = x.datos || x;
-            return `"${x.archivo}","${d.rfc_emisor}","${d.fecha}","${d.cuenta_sugerida}",${d.subtotal},${d.total_traslados},${d.otros_cargos || 0},${d.total},"${d.metodo_pago}"`;
-        });
-        const csv = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');
-        const link = document.createElement("a");
-        link.setAttribute("href", encodeURI(csv));
-        link.setAttribute("download", `Layout_Gastos_OCR_${Date.now()}.csv`);
-        link.click();
+    // LISTA NEGRA DE PALABRAS (Filtro Forense)
+    const blackList = ["propina", "servicio", "tip", "bebida", "alcohol", "cerveza", "vino", "licor", "donativo", "tequila", "mezcal"];
+
+    function esNoDeducible(descripcion) {
+        const text = descripcion.toLowerCase();
+        return blackList.some(word => text.includes(word));
     }
 
-    function descargarXML_Batch() {
-        if(datosEscaneados.length === 0) return;
-        let xml = `<?xml version="1.0" encoding="UTF-8"?><LoteAuditorIA Fecha="${new Date().toISOString()}">`;
-        datosEscaneados.filter(x => x.status === 'success').forEach(x => {
-            const d = x.datos || x;
-            xml += `<Gasto Archivo="${x.archivo}" RFC="${d.rfc_emisor}" Total="${d.total}" IVA="${d.total_traslados}" Cuenta="${d.cuenta_sugerida}"/>`;
+    function procesarResultados(data) {
+        let docs = [];
+        // Normalizar respuesta (Lote o Individual)
+        if(data.status === "success_lote") {
+            data.resultados_lote.forEach(r => { if(r.status === "success") docs.push(r.datos); });
+        } else if (data.conceptos) {
+            docs.push(data);
+        } else {
+            throw new Error("Estructura JSON irreconocible.");
+        }
+
+        auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
+
+        docs.forEach(doc => {
+            auditoriaDatos.totalImpreso += parseFloat(doc.total || 0);
+            
+            if(doc.conceptos && Array.isArray(doc.conceptos)) {
+                doc.conceptos.forEach(c => {
+                    const importe = parseFloat(c.importe || 0);
+                    const desc = c.descripcion || "Concepto sin descripción";
+                    let isBad = esNoDeducible(desc);
+                    
+                    if(isBad) auditoriaDatos.totalNoDeducible += importe;
+                    else auditoriaDatos.baseDeducible += importe;
+
+                    auditoriaDatos.conceptos.push({
+                        desc: desc,
+                        importe: importe,
+                        estado: isBad ? "NO DEDUCIBLE" : "DEDUCIBLE",
+                        cssClass: isBad ? "badge-bad" : "badge-ok"
+                    });
+                });
+            }
         });
-        xml += `</LoteAuditorIA>`;
-        const blob = new Blob([xml], {type: "text/xml"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "Estructura_XML_Proxy.xml";
-        link.click();
+
+        // Auditoría Matemática (Cuadre de Ticket)
+        const sumaCalculada = auditoriaDatos.baseDeducible + auditoriaDatos.totalNoDeducible;
+        const diferencia = Math.abs(auditoriaDatos.totalImpreso - sumaCalculada);
+        let mensajeCuadre = "";
+
+        if (diferencia > 1) { // Tolerancia de redondeo 1 peso
+            mensajeCuadre = `<div style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid var(--warning); padding: 15px; border-radius: 6px; margin-bottom: 20px; color: #FDE68A; font-size: 13px;"><strong>ALERTA DE INTEGRIDAD:</strong> La suma de los conceptos extraídos (${formatMoney(sumaCalculada)}) no coincide con el Total Impreso detectado (${formatMoney(auditoriaDatos.totalImpreso)}). El documento podría estar arrugado, borroso o alterado. Sugerimos revisión manual.</div>`;
+        }
+
+        document.getElementById('scannerAnim').style.display = 'none';
+        document.getElementById('terminalLoader').style.display = 'none';
+        
+        const resContainer = document.getElementById('results');
+        resContainer.style.display = 'block';
+
+        if(mensajeCuadre !== "") {
+            resContainer.insertAdjacentHTML('afterbegin', mensajeCuadre);
+        }
+
+        document.getElementById('kpiTotalTicket').innerText = formatMoney(auditoriaDatos.totalImpreso);
+        document.getElementById('kpiNoDeducible').innerText = formatMoney(auditoriaDatos.totalNoDeducible);
+        document.getElementById('kpiBaseDeducible').innerText = formatMoney(auditoriaDatos.baseDeducible);
+
+        const tbody = document.getElementById('tablaConceptos');
+        tbody.innerHTML = auditoriaDatos.conceptos.map(c => `
+            <tr>
+                <td><strong>${c.desc}</strong></td>
+                <td style="text-align: right; font-family: monospace;">${formatMoney(c.importe)}</td>
+                <td style="text-align: center;"><span class="badge ${c.cssClass}">${c.estado}</span></td>
+            </tr>
+        `).join('');
+
+        if (typeof window.showToast === 'function') window.showToast("Extracción OCR Finalizada.", "success");
     }
-    
+
+    function descargarExcel() {
+        const results = [["Descripción del Gasto", "Monto Extraído", "Dictamen IA (Deducibilidad)"]];
+        auditoriaDatos.conceptos.forEach(c => {
+            results.push([c.desc, c.importe, c.estado]);
+        });
+        
+        results.push(["", "", ""]);
+        results.push(["TOTAL IMPRESO TICKET", auditoriaDatos.totalImpreso, ""]);
+        results.push(["GASTOS RECHAZADOS (No Deducibles)", auditoriaDatos.totalNoDeducible, ""]);
+        results.push(["BASE ESTRICTAMENTE DEDUCIBLE", auditoriaDatos.baseDeducible, ""]);
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 40}, {wch: 20}, {wch: 25}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Layout_Contable");
+        XLSX.writeFile(wb, `Layout_Gastos_${Date.now()}.xlsx`);
+    }
+
     function descargarReportePDF() {
-        if (globales.docs === 0) return;
-        const renderContainer = document.getElementById('hiddenPdfRender');
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: sans-serif;">
-                <h1 style="border-bottom: 2px solid #111827; padding-bottom: 10px;">Reporte Ejecutivo de Gastos OCR</h1>
-                <div style="display:flex; justify-content: space-between; background:#f4f4f4; padding:20px; border-radius:10px; margin: 20px 0;">
-                    <div><strong>Total Docs:</strong> ${globales.docs}</div>
-                    <div><strong>Total Gasto:</strong> ${formatMoney(globales.total)}</div>
-                </div>
-                <p>Este reporte contiene la digitalización de tickets físicos validados mediante IA.</p>
-                <div style="font-size:10px; color:#999; margin-top:50px; text-align:center;">Generado por AuditorIA.mx</div>
-            </div>
-        `;
-        html2pdf().set({ margin: 10, filename: 'Reporte_Gastos_IA.pdf', jsPDF: { format: 'letter' } }).from(renderContainer.firstElementChild).save();
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = `COMPILANDO...`;
+        btn.disabled = true;
+
+        setTimeout(() => {
+            try {
+                if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
+
+                const isPro = localStorage.getItem('auditoria_pro') === 'true';
+                
+                // Preparar cuerpo de tabla dinámica
+                const bodyTabla = [
+                    [{text: 'Concepto', style: 'tableHeader'}, {text: 'Importe', style: 'tableHeader', alignment: 'right'}, {text: 'Resolución', style: 'tableHeader', alignment: 'center'}]
+                ];
+
+                auditoriaDatos.conceptos.forEach(c => {
+                    bodyTabla.push([
+                        {text: c.desc, fontSize: 10},
+                        {text: formatMoneyPDF(c.importe), fontSize: 10, alignment: 'right'},
+                        {text: c.estado, fontSize: 9, bold: true, color: c.estado === 'DEDUCIBLE' ? '#10B981' : '#EF4444', alignment: 'center'}
+                    ]);
+                });
+
+                const docDefinition = {
+                    pageSize: 'LETTER',
+                    pageMargins: [50, 60, 50, 60],
+                    content: [
+                        { text: 'DICTAMEN PERICIAL OCR - AUDITORÍA DE GASTOS', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
+                        { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
+                        
+                        { text: '1. RESUMEN DE INTEGRIDAD TRIBUTARIA', fontSize: 12, bold: true, color: '#06B6D4', margin: [0, 20, 0, 10] },
+                        {
+                            margin: [0, 0, 0, 20],
+                            table: {
+                                widths: ['50%', '50%'],
+                                body: [
+                                    [{ text: 'Suma Total en Tickets Extraídos', bold: true, fillColor: '#F1F5F9', margin: [5,8,5,8] }, { text: formatMoneyPDF(auditoriaDatos.totalImpreso), margin: [5,8,5,8] }],
+                                    [{ text: 'Montos Restringidos (Propinas/Alcohol)', bold: true, fillColor: '#FEF2F2', color: '#EF4444', margin: [5,8,5,8] }, { text: formatMoneyPDF(auditoriaDatos.totalNoDeducible), color: '#EF4444', bold: true, margin: [5,8,5,8] }],
+                                    [{ text: 'BASE ESTRICTAMENTE DEDUCIBLE', bold: true, fillColor: '#ECFDF5', color: '#10B981', margin: [5,8,5,8] }, { text: formatMoneyPDF(auditoriaDatos.baseDeducible), color: '#10B981', bold: true, margin: [5,8,5,8] }]
+                                ]
+                            },
+                            layout: 'lightHorizontalLines'
+                        },
+
+                        { text: '2. DESGLOSE FORENSE DE CONCEPTOS', fontSize: 12, bold: true, color: '#06B6D4', margin: [0, 10, 0, 10] },
+                        {
+                            table: {
+                                headerRows: 1,
+                                widths: ['*', 'auto', 'auto'],
+                                body: bodyTabla
+                            },
+                            layout: 'lightHorizontalLines'
+                        }
+                    ],
+                    styles: {
+                        tableHeader: { bold: true, fontSize: 10, color: '#4B5563', fillColor: '#F3F4F6', margin: [0, 5, 0, 5] }
+                    },
+                    footer: function(currentPage, pageCount) {
+                        return { text: `AuditoriaXML.mx | Motor OCR con Inteligencia Artificial | Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
+                    }
+                };
+
+                if (!isPro) {
+                    docDefinition.background = function(currentPage, pageSize) {
+                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.12, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    };
+                }
+
+                pdfMake.createPdf(docDefinition).download(`Dictamen_OCR_${Date.now()}.pdf`);
+                
+            } catch (e) {
+                console.error("Fallo local PDF:", e);
+                if (typeof window.showToast === 'function') window.showToast("Error crítico al renderizar PDF.", "error");
+            } finally {
+                btn.innerHTML = oldText; 
+                btn.disabled = false;
+            }
+        }, 500);
     }
 </script>
 </body>
