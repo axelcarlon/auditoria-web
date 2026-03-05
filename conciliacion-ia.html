@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conciliación Bancaria Algorítmica | AuditorIA</title>
-    <meta name="description" content="Cruza automáticamente tu estado de cuenta bancario contra tus facturas XML. Detecta movimientos huérfanos y facturas pendientes de cobro o pago.">
+    <meta name="description" content="Cruza automáticamente tu estado de cuenta bancario contra tus facturas XML. Extrae sábanas en Excel o reportes gerenciales en PDF.">
     <link rel="canonical" href="https://auditoriaxml.mx/conciliacion-ia.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -88,7 +90,7 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">ALGORITMO DE AUDITORÍA CRUZADA (FUZZY MATCH)</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Conciliación Bancaria IA</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga tus movimientos bancarios y facturas XML. El algoritmo Levenshtein evalúa la similitud de texto entre conceptos bancarios y razones sociales para resolver cruces de montos idénticos.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga tus movimientos bancarios y facturas XML. El algoritmo evalúa la similitud de texto para resolver cruces. Exporta la sábana en Excel o un Reporte Gerencial en PDF.</p>
     </div>
 
     <div id="mainForm">
@@ -155,10 +157,13 @@
         </div>
 
         <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Nueva Auditoría Cruzada</button>
-            <button onclick="exportarReporteConciliacion()" class="btn-action" style="flex: 2; background: #064E3B; border-color: #059669;">
+            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">Nueva Auditoría</button>
+            <button onclick="exportarReporteConciliacion()" class="btn-secondary" style="border-color: #059669; color: #10B981;">
+                EXCEL (SÁBANA DATOS)
+            </button>
+            <button onclick="exportarReporteConciliacionPDF()" class="btn-action" style="flex: 2;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                EXPORTAR SABANA DE AUDITORÍA (EXCEL)
+                REPORTE GERENCIAL (PDF)
             </button>
         </div>
     </div>
@@ -170,9 +175,9 @@
             <p class="feature-desc">El algoritmo mide matemáticamente la similitud entre la descripción del banco ("PAGO TELCEL") y la razón social del XML ("RADIOMOVIL DIPSA SA DE CV") para resolver conflictos de facturas por el mismo monto.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></div>
-            <h3 class="feature-title">Limpieza Semántica</h3>
-            <p class="feature-desc">Filtra automáticamente ruido bancario y societario (SA DE CV, SAPI, TRASPASO, SPEI) antes de cruzar los textos, logrando una precisión pericial superior al 95%.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+            <h3 class="feature-title">Resumen Ejecutivo</h3>
+            <p class="feature-desc">Exporta un dictamen en PDF que sumariza las fugas de capital y el estado de la cobranza/pagos del mes. Diseñado para ser leído por dueños y directores financieros.</p>
         </div>
     </div>
 
@@ -198,12 +203,23 @@
 <script src="footer.js"></script>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
+
     let fileExcel = null;
     let filesXML = [];
     
     let dbBancos = [];
     let dbFacturas = [];
     let auditoriaFinal = [];
+
+    // Contadores Globales para PDF
+    let kpiCountMatch = 0; let kpiSumMatch = 0;
+    let kpiCountHuerfanos = 0; let kpiSumHuerfanos = 0;
+    let kpiCountPendientes = 0; let kpiSumPendientes = 0;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
@@ -252,7 +268,6 @@
                Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
     }
 
-    // MOTOR DE DISTANCIA LEVENSHTEIN (FUZZY STRING MATCHING)
     function getSimilarity(s1, s2) {
         let longer = s1; let shorter = s2;
         if (s1.length < s2.length) { longer = s2; shorter = s1; }
@@ -282,7 +297,6 @@
         return costs[s2.length];
     }
 
-    // Limpieza semántica para mejorar precisión de la IA
     const cleanStr = (str) => str.toLowerCase().replace(/sa de cv|sapi|s de rl|sc|inc|llc|pago|traspaso|spei|deposito/gi, '').replace(/[^a-z0-9]/gi, '').trim();
 
     async function iniciarCruce() {
@@ -294,9 +308,10 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        dbBancos = [];
-        dbFacturas = [];
-        auditoriaFinal = [];
+        dbBancos = []; dbFacturas = []; auditoriaFinal = [];
+        kpiCountMatch = 0; kpiSumMatch = 0;
+        kpiCountHuerfanos = 0; kpiSumHuerfanos = 0;
+        kpiCountPendientes = 0; kpiSumPendientes = 0;
 
         try {
             status.innerHTML = `> Extrayendo vectores financieros (Excel)...<br>`;
@@ -356,45 +371,26 @@
             status.innerHTML += `> Corriendo Red Neuronal de Emparejamiento Textual (Fuzzy Match)...<br>`;
             
             dbBancos.forEach(banco => {
-                let bestMatch = null;
-                let highestSim = -1;
-                let indexMatch = -1;
-
+                let bestMatch = null; let highestSim = -1; let indexMatch = -1;
                 const bDescClean = cleanStr(banco.desc);
 
                 dbFacturas.forEach((f, idx) => {
-                    // Condición Primaria: Coincidencia de Flujo y Monto (+- 1 peso)
                     if (!f.matched && f.tipo === banco.tipo && Math.abs(f.monto - banco.monto) <= 1.0) {
                         const fDescClean = cleanStr(f.desc);
-                        
-                        // Condición Secundaria: Desempate por Similitud de Textos Levenshtein
                         let sim = getSimilarity(bDescClean, fDescClean);
-                        
-                        // Bonificación si una cadena contiene a la otra (ej. TELCEL está dentro de PAGO A TELCEL)
-                        if (bDescClean.includes(fDescClean) || fDescClean.includes(bDescClean)) {
-                            sim += 0.5; 
-                        }
-
-                        if (sim > highestSim) {
-                            highestSim = sim;
-                            bestMatch = f;
-                            indexMatch = idx;
-                        }
+                        if (bDescClean.includes(fDescClean) || fDescClean.includes(bDescClean)) sim += 0.5; 
+                        if (sim > highestSim) { highestSim = sim; bestMatch = f; indexMatch = idx; }
                     }
                 });
 
                 if(bestMatch) {
-                    banco.matched = true;
-                    banco.matchData = bestMatch;
+                    banco.matched = true; banco.matchData = bestMatch;
                     banco.simScore = Math.min((highestSim * 100), 100).toFixed(0);
                     dbFacturas[indexMatch].matched = true;
                 }
                 
                 auditoriaFinal.push({
-                    origen: 'BANCO',
-                    desc: banco.desc,
-                    monto: banco.monto,
-                    tipo: banco.tipo,
+                    origen: 'BANCO', desc: banco.desc, monto: banco.monto, tipo: banco.tipo,
                     estatus: banco.matched ? 'CONCILIADO' : 'HUÉRFANO (SIN FACTURA)',
                     cruceStr: banco.matched ? banco.matchData.desc : 'N/A',
                     cruceUUID: banco.matched ? `UUID: ${banco.matchData.uuid.substring(0,8)}...` : '',
@@ -405,15 +401,9 @@
 
             dbFacturas.filter(f => !f.matched).forEach(f => {
                 auditoriaFinal.push({
-                    origen: 'FACTURA (XML)',
-                    desc: f.desc,
-                    monto: f.monto,
-                    tipo: f.tipo,
-                    estatus: 'NO COBRADO / PAGADO',
-                    cruceStr: 'Sin impacto en bancos',
-                    cruceUUID: `UUID: ${f.uuid.substring(0,8)}...`,
-                    simScore: 0,
-                    cssClass: 'badge-bad'
+                    origen: 'FACTURA (XML)', desc: f.desc, monto: f.monto, tipo: f.tipo,
+                    estatus: 'NO COBRADO / PAGADO', cruceStr: 'Sin impacto en bancos',
+                    cruceUUID: `UUID: ${f.uuid.substring(0,8)}...`, simScore: 0, cssClass: 'badge-bad'
                 });
             });
 
@@ -422,7 +412,6 @@
         } catch(e) {
             console.error(e);
             term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Fallo en motor heurístico.</strong>`;
-            if(typeof window.showToast === 'function') window.showToast("Error crítico de IA.", "error");
         }
     }
 
@@ -430,24 +419,19 @@
         document.getElementById('terminalLoader').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
-        let countMatch = 0;
-        let countHuerfanos = 0;
-        let countPendientes = 0;
-
         const tbody = document.getElementById('tablaConciliacion');
         tbody.innerHTML = auditoriaFinal.map(r => {
-            if(r.estatus === 'CONCILIADO') countMatch++;
-            else if(r.origen === 'BANCO') countHuerfanos++;
-            else countPendientes++;
+            if(r.estatus === 'CONCILIADO') { kpiCountMatch++; kpiSumMatch += r.monto; }
+            else if(r.origen === 'BANCO') { kpiCountHuerfanos++; kpiSumHuerfanos += r.monto; }
+            else { kpiCountPendientes++; kpiSumPendientes += r.monto; }
 
             let iconOrigen = r.origen === 'BANCO' ? '🏦 BANCO' : '📄 XML';
             let colorMonto = r.tipo === 'EGRESO' ? 'var(--danger)' : 'var(--success)';
             
-            // Barra visual de certidumbre IA
             let simUI = "";
             if (r.estatus === 'CONCILIADO') {
                 simUI = `
-                    <div style="font-size:10px; color:var(--text-muted); margin-top:5px;">Confianza Algoritmo: ${r.simScore}%</div>
+                    <div style="font-size:10px; color:var(--text-muted); margin-top:5px;">Confianza IA: ${r.simScore}%</div>
                     <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:${r.simScore}%;"></div></div>
                 `;
             }
@@ -467,9 +451,9 @@
             `;
         }).join('');
 
-        document.getElementById('kpiMatch').innerText = countMatch;
-        document.getElementById('kpiHuerfanos').innerText = countHuerfanos;
-        document.getElementById('kpiPendientes').innerText = countPendientes;
+        document.getElementById('kpiMatch').innerText = kpiCountMatch;
+        document.getElementById('kpiHuerfanos').innerText = kpiCountHuerfanos;
+        document.getElementById('kpiPendientes').innerText = kpiCountPendientes;
 
         if (typeof window.showToast === 'function') window.showToast("Cruce Neuronal finalizado con éxito.", "success");
     }
@@ -485,7 +469,71 @@
         ws['!cols'] = [{wch: 15}, {wch: 45}, {wch: 15}, {wch: 10}, {wch: 25}, {wch: 40}, {wch: 38}, {wch: 15}];
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Conciliacion_Fuzzy_Match");
-        XLSX.writeFile(wb, `Reporte_Conciliacion_IA_${Date.now()}.xlsx`);
+        XLSX.writeFile(wb, `SABANA_Conciliacion_IA_${Date.now()}.xlsx`);
+    }
+
+    function exportarReporteConciliacionPDF() {
+        if (typeof pdfMake === 'undefined') return;
+
+        let fechaImpresion = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+
+        const docDefinition = {
+            pageSize: 'LETTER',
+            pageMargins: [50, 50, 50, 50],
+            content: [
+                {
+                    columns: [
+                        { width: '*', text: 'REPORTE GERENCIAL DE CONCILIACIÓN', fontSize: 14, bold: true, color: '#D946EF' },
+                        { width: 'auto', text: 'AuditorIA', fontSize: 16, bold: true, alignment: 'right', color: '#1E293B' }
+                    ]
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#E2E8F0' }] },
+                { text: `Fecha de emisión: ${fechaImpresion}`, fontSize: 9, color: '#64748B', margin: [0, 15, 0, 20], alignment: 'right' },
+                
+                { text: 'I. RESUMEN EJECUTIVO (SALUD FINANCIERA)', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                { text: 'Este reporte consolida el análisis algorítmico (Fuzzy String Matching) entre los movimientos bancarios reales y la facturación fiscal emitida/recibida.', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 15] },
+                
+                {
+                    table: {
+                        widths: ['50%', '50%'],
+                        body: [
+                            [{ text: 'Operaciones Exitosamente Conciliadas:', bold: true, fillColor: '#F8FAFC', border: [false, true, false, true] }, { text: `${kpiCountMatch} movimientos`, border: [false, true, false, true] }],
+                            [{ text: 'Volumen Conciliado (MXN):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(kpiSumMatch), color: '#10B981', bold: true, border: [false, false, false, true] }]
+                        ]
+                    }, margin: [0, 0, 0, 20]
+                },
+
+                { text: 'II. RIESGOS DETECTADOS (FUGAS Y PENDIENTES)', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                {
+                    table: {
+                        widths: ['50%', '50%'],
+                        body: [
+                            [{ text: 'Fuga de Capital (Bancos sin Factura):', bold: true, fillColor: '#F8FAFC', border: [false, true, false, true] }, { text: formatMoney(kpiSumHuerfanos), color: '#F59E0B', bold: true, border: [false, true, false, true] }],
+                            [{ text: 'Desglose Huérfanos:', fontSize: 10, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: `${kpiCountHuerfanos} movimientos sin soporte fiscal`, fontSize: 10, border: [false, false, false, true] }],
+                            
+                            [{ text: 'Facturación no Cobrada / Pagada:', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(kpiSumPendientes), color: '#EF4444', bold: true, border: [false, false, false, true] }],
+                            [{ text: 'Desglose Facturas Libres:', fontSize: 10, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: `${kpiCountPendientes} CFDI sin impacto bancario`, fontSize: 10, border: [false, false, false, true] }]
+                        ]
+                    }, margin: [0, 0, 0, 30]
+                },
+
+                { text: 'III. NOTA METODOLÓGICA', fontSize: 10, bold: true, margin: [0, 0, 0, 5], color: '#64748B' },
+                { text: 'Los resultados se generaron aplicando tolerancia a desviaciones de redondeo (± $1.00 MXN) y distancia de edición semántica (Levenshtein) para unificar la limpieza de razones sociales contra conceptos bancarios crudos.', fontSize: 9, color: '#64748B', alignment: 'justify' },
+
+                {
+                    unbreakable: true,
+                    margin: [0, 60, 0, 0],
+                    alignment: 'center',
+                    stack: [
+                        { text: '____________________________________' },
+                        { text: 'AUTORIZACIÓN DEL REPORTE GERENCIAL', fontSize: 10, margin: [0, 5, 0, 0] }
+                    ]
+                }
+            ]
+        };
+
+        pdfMake.createPdf(docDefinition).download(`Resumen_Gerencial_Conciliacion_${Date.now()}.pdf`);
+        if(typeof window.showToast === 'function') window.showToast("Reporte Gerencial PDF generado.", "success");
     }
 </script>
 </body>
