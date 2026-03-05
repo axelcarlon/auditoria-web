@@ -3,91 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conciliador Bancario IA (Fuzzy Matching) | AuditorIA</title>
-    <meta name="description" content="Automatiza la conciliación bancaria. Nuestra IA agentica asocia pagos ambiguos con tus facturas XML mediante análisis semántico.">
+    <title>Conciliación Bancaria Algorítmica | AuditorIA</title>
+    <meta name="description" content="Cruza automáticamente tu estado de cuenta bancario contra tus facturas XML. Detecta movimientos huérfanos y facturas pendientes de cobro o pago.">
     <link rel="canonical" href="https://auditoriaxml.mx/conciliacion-ia.html" />
     
-    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
-    <link rel="apple-touch-icon" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #D946EF; --brand-glow: rgba(217, 70, 239, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .header-section { text-align: center; margin-bottom: 50px; }
+        .header-badge { display: inline-block; background: rgba(217, 70, 239, 0.1); border: 1px solid var(--brand); color: #F0ABFC; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+        .grid-dropzones { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(217, 70, 239, 0.4); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
+        .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 15px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
+        .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #C026D3;}
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        .btn-action { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 30px; }
-        .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
-        .btn-action:hover:not(:disabled) { opacity: 0.9; }
+        .terminal-loader { display: none; font-family: monospace; color: #F0ABFC; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 150px; border: 1px solid rgba(217, 70, 239, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
 
-        .results-container { display: none; }
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
+        .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+
+        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 30px; max-height: 500px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 900px;}
+        th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
+        td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; vertical-align: middle;}
         
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .metric-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
-        .metric-value { font-size: 32px; font-weight: 800; color: var(--text-main); }
-        
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; gap: 15px;}
-        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
-        .btn-restart:hover { background: #e2e8f0; }
-        .btn-export { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.2s; }
-        .btn-export:hover { opacity: 0.9; }
-        .btn-export-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.2s; }
-        .btn-export-excel:hover { opacity: 0.9; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block; white-space: nowrap;}
+        .badge-ok { background: rgba(16, 185, 129, 0.1); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);}
+        .badge-warn { background: rgba(245, 158, 11, 0.1); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3);}
+        .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);}
 
-        .table-wrapper { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 600px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; position: sticky; top: 0; box-shadow: 0 1px 0 var(--border); z-index: 10; }
-        tr:hover { background: #F9FAFB; }
-        .amount { text-align: right; font-family: monospace; font-size: 14px; font-weight: bold; }
-        
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        .badge.exact { background: #ECFDF5; color: #065F46; border: 1px solid #6EE7B7; }
-        .badge.ia-high { background: #EFF6FF; color: #1E3A8A; border: 1px solid #BFDBFE; }
-        .badge.ia-low { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Cross-Selling CSS */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
+        .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(217, 70, 239, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
-        /* Botones Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .btn-wa { background-color: #25D366; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block; }
-
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white;}
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(217, 70, 239, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .metrics-grid { grid-template-columns: 1fr; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar button { width: 100%; justify-content: center; }
+            .grid-dropzones { grid-template-columns: 1fr; }
+            .btn-toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -95,382 +82,345 @@
 
 <script src="navbar.js"></script>
 
-<div class="modal-overlay" id="paywallModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus conciliaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para automatizar el cierre contable con IA sin restricciones y descargar matrices exportables.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
-    </div>
-</div>
-
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: var(--brand); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">IA AGENTICA DE CONCILIACIÓN</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Conciliador Bancario IA (Fuzzy Matching)</h1>
-        <p style="color: var(--text-muted);">Automatiza el cierre de mes. Nuestra IA asocia transferencias bancarias ambiguas con tus facturas XML usando algoritmos de análisis semántico.</p>
+    <div class="header-section" id="headerSection">
+        <div class="header-badge">ALGORITMO DE AUDITORÍA CRUZADA</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Conciliación Bancaria Algorítmica</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Deja de puntear en Excel. Carga tus movimientos bancarios y tus facturas XML simultáneamente. El algoritmo emparejará los montos y detectará discrepancias fiscales al instante.</p>
     </div>
 
-    <div class="grid-2" id="uploadZones">
-        <div class="upload-section" id="dropCsv" onclick="document.getElementById('csvInput').click()">
-            <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <p style="font-weight: 700; margin: 0; font-size: 18px;">1. Estado de Cuenta (CSV)</p>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;" id="csvText">Estructura requerida: Fecha, Concepto, Monto</p>
-            <input type="file" id="csvInput" accept=".csv" style="display: none;">
+    <div id="mainForm">
+        <div class="grid-dropzones">
+            <div class="upload-section" id="dropExcel">
+                <svg width="48" height="48" fill="none" stroke="#10B981" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <h3 style="margin: 0 0 5px; font-size: 18px;">Layout Bancario (.xlsx)</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Archivo generado con el Conversor Bancario.</p>
+                <input type="file" id="inputExcel" accept=".xlsx,.xls" style="display: none;">
+                <div id="statusExcel" style="margin-top: 15px; font-weight: 900; color: #10B981;">Pendiente</div>
+            </div>
+            
+            <div class="upload-section" id="dropXML">
+                <svg width="48" height="48" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                <h3 style="margin: 0 0 5px; font-size: 18px;">Facturación del Periodo</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Lote de XMLs de Ingreso y Egreso.</p>
+                <input type="file" id="inputXML" accept=".xml" multiple style="display: none;">
+                <div id="statusXML" style="margin-top: 15px; font-weight: 900; color: var(--brand);">0 Archivos</div>
+            </div>
         </div>
 
-        <div class="upload-section" id="dropXml" onclick="document.getElementById('xmlInput').click()">
-            <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-            <p style="font-weight: 700; margin: 0; font-size: 18px;" id="xmlText">2. Facturas del Mes (XML)</p>
-            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Arrastra todo el repositorio de XMLs emitidos/recibidos</p>
-            <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
+        <button id="btnEjecutar" class="btn-action" onclick="iniciarCruce()" disabled>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            EJECUTAR EMPAREJAMIENTO
+        </button>
+
+        <div class="terminal-loader" id="terminalLoader">
+            > Inyectando matrices de datos en memoria RAM...<br>
+            <span id="termStatus"></span>
         </div>
-    </div>
-    
-    <div class="trust-badges" id="badgesSection" style="margin-bottom: 30px;">
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-        <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Doble Cerebro IA</div>
-    </div>
-
-    <button id="btnEjecutar" class="btn-action" disabled onclick="ejecutarConciliacion()">EJECUTAR CONCILIACIÓN SEMÁNTICA</button>
-
-    <div id="loadingState" style="display: none; text-align: center; margin-bottom: 30px;">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; color: var(--brand);">Cerebro 1: Cruce determinista activado...</p>
-        <p style="font-size: 13px; color: var(--text-muted);" id="loadingSubtext">Enlazando montos exactos y metadatos.</p>
     </div>
 
     <div class="results-container" id="results">
-        <div class="toolbar">
-            <div style="font-weight: 800; font-size: 18px; color: var(--text-main);">Resultados de Conciliación</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-export-excel" onclick="descargarCSV_IA()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Matriz a Excel
-                </button>
-                <button onclick="descargarConciliacionPDF()" class="btn-export">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Reporte PDF
-                </button>
-                <button onclick="window.location.reload()" class="btn-restart">Limpiar</button>
+        
+        <div class="kpi-grid">
+            <div class="kpi-box" style="border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);">
+                <div class="kpi-label" style="color: var(--success);">Operaciones Conciliadas</div>
+                <div class="kpi-value" id="kpiMatch" style="color: var(--success);">0</div>
+            </div>
+            <div class="kpi-box" style="border-color: rgba(245, 158, 11, 0.3);">
+                <div class="kpi-label" style="color: var(--warning);">Movimientos Huérfanos (Banco)</div>
+                <div class="kpi-value" id="kpiHuerfanos" style="color: var(--warning);">0</div>
+            </div>
+            <div class="kpi-box" style="border-color: rgba(239, 68, 68, 0.3);">
+                <div class="kpi-label" style="color: var(--danger);">Facturas Pendientes (XML)</div>
+                <div class="kpi-value" id="kpiPendientes" style="color: var(--danger);">0</div>
             </div>
         </div>
 
-        <div class="metrics-grid">
-            <div class="metric-card" style="border-bottom: 4px solid var(--success);">
-                <div class="metric-title">Monto Conciliado</div>
-                <div class="metric-value" style="color: var(--success);" id="kpiConciliado">$0.00</div>
-            </div>
-            <div class="metric-card" style="border-bottom: 4px solid var(--danger);">
-                <div class="metric-title">Monto Huérfano (No Asociado)</div>
-                <div class="metric-value" style="color: var(--danger);" id="kpiHuerfano">$0.00</div>
-            </div>
-        </div>
-
-        <div class="table-wrapper">
-            <table id="conciliacionTable">
+        <div class="table-container">
+            <table>
                 <thead>
                     <tr>
-                        <th>Concepto de Banco</th>
-                        <th class="amount">Monto Banco</th>
-                        <th>Factura Asociada (IA)</th>
-                        <th>Nivel de Confianza</th>
-                        <th>Razonamiento Semántico</th>
+                        <th>Origen</th>
+                        <th>Descripción / Concepto</th>
+                        <th style="text-align: right;">Monto Evaluado</th>
+                        <th style="text-align: center;">Estatus Algoritmo</th>
+                        <th>Cruce Detectado</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="tablaConciliacion">
+                </tbody>
             </table>
         </div>
 
-        <div class="share-container" id="shareContainer" style="display: none;">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20automatizar%20mi%20conciliación%20bancaria%20con%20inteligencia%20artificial%20usando%20AuditorIA:&url=https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20automatizar%20mi%20conciliación%20bancaria%20con%20inteligencia%20artificial%20usando%20AuditorIA:%20https://auditoriaxml.mx/conciliacion-ia.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">Nueva Auditoría Cruzada</button>
+            <button onclick="exportarReporteConciliacion()" class="btn-action" style="flex: 2; background: #064E3B; border-color: #059669;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                EXPORTAR SABANA DE AUDITORÍA (EXCEL)
+            </button>
         </div>
     </div>
-</div>
 
-<div id="hiddenPdfRender"></div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <h3 class="feature-title">Heurística de Tolerancia</h3>
+            <p class="feature-desc">El algoritmo permite una tolerancia de hasta $1.00 MXN para enlazar facturas con pagos bancarios, evitando errores por redondeo de centavos en sistemas externos.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></div>
+            <h3 class="feature-title">Espectro Bidireccional</h3>
+            <p class="feature-desc">Analiza tanto entradas como salidas. Relaciona los depósitos bancarios con facturas de ingreso (clientes) y los retiros con facturas de egreso (proveedores).</p>
+        </div>
+    </div>
+
+    <h2 class="showcase-header">Soluciones Complementarias</h2>
+    <div class="bento-grid">
+        <a href="conversor-bancario.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg></div>
+                <h3 class="bento-title">Conversor Bancario PDF</h3>
+                <p class="bento-desc">Si aún no tienes el layout en Excel, utiliza el conversor primario para estructurar tu estado de cuenta PDF al instante.</p>
+            </div>
+        </a>
+        <a href="conciliador-pagos.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg></div>
+                <h3 class="bento-title">Conciliador REP (PPD)</h3>
+                <p class="bento-desc">Si el pago fue a crédito, utiliza esta herramienta para cruzar la factura madre contra sus complementos de pago asociados.</p>
+            </div>
+        </a>
+    </div>
+</div>
 
 <script src="footer.js"></script>
 
 <script>
-    function checkQuota() {
-        let usos = localStorage.getItem('auditoria_usos');
-        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
-        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
-        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
-        return true;
-    }
+    let fileExcel = null;
+    let filesXML = [];
+    
+    let dbBancos = [];
+    let dbFacturas = [];
+    let auditoriaFinal = [];
 
-    let bancoData = [];
-    let xmlData = [];
-    let exportHTMLRows = "";
-    let csvExportData = [];
-    let dataReporte = { conciliado: 0, huerfano: 0 };
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    const inputCsv = document.getElementById('csvInput');
-    const inputXml = document.getElementById('xmlInput');
-    const btnEjecutar = document.getElementById('btnEjecutar');
-
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
-
-    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropCsv').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => document.getElementById('dropCsv').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
-    document.getElementById('dropCsv').addEventListener('drop', e => processCsv(e.dataTransfer.files[0]));
-    inputCsv.addEventListener('change', e => processCsv(e.target.files[0]));
-
-    function processCsv(file) {
-        if(!file) return;
-        document.getElementById('csvText').innerText = file.name;
-        document.getElementById('dropCsv').style.borderColor = "var(--success)";
-        document.getElementById('dropCsv').style.background = "#ECFDF5";
-        checkReady();
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const lines = e.target.result.split('\n');
-            bancoData = lines.slice(1).filter(l => l.trim() !== '').map((line, index) => {
-                const cols = line.split(',');
-                return { id: `BNK-${index}`, concepto: cols[1] || 'Sin concepto', monto: parseFloat(cols[2] || 0) };
-            });
-        };
-        reader.readAsText(file);
-    }
-
-    ['dragover', 'dragenter'].forEach(e => document.getElementById('dropXml').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "rgba(37, 99, 235, 0.05)"; }));
-    ['dragleave', 'drop'].forEach(e => document.getElementById('dropXml').addEventListener(e, ev => { ev.preventDefault(); ev.target.style.background = "var(--bg-secondary)"; }));
-    document.getElementById('dropXml').addEventListener('drop', e => processXmls(e.dataTransfer.files));
-    inputXml.addEventListener('change', e => processXmls(e.target.files));
-
-    function processXmls(files) {
-        if(files.length === 0) return;
-        document.getElementById('xmlText').innerText = `${files.length} XMLs cargados`;
-        document.getElementById('dropXml').style.borderColor = "var(--success)";
-        document.getElementById('dropXml').style.background = "#ECFDF5";
-        checkReady();
-        xmlData = [];
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
-                const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
-                const emisor = xmlDoc.getElementsByTagName('cfdi:Emisor')[0];
-                const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
-                
-                if(cfdi && timbre) {
-                    xmlData.push({
-                        uuid: timbre.getAttribute('UUID'),
-                        rfcEmisor: emisor ? emisor.getAttribute('Rfc') : '',
-                        nombreEmisor: emisor ? emisor.getAttribute('Nombre') : '',
-                        total: parseFloat(cfdi.getAttribute('Total') || 0)
-                    });
-                }
-            };
-            reader.readAsText(file);
-        });
-    }
-
-    function checkReady() {
-        if(bancoData.length > 0 && xmlData.length > 0) btnEjecutar.disabled = false;
-    }
-
-    async function ejecutarConciliacion() {
-        if (!checkQuota()) return;
-
-        document.getElementById('headerSection').style.display = 'none';
-        document.getElementById('uploadZones').style.display = 'none';
-        document.getElementById('badgesSection').style.display = 'none';
-        btnEjecutar.style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
+    // Configuración de Dropzones
+    function setupDropzone(idDrop, idInput, idStatus, isExcel) {
+        const drop = document.getElementById(idDrop);
+        const input = document.getElementById(idInput);
         
-        let conciliadosExactos = [];
-        let bancoHuerfanos = [];
-        let xmlHuerfanos = [...xmlData];
+        drop.onclick = () => input.click();
+        ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
+        ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
+        
+        drop.addEventListener('drop', e => processFiles(e.dataTransfer.files, isExcel, drop, idStatus));
+        input.addEventListener('change', e => processFiles(e.target.files, isExcel, drop, idStatus));
+    }
 
-        // 1. CEREBRO 1: Cruce determinista estricto (Monto exacto)
-        bancoData.forEach(b => {
-            let matchIndex = xmlHuerfanos.findIndex(x => Math.abs(x.total - Math.abs(b.monto)) < 0.10);
-            if(matchIndex !== -1) {
-                const matchedXml = xmlHuerfanos.splice(matchIndex, 1)[0];
-                conciliadosExactos.push({
-                    banco: b,
-                    xml: matchedXml,
-                    estado: 'exact',
-                    confianza: 100,
-                    razonamiento: 'Cruce matemático exacto por importe.'
-                });
+    setupDropzone('dropExcel', 'inputExcel', 'statusExcel', true);
+    setupDropzone('dropXML', 'inputXML', 'statusXML', false);
+
+    function processFiles(files, isExcel, dropZone, idStatus) {
+        if(isExcel) {
+            const f = files[0];
+            if(f && (f.name.endsWith('.xlsx') || f.name.endsWith('.xls'))) {
+                fileExcel = f;
+                dropZone.classList.add('filled');
+                document.getElementById(idStatus).innerText = `Layout Cargado`;
             } else {
-                bancoHuerfanos.push(b);
+                if(typeof window.showToast === 'function') window.showToast("Solo formato Excel (.xlsx)", "error");
             }
-        });
-
-        // 2. CEREBRO 2: Fuzzy Matching (IA)
-        document.getElementById('loadingSubtext').innerText = "Cerebro 2: Analizando contexto semántico para registros huérfanos...";
-        let conciliadosFuzzy = [];
-
-        if (bancoHuerfanos.length > 0 && xmlHuerfanos.length > 0) {
-            try {
-                // Reducción de payload
-                const payloadBancos = bancoHuerfanos.map(b => ({id: b.id, concepto: b.concepto, monto: Math.abs(b.monto)}));
-                const payloadXmls = xmlHuerfanos.map(x => ({uuid: x.uuid, nombre: x.nombreEmisor, total: x.total}));
-
-                const res = await fetch("https://fastapi-susu.onrender.com/api/conciliacion-fuzzy", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ bancos: payloadBancos, facturas: payloadXmls })
-                });
-                
-                if (res.ok) {
-                    const dataIA = await res.json();
-                    if(dataIA.conciliados) {
-                        dataIA.conciliados.forEach(c => {
-                            const bOrigin = bancoHuerfanos.find(x => x.id === c.id_banco);
-                            const xOrigin = xmlHuerfanos.find(x => x.uuid === c.uuid_factura);
-                            if(bOrigin && xOrigin) {
-                                conciliadosFuzzy.push({
-                                    banco: bOrigin,
-                                    xml: xOrigin,
-                                    estado: c.nivel_confianza >= 95 ? 'ia-high' : 'ia-low',
-                                    confianza: c.nivel_confianza,
-                                    razonamiento: c.razonamiento
-                                });
-                                // Quitar de huérfanos ya que fue asociado
-                                bancoHuerfanos = bancoHuerfanos.filter(x => x.id !== c.id_banco);
-                            }
-                        });
-                    }
-                }
-            } catch (e) {}
+        } else {
+            const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+            if(validFiles.length > 0) {
+                filesXML = validFiles;
+                dropZone.classList.add('filled');
+                document.getElementById(idStatus).innerText = `${validFiles.length} Facturas listas`;
+            }
         }
 
-        renderResultados([...conciliadosExactos, ...conciliadosFuzzy], bancoHuerfanos);
+        if(fileExcel && filesXML.length > 0) {
+            document.getElementById('btnEjecutar').disabled = false;
+        }
     }
 
-    function renderResultados(resultados, huerfanos) {
-        document.getElementById('loadingState').style.display = 'none';
-        document.getElementById('results').style.display = 'block';
-        document.getElementById('shareContainer').style.display = 'block';
-
-        const tbody = document.querySelector('#conciliacionTable tbody');
-        tbody.innerHTML = '';
-        exportHTMLRows = '';
-        csvExportData = [];
-
-        let totalConciliado = 0;
-        let totalHuerfano = 0;
-
-        resultados.forEach(r => {
-            totalConciliado += Math.abs(r.banco.monto);
-
-            let badgeClass = r.estado;
-            let badgeText = r.estado === 'exact' ? 'MATEMÁTICA EXACTA' : `IA MATCH (${r.confianza}%)`;
-            let colorPDF = r.estado === 'exact' ? '#065F46' : (r.estado === 'ia-high' ? '#1E3A8A' : '#92400E');
-            if (r.estado === 'ia-low') badgeText += " ⚠️ REVISAR";
-
-            const tr = `
-                <tr style="page-break-inside: avoid;">
-                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #E5E7EB; color: #111827;">${r.banco.concepto.substring(0,40)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB; text-align: right; font-family: monospace; font-weight: bold; color: var(--success);">${formatMoney(r.banco.monto)}</td>
-                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #E5E7EB;">
-                        <strong style="color: #111827;">${r.xml.nombreEmisor.substring(0,25)}</strong><br>
-                        <span style="font-family:monospace; color: #4B5563;">${r.xml.uuid.substring(0,18)}...</span>
-                    </td>
-                    <td style="padding: 10px; border-bottom: 1px solid #E5E7EB;"><span class="badge ${badgeClass}" style="color:${colorPDF}; font-weight:bold;">${badgeText}</span></td>
-                    <td style="font-size: 10px; padding: 10px; border-bottom: 1px solid #E5E7EB; color: #4B5563;">${r.razonamiento}</td>
-                </tr>
-            `;
-            tbody.innerHTML += tr;
-            exportHTMLRows += tr;
-
-            csvExportData.push(`"${r.banco.concepto}",${Math.abs(r.banco.monto).toFixed(2)},"${r.xml.nombreEmisor}",${r.xml.uuid},${r.estado},"${r.razonamiento}"`);
-        });
-
-        // Agregar huérfanos a la tabla
-        huerfanos.forEach(h => {
-            totalHuerfano += Math.abs(h.monto);
-            const tr = `
-                <tr style="background: #FEF2F2; page-break-inside: avoid;">
-                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #FCA5A5; color: #991B1B;">${h.concepto.substring(0,40)}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #FCA5A5; text-align: right; font-family: monospace; font-weight: bold; color: #991B1B;">${formatMoney(h.monto)}</td>
-                    <td style="font-size: 11px; padding: 10px; border-bottom: 1px solid #FCA5A5; color: #991B1B;">SIN FACTURA ASOCIADA</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #FCA5A5;"><span class="badge" style="color:#991B1B; font-weight:bold;">HUÉRFANO</span></td>
-                    <td style="font-size: 10px; padding: 10px; border-bottom: 1px solid #FCA5A5; color: #991B1B;">Movimiento bancario sin soporte fiscal.</td>
-                </tr>
-            `;
-            tbody.innerHTML += tr;
-            exportHTMLRows += tr;
-
-            csvExportData.push(`"${h.concepto}",${Math.abs(h.monto).toFixed(2)},"SIN FACTURA","N/A","HUERFANO","Sin soporte fiscal"`);
-        });
-
-        // Actualizar KPIs
-        document.getElementById('kpiConciliado').innerText = formatMoney(totalConciliado);
-        document.getElementById('kpiHuerfano').innerText = formatMoney(totalHuerfano);
-        dataReporte.conciliado = formatMoney(totalConciliado);
-        dataReporte.huerfano = formatMoney(totalHuerfano);
+    function getNodes(node, tagName) {
+        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
+               Array.from(node.getElementsByTagName(tagName)),
+               Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
     }
 
-    function descargarCSV_IA() {
-        if (csvExportData.length === 0) return;
-        const headers = ['Concepto Bancario', 'Monto', 'Emisor/Cliente XML', 'UUID Asociado', 'Estatus Cruce IA', 'Razonamiento Forense'];
-        const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + csvExportData.join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Matriz_Conciliacion_IA_${Date.now()}.csv`);
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    }
-
-    function descargarConciliacionPDF() {
-        if (!exportHTMLRows) return;
-        const renderContainer = document.getElementById('hiddenPdfRender');
+    async function iniciarCruce() {
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('btnEjecutar').style.display = 'none';
+        document.querySelector('.grid-dropzones').style.display = 'none';
         
-        renderContainer.innerHTML = `
-            <div style="width: 1050px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
-                <div style="position: absolute; top: 40%; left: 15%; font-size: 60px; color: rgba(37, 99, 235, 0.05); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
-                
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 25px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Matriz de Conciliación Bancaria IA</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Cruce Determinista y Fuzzy Matching (Análisis Semántico)</p>
-                </div>
+        const term = document.getElementById('terminalLoader');
+        const status = document.getElementById('termStatus');
+        term.style.display = 'block';
+        
+        dbBancos = [];
+        dbFacturas = [];
+        auditoriaFinal = [];
 
-                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="text-align: center;"><strong style="font-size: 24px; display: block; color: #059669; font-family: monospace;">${dataReporte.conciliado}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Monto Validado (Asociado a XML)</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 24px; display: block; color: #DC2626; font-family: monospace;">${dataReporte.huerfano}</strong><span style="font-size: 11px; color: #6B7280; text-transform: uppercase;">Monto Huérfano (Riesgo / Sin XML)</span></div>
-                </div>
-                
-                <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <thead style="background: #111827; color: white;">
-                        <tr>
-                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Concepto Bancario</th>
-                            <th style="padding: 10px; text-align: right; text-transform: uppercase;">Monto Banco</th>
-                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Factura Asociada</th>
-                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Confianza IA</th>
-                            <th style="padding: 10px; text-align: left; text-transform: uppercase;">Razonamiento</th>
-                        </tr>
-                    </thead>
-                    <tbody>${exportHTMLRows}</tbody>
-                </table>
-                
-                <div style="margin-top: 50px; font-size: 10px; color: #6B7280; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px; font-family: monospace;">
-                    Plataforma: AuditoriaXML.mx | El análisis semántico IA puede requerir supervisión contable final sobre operaciones ambiguas.
-                </div>
-            </div>
-        `;
+        try {
+            // 1. LEER EXCEL DE BANCOS
+            status.innerHTML = `> Extrayendo vectores financieros (Excel)...<br>`;
+            const dataBuffer = await fileExcel.arrayBuffer();
+            const workbook = XLSX.read(dataBuffer, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const rawExcel = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        const opt = {
-            margin:       10,
-            filename:     `Conciliacion_Bancaria_IA_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'landscape' }
-        };
+            // Ignorar encabezados si la fila 0 es texto
+            const rows = typeof rawExcel[0][0] === 'string' ? rawExcel.slice(1) : rawExcel;
+            
+            rows.forEach((row, idx) => {
+                // Estructura esperada del conversor bancario: [FECHA, DESC, CARGO, ABONO]
+                const cargo = parseFloat(row[2]) || 0;
+                const abono = parseFloat(row[3]) || 0;
+                if(cargo > 0 || abono > 0) {
+                    dbBancos.push({
+                        id: `B-${idx}`,
+                        fecha: row[0] || "",
+                        desc: row[1] || "MOVIMIENTO BANCARIO",
+                        monto: cargo > 0 ? cargo : abono,
+                        tipo: cargo > 0 ? 'EGRESO' : 'INGRESO',
+                        matched: false,
+                        matchData: null
+                    });
+                }
+            });
 
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+            // 2. LEER XMLS DE FACTURAS
+            status.innerHTML += `> Mapeando red de CFDI en RAM...<br>`;
+            for(let i=0; i<filesXML.length; i++) {
+                const text = await filesXML[i].text();
+                const xml = new DOMParser().parseFromString(text, "text/xml");
+                
+                const cfdi = getNodes(xml, 'Comprobante')[0];
+                const emisor = getNodes(xml, 'Emisor')[0];
+                const receptor = getNodes(xml, 'Receptor')[0];
+                const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
+                
+                if(!cfdi || !timbre) continue;
+
+                const tipoXml = cfdi.getAttribute('TipoDeComprobante'); // I o E
+                const total = parseFloat(cfdi.getAttribute('Total') || 0);
+                const uuid = timbre.getAttribute('UUID');
+                
+                // Si es un ingreso, es una venta (Abono en banco). Si es Egreso, es compra (Cargo).
+                let tipoLogico = tipoXml === 'I' ? 'INGRESO' : 'EGRESO';
+                let tercero = tipoXml === 'I' ? (receptor ? receptor.getAttribute('Nombre') : "") : (emisor ? emisor.getAttribute('Nombre') : "");
+
+                dbFacturas.push({
+                    uuid: uuid,
+                    desc: tercero || "CFDI",
+                    monto: total,
+                    tipo: tipoLogico,
+                    matched: false
+                });
+            }
+
+            // 3. MOTOR DE EMPAREJAMIENTO (HEURÍSTICA Y TOLERANCIA DE REDONDEO: 1 Peso)
+            status.innerHTML += `> Corriendo algoritmo de enlace relacional...<br>`;
+            
+            dbBancos.forEach(banco => {
+                // Buscar factura del mismo tipo con monto casi exacto
+                let indexMatch = dbFacturas.findIndex(f => 
+                    !f.matched && 
+                    f.tipo === banco.tipo && 
+                    Math.abs(f.monto - banco.monto) <= 1.0 
+                );
+
+                if(indexMatch !== -1) {
+                    banco.matched = true;
+                    banco.matchData = dbFacturas[indexMatch];
+                    dbFacturas[indexMatch].matched = true;
+                }
+                
+                // Anexar banco a lista final
+                auditoriaFinal.push({
+                    origen: 'BANCO',
+                    desc: banco.desc,
+                    monto: banco.monto,
+                    tipo: banco.tipo,
+                    estatus: banco.matched ? 'CONCILIADO' : 'HUÉRFANO (SIN FACTURA)',
+                    cruce: banco.matched ? `UUID: ${banco.matchData.uuid.substring(0,18)}...` : 'N/A',
+                    cssClass: banco.matched ? 'badge-ok' : 'badge-warn'
+                });
+            });
+
+            // Anexar facturas sobrantes a la lista final
+            dbFacturas.filter(f => !f.matched).forEach(f => {
+                auditoriaFinal.push({
+                    origen: 'FACTURA (XML)',
+                    desc: f.desc,
+                    monto: f.monto,
+                    tipo: f.tipo,
+                    estatus: 'NO COBRADO / PAGADO',
+                    cruce: `UUID: ${f.uuid.substring(0,18)}...`,
+                    cssClass: 'badge-bad'
+                });
+            });
+
+            setTimeout(() => { renderResultados(); }, 800);
+
+        } catch(e) {
+            console.error(e);
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Fallo en la lectura del Layout Excel.</strong>`;
+            if(typeof window.showToast === 'function') window.showToast("Error crítico de lectura.", "error");
+        }
+    }
+
+    function renderResultados() {
+        document.getElementById('terminalLoader').style.display = 'none';
+        document.getElementById('results').style.display = 'block';
+
+        let countMatch = 0;
+        let countHuerfanos = 0;
+        let countPendientes = 0;
+
+        const tbody = document.getElementById('tablaConciliacion');
+        tbody.innerHTML = auditoriaFinal.map(r => {
+            if(r.estatus === 'CONCILIADO') countMatch++;
+            else if(r.origen === 'BANCO') countHuerfanos++;
+            else countPendientes++;
+
+            let iconOrigen = r.origen === 'BANCO' ? '🏦 BANCO' : '📄 XML';
+            let colorMonto = r.tipo === 'EGRESO' ? 'var(--danger)' : 'var(--success)';
+
+            return `
+            <tr>
+                <td style="font-size: 11px; font-weight: bold; color: var(--text-muted);">${iconOrigen}</td>
+                <td><strong style="font-size: 12px;">${r.desc.substring(0,40)}</strong></td>
+                <td style="text-align: right; color: ${colorMonto}; font-family: monospace;">${formatMoney(r.monto)}</td>
+                <td style="text-align: center;"><span class="badge ${r.cssClass}">${r.estatus}</span></td>
+                <td style="font-size: 11px; font-family: monospace; color: var(--brand);">${r.cruce}</td>
+            </tr>
+            `;
+        }).join('');
+
+        document.getElementById('kpiMatch').innerText = countMatch;
+        document.getElementById('kpiHuerfanos').innerText = countHuerfanos;
+        document.getElementById('kpiPendientes').innerText = countPendientes;
+
+        if (typeof window.showToast === 'function') window.showToast("Algoritmo finalizado con éxito.", "success");
+    }
+
+    function exportarReporteConciliacion() {
+        const results = [["ORIGEN", "DESCRIPCIÓN / RAZÓN SOCIAL", "MONTO EVALUADO", "TIPO (I/E)", "ESTATUS DEL CRUCE", "UUID ASOCIADO (SI EXISTE)"]];
+        
+        auditoriaFinal.forEach(r => {
+            results.push([r.origen, r.desc, r.monto, r.tipo, r.estatus, r.cruce.replace('UUID: ', '')]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 15}, {wch: 45}, {wch: 15}, {wch: 10}, {wch: 25}, {wch: 40}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Conciliacion");
+        XLSX.writeFile(wb, `Reporte_Conciliacion_${Date.now()}.xlsx`);
     }
 </script>
 </body>
