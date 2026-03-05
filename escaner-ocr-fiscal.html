@@ -244,7 +244,6 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- MOTOR DE COMPRESIÓN A PRUEBA DE FALLOS ---
     async function comprimirImagen(file) {
         if (file.type === 'application/pdf' || file.size < 2 * 1024 * 1024) return file;
 
@@ -275,20 +274,18 @@
                         ctx.drawImage(img, 0, 0, width, height);
 
                         canvas.toBlob((blob) => {
-                            if (!blob) { resolve(file); return; } // Si falla el blob, devuelve original
+                            if (!blob) { resolve(file); return; }
                             resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' }));
                         }, 'image/jpeg', 0.8);
-                    } catch (e) {
-                        resolve(file); // Si el navegador bloquea Canvas, devuelve original
-                    }
+                    } catch (e) { resolve(file); }
                 };
-                img.onerror = () => resolve(file); // Si la imagen es corrupta, devuelve original
+                img.onerror = () => resolve(file);
             };
-            reader.onerror = () => resolve(file); // Si la lectura falla, devuelve original
+            reader.onerror = () => resolve(file);
         });
     }
 
-    // --- SISTEMA FORENSE DE 3 REINTENTOS ---
+    // --- REPARACIÓN FORENSE: formData SE CONSTRUYE DENTRO DEL LOOP ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -303,12 +300,11 @@
         
         status.innerHTML = `> Analizando densidad óptica...<br>`;
 
-        const formData = new FormData();
-        
+        // Primero comprimimos los archivos una sola vez y los guardamos en un arreglo temporal
+        let optimizedFiles = [];
         for (let i = 0; i < currentFiles.length; i++) {
             status.innerHTML += `> Optimizando resolución de imagen [${i+1}/${currentFiles.length}]...<br>`;
-            const fileOpt = await comprimirImagen(currentFiles[i]);
-            formData.append("archivos", fileOpt);
+            optimizedFiles.push(await comprimirImagen(currentFiles[i]));
         }
         
         status.innerHTML += `> Transfiriendo matriz a Motor Visión IA...`;
@@ -321,6 +317,10 @@
             // Loop de Resiliencia de Red (3 intentos)
             for (let i = 0; i < 3; i++) {
                 try {
+                    // CRÍTICO: El FormData debe crearse de nuevo en cada ciclo para evitar el "Buffer Vacío"
+                    const formData = new FormData();
+                    optimizedFiles.forEach(f => formData.append("archivos", f));
+
                     res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
                         method: 'POST',
                         body: formData
@@ -328,7 +328,7 @@
                     
                     if (res.ok) {
                         data = await res.json();
-                        break; 
+                        break; // Éxito, salimos del loop
                     } else {
                         fetchError = `Error HTTP ${res.status}`;
                     }
@@ -336,17 +336,18 @@
                     fetchError = e.message;
                 }
                 
+                // Si falla, esperamos 2 segundos antes del siguiente intento
                 if (i < 2) {
-                    status.innerHTML = `> Servidor ocupado. Forzando reconexión IA (Intento ${i+2}/3)...`;
+                    status.innerHTML = `> Servidor en suspensión. Forzando conexión IA (Intento ${i+2}/3)...`;
                     await new Promise(r => setTimeout(r, 2000));
                 }
             }
 
-            if (!data) throw new Error(fetchError || "Servidor IA inalcanzable tras 3 intentos.");
+            if (!data) throw new Error(fetchError || "Servidor IA inalcanzable tras múltiples intentos.");
             
-            // Capturar error devuelto explícitamente por el backend
+            // Capturar error devuelto explícitamente por el backend (ej. imagen negra o borrosa)
             if (data.error || data.status === "error_calidad") {
-                throw new Error("Imagen rechazada por calidad insuficiente o ticket ilegible.");
+                throw new Error("Imagen rechazada por el motor algorítmico (ilegible o dañada).");
             }
             
             procesarResultados(data);
@@ -355,7 +356,6 @@
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
             
-            // Impresión del Error Exacto y Botón de Rescate Rojo
             term.innerHTML += `<br><br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Fallo de procesamiento. Verifique enfoque e iluminación de la foto.</strong>`;
             term.innerHTML += `<br><span style="color:#FCA5A5; font-size:11px; font-family:monospace;">Detalle técnico: ${e.message}</span>`;
             term.innerHTML += `<br><br><button onclick="window.location.reload()" class="btn-rescue">
@@ -363,11 +363,10 @@
                 ESCANEAR NUEVO DOCUMENTO
             </button>`;
             
-            if (typeof window.showToast === 'function') window.showToast("Extracción fallida.", "error");
+            if (typeof window.showToast === 'function') window.showToast("Extracción abortada por sistema.", "error");
         }
     }
 
-    // LISTA NEGRA DE PALABRAS (Filtro Forense)
     const blackList = ["propina", "servicio", "tip", "bebida", "alcohol", "cerveza", "vino", "licor", "donativo", "tequila", "mezcal"];
 
     function esNoDeducible(descripcion) {
@@ -409,7 +408,6 @@
             }
         });
 
-        // Auditoría Matemática (Cuadre de Ticket)
         const sumaCalculada = auditoriaDatos.baseDeducible + auditoriaDatos.totalNoDeducible;
         const diferencia = Math.abs(auditoriaDatos.totalImpreso - sumaCalculada);
         let mensajeCuadre = "";
