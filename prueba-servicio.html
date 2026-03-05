@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba de Servicio y Materialidad | AuditorIA</title>
-    <meta name="description" content="Cruza tus facturas XML con evidencia fotográfica. Genera expedientes de materialidad automatizados para blindarte ante revisiones del Art. 69-B.">
+    <title>Expediente de Materialidad Fiscal | AuditorIA</title>
+    <meta name="description" content="Blinda tus deducciones. Vincula tus facturas XML con evidencia fotográfica y genera un Dictamen de Materialidad en PDF válido ante el SAT.">
     <link rel="canonical" href="https://auditoriaxml.mx/prueba-servicio.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -12,43 +12,47 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #64748B; --brand-glow: rgba(100, 116, 139, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #0D9488; --brand-glow: rgba(13, 148, 136, 0.4); --success: #10B981; --warning: #F59E0B; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
 
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
         .header-section { text-align: center; margin-bottom: 50px; }
-        .header-badge { display: inline-block; background: rgba(100, 116, 139, 0.1); border: 1px solid var(--brand); color: #CBD5E1; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
+        .header-badge { display: inline-block; background: rgba(13, 148, 136, 0.1); border: 1px solid var(--brand); color: #5EEAD4; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
+        
+        .form-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px; padding: 40px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
         
         .grid-dropzones { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(100, 116, 139, 0.4); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden;}
-        .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
+        
+        .upload-section { background: #0F172A; border: 2px dashed rgba(13, 148, 136, 0.4); border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .upload-section:hover { border-color: var(--brand); background: rgba(15, 23, 42, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
-        .preview-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.2; pointer-events: none; display: none;}
-
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #475569;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #0F766E;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        .terminal-loader { display: none; font-family: monospace; color: #CBD5E1; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 120px; border: 1px solid rgba(100, 116, 139, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+        .terminal-loader { display: none; font-family: monospace; color: #5EEAD4; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: auto; min-height: 120px; border: 1px solid rgba(13, 148, 136, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
 
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .report-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-bottom: 20px;}
-        .report-header { font-size: 18px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;}
-        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .data-item { margin-bottom: 10px; }
-        .data-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 4px;}
-        .data-val { font-size: 14px; color: var(--text-main); font-family: monospace;}
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
+        .kpi-value { font-size: 24px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+        .kpi-value.small { font-size: 16px; word-break: break-all; color: var(--brand); }
+
+        .preview-images { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;}
+        .preview-img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); background: #000;}
 
         .btn-toolbar { display: flex; gap: 15px; margin-top: 30px;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
@@ -57,14 +61,14 @@
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
         .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
-        .feature-icon { width: 48px; height: 48px; background: rgba(100, 116, 139, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-icon { width: 48px; height: 48px; background: rgba(13, 148, 136, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
-        .bento-card:hover { transform: translateY(-5px); border-color: rgba(100, 116, 139, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(13, 148, 136, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
             .grid-dropzones { grid-template-columns: 1fr; }
@@ -77,106 +81,94 @@
 <script src="navbar.js"></script>
 
 <div class="container">
-    <div class="header-section" id="headerSection">
-        <div class="header-badge">DEFENSA FISCAL Y COMPLIANCE</div>
+    <div class="header-section">
+        <div class="header-badge">CUMPLIMIENTO NORMATIVO (ART. 5-A / 69-B)</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Expediente de Materialidad</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">El SAT requiere pruebas físicas de que las operaciones facturadas realmente ocurrieron. Cruza tu XML con su evidencia fotográfica para generar un dictamen de materialidad inmutable.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">El SAT rechaza deducciones por falta de evidencia visual. Fusiona tu factura XML con pruebas fotográficas para generar un Dictamen Pericial irrefutable.</p>
     </div>
 
-    <div id="mainForm">
+    <div id="mainForm" class="form-card">
         <div class="grid-dropzones">
             <div class="upload-section" id="dropXML">
                 <svg width="48" height="48" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                <h3 style="margin: 0 0 5px; font-size: 18px;">Factura Base (XML)</h3>
-                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Sube el comprobante de la operación.</p>
+                <h3 style="margin: 0 0 5px; font-size: 18px;">1. Cargar Factura (XML)</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Extraeremos el UUID y Conceptos.</p>
                 <input type="file" id="inputXML" accept=".xml" style="display: none;">
                 <div id="statusXML" style="margin-top: 15px; font-weight: 900; color: var(--brand);">Pendiente</div>
             </div>
             
-            <div class="upload-section" id="dropIMG">
-                <img id="previewIMG" class="preview-img" src="" alt="preview">
-                <svg width="48" height="48" fill="none" stroke="#10B981" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px; position:relative; z-index:2;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                <h3 style="margin: 0 0 5px; font-size: 18px; position:relative; z-index:2;">Evidencia Fotográfica</h3>
-                <p style="font-size: 12px; color: var(--text-muted); margin: 0; position:relative; z-index:2;">Sube JPG o PNG que avale el gasto.</p>
-                <input type="file" id="inputIMG" accept=".jpg,.jpeg,.png" style="display: none;">
-                <div id="statusIMG" style="margin-top: 15px; font-weight: 900; color: #10B981; position:relative; z-index:2;">Pendiente</div>
+            <div class="upload-section" id="dropImg">
+                <svg width="48" height="48" fill="none" stroke="#10B981" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <h3 style="margin: 0 0 5px; font-size: 18px;">2. Evidencia Fotográfica</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Sube hasta 4 imágenes (JPG/PNG).</p>
+                <input type="file" id="inputImg" accept="image/*" multiple style="display: none;">
+                <div id="statusImg" style="margin-top: 15px; font-weight: 900; color: #10B981;">0 Imágenes</div>
             </div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="iniciarFusion()" disabled>
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
-            GENERAR EXPEDIENTE FORENSE
+        <button id="btnEjecutar" class="btn-action" onclick="procesarExpediente()" disabled>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            SINTETIZAR DICTAMEN DE MATERIALIDAD
         </button>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Activando Motor de Fusión de Datos...<br>
+            > Procesando nodos XML...<br>
+            > Comprimiendo texturas fotográficas en RAM...<br>
             <span id="termStatus"></span>
         </div>
     </div>
 
     <div class="results-container" id="results">
-        
-        <div class="report-card">
-            <div class="report-header">
-                <svg width="20" height="20" fill="none" stroke="var(--success)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Fusión de Materialidad Exitosa
+        <div class="kpi-grid">
+            <div class="kpi-box" style="grid-column: span 2;">
+                <div class="kpi-label">Folio Fiscal Validado (UUID)</div>
+                <div class="kpi-value small" id="kpiUUID">N/A</div>
             </div>
-            <div class="data-grid">
-                <div class="data-item">
-                    <div class="data-label">UUID Relacionado</div>
-                    <div class="data-val" id="resUUID">...</div>
-                </div>
-                <div class="data-item">
-                    <div class="data-label">Proveedor</div>
-                    <div class="data-val" id="resProv">...</div>
-                </div>
-                <div class="data-item">
-                    <div class="data-label">Total Avalado</div>
-                    <div class="data-val" id="resTotal" style="color: var(--success); font-weight: bold;">...</div>
-                </div>
-                <div class="data-item">
-                    <div class="data-label">Estado de Evidencia</div>
-                    <div class="data-val" style="color: var(--success);">Incrustada en Base64</div>
-                </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Imágenes Comprimidas</div>
+                <div class="kpi-value" id="kpiImgCount" style="color: var(--success);">0</div>
             </div>
         </div>
 
+        <div class="section-title">Vista Previa de Evidencias</div>
+        <div class="preview-images" id="previewGrid"></div>
+
         <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Crear Nuevo Expediente</button>
-            <button id="btnDescargarPDF" onclick="descargarExpedientePDF()" class="btn-action" style="flex: 2;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                DESCARGAR CARÁTULA PDF
+            <button onclick="window.location.reload()" class="btn-secondary">Reiniciar Matriz</button>
+            <button onclick="exportarDictamenMaterialidadPDF()" class="btn-action" style="flex: 2;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DESCARGAR DICTAMEN BLINDADO (PDF)
             </button>
         </div>
     </div>
 
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
-            <h3 class="feature-title">Defensa Anticipada</h3>
-            <p class="feature-desc">Evita que el SAT rechace tus deducciones por "falta de materialidad". Crea una bitácora infalsificable uniendo el comprobante fiscal con la prueba del hecho.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+            <h3 class="feature-title">Compresor de Gráficos Integrado</h3>
+            <p class="feature-desc">No importa si tus fotos pesan 10MB. El algoritmo interno las renderiza, comprime y optimiza mediante HTML5 Canvas sin enviarlas a servidores externos, garantizando un PDF ligero y rápido.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
-            <h3 class="feature-title">Optimización de Evidencia</h3>
-            <p class="feature-desc">El motor comprime y redibuja la evidencia fotográfica antes de incrustarla en el PDF, asegurando archivos ligeros y fáciles de enviar por correo.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+            <h3 class="feature-title">Fundamentación Art. 5-A</h3>
+            <p class="feature-desc">El dictamen incluye jurisprudencia y texto legal pre-redactado que blinda la "Razón de Negocios" de la operación, desvirtuando cualquier presunción de operaciones simuladas.</p>
         </div>
     </div>
 
-    <h2 class="showcase-header">Ecosistema Completo</h2>
+    <h2 class="showcase-header">Soluciones Complementarias</h2>
     <div class="bento-grid">
-        <a href="visor-xml.html" class="bento-card">
-            <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
-                <h3 class="bento-title">Motor Decodificador XML</h3>
-                <p class="bento-desc">Si no necesitas adjuntar evidencia, extrae la representación impresa masiva de tus XMLs con un solo clic.</p>
-            </div>
-        </a>
         <a href="validador-efos.html" class="bento-card">
             <div>
                 <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
-                <h3 class="bento-title">Prevención EFOS</h3>
-                <p class="bento-desc">Complementa tu expediente de materialidad verificando que el proveedor no esté en la lista negra definitiva del SAT.</p>
+                <h3 class="bento-title">Validador EFOS (69-B)</h3>
+                <p class="bento-desc">Antes de generar expedientes, revisa si el proveedor ya se encuentra en las listas negras definitivas del SAT.</p>
+            </div>
+        </a>
+        <a href="defensa-legal.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
+                <h3 class="bento-title">Defensa Legal (Escritos)</h3>
+                <p class="bento-desc">Si el SAT te requiere, utiliza este dictamen como anexo probatorio junto con el escrito legal de contestación generado por la IA.</p>
             </div>
         </a>
     </div>
@@ -191,14 +183,14 @@
         }
     });
 
-    let xmlFile = null;
-    let imgFile = null;
-    let imgBase64 = null;
-    let metaDataXML = {};
+    let xmlData = null;
+    let base64Images = []; // Almacena fotos optimizadas
+    let qrDataURI = null;
 
-    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
-    function setupDropzone(idDrop, idInput, idStatus, fileType) {
+    // Setup Dropzones
+    function setupDropzone(idDrop, idInput, idStatus, isImage) {
         const drop = document.getElementById(idDrop);
         const input = document.getElementById(idInput);
         
@@ -206,56 +198,44 @@
         ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
         ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
         
-        drop.addEventListener('drop', e => processFile(e.dataTransfer.files[0], fileType, drop, idStatus));
-        input.addEventListener('change', e => processFile(e.target.files[0], fileType, drop, idStatus));
+        drop.addEventListener('drop', e => handleFiles(e.dataTransfer.files, isImage, drop, idStatus));
+        input.addEventListener('change', e => handleFiles(e.target.files, isImage, drop, idStatus));
     }
 
-    setupDropzone('dropXML', 'inputXML', 'statusXML', 'xml');
-    setupDropzone('dropIMG', 'inputIMG', 'statusIMG', 'img');
+    setupDropzone('dropXML', 'inputXML', 'statusXML', false);
+    setupDropzone('dropImg', 'inputImg', 'statusImg', true);
 
-    function processFile(file, type, dropZone, idStatus) {
-        if(!file) return;
+    let rawXMLFile = null;
+    let rawImgFiles = [];
 
-        if (type === 'xml') {
-            if(!file.name.toLowerCase().endsWith('.xml')) {
-                if(typeof window.showToast === 'function') window.showToast("Solo archivos XML permitidos en esta área.", "error");
-                return;
+    function handleFiles(files, isImage, dropZone, idStatus) {
+        if(!isImage) {
+            const f = Array.from(files).find(f => f.name.toLowerCase().endsWith('.xml'));
+            if(f) {
+                rawXMLFile = f;
+                dropZone.classList.add('filled');
+                document.getElementById(idStatus).innerText = `Factura Cargada`;
             }
-            xmlFile = file;
-            dropZone.classList.add('filled');
-            document.getElementById(idStatus).innerText = `XML Cargado: ${file.name.substring(0,15)}...`;
         } else {
-            const ext = file.name.split('.').pop().toLowerCase();
-            if(!['jpg', 'jpeg', 'png'].includes(ext)) {
-                if(typeof window.showToast === 'function') window.showToast("Solo JPG o PNG en esta área.", "error");
-                return;
+            const validImgs = Array.from(files).filter(f => f.type.startsWith('image/')).slice(0, 4); // Max 4 fotos
+            if(validImgs.length > 0) {
+                rawImgFiles = validImgs;
+                dropZone.classList.add('filled');
+                document.getElementById(idStatus).innerText = `${validImgs.length} Evidencias Listas`;
             }
-            imgFile = file;
-            dropZone.classList.add('filled');
-            document.getElementById(idStatus).innerText = `Evidencia Cargada`;
-            
-            // Thumbnail Preview
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const prev = document.getElementById('previewIMG');
-                prev.src = e.target.result;
-                prev.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
         }
 
-        if(xmlFile && imgFile) {
+        if(rawXMLFile && rawImgFiles.length > 0) {
             document.getElementById('btnEjecutar').disabled = false;
         }
     }
 
     function getNodes(node, tagName) {
-        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
-               Array.from(node.getElementsByTagName(tagName)),
-               Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
+        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(Array.from(node.getElementsByTagName(tagName)));
     }
 
-    async function comprimirBase64(file) {
+    // MOTOR COMPRESOR DE IMÁGENES CLIENT-SIDE (Evita desbordamiento de RAM al compilar PDF)
+    function compressImage(file, maxWidth = 800) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -264,30 +244,28 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
                     let width = img.width;
                     let height = img.height;
-                    const MAX_SIZE = 1200; // Resolución optimizada para PDF
-
-                    if (width > height && width > MAX_SIZE) {
-                        height *= MAX_SIZE / width;
-                        width = MAX_SIZE;
-                    } else if (height > MAX_SIZE) {
-                        width *= MAX_SIZE / height;
-                        height = MAX_SIZE;
+                    
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
                     }
-
+                    
                     canvas.width = width;
                     canvas.height = height;
-                    const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-
-                    resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    
+                    // Comprimir a JPEG calidad 70%
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
                 };
             };
         });
     }
 
-    async function iniciarFusion() {
+    async function procesarExpediente() {
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('btnEjecutar').style.display = 'none';
         document.querySelector('.grid-dropzones').style.display = 'none';
@@ -296,10 +274,10 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Extrayendo metadatos fiscales del XML...<br>`;
-        
         try {
-            const text = await xmlFile.text();
+            // 1. Parsear XML
+            status.innerText = "> Desencriptando nodos fiscales...";
+            const text = await rawXMLFile.text();
             const xml = new DOMParser().parseFromString(text, "text/xml");
             
             const cfdi = getNodes(xml, 'Comprobante')[0];
@@ -307,112 +285,142 @@
             const receptor = getNodes(xml, 'Receptor')[0];
             const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
             
-            if(!cfdi || !emisor || !timbre) throw new Error("XML Inválido o sin timbrar.");
+            if(!cfdi || !timbre) throw new Error("XML Inválido o sin Timbre Fiscal");
 
-            metaDataXML = {
-                uuid: timbre.getAttribute('UUID'),
-                fecha: cfdi.getAttribute('Fecha'),
+            xmlData = {
                 folio: cfdi.getAttribute('Folio') || "S/F",
-                total: cfdi.getAttribute('Total'),
-                moneda: cfdi.getAttribute('Moneda') || "MXN",
-                emisor: emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc'),
-                emisorRfc: emisor.getAttribute('Rfc'),
-                receptor: receptor ? (receptor.getAttribute('Nombre') || receptor.getAttribute('Rfc')) : "N/A",
-                cert: timbre.getAttribute('NoCertificadoSAT')
+                fecha: (cfdi.getAttribute('Fecha') || "").split('T')[0],
+                total: parseFloat(cfdi.getAttribute('Total') || 0),
+                emisorNombre: emisor.getAttribute('Nombre') || "DESCONOCIDO",
+                emisorRfc: emisor.getAttribute('Rfc') || "",
+                receptorNombre: receptor.getAttribute('Nombre') || "DESCONOCIDO",
+                receptorRfc: receptor.getAttribute('Rfc') || "",
+                uuid: timbre.getAttribute('UUID') || "",
+                conceptos: []
             };
 
-            status.innerHTML += `> Vectorizando y comprimiendo evidencia fotográfica...<br>`;
-            imgBase64 = await comprimirBase64(imgFile);
+            const conceptosNodos = getNodes(xml, 'Concepto');
+            conceptosNodos.forEach(c => {
+                xmlData.conceptos.push(c.getAttribute('Descripcion'));
+            });
 
-            status.innerHTML += `> Fusión completada con éxito.`;
-            
-            mostrarResultados();
+            // 2. Generar QR Oficial
+            status.innerText = "> Estructurando identificador QRious...";
+            const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${xmlData.uuid}&re=${xmlData.emisorRfc}&rr=${xmlData.receptorRfc}&tt=${xmlData.total}`;
+            const qr = new QRious({ value: satUrl, size: 300, level: 'M' });
+            qrDataURI = qr.toDataURL('image/png');
+
+            // 3. Comprimir Imágenes Simultáneamente
+            status.innerText = "> Aplicando algoritmos de compresión a la evidencia...";
+            base64Images = await Promise.all(rawImgFiles.map(file => compressImage(file)));
+
+            // 4. Render Visual
+            setTimeout(() => { 
+                term.style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                
+                document.getElementById('kpiUUID').innerText = xmlData.uuid;
+                document.getElementById('kpiImgCount').innerText = base64Images.length;
+
+                const grid = document.getElementById('previewGrid');
+                grid.innerHTML = base64Images.map(img => `<img src="${img}" class="preview-img">`).join('');
+
+                if(typeof window.showToast === 'function') window.showToast("Datos y evidencia vinculados en RAM.", "success");
+            }, 800);
 
         } catch(e) {
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Estructura XML no reconocida.</strong>`;
-            if(typeof window.showToast === 'function') window.showToast("Fallo de lectura XML.", "error");
+            console.error(e);
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Fallo en la lectura. Factura incompleta.</strong>`;
         }
     }
 
-    function mostrarResultados() {
-        document.getElementById('terminalLoader').style.display = 'none';
-        document.getElementById('results').style.display = 'block';
+    function exportarDictamenMaterialidadPDF() {
+        if (typeof pdfMake === 'undefined') return;
 
-        document.getElementById('resUUID').innerText = metaDataXML.uuid;
-        document.getElementById('resProv').innerText = metaDataXML.emisor;
-        document.getElementById('resTotal').innerText = formatMoneyPDF(metaDataXML.total) + ' ' + metaDataXML.moneda;
+        let fechaImpresion = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+        
+        // Estructura de Conceptos para la tabla
+        let tablaConceptosBody = [['Descripción del Servicio / Bien (Según CFDI)']];
+        xmlData.conceptos.forEach(c => tablaConceptosBody.push([{ text: c, fontSize: 10, color: '#334155' }]));
 
-        if (typeof window.showToast === 'function') window.showToast("Expediente ensamblado.", "success");
-    }
+        // Estructura de Imágenes (Hasta 4 fotos max, renderizadas dinámicamente)
+        let imageStack = [];
+        base64Images.forEach((img, index) => {
+            imageStack.push({
+                text: `Anexo Fotográfico ${index + 1} - Evidencia Física de Operación`,
+                fontSize: 10, bold: true, color: '#0D9488', margin: [0, 20, 0, 5]
+            });
+            imageStack.push({
+                image: img,
+                width: 400,
+                alignment: 'center',
+                margin: [0, 0, 0, 20]
+            });
+        });
 
-    function descargarExpedientePDF() {
-        const btn = document.getElementById('btnDescargarPDF');
-        const oldText = btn.innerHTML;
-        btn.innerHTML = `ENSAMBLANDO PDF...`;
-        btn.disabled = true;
-
-        setTimeout(() => {
-            try {
-                if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
-
-                const isPro = localStorage.getItem('auditoria_pro') === 'true';
-
-                const docDefinition = {
-                    pageSize: 'LETTER',
-                    pageMargins: [40, 40, 40, 40],
-                    content: [
-                        { text: 'CARÁTULA DE MATERIALIDAD Y SERVICIO', alignment: 'center', color: '#111827', fontSize: 16, bold: true, margin: [0, 0, 0, 10], letterSpacing: 1 },
-                        { text: 'Cumplimiento Normativo - Artículo 69-B del CFF', alignment: 'center', color: '#64748B', fontSize: 10, margin: [0, 0, 0, 20] },
-                        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 532, y2: 0, lineWidth: 2, lineColor: '#64748B' }] },
-                        
-                        { text: '1. DATOS DE LA OPERACIÓN FISCAL (XML)', fontSize: 12, bold: true, color: '#111827', margin: [0, 20, 0, 10] },
-                        {
-                            margin: [0, 0, 0, 20],
-                            table: {
-                                widths: ['30%', '70%'],
-                                body: [
-                                    [{ text: 'Folio Fiscal (UUID)', bold: true, fillColor: '#F8FAFC', margin: [5,5,5,5] }, { text: metaDataXML.uuid, margin: [5,5,5,5] }],
-                                    [{ text: 'Proveedor / Emisor', bold: true, fillColor: '#F8FAFC', margin: [5,5,5,5] }, { text: `${metaDataXML.emisor} (RFC: ${metaDataXML.emisorRfc})`, margin: [5,5,5,5] }],
-                                    [{ text: 'Fecha de Operación', bold: true, fillColor: '#F8FAFC', margin: [5,5,5,5] }, { text: metaDataXML.fecha, margin: [5,5,5,5] }],
-                                    [{ text: 'Monto Total Facturado', bold: true, fillColor: '#F8FAFC', margin: [5,5,5,5] }, { text: `${formatMoneyPDF(metaDataXML.total)} ${metaDataXML.moneda}`, bold: true, color: '#10B981', margin: [5,5,5,5] }],
-                                    [{ text: 'Certificado SAT', bold: true, fillColor: '#F8FAFC', margin: [5,5,5,5] }, { text: metaDataXML.cert, fontSize: 10, margin: [5,5,5,5] }]
-                                ]
-                            },
-                            layout: 'lightHorizontalLines'
-                        },
-
-                        { text: '2. EVIDENCIA DOCUMENTAL ACREDITADA', fontSize: 12, bold: true, color: '#111827', margin: [0, 10, 0, 10] },
-                        {
-                            alignment: 'center',
-                            margin: [0, 0, 0, 20],
-                            image: imgBase64,
-                            width: 350
-                        },
-                        
-                        { text: 'Dictamen de Integridad:', bold: true, fontSize: 10, color: '#64748B', margin: [0, 10, 0, 2] },
-                        { text: 'La evidencia adjunta en este expediente avala la materialización de los bienes o servicios amparados bajo el Folio Fiscal arriba descrito, constituyendo prueba documental para efectos de control interno y defensa fiscal.', fontSize: 9, alignment: 'justify', color: '#4B5563' }
-                    ],
-                    footer: function(currentPage, pageCount) {
-                        return { text: `Expediente de Materialidad | AuditorIA | Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
-                    }
-                };
-
-                if (!isPro) {
-                    docDefinition.background = function(currentPage, pageSize) {
-                        return { text: 'Generado por AuditorIA - Versión Gratuita', color: '#9CA3AF', opacity: 0.1, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
-                    };
-                }
-
-                pdfMake.createPdf(docDefinition).download(`Materialidad_${metaDataXML.uuid.substring(0,8)}.pdf`);
+        const docDefinition = {
+            pageSize: 'LETTER',
+            pageMargins: [50, 50, 50, 50],
+            content: [
+                // PORTADA Y RESUMEN EJECUTIVO
+                {
+                    columns: [
+                        { width: '*', text: 'DICTAMEN DE MATERIALIDAD DE OPERACIONES', fontSize: 16, bold: true, color: '#0D9488' },
+                        { width: 'auto', text: 'AuditorIA', fontSize: 16, bold: true, alignment: 'right', color: '#1E293B' }
+                    ]
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#E2E8F0' }] },
+                { text: `Fecha de emisión del Dictamen: ${fechaImpresion}`, fontSize: 9, color: '#64748B', margin: [0, 15, 0, 20], alignment: 'right' },
                 
-            } catch (e) {
-                console.error(e);
-                if (typeof window.showToast === 'function') window.showToast("Error renderizando PDF.", "error");
-            } finally {
-                btn.innerHTML = oldText; 
-                btn.disabled = false;
-            }
-        }, 500);
+                { text: 'I. OBJETO DEL DICTAMEN', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                { text: 'El presente documento tiene como objetivo acreditar de forma fehaciente la materialidad y la razón de negocios de la operación amparada en el comprobante fiscal detallado a continuación, en estricto apego a los requerimientos de evidencia establecidos en el Artículo 5-A y 69-B del Código Fiscal de la Federación (CFF).', fontSize: 10, alignment: 'justify', lineHeight: 1.5, margin: [0, 0, 0, 20] },
+
+                { text: 'II. IDENTIFICACIÓN DEL COMPROBANTE FISCAL VINCULADO', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B' },
+                {
+                    table: {
+                        widths: ['35%', '65%'],
+                        body: [
+                            [{ text: 'Folio Fiscal (UUID):', bold: true, fillColor: '#F8FAFC', border: [false, true, false, true] }, { text: xmlData.uuid, border: [false, true, false, true] }],
+                            [{ text: 'Fecha de Emisión (CFDI):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: xmlData.fecha, border: [false, false, false, true] }],
+                            [{ text: 'Razón Social (Proveedor):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: xmlData.emisorNombre, border: [false, false, false, true] }],
+                            [{ text: 'RFC (Proveedor):', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: xmlData.emisorRfc, border: [false, false, false, true] }],
+                            [{ text: 'Monto de la Operación:', bold: true, fillColor: '#F8FAFC', border: [false, false, false, true] }, { text: formatMoney(xmlData.total), color: '#0D9488', bold: true, border: [false, false, false, true] }]
+                        ]
+                    }, margin: [0, 0, 0, 20]
+                },
+
+                {
+                    columns: [
+                        { width: '*', table: { widths: ['*'], body: tablaConceptosBody }, layout: 'lightHorizontalLines' },
+                        { width: 100, image: qrDataURI, fit: [80, 80], alignment: 'right', margin: [10, 0, 0, 0] }
+                    ], margin: [0, 0, 0, 30]
+                },
+
+                // SALTO DE PÁGINA: ANEXO FOTOGRÁFICO
+                { text: 'III. ANEXO FOTOGRÁFICO Y MATERIALIDAD', fontSize: 12, bold: true, margin: [0, 0, 0, 10], color: '#1E293B', pageBreak: 'before' },
+                { text: 'Las siguientes imágenes documentan la prestación efectiva del servicio y/o la entrega del bien, validando la infraestructura, capacidad y existencia real del proveedor en la ejecución de la operación facturada.', fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 15] },
+                
+                // Inyectar imágenes dinámicamente
+                ...imageStack,
+
+                // CIERRE LEGAL
+                {
+                    unbreakable: true,
+                    margin: [0, 40, 0, 0],
+                    alignment: 'center',
+                    stack: [
+                        { text: 'Bajo protesta de decir verdad, manifestamos que la evidencia aquí contenida es legítima y corresponde a la operación señalada.', fontSize: 9, color: '#64748B', margin: [0, 0, 0, 40] },
+                        { text: '________________________________________________' },
+                        { text: 'FIRMA DEL REPRESENTANTE LEGAL / SUPERVISOR', fontSize: 10, margin: [0, 5, 0, 0] },
+                        { text: xmlData.receptorNombre, fontSize: 9, bold: true, margin: [0, 2, 0, 0] }
+                    ]
+                }
+            ],
+            styles: { th: { bold: true, fontSize: 10, color: '#ffffff', fillColor: '#0D9488', margin: [0, 4, 0, 4] } }
+        };
+
+        pdfMake.createPdf(docDefinition).download(`Expediente_Materialidad_${xmlData.uuid.substring(0,8)}.pdf`);
+        if(typeof window.showToast === 'function') window.showToast("Dictamen Pericial PDF generado.", "success");
     }
 </script>
 </body>
