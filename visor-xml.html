@@ -217,7 +217,6 @@
     });
 
     let currentInvoiceData = null;
-    let qrDataURI = null;
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
     const drop = document.getElementById('dropZone');
@@ -330,16 +329,14 @@
             </tr>
         `).join('');
 
-        // Generar QR Dinámico
         try {
             const selloCorto = d.sello ? d.sello.substring(d.sello.length - 8) : "";
             const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${d.uuid}&re=${d.emisorRfc}&rr=${d.receptorRfc}&tt=${d.total}&fe=${selloCorto}`;
             const qr = qrcode(0, 'M');
             qr.addData(satUrl);
             qr.make();
-            qrDataURI = qr.createDataURL(4, 0);
-            document.getElementById('qrContainer').innerHTML = `<img src="${qrDataURI}" style="width:100%; height:100%;">`;
-        } catch(e) { console.warn("QR Error:", e); }
+            document.getElementById('qrContainer').innerHTML = `<img src="${qr.createDataURL(4, 0)}" style="width:100%; height:100%;">`;
+        } catch(e) {}
     }
 
     function exportarPDF() {
@@ -363,7 +360,10 @@
                     ]);
                 });
 
-                let qrContent = qrDataURI ? { image: qrDataURI, width: 80, height: 80, alignment: 'center' } : { text: '' };
+                // Uso del motor QR nativo de PDFMake
+                const selloCorto = d.sello ? d.sello.substring(d.sello.length - 8) : "";
+                const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${d.uuid}&re=${d.emisorRfc}&rr=${d.receptorRfc}&tt=${d.total}&fe=${selloCorto}`;
+                let qrContent = d.uuid !== "NO-TIMBRADO" ? { qr: satUrl, fit: 80, alignment: 'center' } : { text: '' };
 
                 const docDefinition = {
                     pageSize: 'LETTER', pageMargins: [40, 40, 40, 40],
