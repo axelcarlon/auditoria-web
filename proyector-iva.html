@@ -29,7 +29,7 @@
         
         /* Dropzone Dual */
         .grid-dropzones { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(59, 130, 246, 0.4); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px dashed rgba(59, 130, 246, 0.4); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center;}
         .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
@@ -180,7 +180,7 @@
             <button onclick="window.location.reload()" class="btn-secondary">Limpiar Memoria RAM</button>
             <button id="btnDescargarPDF" onclick="descargarReportePDF()" class="btn-action" style="flex: 2;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                ExportAR DICTAMEN PDF
+                Exportar Dictamen PDF
             </button>
         </div>
     </div>
@@ -223,7 +223,9 @@
     if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
         pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
     }
+</script>
 
+<script>
     let filesEmitidas = [];
     let filesRecibidas = [];
     let metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: 0, isFavor: false, montoFinal: 0 };
@@ -261,6 +263,45 @@
         if (typeof window.showToast === 'function') window.showToast(`Lote cargado correctamente.`, "success");
     }
 
+    // LÓGICA DE REINTENTOS PARA EVITAR CAÍDAS DE LA IA
+    async function obtenerDictamenIA(retries = 3) {
+        const promptConcepto = `Análisis contable: ${metrics.totalFiles} XMLs procesados. IVA Trasladado (Cobrado): ${formatMoney(metrics.cobrado)}. IVA Acreditable (Pagado): ${formatMoney(metrics.pagado)}. IVA Retenido: ${formatMoney(metrics.retenido)}. Obligación de Prorrateo detectada: ${metrics.prorrateo ? 'SÍ' : 'NO'}. Resultado aritmético: ${formatMoney(metrics.montoFinal)}.`;
+        
+        for (let i = 0; i < retries; i++) {
+            try {
+                const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        tipo_documento: "Cálculo de IVA Transaccional", 
+                        descripcion_concepto: promptConcepto, 
+                        error_detectado: "Emite un dictamen indicando si el IVA es a cargo o a favor y alerta sobre el riesgo de acreditamiento indebido si existe prorrateo." 
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.analisis_legal) {
+                        return data.analisis_legal.replace(/[*#_]/g, '');
+                    }
+                }
+            } catch (e) {
+                console.log(`Intento de conexión IA ${i+1} fallido. Reintentando...`);
+            }
+            // Espera 1 segundo antes del reintento
+            await new Promise(r => setTimeout(r, 1000));
+        }
+
+        // BACKUP HÍBRIDO (Garantiza que el PDF nunca se quede sin dictamen)
+        let fallback = `El análisis matemático local confirma un resultado ${metrics.isFavor ? 'A FAVOR del contribuyente' : 'A CARGO (por pagar) al SAT'} por la cantidad de ${formatMoney(Math.abs(metrics.montoFinal))}. `;
+        if(metrics.prorrateo) {
+            fallback += `ALERTA ESTRATÉGICA: El motor detectó facturación de actos exentos o a Tasa 0%. Es obligatorio calcular la proporción de IVA acreditable conforme al Artículo 5 de la LIVA.`;
+        } else {
+            fallback += `No se detectaron actos exentos. El IVA acreditado es procedente salvo comprobación de requisitos de deducibilidad estructural.`;
+        }
+        return fallback;
+    }
+
     async function iniciarProyeccion() {
         if(filesEmitidas.length === 0 && filesRecibidas.length === 0) return;
         
@@ -272,7 +313,7 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: filesEmitidas.length + filesRecibidas.length };
+        metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: filesEmitidas.length + filesRecibidas.length, isFavor: false, montoFinal: 0 };
 
         await procesarLote(filesEmitidas, true, status);
         await procesarLote(filesRecibidas, false, status);
@@ -280,20 +321,9 @@
         metrics.montoFinal = metrics.cobrado - metrics.pagado - metrics.retenido;
         metrics.isFavor = metrics.montoFinal < 0;
 
-        term.innerHTML += `<br>> Procesamiento matemático concluido.<br>> Solicitando interpretación a Red Neuronal IA...`;
+        term.innerHTML += `<br>> Procesamiento matemático concluido.<br>> Estableciendo conexión segura con Red Neuronal IA...`;
 
-        try {
-            const promptConcepto = `Análisis de ${metrics.totalFiles} XMLs. IVA Trasladado: ${metrics.cobrado}. IVA Acreditable: ${metrics.pagado}. IVA Retenido: ${metrics.retenido}. Detección de actos exentos (Prorrateo): ${metrics.prorrateo}. Posición final: ${metrics.montoFinal}.`;
-            const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: "Cálculo de IVA Transaccional", descripcion_concepto: promptConcepto, error_detectado: "Emite un dictamen indicando si el IVA es a cargo o a favor y menciona el riesgo de acreditamiento si existe prorrateo." })
-            });
-            const data = await res.json();
-            dataDictamen = data.analisis_legal.replace(/[*#_]/g, '');
-        } catch (e) {
-            dataDictamen = "El análisis aritmético local ha concluido con éxito. El motor IA de redacción se encuentra en estado de hibernación de servidor, por favor guíese por las métricas visuales mostradas en pantalla.";
-        }
-
+        dataDictamen = await obtenerDictamenIA();
         mostrarResultados();
     }
 
@@ -366,14 +396,23 @@
         if(!btn) return;
         
         const oldText = btn.innerHTML;
-        btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> EXPORTANDO...`;
+        btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> COMPILANDO PDF...`;
         btn.disabled = true;
 
         setTimeout(() => {
             try {
+                // Revalidación de fuentes de seguridad
+                if (typeof pdfMake === 'undefined' || typeof pdfMakeFonts === 'undefined') {
+                    throw new Error("Librerías PDFMake no cargadas.");
+                }
+                pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+
                 const isPro = localStorage.getItem('auditoria_pro') === 'true';
                 const colorRes = metrics.isFavor ? '#10B981' : '#EF4444';
                 const txtRes = metrics.isFavor ? 'A FAVOR' : 'A CARGO';
+                
+                // Evitamos NaN por seguridad matemática
+                const montoAbsoluto = isNaN(metrics.montoFinal) ? 0 : Math.abs(metrics.montoFinal);
 
                 const docDefinition = {
                     pageSize: 'LETTER',
@@ -394,7 +433,7 @@
                                     columns: [{
                                         stack: [
                                             { text: `POSICIÓN FISCAL (IVA ${txtRes})`, fontSize: 10, bold: true, color: colorRes, margin: [0, 0, 0, 5] },
-                                            { text: formatMoney(Math.abs(metrics.montoFinal)), fontSize: 26, bold: true, color: colorRes }
+                                            { text: formatMoney(montoAbsoluto), fontSize: 26, bold: true, color: colorRes }
                                         ]
                                     }],
                                     margin: [20, 20, 20, 20],
@@ -429,7 +468,7 @@
                 }
 
                 docDefinition.content.push({ text: '2. DICTAMEN ESTRATÉGICO IA', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
-                docDefinition.content.push({ text: dataDictamen, fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
+                docDefinition.content.push({ text: dataDictamen || "Resolución matemática confirmada.", fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
 
                 if (!isPro) {
                     docDefinition.background = function(currentPage, pageSize) {
@@ -441,12 +480,12 @@
                 
             } catch (e) {
                 console.error(e);
-                if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF.", "error");
+                if (typeof window.showToast === 'function') window.showToast("Error de renderizado PDF. Intente recargar la página.", "error");
             } finally {
                 btn.innerHTML = oldText; 
                 btn.disabled = false;
             }
-        }, 300);
+        }, 500);
     }
 </script>
 </body>
