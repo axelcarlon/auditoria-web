@@ -3,88 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conciliador de Complementos de Pago (REP) | AuditorIA</title>
-    <meta name="description" content="Cruza masivamente facturas PPD contra Complementos de Pago. Detecta saldos pendientes y facturas no cobradas automáticamente.">
+    <title>Conciliador de Pagos PPD vs REP | AuditorIA</title>
+    <meta name="description" content="Cruza automáticamente tus facturas a crédito (PPD) con los Recibos Electrónicos de Pago (REP) para detectar saldos abiertos y facturas no cobradas.">
     <link rel="canonical" href="https://auditoriaxml.mx/conciliador-pagos.html" />
     
-    <link rel="icon" type="image/png" sizes="32x32" href="candado.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="candado.png">
-    <link rel="apple-touch-icon" href="candado.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-KJW30G9ETZ');</script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
-        :root { --bg-primary: #F9FAFB; --bg-secondary: #ffffff; --text-main: #111827; --text-muted: #4B5563; --border: #E5E7EB; --brand: #2563EB; --danger: #DC2626; --success: #059669; --warning: #D97706;}
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --border: rgba(255,255,255,0.1); --brand: #F59E0B; --brand-glow: rgba(245, 158, 11, 0.4); --success: #10B981; --danger: #EF4444;}
         *, *::before, *::after { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
         
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; }
-        .upload-section { background: var(--bg-secondary); border: 2px dashed var(--brand); border-radius: 12px; padding: 50px 20px; text-align: center; margin-bottom: 30px; cursor: pointer; transition: 0.2s; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.05); }
-        .upload-section:hover { background: rgba(37, 99, 235, 0.03); transform: scale(1.01); }
+        .header-section { text-align: center; margin-bottom: 50px; }
+        .header-badge { display: inline-block; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--brand); color: #FCD34D; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
-        .trust-badges { display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .trust-badges div { display: flex; align-items: center; gap: 4px; }
+        .grid-dropzones { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(245, 158, 11, 0.4); border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
+        .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
-        .results-container { display: none; }
+        .btn-action { background: var(--brand); color: #000; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #D97706; color: white;}
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
+
+        .terminal-loader { display: none; font-family: monospace; color: #FCD34D; background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 160px; overflow-y: auto; border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+        .terminal-loader::-webkit-scrollbar { width: 6px; }
+        .terminal-loader::-webkit-scrollbar-thumb { background-color: #374151; border-radius: 10px; }
+
+        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;}
+        .kpi-box { background: var(--bg-secondary); border: 1px solid var(--border); padding: 25px; border-radius: 12px; text-align: center; }
+        .kpi-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;}
+        .kpi-value { font-size: 28px; font-weight: 900; color: var(--text-main); font-family: monospace; }
+
+        .table-container { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; margin-bottom: 30px; max-height: 400px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;}
+        th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
+        td { padding: 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; }
         
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .metric-card { background: var(--bg-secondary); padding: 25px; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .metric-title { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
-        .metric-value { font-size: 32px; font-weight: 800; color: var(--text-main); }
-        
-        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        .btn-restart { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px;}
-        .btn-restart:hover { background: #e2e8f0; }
-        .btn-export { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
-        .btn-export:hover { opacity: 0.9; }
-        .btn-export-excel { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
-        .btn-export-excel:hover { opacity: 0.9; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; display: inline-block;}
+        .badge-ok { background: rgba(16, 185, 129, 0.1); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);}
+        .badge-warn { background: rgba(245, 158, 11, 0.1); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3);}
+        .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);}
 
-        .table-container { background: var(--bg-secondary); border-radius: 10px; border: 1px solid var(--border); overflow-x: auto; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); max-height: 600px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
-        th { background: var(--bg-primary); color: var(--text-muted); font-weight: 600; text-transform: uppercase; position: sticky; top: 0; box-shadow: 0 1px 0 var(--border); z-index: 10;}
-        tr:hover { background: #F9FAFB; }
-        .row-orphan { background: #FFFBEB; } /* Alerta visual para facturas huérfanas */
-        .amount { text-align: right; font-family: monospace; font-size: 14px; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; }
-        .status-pagado { background: #D1FAE5; color: #065F46; }
-        .status-pendiente { background: #FEE2E2; color: #991B1B; }
-        .status-parcial { background: #FEF3C7; color: #92400E; }
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
-        .ia-advisor-box { background: #EFF6FF; border-left: 4px solid var(--brand); padding: 20px; margin-bottom: 30px; border-radius: 4px; display: none; text-align: left; }
-        .ia-advisor-title { font-weight: 800; color: #1E3A8A; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; text-transform: uppercase;}
-        .ia-advisor-content { font-size: 14px; color: #1E40AF; margin: 0; line-height: 1.6; }
-        .ia-loading { color: var(--brand); font-size: 14px; font-weight: 600; display: none; margin-bottom: 30px; text-align: center; }
-        .spinner { border: 4px solid rgba(37, 99, 235, 0.2); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--brand); animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
+        .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
+        .feature-card:hover { border-color: var(--brand); transform: translateY(-5px); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(245, 158, 11, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
-        /* Botones Compartir */
-        .share-container { padding: 25px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border); text-align: center; margin-top: 30px;}
-        .social-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 14px; text-decoration: none; color: white; margin: 5px; transition: opacity 0.2s; min-width: 110px; }
-        .social-btn:hover { opacity: 0.9; }
-        .btn-x { background-color: #000000; }
-        .btn-in { background-color: #0A66C2; }
-        .btn-fb { background-color: #1877F2; }
-        .btn-wa { background-color: #25D366; }
-
-        /* Paywall Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.9); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .modal-content { background: white; padding: 40px; border-radius: 12px; max-width: 500px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; color: var(--text-main); }
-        .modal-text { font-size: 16px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
-        .btn-upgrade { background: var(--brand); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-decoration: none; display: inline-block;}
-
-        #hiddenPdfRender { position: absolute; left: -9999px; top: 0; background: white; }
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
-            .metrics-grid { grid-template-columns: 1fr; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .toolbar button { width: 100%; justify-content: center; }
+            .grid-dropzones { grid-template-columns: 1fr; }
+            .btn-toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -92,375 +85,407 @@
 
 <script src="navbar.js"></script>
 
-<div class="modal-overlay" id="paywallModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="document.getElementById('paywallModal').style.display='none'">&times;</button>
-        <svg width="60" height="60" fill="none" stroke="var(--brand)" viewBox="0 0 24 24" style="margin-bottom: 20px; display:block; margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-        <h2 class="modal-title">Límite Gratuito Alcanzado</h2>
-        <p class="modal-text">Has agotado tus conciliaciones gratuitas. Actualiza a <strong>AuditorIA Pro</strong> para conciliar facturación ilimitada y descargar reportes PDF y Excel.</p>
-        <a href="planes.html" class="btn-upgrade">Actualizar a Pro</a>
-    </div>
-</div>
-
 <div class="container">
-    <div style="text-align: center; margin-bottom: 40px;" id="headerSection">
-        <span style="background: #111827; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 1px;">SISTEMA CONTABLE AUTOMATIZADO</span>
-        <h1 style="font-size: 32px; margin-bottom: 10px; margin-top: 15px;">Conciliador de Pagos PPD vs REP</h1>
-        <p style="color: var(--text-muted);">Sube todas las facturas y complementos del ejercicio. El sistema vinculará matemáticamente los UUIDs para detectar saldos insolutos y documentos huérfanos.</p>
+    <div class="header-section" id="headerSection">
+        <div class="header-badge">CONTROL DE LIQUIDEZ</div>
+        <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Conciliador PPD vs REP</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Evita facturar dos veces el mismo cobro y detecta facturas a crédito abandonadas. Sube tus facturas PPD y tus Recibos de Pago; el sistema enlazará los UUIDs para calcular el saldo vivo.</p>
     </div>
 
-    <div class="upload-section" id="dropZone" onclick="document.getElementById('xmlInput').click()">
-        <svg width="48" height="48" color="var(--brand)" style="margin-bottom: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-        <p style="font-weight: 700; margin: 0; font-size: 20px; color: var(--text-main);" id="fileCountText">Cargar Facturas PPD y Complementos REP (Lote)</p>
-        <p style="font-size: 14px; color: var(--text-muted); margin-top: 8px;">Procesa todos los XML de manera masiva y simultánea.</p>
-        <input type="file" id="xmlInput" accept=".xml" multiple style="display: none;">
-        
-        <div class="trust-badges">
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Cifrado SSL</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> Zero-Retention</div>
-            <div><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Vinculación Matemática Exacta</div>
+    <div id="mainForm">
+        <div class="grid-dropzones">
+            <div class="upload-section" id="dropPPD">
+                <svg width="48" height="48" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <h3 style="margin: 0 0 5px; font-size: 18px;">Facturas (PPD)</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">XML de Ingreso o Egreso (Método PPD)</p>
+                <input type="file" id="inputPPD" accept=".xml" multiple style="display: none;">
+                <div id="statusPPD" style="margin-top: 15px; font-weight: 900; color: var(--brand);">0 Archivos</div>
+            </div>
+            
+            <div class="upload-section" id="dropREP">
+                <svg width="48" height="48" fill="none" stroke="#10B981" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <h3 style="margin: 0 0 5px; font-size: 18px;">Complementos (REP)</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">XML de Pagos (Tipo P)</p>
+                <input type="file" id="inputREP" accept=".xml" multiple style="display: none;">
+                <div id="statusREP" style="margin-top: 15px; font-weight: 900; color: #10B981;">0 Archivos</div>
+            </div>
         </div>
-    </div>
 
-    <div id="loadingState" style="display: none; text-align: center; margin-top: 30px;">
-        <div class="spinner"></div> Analizando y cruzando nodos UUID.
+        <button id="btnEjecutar" class="btn-action" onclick="iniciarCruce()" disabled>
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            CRUZAR COMPROBANTES
+        </button>
+
+        <div class="terminal-loader" id="terminalLoader">
+            > Inicializando Árbol Relacional de UUIDs...<br>
+            <span id="termStatus"></span>
+        </div>
     </div>
 
     <div class="results-container" id="results">
-        <div class="toolbar">
-            <div>
-                <button class="btn-restart" onclick="window.location.reload()">Nuevo Lote</button>
-            </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-export-excel" onclick="descargarCSV_Conciliacion()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Matriz Excel (CSV)
-                </button>
-                <button class="btn-export" onclick="descargarPDF_Conciliacion()">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Reporte Ejecutivo PDF
-                </button>
-            </div>
-        </div>
         
-        <div id="iaLoading" class="ia-loading">
-            <div class="spinner"></div> Evaluando riesgo fiscal de omisiones REP...
-        </div>
-        <div id="iaAdvisorContainer" class="ia-advisor-box">
-            <div class="ia-advisor-title">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                AuditorIA Legal Insight
+        <div class="kpi-grid">
+            <div class="kpi-box">
+                <div class="kpi-label">Deuda Original (PPD)</div>
+                <div class="kpi-value" id="kpiTotalPPD">$0.00</div>
             </div>
-            <p id="iaAdvisorText" class="ia-advisor-content"></p>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-title">Facturas PPD (Matriz)</div>
-                <div class="metric-value" id="valPpdCount">0</div>
+            <div class="kpi-box" style="border-color: rgba(16, 185, 129, 0.3);">
+                <div class="kpi-label" style="color: var(--success);">Flujo Amortizado (REPs)</div>
+                <div class="kpi-value" id="kpiTotalREP" style="color: var(--success);">$0.00</div>
             </div>
-            <div class="metric-card">
-                <div class="metric-title">Monto Total Base PPD</div>
-                <div class="metric-value" id="valTotalPpd">$0.00</div>
-            </div>
-            <div class="metric-card" style="border-bottom: 4px solid var(--success);">
-                <div class="metric-title">Cobrado (Validado en REP)</div>
-                <div class="metric-value" style="color: var(--success);" id="valCobrado">$0.00</div>
-            </div>
-            <div class="metric-card" style="border-bottom: 4px solid var(--danger); background: #FEF2F2;">
-                <div class="metric-title" style="color: var(--danger);">Saldo Insoluto Real</div>
-                <div class="metric-value" style="color: var(--danger);" id="valPendiente">$0.00</div>
+            <div class="kpi-box" style="border-color: rgba(239, 68, 68, 0.3);">
+                <div class="kpi-label" style="color: var(--danger);">Saldo Abierto (Pendiente)</div>
+                <div class="kpi-value" id="kpiSaldo" style="color: var(--danger);">$0.00</div>
             </div>
         </div>
 
         <div class="table-container">
-            <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--text-main);">Estado de Cuenta Detallado</h3>
-            <p style="margin: 0 0 20px 0; font-size: 12px; color: var(--warning); font-weight: bold;">*Las filas resaltadas indican documentos PPD sin ningún pago asociado.</p>
-            <table id="conciliacionTable">
+            <table>
                 <thead>
                     <tr>
-                        <th>Folio</th>
-                        <th>UUID (Factura Origen)</th>
-                        <th>Receptor / Cliente</th>
-                        <th class="amount">Total Factura</th>
-                        <th class="amount">Pagado (REP)</th>
-                        <th class="amount">Saldo Actual</th>
-                        <th>Estado</th>
+                        <th>UUID Origen (PPD)</th>
+                        <th>Proveedor/Cliente</th>
+                        <th style="text-align: right;">Total Factura</th>
+                        <th style="text-align: right;">Monto Pagado</th>
+                        <th style="text-align: right;">Saldo Vivo</th>
+                        <th style="text-align: center;">Estatus</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="tablaConciliacion">
+                </tbody>
             </table>
         </div>
 
-        <div class="share-container" id="shareContainer">
-            <p style="font-size: 15px; font-weight: 600; color: var(--text-main); margin-top: 0; margin-bottom: 15px;">Ayúdanos a llegar a más personas compartiendo esta herramienta:</p>
-            <a href="https://twitter.com/intent/tweet?text=Acabo%20de%20conciliar%20todas%20mis%20facturas%20PPD%20contra%20los%20Pagos%20REP%20automáticamente%20con%20AuditorIA:&url=https://auditoriaxml.mx/conciliador-pagos.html" target="_blank" class="social-btn btn-x">X</a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://auditoriaxml.mx/conciliador-pagos.html" target="_blank" class="social-btn btn-in">LinkedIn</a>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=https://auditoriaxml.mx/conciliador-pagos.html" target="_blank" class="social-btn btn-fb">Facebook</a>
-            <a href="https://api.whatsapp.com/send?text=Acabo%20de%20conciliar%20todas%20mis%20facturas%20PPD%20contra%20los%20Pagos%20REP%20automáticamente%20con%20AuditorIA:%20https://auditoriaxml.mx/conciliador-pagos.html" target="_blank" class="social-btn btn-wa">WhatsApp</a>
+        <div class="btn-toolbar">
+            <button onclick="window.location.reload()" class="btn-secondary">Purgar Enlaces</button>
+            <button onclick="descargarExcel()" class="btn-secondary" style="background: #064E3B; color: #34D399; border-color: #065F46;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Matriz de Control (Excel)
+            </button>
+            <button id="btnDescargarPDF" onclick="descargarPDF()" class="btn-action" style="flex: 2;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                IMPRIMIR REPORTE DE SALDOS
+            </button>
         </div>
     </div>
-</div>
 
-<div id="hiddenPdfRender"></div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+            <h3 class="feature-title">Mapeo Inverso Ultrarrápido</h3>
+            <p class="feature-desc">Extrae los nodos de relación (DoctoRelacionado) de los complementos 2.0 y los asigna al UUID padre sin consumir recursos de servidores externos.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+            <h3 class="feature-title">Prevención de Multas (Cancelación)</h3>
+            <p class="feature-desc">Detecta facturas PPD que se emitieron sin recibir su REP correspondiente en el plazo límite, protegiéndote de revisiones por diferencias en IVA.</p>
+        </div>
+    </div>
+
+    <h2 class="showcase-header">Soluciones Complementarias</h2>
+    <div class="bento-grid">
+        <a href="dashboard-xml.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg></div>
+                <h3 class="bento-title">Dashboard Financiero XML</h3>
+                <p class="bento-desc">Proyecta la liquidez de la empresa y la distribución del gasto en gráficas generadas directamente desde los metadatos de las facturas.</p>
+            </div>
+        </a>
+        <a href="generador-polizas.html" class="bento-card">
+            <div>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+                <h3 class="bento-title">Generador de Pólizas</h3>
+                <p class="bento-desc">Automatiza la partida doble de las facturas conciliadas y descárgalas en un layout compatible con tu software contable.</p>
+            </div>
+        </a>
+    </div>
+</div>
 
 <script src="footer.js"></script>
 
 <script>
-    function checkQuota() {
-        let usos = localStorage.getItem('auditoria_usos');
-        if (!usos) { usos = 3; localStorage.setItem('auditoria_usos', 3); }
-        if (parseInt(usos) <= 0) { document.getElementById('paywallModal').style.display = 'flex'; return false; }
-        localStorage.setItem('auditoria_usos', parseInt(usos) - 1);
-        return true;
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
+
+    let filesPPD = [];
+    let filesREP = [];
+    let dbPPD = {}; // Base relacional { UUID: { total, pagado, nombre, folio } }
+    let globalStats = { totalPPD: 0, totalREP: 0, saldoAbierto: 0 };
+
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    function setupDropzone(idDrop, idInput, idStatus, isPPD) {
+        const drop = document.getElementById(idDrop);
+        const input = document.getElementById(idInput);
+        drop.onclick = () => input.click();
+        ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
+        ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
+        drop.addEventListener('drop', e => processFiles(e.dataTransfer.files, isPPD, drop, idStatus));
+        input.addEventListener('change', e => processFiles(e.target.files, isPPD, drop, idStatus));
     }
 
-    const input = document.getElementById('xmlInput');
-    const dropZone = document.getElementById('dropZone');
-    
-    let htmlTablaExport = "";
-    let dataReporte = {};
-    let csvExportData = []; // Matriz cruda para Excel
+    setupDropzone('dropPPD', 'inputPPD', 'statusPPD', true);
+    setupDropzone('dropREP', 'inputREP', 'statusREP', false);
 
-    ['dragover', 'dragenter'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--brand)"; }));
-    ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.style.borderColor = "var(--border)"; }));
-    dropZone.addEventListener('drop', (e) => { input.files = e.dataTransfer.files; processFiles(e.dataTransfer.files); });
-    input.addEventListener('change', (e) => { processFiles(e.target.files); });
+    function processFiles(files, isPPD, dropZone, idStatus) {
+        const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+        if(validFiles.length === 0) return;
 
-    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(parseFloat(val) || 0);
+        if (isPPD) filesPPD = validFiles;
+        else filesREP = validFiles;
 
-    async function processFiles(files) {
-        if (files.length === 0) return;
-        if (!checkQuota()) return;
+        dropZone.classList.add('filled');
+        document.getElementById(idStatus).innerText = `${validFiles.length} documentos listos`;
         
-        document.getElementById('fileCountText').innerText = `${files.length} archivos en proceso...`;
-        document.getElementById('headerSection').style.display = 'none';
-        dropZone.style.display = 'none';
-        document.getElementById('loadingState').style.display = 'block';
-
-        let ppds = {}; 
-        let complementos = [];
-
-        const promises = Array.from(files).map(file => {
-            return new Promise((resolve) => {
-                if (!file.name.toLowerCase().endsWith('.xml')) { resolve(); return; }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const xmlDoc = new DOMParser().parseFromString(e.target.result, "text/xml");
-                        const cfdi = xmlDoc.getElementsByTagName('cfdi:Comprobante')[0] || xmlDoc.getElementsByTagName('Comprobante')[0];
-                        if (!cfdi) { resolve(); return; }
-
-                        const tipo = (cfdi.getAttribute('TipoDeComprobante') || '').toUpperCase();
-                        const timbre = xmlDoc.getElementsByTagName('tfd:TimbreFiscalDigital')[0] || xmlDoc.getElementsByTagName('TimbreFiscalDigital')[0];
-                        const uuid = timbre ? timbre.getAttribute('UUID').toUpperCase() : null;
-                        if (!uuid) { resolve(); return; }
-
-                        if (tipo === 'I' || tipo === 'E') {
-                            const metodo = (cfdi.getAttribute('MetodoPago') || '').toUpperCase();
-                            if (metodo === 'PPD') {
-                                const receptor = xmlDoc.getElementsByTagName('cfdi:Receptor')[0];
-                                ppds[uuid] = {
-                                    folio: (cfdi.getAttribute('Serie') || '') + (cfdi.getAttribute('Folio') || ''),
-                                    receptor: receptor ? receptor.getAttribute('Nombre') : 'N/A',
-                                    total: parseFloat(cfdi.getAttribute('Total') || 0),
-                                    pagado: 0
-                                };
-                            }
-                        } else if (tipo === 'P') {
-                            const doctosRelacionados = xmlDoc.getElementsByTagName('pago20:DoctoRelacionado') || xmlDoc.getElementsByTagName('pago10:DoctoRelacionado');
-                            for (let i = 0; i < doctosRelacionados.length; i++) {
-                                const doc = doctosRelacionados[i];
-                                complementos.push({
-                                    idDoc: (doc.getAttribute('IdDocumento') || '').toUpperCase(),
-                                    impPagado: parseFloat(doc.getAttribute('ImpPagado') || 0)
-                                });
-                            }
-                        }
-                    } catch (err) {}
-                    resolve();
-                };
-                reader.readAsText(file);
-            });
-        });
-
-        await Promise.all(promises);
-
-        // Fase Matemática: Conciliación Estricta
-        complementos.forEach(pago => {
-            if (ppds[pago.idDoc]) ppds[pago.idDoc].pagado += pago.impPagado;
-        });
-
-        renderConciliacion(ppds);
+        if(filesPPD.length > 0 && filesREP.length > 0) {
+            document.getElementById('btnEjecutar').disabled = false;
+        }
     }
 
-    function renderConciliacion(ppds) {
-        const uuids = Object.keys(ppds);
-        if (uuids.length === 0) {
-            alert("No se encontraron facturas PPD en el lote analizado.");
-            window.location.reload();
-            return;
+    function getNodes(node, tagName) {
+        return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
+               Array.from(node.getElementsByTagName(tagName)),
+               Array.from(node.getElementsByTagName(`pago10:${tagName}`)),
+               Array.from(node.getElementsByTagName(`pago20:${tagName}`)),
+               Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
+    }
+
+    async function iniciarCruce() {
+        document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('btnEjecutar').style.display = 'none';
+        document.querySelector('.grid-dropzones').style.display = 'none';
+        
+        const term = document.getElementById('terminalLoader');
+        const status = document.getElementById('termStatus');
+        term.style.display = 'block';
+        
+        dbPPD = {};
+        globalStats = { totalPPD: 0, totalREP: 0, saldoAbierto: 0 };
+
+        // 1. CARGAR ARQUITECTURA PPD
+        status.innerHTML = `> Mapeando PPDs de origen...<br>`;
+        for(let i=0; i<filesPPD.length; i++) {
+            try {
+                const text = await filesPPD[i].text();
+                const xml = new DOMParser().parseFromString(text, "text/xml");
+                
+                const cfdi = getNodes(xml, 'Comprobante')[0];
+                const emisor = getNodes(xml, 'Emisor')[0];
+                const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
+                
+                if(!cfdi || !timbre) continue;
+                
+                const uuid = timbre.getAttribute('UUID').toUpperCase();
+                const total = parseFloat(cfdi.getAttribute('Total') || 0);
+                const metodo = cfdi.getAttribute('MetodoPago') || "";
+                const nombre = emisor.getAttribute('Nombre') || "SIN NOMBRE";
+
+                if (metodo === 'PPD') {
+                    dbPPD[uuid] = { total: total, pagado: 0, nombre: nombre.substring(0,35), original: true };
+                    globalStats.totalPPD += total;
+                }
+            } catch(e) {}
         }
 
-        let totalPpd = 0; let totalCobrado = 0; let erroresDetectados = 0;
-        const tbody = document.querySelector('#conciliacionTable tbody');
-        tbody.innerHTML = '';
-        htmlTablaExport = '';
-        csvExportData = [];
+        // 2. INYECTAR RECIBOS (REP) Y CRUZAR
+        status.innerHTML += `> Cruzando UUIDs en Recibos de Pago...<br>`;
+        for(let i=0; i<filesREP.length; i++) {
+            try {
+                const text = await filesREP[i].text();
+                const xml = new DOMParser().parseFromString(text, "text/xml");
+                
+                const docsRelacionados = getNodes(xml, 'DoctoRelacionado'); // Pago 2.0 y 1.0
+                
+                docsRelacionados.forEach(doc => {
+                    const uuidTarget = (doc.getAttribute('IdDocumento') || "").toUpperCase();
+                    const montoPagado = parseFloat(doc.getAttribute('ImpPagado') || 0); // Versión 2.0
+                    const montoPagadoV1 = parseFloat(doc.getAttribute('ImpPagado') || 0); // Manejo genérico
+                    
+                    const pagoReal = montoPagado > 0 ? montoPagado : montoPagadoV1;
 
-        uuids.forEach(uuid => {
-            const data = ppds[uuid];
-            totalPpd += data.total; 
-            totalCobrado += data.pagado;
-            const saldo = data.total - data.pagado;
-            
-            let statusHTML = '';
-            let statusPDF = '';
-            let colorPDF = '';
-            let isOrphan = false;
+                    if(uuidTarget) {
+                        // Si el UUID del REP existe en nuestra base de PPDs, lo sumamos.
+                        // Si no existe, significa que pagaron una factura que no se subió, la registramos como "Huérfana".
+                        if(dbPPD[uuidTarget]) {
+                            dbPPD[uuidTarget].pagado += pagoReal;
+                        } else {
+                            dbPPD[uuidTarget] = { total: 0, pagado: pagoReal, nombre: "FACTURA NO CARGADA", original: false };
+                        }
+                        globalStats.totalREP += pagoReal;
+                    }
+                });
+            } catch(e) {}
+        }
 
-            if (saldo <= 0.05) { 
-                statusHTML = '<span class="status-badge status-pagado">PAGADO TOTAL</span>'; 
-                statusPDF = 'PAGADO TOTAL'; colorPDF = '#065F46';
-            }
-            else if (data.pagado > 0) { 
-                statusHTML = '<span class="status-badge status-parcial">PAGO PARCIAL</span>'; erroresDetectados++; 
-                statusPDF = 'PAGO PARCIAL'; colorPDF = '#92400E';
-            }
-            else { 
-                statusHTML = '<span class="status-badge status-pendiente">SIN PAGOS REP</span>'; erroresDetectados++; 
-                statusPDF = 'SIN PAGOS REP'; colorPDF = '#991B1B';
-                isOrphan = true;
-            }
+        mostrarResultados();
+    }
 
-            const trClass = isOrphan ? 'row-orphan' : '';
-
-            // Visual Web
-            const tr = `
-                <tr class="${trClass}">
-                    <td style="font-weight: bold; font-size: 11px;">${data.folio}</td>
-                    <td style="font-family: monospace; font-size: 11px; color: var(--text-muted);">${uuid}</td>
-                    <td style="font-size: 12px; font-weight: 500;">${data.receptor.substring(0, 30)}</td>
-                    <td class="amount">${formatMoney(data.total)}</td>
-                    <td class="amount" style="color: var(--success);">${formatMoney(data.pagado)}</td>
-                    <td class="amount" style="color: var(--danger);">${formatMoney(Math.max(0, saldo))}</td>
-                    <td>${statusHTML}</td>
-                </tr>
-            `;
-            tbody.innerHTML += tr;
-
-            // Formato estricto para PDF Export
-            htmlTablaExport += `
-                <tr style="page-break-inside: avoid; background: ${isOrphan ? '#FFFBEB' : 'transparent'};">
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px;">${data.folio}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px; font-family: monospace;">${uuid}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px;">${data.receptor.substring(0, 20)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; font-family: monospace;">${formatMoney(data.total)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; color: #059669; font-family: monospace;">${formatMoney(data.pagado)}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 10px; text-align: right; color: #DC2626; font-weight: bold; font-family: monospace;">${formatMoney(Math.max(0, saldo))}</td>
-                    <td style="padding: 8px; border-bottom: 1px solid #E5E7EB; font-size: 9px; font-weight: bold; color: ${colorPDF};">${statusPDF}</td>
-                </tr>
-            `;
-
-            // Data para CSV
-            csvExportData.push(`${data.folio},${uuid},"${data.receptor}",${data.total.toFixed(2)},${data.pagado.toFixed(2)},${Math.max(0, saldo).toFixed(2)},${statusPDF}`);
-        });
-
-        const numPendiente = Math.max(0, totalPpd - totalCobrado);
-        
-        document.getElementById('valPpdCount').innerText = uuids.length;
-        document.getElementById('valTotalPpd').innerText = formatMoney(totalPpd);
-        document.getElementById('valCobrado').innerText = formatMoney(totalCobrado);
-        document.getElementById('valPendiente').innerText = formatMoney(numPendiente);
-
-        dataReporte = { count: uuids.length, total: totalPpd, cobrado: totalCobrado, pendiente: numPendiente };
-
-        document.getElementById('loadingState').style.display = 'none';
+    function mostrarResultados() {
+        document.getElementById('terminalLoader').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
-        if (erroresDetectados > 0) {
-            consultarAlertaIA("Conciliación REP", "Facturas PPD con saldo insoluto", `Se detectaron ${erroresDetectados} facturas con método de pago PPD que carecen de su respectivo Complemento (REP) o el abono es parcial. Genera un resumen del riesgo de deducir estas facturas sin su comprobante de pago.`);
-        }
+        const dataArr = Object.keys(dbPPD).map(k => {
+            const saldo = dbPPD[k].total - dbPPD[k].pagado;
+            let estatus = "";
+            let css = "";
+            
+            if (!dbPPD[k].original) { estatus = "PAGO HUÉRFANO"; css = "badge-warn"; }
+            else if (saldo <= 0.5 && saldo >= -0.5) { estatus = "LIQUIDADO"; css = "badge-ok"; } // Tolerancia decimal
+            else if (dbPPD[k].pagado === 0) { estatus = "SIN PAGO"; css = "badge-bad"; }
+            else { estatus = "PARCIALIDAD"; css = "badge-warn"; }
+
+            return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus, css: css };
+        });
+
+        // Sumar solo saldos positivos de PPDs reales
+        globalStats.saldoAbierto = dataArr.reduce((acc, curr) => (curr.original && curr.saldo > 0) ? acc + curr.saldo : acc, 0);
+
+        document.getElementById('kpiTotalPPD').innerText = formatMoney(globalStats.totalPPD);
+        document.getElementById('kpiTotalREP').innerText = formatMoney(globalStats.totalREP);
+        document.getElementById('kpiSaldo').innerText = formatMoney(globalStats.saldoAbierto);
+
+        const tbody = document.getElementById('tablaConciliacion');
+        tbody.innerHTML = dataArr.map(e => `
+            <tr>
+                <td style="font-family: monospace; font-size: 11px; color: var(--brand);">${e.uuid}</td>
+                <td><strong>${e.nombre}</strong></td>
+                <td style="text-align: right; font-family: monospace;">${e.total > 0 ? formatMoney(e.total) : 'N/A'}</td>
+                <td style="text-align: right; font-family: monospace; color: var(--success);">${formatMoney(e.pagado)}</td>
+                <td style="text-align: right; font-family: monospace; color: ${e.saldo > 0.5 ? 'var(--danger)' : 'var(--text-muted)'};">${formatMoney(e.saldo)}</td>
+                <td style="text-align: center;"><span class="badge ${e.css}">${e.estatus}</span></td>
+            </tr>
+        `).join('');
+
+        if (typeof window.showToast === 'function') window.showToast("Conciliación Completada.", "success");
     }
 
-    async function consultarAlertaIA(tipo, concepto, errorDesc) {
-        document.getElementById('iaLoading').style.display = 'block';
-        try {
-            const res = await fetch("https://fastapi-susu.onrender.com/api/asesor-ia", {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tipo_documento: tipo, descripcion_concepto: concepto, error_detectado: errorDesc })
-            });
-            const data = await res.json();
-            document.getElementById('iaLoading').style.display = 'none';
-            document.getElementById('iaAdvisorText').innerText = data.analisis_legal;
-            document.getElementById('iaAdvisorContainer').style.display = 'block';
-        } catch (err) {
-            document.getElementById('iaLoading').style.display = 'none';
-        }
-    }
-
-    // EXPORTACIÓN A EXCEL (CSV)
-    function descargarCSV_Conciliacion() {
-        if (csvExportData.length === 0) return;
-        const headers = ['Folio', 'UUID', 'Receptor', 'Total Facturado', 'Monto Pagado', 'Saldo Pendiente', 'Estatus_SAT'];
-        const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + csvExportData.join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Matriz_Conciliacion_REP_${Date.now()}.csv`);
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-    }
-
-    function descargarPDF_Conciliacion() {
-        if (!dataReporte.count || !htmlTablaExport) return;
-        const renderContainer = document.getElementById('hiddenPdfRender');
+    function descargarExcel() {
+        const results = [["UUID PPD", "RAZON SOCIAL", "TOTAL FACTURA", "PAGOS ENCONTRADOS", "SALdo RESTANTE", "ESTATUS"]];
         
-        renderContainer.innerHTML = `
-            <div style="width: 800px; padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; background: white;">
-                <div style="position: absolute; top: 40%; left: 10%; font-size: 50px; color: rgba(37, 99, 235, 0.08); transform: rotate(-30deg); white-space: nowrap; font-weight: 900; z-index: 0; pointer-events: none;">Generado por AuditorIA - Versión Gratuita</div>
-                
-                <div style="border-bottom: 3px solid #111827; padding-bottom: 15px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <h1 style="margin: 0; font-size: 24px; color: #111827; font-weight: 900;">Reporte Consolidado: Conciliación PPD vs REP</h1>
-                    <p style="margin: 5px 0 0; font-size: 12px; color: #6B7280; font-family: monospace;">Estado de Cuenta Global generado algorítmicamente.</p>
-                </div>
+        const dataArr = Object.keys(dbPPD).map(k => {
+            const saldo = dbPPD[k].total - dbPPD[k].pagado;
+            let estatus = "";
+            if (!dbPPD[k].original) estatus = "PAGO SIN FACTURA";
+            else if (saldo <= 0.5 && saldo >= -0.5) estatus = "LIQUIDADO";
+            else if (dbPPD[k].pagado === 0) estatus = "SIN PAGO";
+            else estatus = "PAGO PARCIAL";
+            return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus };
+        });
 
-                <div style="display: flex; justify-content: space-between; background: #F9FAFB; padding: 20px; border: 1px solid #E5E7EB; border-radius: 6px; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #111827;">${dataReporte.count}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase; font-weight: bold;">Docs Matriz PPD</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #111827; font-family: monospace;">${formatMoney(dataReporte.total)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase; font-weight: bold;">Base Total</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 20px; display: block; color: #059669; font-family: monospace;">${formatMoney(dataReporte.cobrado)}</strong><span style="font-size: 10px; color: #6B7280; text-transform: uppercase; font-weight: bold;">Cobrado/Pagado</span></div>
-                    <div style="text-align: center;"><strong style="font-size: 24px; display: block; color: #DC2626; font-family: monospace;">${formatMoney(dataReporte.pendiente)}</strong><span style="font-size: 10px; color: #DC2626; text-transform: uppercase; font-weight: bold;">Saldo en Riesgo</span></div>
-                </div>
-                
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; position: relative; z-index: 1;">
-                    <thead style="background: #111827; color: white;">
-                        <tr>
-                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; text-transform: uppercase;">Folio</th>
-                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; text-transform: uppercase;">UUID Origen</th>
-                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; text-transform: uppercase;">Cliente / Receptor</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; text-transform: uppercase;">Facturado</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; text-transform: uppercase;">Abonado</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; text-transform: uppercase;">Saldo</th>
-                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; text-transform: uppercase;">Estado Legal</th>
-                        </tr>
-                    </thead>
-                    <tbody>${htmlTablaExport}</tbody>
-                </table>
-                
-                <div style="margin-top: 50px; font-size: 10px; color: #9CA3AF; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 15px;">
-                    Plataforma: AuditoriaXML.mx | La información aquí contenida es para control interno de flujos y auditoría.
-                </div>
-            </div>
-        `;
+        dataArr.forEach(e => {
+            results.push([e.uuid, e.nombre, e.total, e.pagado, e.saldo, e.estatus]);
+        });
 
-        const opt = {
-            margin:       10,
-            filename:     `Conciliacion_REP_${Date.now()}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
-        };
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 38}, {wch: 35}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Estado_Cuenta");
+        XLSX.writeFile(wb, `Estado_Cuenta_PPD_${Date.now()}.xlsx`);
+    }
 
-        html2pdf().set(opt).from(renderContainer.firstElementChild).save();
+    function descargarPDF() {
+        const btn = document.getElementById('btnDescargarPDF');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = `COMPILANDO...`;
+        btn.disabled = true;
+
+        setTimeout(() => {
+            try {
+                if (typeof pdfMake === 'undefined') throw new Error("PDFMake no cargado.");
+                const isPro = localStorage.getItem('auditoria_pro') === 'true';
+
+                const dataArr = Object.keys(dbPPD).map(k => {
+                    const saldo = dbPPD[k].total - dbPPD[k].pagado;
+                    let estatus = "";
+                    if (!dbPPD[k].original) estatus = "HUÉRFANO";
+                    else if (saldo <= 0.5 && saldo >= -0.5) estatus = "LIQUIDADO";
+                    else if (dbPPD[k].pagado === 0) estatus = "ABIERTO";
+                    else estatus = "PARCIAL";
+                    return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus };
+                });
+                
+                const bodyTabla = [
+                    [{text: 'UUID', style: 'th'}, {text: 'Tercero', style: 'th'}, {text: 'Facturado', style: 'th', alignment: 'right'}, {text: 'Cobrado/Pagado', style: 'th', alignment: 'right'}, {text: 'Saldo', style: 'th', alignment: 'right'}, {text: 'Dictamen', style: 'th', alignment: 'center'}]
+                ];
+
+                const limit = Math.min(dataArr.length, 300);
+                for(let i=0; i<limit; i++) {
+                    let e = dataArr[i];
+                    let colorSaldo = e.saldo > 0.5 ? '#EF4444' : '#4B5563';
+                    bodyTabla.push([
+                        {text: e.uuid.substring(0,18)+'...', fontSize: 8},
+                        {text: e.nombre.substring(0,25), fontSize: 8},
+                        {text: formatMoneyPDF(e.total), fontSize: 8, alignment: 'right'},
+                        {text: formatMoneyPDF(e.pagado), fontSize: 8, alignment: 'right', color: '#10B981'},
+                        {text: formatMoneyPDF(e.saldo), fontSize: 8, alignment: 'right', bold: e.saldo > 0.5, color: colorSaldo},
+                        {text: e.estatus, fontSize: 8, bold: true, alignment: 'center'}
+                    ]);
+                }
+
+                const docDefinition = {
+                    pageSize: 'LETTER',
+                    pageMargins: [40, 50, 40, 50],
+                    content: [
+                        { text: 'REPORTE DE SALDOS Y CONCILIACIÓN PPD/REP', alignment: 'center', color: '#111827', fontSize: 13, bold: true, margin: [0, 0, 0, 15] },
+                        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 532, y2: 0, lineWidth: 2, lineColor: '#F59E0B' }] },
+                        
+                        {
+                            margin: [0, 20, 0, 20],
+                            table: {
+                                widths: ['33%', '33%', '33%'],
+                                body: [
+                                    [
+                                        { text: 'DEUDA PPD:', bold: true, fillColor: '#F3F4F6', margin: [5,5,5,5], alignment: 'center' }, 
+                                        { text: 'PAGOS ENCONTRADOS:', bold: true, fillColor: '#ECFDF5', color: '#10B981', margin: [5,5,5,5], alignment: 'center' },
+                                        { text: 'SALDO VIVO:', bold: true, fillColor: '#FEF2F2', color: '#EF4444', margin: [5,5,5,5], alignment: 'center' }
+                                    ],
+                                    [
+                                        { text: formatMoneyPDF(globalStats.totalPPD), fontSize: 14, bold: true, alignment: 'center', margin: [0,5,0,5] },
+                                        { text: formatMoneyPDF(globalStats.totalREP), fontSize: 14, bold: true, color: '#10B981', alignment: 'center', margin: [0,5,0,5] },
+                                        { text: formatMoneyPDF(globalStats.saldoAbierto), fontSize: 14, bold: true, color: '#EF4444', alignment: 'center', margin: [0,5,0,5] }
+                                    ]
+                                ]
+                            },
+                            layout: 'lightHorizontalLines'
+                        },
+
+                        {
+                            table: {
+                                headerRows: 1,
+                                widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
+                                body: bodyTabla
+                            },
+                            layout: 'lightHorizontalLines'
+                        }
+                    ],
+                    styles: {
+                        th: { bold: true, fontSize: 9, color: '#ffffff', fillColor: '#F59E0B', margin: [0, 4, 0, 4] }
+                    },
+                    footer: function(currentPage, pageCount) {
+                        return { text: `AuditoriaXML.mx | Control de Flujo de Efectivo | Página ${currentPage} de ${pageCount}`, alignment: 'center', fontSize: 8, color: '#9CA3AF', margin: [40, 20, 40, 0] };
+                    }
+                };
+
+                if (!isPro) {
+                    docDefinition.background = function(currentPage, pageSize) {
+                        return { text: 'AuditorIA - Evaluación Técnica', color: '#9CA3AF', opacity: 0.1, bold: true, fontSize: 40, angle: -45, alignment: 'center', margin: [0, pageSize.height / 3, 0, 0] };
+                    };
+                }
+
+                pdfMake.createPdf(docDefinition).download(`Conciliacion_Pagos_${Date.now()}.pdf`);
+                
+            } catch (e) {
+                console.error(e);
+                if (typeof window.showToast === 'function') window.showToast("Error renderizando PDF.", "error");
+            } finally {
+                btn.innerHTML = oldText; 
+                btn.disabled = false;
+            }
+        }, 300);
     }
 </script>
 </body>
