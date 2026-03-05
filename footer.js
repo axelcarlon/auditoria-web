@@ -79,6 +79,7 @@ const footerHTML = `
         <div>
             <strong style="color: white; display: block; margin-bottom: 15px; font-size: 14px;">Corporativo</strong>
             <a href="como-funciona.html">Arquitectura Zero-Retention</a>
+            <a href="empresas.html">Soluciones Empresas</a>
             <a href="despachos-contables.html">Soluciones Despachos</a>
             <a href="planes.html">Licenciamiento Pro</a>
         </div>
@@ -91,7 +92,6 @@ const footerHTML = `
 
 document.write(footerHTML);
 
-// Lógica del Chat IA
 setTimeout(() => {
     const openBtn = document.getElementById('openAdvisor');
     const closeBtn = document.getElementById('closeAdvisor');
