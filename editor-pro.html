@@ -206,7 +206,8 @@
             <div class="divider-v"></div>
 
             <button class="btn-export" onclick="ExportEngine.buildPDF()">
-                Exportar PDF <span class="pro-badge">PRO</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Exportar <span class="pro-badge">PRO</span>
             </button>
         </div>
     </header>
@@ -322,7 +323,7 @@
                     <span>Escala / Tamaño</span>
                     <span class="prop-val" id="lblSize">14pt</span>
                 </div>
-                <input type="range" class="custom-slider" id="sliderSize" min="6" max="120" value="14">
+                <input type="range" class="custom-slider" id="sliderSize" min="8" max="72" value="14">
 
                 <div class="prop-row" style="margin-top: 10px;">
                     <span>Grosor de Borde</span>
@@ -441,7 +442,6 @@
             hide() { document.getElementById('sysLoader').style.display = 'none'; }
         };
 
-        // Tooltips Dinámicos JS (Para que no se corten con el scroll)
         const tooltipEl = document.getElementById('dynamicTooltip');
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('mouseenter', () => {
@@ -473,25 +473,20 @@
         let zoom = 1.0;
         const MIN_Z = 0.5, MAX_Z = 4.0, STEP_Z = 0.25;
 
-        // Base de Datos en RAM (Coordenadas en Porcentajes 0.0 - 1.0)
+        // Base de Datos en RAM (Coordenadas en Porcentajes Relativos)
         let DB = {}; 
-        
-        // Time Machine
         let historyStack = [];
         let redoStack = [];
 
-        // UI State
         let currentTool = 'select';
         let currentProps = { color: '#000000', size: 14, stroke: 2, opacity: 100 };
         let selectedId = null;
 
-        // Interacción Ratón
         let isDrawing = false;
         let isDragging = false;
         let startX = 0, startY = 0;
         let dragOffsetX = 0, dragOffsetY = 0;
 
-        // Caché del DOM
         const layer = document.getElementById('interactiveLayer');
         const guide = document.getElementById('drawGuide');
         const wrapper = document.getElementById('pageWrapper');
@@ -499,20 +494,24 @@
         const ctx = canvas.getContext('2d');
 
         // ---------------------------------------------------------
-        // 3. INGESTA Y RENDER (PDF.JS)
+        // 3. INGESTA Y RENDER (PDF.JS) BLINDADO DE ORIGEN
         // ---------------------------------------------------------
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF.", "error");
+            if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF válido.", "error");
 
             Loader.show("Desensamblando Vectores y Fuentes...");
             try {
                 const reader = new FileReader();
                 reader.onload = async function() {
-                    // Respaldar ArrayBuffer íntegro para la exportación final
-                    pdfBytesOriginal = this.result; 
-                    
-                    pdfProxy = await pdfjsLib.getDocument({data: new Uint8Array(pdfBytesOriginal)}).promise;
+                    const arrayBuffer = this.result;
+                    // TRUCO MAESTRO: Sacamos dos copias exactas y separadas en la memoria
+                    // Una se la damos a PDF.js (que a veces la destruye en el worker)
+                    // Y otra la guardamos intacta para PDF-Lib al exportar.
+                    pdfBytesOriginal = new Uint8Array(arrayBuffer).slice(0); 
+                    const pdfjsBytes = new Uint8Array(arrayBuffer).slice(0);
+
+                    pdfProxy = await pdfjsLib.getDocument({data: pdfjsBytes}).promise;
                     
                     totalPages = pdfProxy.numPages;
                     currentPage = 1;
@@ -541,18 +540,19 @@
             async autoFit() {
                 const p = await pdfProxy.getPage(1);
                 const vp = p.getViewport({scale: 1.0});
-                const containerW = document.getElementById('scrollArea').clientWidth;
+                const containerW = document.querySelector('.canvas-area').clientWidth;
                 let autoZ = (containerW - 100) / vp.width;
                 zoom = Math.min(Math.max(Math.round(autoZ * 4)/4, MIN_Z), 2.0);
                 this.updateUI();
             },
             async zoomIn() { if(zoom < MAX_Z) { zoom += STEP_Z; this.updateUI(); await this.renderPage(); } },
             async zoomOut() { if(zoom > MIN_Z) { zoom -= STEP_Z; this.updateUI(); await this.renderPage(); } },
-            async prevPage() { if(currentPage > 1) { currentPage--; ObjectManager.deselect(); await this.renderPage(); } },
-            async nextPage() { if(currentPage < totalPages) { currentPage++; ObjectManager.deselect(); await this.renderPage(); } },
+            async prevPage() { if(currentPage > 1) { currentPage--; ObjectManager.deselect(); await this.renderPage(); document.getElementById('ocrOutput').style.display = 'none';} },
+            async nextPage() { if(currentPage < totalPages) { currentPage++; ObjectManager.deselect(); await this.renderPage(); document.getElementById('ocrOutput').style.display = 'none';} },
             updateUI() {
-                document.getElementById('lblZoom').innerText = `${Math.round(zoom*100)}%`;
-                document.getElementById('lblPage').innerText = `${currentPage} / ${totalPages}`;
+                // Actualiza visualmente los medidores usando QuerySelectorAll por seguridad
+                document.querySelectorAll('#lblZoom').forEach(el => el.innerText = `${Math.round(zoom*100)}%`);
+                document.querySelectorAll('#lblPage').forEach(el => el.innerText = `${currentPage} / ${totalPages}`);
             },
             async renderPage() {
                 const p = await pdfProxy.getPage(currentPage);
@@ -569,6 +569,7 @@
 
                 await p.render({ canvasContext: ctx, transform: scale !== 1 ? [scale,0,0,scale,0,0] : null, viewport: vp }).promise;
                 
+                this.updateUI();
                 ObjectManager.drawAll();
             }
         };
@@ -650,19 +651,12 @@
 
         // Atajos de teclado Pro
         document.addEventListener('keydown', (e) => {
-            if(e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
-            
+            if(e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             if(e.key.toLowerCase() === 'v') ToolManager.set('select');
             if(e.key.toLowerCase() === 't') ToolManager.set('text');
-            if(e.key === 'Delete' || e.key === 'Backspace') ObjectManager.deleteSelected();
-            
-            // Undo / Redo
+            if((e.key === 'Delete' || e.key === 'Backspace') && selectedId) ObjectManager.deleteSelected();
             if(e.ctrlKey || e.metaKey) {
-                if(e.key.toLowerCase() === 'z') {
-                    e.preventDefault();
-                    if(e.shiftKey) History.redo();
-                    else History.undo();
-                }
+                if(e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? History.redo() : History.undo(); }
             }
         });
 
@@ -694,15 +688,13 @@
 
                 guide.style.display = 'block';
             } else {
-                // Guardar en RAM como Porcentaje
                 ObjectManager.create(currentTool, startX / r.width, startY / r.height);
             }
         });
 
         document.addEventListener('mousemove', (e) => {
             const r = layer.getBoundingClientRect();
-            let curX = e.clientX - r.left;
-            let curY = e.clientY - r.top;
+            let curX = e.clientX - r.left; let curY = e.clientY - r.top;
 
             if(isDrawing) {
                 if(currentTool === 'line') {
@@ -740,15 +732,16 @@
             }
         });
 
-        document.addEventListener('mouseup', (e) => {
+        document.addEventListener('mouseup', () => {
             const r = layer.getBoundingClientRect();
             if(isDrawing) {
                 isDrawing = false; guide.style.display = 'none';
                 const w = parseFloat(guide.style.width); const h = parseFloat(guide.style.height);
                 
-                if(w > 5 || h > 5) {
+                if(w > 10 || h > 10) {
                     if(currentTool === 'line') {
-                        const endX = e.clientX - r.left; const endY = e.clientY - r.top;
+                        const endX = parseFloat(guide.style.width) * Math.cos(parseFloat(guide.style.transform.replace(/[^0-9\-.,]/g,'')) * Math.PI / 180) + startX;
+                        const endY = parseFloat(guide.style.width) * Math.sin(parseFloat(guide.style.transform.replace(/[^0-9\-.,]/g,'')) * Math.PI / 180) + startY;
                         ObjectManager.create(currentTool, startX/r.width, startY/r.height, (endX-startX)/r.width, (endY-startY)/r.height);
                     } else {
                         let cx = parseFloat(guide.style.left) + (w/2);
@@ -776,7 +769,7 @@
         });
 
         // ---------------------------------------------------------
-        // 7. GESTIÓN DE OBJETOS (LA BÓVEDA)
+        // 7. GESTIÓN DE OBJETOS EN RAM (LA BÓVEDA)
         // ---------------------------------------------------------
         const ObjectManager = {
             create(type, x, y, w=0, h=0, ext={}) {
@@ -790,17 +783,11 @@
                     text: '', img: ext.imgData||null 
                 };
                 
-                if(type==='text') obj.text = "";
+                if(type==='text') obj.text = "Texto...";
                 if(type==='check') { obj.text = "✓"; obj.size *= 1.5; }
                 if(type==='cross') { obj.text = "✗"; obj.size *= 1.5; }
                 if(type==='stamp') { obj.text = document.getElementById('stampText').value; obj.size *= 2; }
-                
-                if(type==='date') { 
-                    const d = new Date(); 
-                    obj.type = 'text'; 
-                    obj.text = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`; 
-                }
-                
+                if(type==='date') { const d = new Date(); obj.type = 'text'; obj.text = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`; }
                 if(type==='whiteout') { obj.type = 'redact'; obj.color = '#FFFFFF'; }
 
                 DB[currentPage].push(obj);
@@ -811,7 +798,7 @@
                 
                 setTimeout(() => {
                     this.select(id);
-                    if(type==='text') { const el = document.getElementById(id); if(el) el.focus(); }
+                    if(type==='text') { const el = document.getElementById(id); if(el) el.focus(); document.execCommand('selectAll', false, null); }
                 }, 10);
             },
             
@@ -902,10 +889,8 @@
                 if(o) {
                     document.getElementById('sliderSize').value = o.type==='stamp' ? o.size/2 : (o.type==='check'||o.type==='cross'? o.size/1.5 : o.size);
                     document.getElementById('lblSize').innerText = document.getElementById('sliderSize').value + 'pt';
-                    
                     document.getElementById('sliderStroke').value = o.stroke || 2;
                     document.getElementById('lblStroke').innerText = (o.stroke || 2) + 'px';
-                    
                     document.getElementById('sliderOpacity').value = o.opacity || 100;
                     document.getElementById('lblOpacity').innerText = (o.opacity || 100) + '%';
                     
@@ -1010,25 +995,23 @@
             return { r: parseInt(hex.substring(0,2), 16)/255, g: parseInt(hex.substring(2,4), 16)/255, b: parseInt(hex.substring(4,6), 16)/255 };
         }
 
-        // Sistema Nativo de Descarga (Bypass de FileSaver.js para mayor seguridad)
+        // Descarga Nativa (Bypass de bloqueadores y vaciados)
         function nativeDownload(bytes, filename) {
             const blob = new Blob([bytes], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
         }
 
         const ExportEngine = {
             async buildPDF() {
                 Loader.show("Compilando código binario y quemando vectores...");
-                
+                await new Promise(r => setTimeout(r, 600)); // Breve pausa para estabilizar la memoria UI
+
                 try {
-                    // Cargar desde una copia exacta del buffer original para evitar corrupción de RAM
+                    // Cargar copia exacta virgen
                     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal.slice(0));
                     const pages = pdfDoc.getPages();
                     
@@ -1044,7 +1027,7 @@
                         const { width: pW, height: pH } = pPdf.getSize();
 
                         for(let o of objs) {
-                            try { // SHIELD: Si el objeto está mal construido, PDF-Lib no se bloquea.
+                            try { // SHIELD ANTI-CORRUPCIÓN INDIVIDUAL
                                 if(typeof o.x !== 'number' || typeof o.y !== 'number') continue;
 
                                 const c = hex2rgb(o.color || '#000000');
@@ -1053,9 +1036,8 @@
                                 const pOpac = (parseFloat(o.opacity) || 100) / 100;
                                 const pStroke = parseFloat(o.stroke) || 2;
                                 
-                                // Traducción matemática exacta (Porcentaje * Total Puntos PDF)
                                 const pdfX = o.x * pW;
-                                const pdfY = pH - (o.y * pH); // Invertimos Y porque PDF-Lib lee desde abajo
+                                const pdfY = pH - (o.y * pH); // Invertimos Y para PDF-Lib
 
                                 if(o.type === 'check') {
                                     const w = fSym.widthOfTextAtSize('4', pSize);
@@ -1066,7 +1048,6 @@
                                     pPdf.drawText('8', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor, opacity: pOpac });
                                 }
                                 else if(o.type === 'text') {
-                                    // Limpieza de caracteres no compatibles con WinAnsi
                                     let safeText = o.text ? o.text.replace(/[^\x00-\xFF]/g, "") : ""; 
                                     if(safeText.trim().length > 0) {
                                         const lines = safeText.split('\n');
@@ -1102,17 +1083,18 @@
                                 }
                                 else if(o.type === 'image' && o.img) {
                                     let embed = o.img.startsWith('data:image/png') ? await pdfDoc.embedPng(o.img) : await pdfDoc.embedJpg(o.img);
-                                    // Escala aproximada basándose en el size (150px html = escala)
                                     const dims = embed.scale(0.5 * (pSize/14)); 
                                     pPdf.drawImage(embed, { x: pdfX - (dims.width/2), y: pdfY - (dims.height/2), width: dims.width, height: dims.height, opacity: pOpac });
                                 }
                             } catch(objError) {
-                                console.warn("Objeto omitido por corrupción de datos.");
+                                console.warn("Objeto omitido por corrupción de datos.", objError);
                             }
                         }
                     }
 
-                    // Aplanado final seguro
+                    Loader.show("Aplanando capas y sellando documento...");
+                    await new Promise(r => setTimeout(r, 600)); // Breve pausa de aplanado
+
                     try { const form = pdfDoc.getForm(); if(form) form.flatten(); } catch(e){}
 
                     const bytes = await pdfDoc.save();
@@ -1121,9 +1103,8 @@
 
                 } catch(e) {
                     console.error("Critical Engine Error:", e);
-                    Toast.show("Fallo en la compilación principal. Intentando recuperación...", "warning");
-                    // Protocolo de Emergencia: Descarga el PDF Original para no perder el archivo.
-                    try { nativeDownload(pdfBytesOriginal, `Recuperado_${Date.now()}.pdf`); } catch(fallbackErr) {}
+                    Toast.show("Fallo en compilación evitado. Descargando recuperación.", "warning");
+                    try { nativeDownload(pdfBytesOriginal.slice(0), `Recuperado_${Date.now()}.pdf`); } catch(fallbackErr) {}
                 } finally {
                     Loader.hide();
                 }
