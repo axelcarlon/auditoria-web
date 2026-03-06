@@ -10,9 +10,9 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root { 
@@ -24,58 +24,45 @@
             --brand: #3B82F6; 
             --brand-glow: rgba(59, 130, 246, 0.4);
             --success: #10B981;
+            --danger: #EF4444;
         }
         
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;}
         *, *::before, *::after { box-sizing: border-box; }
         
-        /* Contenedor central alineado */
         .login-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 20px; position: relative;}
-        
-        /* Fondo Tecnológico con Destellos */
-        .login-wrapper::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 40px 40px; opacity: 0.05; z-index: 0; pointer-events: none;
-        }
-        .login-wrapper::after {
-            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
-            z-index: 0; pointer-events: none;
-        }
+        .login-wrapper::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 40px 40px; opacity: 0.05; z-index: 0; pointer-events: none;}
+        .login-wrapper::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%); z-index: 0; pointer-events: none;}
 
-        /* Tarjeta de Login */
-        .login-card { position: relative; z-index: 1; width: 100%; max-width: 440px; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.6); padding: 50px 40px; }
+        .login-card { position: relative; z-index: 1; width: 100%; max-width: 440px; background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 25px 50px rgba(0,0,0,0.6); padding: 50px 40px; }
         
         .login-header { text-align: center; margin-bottom: 40px; }
         .login-icon { width: 64px; height: 64px; background: rgba(59, 130, 246, 0.1); color: var(--brand); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);}
         .login-title { font-size: 26px; font-weight: 900; margin: 0 0 10px 0; letter-spacing: -0.5px; color: white; }
         .login-desc { font-size: 14px; color: var(--text-muted); margin: 0; }
 
-        /* Formulario */
         .input-group { margin-bottom: 25px; text-align: left; }
         .input-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-control { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); color: white; padding: 14px 16px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s; font-family: 'Inter', sans-serif;}
+        .input-control { width: 100%; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); color: white; padding: 14px 16px; border-radius: 10px; font-size: 14px; outline: none; transition: 0.3s;}
         .input-control:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); background: rgba(15, 23, 42, 0.9);}
-        .input-control::placeholder { color: #64748B; }
 
         .form-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; font-size: 13px; }
         .remember-me { display: flex; align-items: center; gap: 8px; color: var(--text-muted); cursor: pointer; }
         .forgot-pwd { color: var(--brand); text-decoration: none; font-weight: 600; transition: 0.2s; }
         .forgot-pwd:hover { color: #60A5FA; text-decoration: underline; }
 
-        /* Botón de Acceso */
         .btn-login { width: 100%; background: var(--brand); color: white; border: none; padding: 16px; border-radius: 10px; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .btn-login:hover { transform: translateY(-2px); background: #2563EB; box-shadow: 0 8px 25px var(--brand-glow); }
-        .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        /* Footer de la tarjeta */
         .login-footer { margin-top: 30px; text-align: center; border-top: 1px solid var(--border); padding-top: 25px; }
         .register-link { color: var(--text-muted); font-size: 14px; }
         .register-link a { color: white; font-weight: bold; text-decoration: none; margin-left: 5px; transition: 0.2s; }
         .register-link a:hover { color: var(--brand); }
 
         .security-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; font-size: 11px; color: var(--success); font-weight: 700; letter-spacing: 0.5px; background: rgba(16, 185, 129, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2);}
+        
+        #errorMsg { color: #FCA5A5; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; display: none; text-align: center;}
 
         @media (max-width: 480px) {
             .login-card { padding: 40px 20px; }
@@ -98,7 +85,9 @@
                 <p class="login-desc">Ingresa tus credenciales corporativas para entrar al motor de auditoría forense.</p>
             </div>
 
-            <form id="formAcceso" onsubmit="procesarLogin(event)">
+            <div id="errorMsg"></div>
+
+            <form id="formLogin">
                 <div class="input-group">
                     <label class="input-label" for="email">Correo Electrónico</label>
                     <input type="email" id="email" class="input-control" placeholder="ejemplo@empresa.com" required>
@@ -124,7 +113,7 @@
 
             <div class="login-footer">
                 <div class="register-link">
-                    ¿No tienes una licencia activa? <a href="planes.html">Ver Planes</a>
+                    ¿No tienes una cuenta? <a href="registro.html">Regístrate aquí</a>
                 </div>
                 <div class="security-badge">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
@@ -138,34 +127,76 @@
     <script src="footer.js"></script>
 
     <script>
-        // Simulación de Auth y validación de seguridad
-        function procesarLogin(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('btnSubmit');
-            const originalText = btn.innerHTML;
-            const email = document.getElementById('email').value;
-            
-            // Animación de carga
-            btn.innerHTML = `<svg class="animate-spin" style="animation: spin 1s linear infinite;" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> VERIFICANDO ENCRIPTACIÓN...`;
-            btn.disabled = true;
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('formLogin');
+            const errorMsg = document.getElementById('errorMsg');
+            let supabase;
 
-            // Simular un request al servidor de 1.5 segundos
-            setTimeout(() => {
-                // Aquí podrías validar si existe en tu base de datos.
-                // Como es frontend por ahora, mostramos un error de prueba indicando que el módulo de usuarios está en desarrollo.
-                if(typeof window.showToast === 'function') {
-                    window.showToast(`Conexión rechazada. La licencia para ${email} no se encuentra activa en el servidor.`, 'error');
-                } else {
-                    alert('Licencia no activa.');
+            // 1. INICIALIZAR SUPABASE
+            try {
+                const supabaseUrl = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE'; 
+                
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            } catch (err) {
+                errorMsg.innerText = "Error cargando los servicios. Verifica tu conexión.";
+                errorMsg.style.display = 'block';
+            }
+
+            // 2. LÓGICA DE INICIO DE SESIÓN
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Bloquea la recarga de página
+
+                if (!supabase) return;
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const btn = document.getElementById('btnSubmit');
+                const originalText = btn.innerHTML;
+
+                // Animación de carga
+                btn.innerHTML = `<svg style="animation: spin 1s linear infinite;" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> VERIFICANDO ENCRIPTACIÓN...`;
+                btn.disabled = true;
+                errorMsg.style.display = 'none';
+
+                try {
+                    // Consultamos a la base de datos de Supabase
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                    });
+
+                    // Si hay un error (contraseña incorrecta o correo no existe)
+                    if (error) throw error;
+
+                    // LOGIN EXITOSO: 
+                    // Supabase automáticamente guarda la sesión segura en el navegador.
+                    if(typeof window.showToast === 'function') {
+                        window.showToast("Acceso Autorizado. Iniciando sistema...", "success");
+                    }
+                    
+                    // Lo mandamos de regreso al inicio (Dashboard)
+                    setTimeout(() => {
+                        window.location.href = "index.html"; 
+                    }, 1000);
+
+                } catch (error) {
+                    console.error("Fallo de Login:", error);
+                    
+                    // Traducir los errores al español para el usuario
+                    let msj = error.message;
+                    if (msj === "Invalid login credentials") msj = "Correo o contraseña incorrectos.";
+                    if (msj === "Email not confirmed") msj = "Por favor confirma tu correo electrónico primero.";
+
+                    errorMsg.innerText = msj;
+                    errorMsg.style.display = 'block';
+                    
+                    // Restaurar el botón
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }
-                
-                // Restaurar botón
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                
-            }, 1500);
-        }
+            });
+        });
     </script>
 </body>
 </html>
