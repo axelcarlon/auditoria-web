@@ -235,7 +235,6 @@
         return text;
     }
 
-    // MOTOR HEURÍSTICO AVANZADO (REGEX MULTI-DIRECCIONAL) PARA EXTRAER DATA DEL TEXTO CRUDO
     function parseSATDocument(rawText) {
         let docData = {
             isCSF: false,
@@ -248,7 +247,6 @@
             fechaEmision: null
         };
 
-        // Normalizamos espacios largos y saltos de línea para domar el PDF.js
         let t = rawText.replace(/\s+/g, ' ');
 
         // 1. Detección de Tipo de Documento
@@ -259,15 +257,14 @@
             docData.is32D = true;
         }
 
-        // 2. Extracción de RFC (Regex Maestro de RFC Mexicano)
+        // 2. Extracción de RFC
         const rfcMatch = t.match(/([A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3})/i);
         if(rfcMatch) docData.rfc = rfcMatch[1].toUpperCase();
 
         // 3. Lógica para CSF (Constancia)
         if(docData.isCSF) {
             
-            // -- EXTRACCIÓN DE NOMBRE (EL RETO DEL PDF.js) --
-            // Intento A: Formato "Persona Física" en tabla inferior
+            // Extracción de Nombre Multi-direccional
             let m_n = t.match(/Nombre\s*\(s\):?\s*([A-ZÑ\s]+?)\s*Primer\s*Apellido/i);
             let m_p = t.match(/Primer\s*Apellido:?\s*([A-ZÑ\s]+?)\s*Segundo\s*Apellido/i);
             let m_s = t.match(/Segundo\s*Apellido:?\s*([A-ZÑ\s]+?)\s*(?:Fecha|Datos)/i);
@@ -276,19 +273,17 @@
                 let full = `${m_n?m_n[1].trim():''} ${m_p?m_p[1].trim():''} ${m_s?m_s[1].trim():''}`.replace(/\s+/g, ' ').trim();
                 docData.nombreLegal = full;
             } 
-            // Intento B: Formato Invertido (PDF dibuja el nombre antes que la etiqueta)
             else if (docData.rfc) {
                 let rgxInv = new RegExp(docData.rfc + "\\s*(?:Registro Federal de Contribuyentes)?\\s*([A-ZÑ&\\s\\.,]+?)\\s*Nombre,\\s*denominaci", "i");
                 let mInv = t.match(rgxInv);
                 if (mInv && mInv[1].trim().length > 3) docData.nombreLegal = mInv[1].trim();
             }
-            // Intento C: Formato Tradicional
             if (!docData.nombreLegal) {
                 let mTrad = t.match(/(?:Nombre,\s*denominación\s*o\s*razón\s*social:|Nombre\(s\):)\s*([A-ZÑ&\s\.,]+?)(?=\s*(?:idCIF|Registro|Primer|Segundo|VALIDA))/i);
                 if(mTrad) docData.nombreLegal = mTrad[1].trim();
             }
 
-            // Limpieza CFDI 4.0 (Remover regímenes de capital)
+            // Limpieza SA de CV
             if (docData.nombreLegal) {
                 docData.nombreLegal = docData.nombreLegal
                     .replace(/,\s*S\.?\s*A\.?\s*DE\s*C\.?\s*V\.?/g, '')
@@ -299,11 +294,11 @@
                     .trim().toUpperCase();
             }
 
-            // -- EXTRACCIÓN DE CÓDIGO POSTAL --
+            // Código Postal
             const cpMatch = t.match(/(?:C[ÓO]DIGO\s*POSTAL:|C\.P\.)\s*(\d{5})/i);
             if(cpMatch) docData.cp = cpMatch[1];
 
-            // -- EXTRACCIÓN DE RÉGIMEN FISCAL (Soporta múltiples regímenes) --
+            // -- EXTRACCIÓN DE RÉGIMEN FISCAL (Soporta múltiples regímenes y limpia basura) --
             let regMatches = [...t.matchAll(/(R[ée]gimen\s+[A-Za-zÁÉÍÓÚáéíóúÑñ\s,y]+?)(?=\s*\d{2}\/\d{2}\/\d{4})/gi)];
             if(regMatches.length > 0) {
                 let regs = regMatches.map(m => {
@@ -320,8 +315,9 @@
                 const regMatch = t.match(/(?:Régimen:|Régimen Fiscal:)\s*(.*?)(?=\s*Fecha|$)/i);
                 if(regMatch) docData.regimen = regMatch[1].trim();
             }
+        }
 
-        // 4. Lógica para 32-D (Opinión)
+        // 4. Lógica para 32-D
         if(docData.is32D) {
             if(t.match(/opinión\s*POSITIVA/i)) docData.opinion = "POSITIVA";
             else if (t.match(/opinión\s*NEGATIVA/i)) docData.opinion = "NEGATIVA";
@@ -333,7 +329,6 @@
         return docData;
     }
 
-    // EVALUADOR DE CADUCIDAD (30 DÍAS LEY)
     function evaluarVigencia32D(fechaStr) {
         if(!fechaStr) return { valida: false, msj: "Fecha ilegible" };
         
@@ -515,4 +510,3 @@
 </script>
 </body>
 </html>
-
