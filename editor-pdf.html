@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Studio Forense | AuditorIA</title>
-    <meta name="description" content="La cúspide de la ofimática fiscal. 34 súper herramientas forenses para manipular, blindar y auditar PDFs al 100% en tu memoria RAM.">
+    <meta name="description" content="La cúspide de la ofimática fiscal. 33 súper herramientas forenses para manipular, blindar y auditar PDFs al 100% en tu memoria RAM.">
     <link rel="canonical" href="https://auditoriaxml.mx/editor-pdf.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -57,34 +57,6 @@
         #pdfCanvas { max-width: 100%; height: auto; border: 1px solid rgba(255,255,255,0.2); cursor: crosshair; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: white;}
         .coords-badge { position: absolute; top: 20px; left: 20px; background: var(--brand); color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 900; font-family: monospace; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none; z-index: 10;}
 
-        /* ===================================================
-           ESTILOS LA CÚSPIDE: EDITOR LIBRE PRO (CANVAS INTERACTIVO)
-           =================================================== */
-        .editor-pro-container { display: none; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: #000; grid-template-columns: 280px 1fr; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        .editor-sidebar { background: var(--bg-primary); padding: 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px; overflow-y: auto;}
-        .editor-sidebar h4 { margin: 0; font-size: 14px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
-        
-        .tool-btn { background: var(--bg-secondary); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; transition: 0.2s;}
-        .tool-btn:hover { border-color: var(--brand); background: rgba(220,38,38,0.1);}
-        .tool-btn.active { background: var(--brand); border-color: var(--brand); color: white;}
-        
-        .color-picker { display: flex; gap: 10px; margin-top: 10px;}
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s;}
-        .color-dot.active { border-color: white; transform: scale(1.1);}
-        
-        .editor-canvas-wrapper { display: flex; justify-content: center; align-items: flex-start; padding: 20px; background: #111; overflow: hidden; position: relative;}
-        /* El lienzo se ajusta a la altura de la pantalla (Scroll-Free) */
-        #editorCanvas { max-height: 70vh; width: auto; object-fit: contain; box-shadow: 0 0 20px rgba(0,0,0,0.8); background: white; }
-        
-        /* Capa de Anotaciones que flota encima del Canvas */
-        #annotationLayer { position: absolute; pointer-events: none; overflow: hidden; }
-        .annotation-item { position: absolute; pointer-events: auto; cursor: default; white-space: nowrap; font-family: monospace; font-weight: bold; }
-        
-        .page-controls { display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); border-radius: 8px; padding: 5px;}
-        .page-btn { background: transparent; border: none; color: var(--brand); font-weight: bold; padding: 10px; cursor: pointer;}
-        .page-btn:hover { color: white;}
-
         .btn-action { background: var(--brand); color: white; border: none; padding: 20px 40px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
@@ -95,7 +67,7 @@
         .meta-key { color: var(--text-muted); font-weight: bold;}
         .meta-val { color: var(--success); font-weight: 900; text-align: right; max-width: 60%; word-wrap: break-word;}
 
-        /* BENTO GRID 34 TOOLS */
+        /* BENTO GRID TOOLS */
         .grid-header { font-size: 20px; font-weight: 900; color: white; margin: 50px 0 20px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border); padding-bottom: 10px;}
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
         
@@ -114,8 +86,6 @@
             .workspace { padding: 20px; }
             .workspace-header { flex-direction: column; align-items: flex-start; }
             .tools-grid { grid-template-columns: 1fr; }
-            .editor-pro-container { grid-template-columns: 1fr; }
-            .editor-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
         }
     </style>
 </head>
@@ -125,9 +95,9 @@
 
 <div class="container">
     <div class="header-section" id="mainHeader">
-        <div class="header-badge">FRAMEWORK DE MANIPULACIÓN BINARIA CÚSPIDE (RAM)</div>
-        <h1 style="font-size: 42px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">AuditorIA PDF Studio Pro</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 900px; margin: 0 auto;">El ecosistema definitivo. 34 súper herramientas paramétricas para editar, extraer, auditar y blindar expedientes. El procesamiento ocurre al 100% en la memoria de tu equipo. Cero servidores, cero fugas de información, confidencialidad extrema.</p>
+        <div class="header-badge">FRAMEWORK DE MANIPULACIÓN BINARIA (RAM)</div>
+        <h1 style="font-size: 42px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">AuditorIA PDF Studio</h1>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 900px; margin: 0 auto;">El ecosistema definitivo. 33 súper herramientas paramétricas para editar, extraer, auditar y blindar expedientes. El procesamiento ocurre al 100% en la memoria de tu equipo. Cero servidores, cero fugas de información, confidencialidad extrema.</p>
     </div>
 
     <div class="workspace" id="workspace">
@@ -151,61 +121,6 @@
 
         <div class="param-grid" id="dynamicInputs"></div>
 
-        <div class="editor-pro-container" id="editorProContainer">
-            
-            <div class="editor-sidebar">
-                <div>
-                    <h4>Paginación</h4>
-                    <div class="page-controls">
-                        <button class="page-btn" onclick="cambiarPaginaEditor(-1)">◀ Ant</button>
-                        <span id="editorPageIndicator" style="font-size:14px; font-weight:bold; color:white;">Pág 1</span>
-                        <button class="page-btn" onclick="cambiarPaginaEditor(1)">Sig ▶</button>
-                    </div>
-                </div>
-
-                <div>
-                    <h4>Herramientas de Inyección</h4>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button class="tool-btn active" id="btnToolText" onclick="setEditorTool('text')">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg> Insertar Texto
-                        </button>
-                        <button class="tool-btn" id="btnToolCheck" onclick="setEditorTool('check')">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Palomita (SAT)
-                        </button>
-                        <button class="tool-btn" id="btnToolCross" onclick="setEditorTool('cross')">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg> Cruz / Tache
-                        </button>
-                        <button class="tool-btn" id="btnToolBox" onclick="setEditorTool('box')">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg> Tachar / Censurar
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <h4>Propiedades</h4>
-                    <div class="control-group" style="margin-bottom: 10px;">
-                        <label class="control-label" style="font-size: 10px;">Tamaño</label>
-                        <input type="range" id="editorSize" min="8" max="72" value="14" style="width:100%;">
-                    </div>
-                    <div class="color-picker">
-                        <div class="color-dot active" style="background: #000000;" onclick="setEditorColor('#000000', this)"></div>
-                        <div class="color-dot" style="background: #2563EB;" onclick="setEditorColor('#2563EB', this)"></div>
-                        <div class="color-dot" style="background: #DC2626;" onclick="setEditorColor('#DC2626', this)"></div>
-                    </div>
-                </div>
-
-                <div style="margin-top: auto;">
-                    <button class="tool-btn" style="width: 100%; justify-content: center; background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: var(--warning);" onclick="deshacerAnotacion()">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg> Deshacer Último
-                    </button>
-                </div>
-            </div>
-
-            <div class="editor-canvas-wrapper" id="canvasWrapper">
-                <canvas id="editorCanvas"></canvas>
-                <div id="annotationLayer"></div> </div>
-            
-        </div>
         <div class="preview-container" id="previewContainer">
             <div class="coords-badge" id="coordBadge">X: -- | Y: -- (Centro por defecto)</div>
             <div class="preview-title" id="previewTitle">Modo Interactivo: Haz clic en el documento para marcar la coordenada exacta</div>
@@ -224,12 +139,14 @@
         
         <h2 class="grid-header">I. Edición, Arquitectura y Ensamblaje</h2>
         <div class="tools-grid">
-            <div class="tool-card" style="border-color: var(--brand); background: rgba(220, 38, 38, 0.05);" onclick="abrirHerramienta('editor')">
+            
+            <div class="tool-card" style="border-color: var(--brand); background: rgba(220, 38, 38, 0.05);" onclick="window.location.href='editor-pro.html'">
                 <div class="tool-icon" style="background: var(--brand); color: white;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></div>
                 <h3 class="tool-title">1. Editor Libre (Canvas Pro)</h3>
-                <p class="tool-desc">La cúspide. Renderiza el PDF a hoja completa. Inyecta texto, marcas de verificación y cajas de censura haciendo clic directo sobre el documento.</p>
-                <div class="badge-king">CÚSPIDE</div>
+                <p class="tool-desc">El motor definitivo. Un entorno de trabajo dedicado (Mini-Adobe). Visualiza el PDF completo y modifica coordenadas, inyecta firmas, textos y censura en tiempo real con precisión milimétrica.</p>
+                <div class="badge-king">PRO</div>
             </div>
+
             <div class="tool-card" onclick="abrirHerramienta('fusion')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></div>
                 <h3 class="tool-title">2. Fusión Dinámica</h3>
@@ -424,14 +341,6 @@
     let currentFiles = [];
     let lastScrollPos = 0; // Memoria de Scroll
     let clickCoords = { x: -1, y: -1 }; 
-    
-    // Variables Globales Editor Pro
-    let editorConfig = { tool: 'text', color: '#000000', size: 14 };
-    let editorAnnotations = []; // { page, type, x, y, text, color, size }
-    let currentEditorPage = 1;
-    let totalEditorPages = 1;
-    let renderScaleX = 1;
-    let renderScaleY = 1;
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
@@ -462,12 +371,9 @@
         drop.classList.add('filled');
         document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM listos para procesar.`;
 
-        // Disparar previsualización táctica (Cúspide / Sign)
-        if(activeTool === 'sign') renderPreviewPDF();
-        if(activeTool === 'editor') {
-            currentEditorPage = 1;
-            editorAnnotations = [];
-            renderEditorPDF();
+        // Disparar previsualización táctica (Sign)
+        if(activeTool === 'sign' && currentFiles.length > 0) {
+            renderPreviewPDF();
         }
     }
 
@@ -492,16 +398,11 @@
         
         // Contenedores a ocultar/mostrar
         const preview = document.getElementById('previewContainer');
-        const editorPro = document.getElementById('editorProContainer');
-        const btnEjecutar = document.getElementById('btnEjecutar');
 
         grid.style.display = 'none';
         mainH.style.display = 'none';
         ws.style.display = 'block';
         preview.style.display = 'none';
-        editorPro.style.display = 'none';
-        btnEjecutar.style.display = 'inline-flex';
-        document.getElementById('txtBtnEjecutar').innerText = "EJECUTAR ALGORITMO FORENSE";
         
         dInputs.innerHTML = '';
         dropDesc.innerText = "Arrastra tus PDFs aquí.";
@@ -509,15 +410,8 @@
         
         window.scrollTo(0, 0);
 
-        // CONFIGURADOR PARAMÉTRICO DE LAS 34 HERRAMIENTAS (Activas)
+        // CONFIGURADOR PARAMÉTRICO DE LAS 33 HERRAMIENTAS (Activas en este archivo)
         switch(tool) {
-            case 'editor':
-                wsTitle.innerText = "1. Editor Libre (Canvas Pro)";
-                wsDesc.innerText = "Sube un PDF. Selecciona la herramienta de la barra izquierda, elige color y tamaño, y haz clic directo en el documento para inyectar textos, palomitas de revisión o cajas de censura.";
-                inputF.multiple = false;
-                editorPro.style.display = 'grid'; // Mostrar UI Pro
-                document.getElementById('txtBtnEjecutar').innerText = "GUARDAR CAMBIOS E IMPRIMIR PDF";
-                break;
             case 'fusion':
                 wsTitle.innerText = "2. Fusión Dinámica";
                 wsDesc.innerText = "Une múltiples archivos. Puedes simplemente poner un PDF tras otro, o usar el algoritmo de intercalado para barajar las hojas (ideal si escaneaste frentes y reversos por separado).";
@@ -590,7 +484,7 @@
                         <label class="control-label">Archivo de Firma (.PNG transparente)</label>
                         <input type="file" id="sigInput" accept="image/png" class="control-input" style="padding: 10px;">
                     </div>
-                    <p style="color:var(--text-muted); font-size:12px; grid-column: span 2; margin-top:0;">*Sube el PDF para abrir la vista interactiva. El motor firmará automáticamente todos los documentos en la página y coordenada que indiques.</p>
+                    <p style="color:var(--warning); font-size:12px; grid-column: span 2; margin-top:0;">*Sube el PDF primero para que aparezca la previsualización. Haz clic en la imagen para marcar las coordenadas donde caerá la firma.</p>
                 `;
                 break;
             case 'watermark':
@@ -662,154 +556,6 @@
         document.getElementById('mainHeader').style.display = 'block';
         document.getElementById('toolsGrid').style.display = 'grid';
         window.scrollTo(0, lastScrollPos); // Regresa a donde estaba
-    }
-
-    function toastConstruccion() {
-        if(typeof window.showToast === 'function') window.showToast("Módulo avanzado programado para la V2.", "warning");
-        else alert("Módulo avanzado programado para la V2.");
-    }
-
-    // =========================================================================
-    // LÓGICA DEL EDITOR LIBRE PRO (CANVAS INTERACTIVO WYSIWYG)
-    // =========================================================================
-    
-    function setEditorTool(tool) {
-        editorConfig.tool = tool;
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('btnTool' + tool.charAt(0).toUpperCase() + tool.slice(1)).classList.add('active');
-        
-        const canvas = document.getElementById('editorCanvas');
-        if(tool === 'text') canvas.style.cursor = 'text';
-        else canvas.style.cursor = 'crosshair';
-    }
-
-    function setEditorColor(color, el) {
-        editorConfig.color = color;
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    document.getElementById('editorSize').addEventListener('input', (e) => {
-        editorConfig.size = parseInt(e.target.value);
-    });
-
-    async function renderEditorPDF() {
-        if(currentFiles.length === 0) return;
-        try {
-            const file = currentFiles[0]; 
-            const arrayBuffer = await file.arrayBuffer();
-            const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
-            const pdf = await loadingTask.promise;
-            
-            totalEditorPages = pdf.numPages;
-            if(currentEditorPage > totalEditorPages) currentEditorPage = totalEditorPages;
-            if(currentEditorPage < 1) currentEditorPage = 1;
-            
-            document.getElementById('editorPageIndicator').innerText = `Pág ${currentEditorPage} de ${totalEditorPages}`;
-            
-            const page = await pdf.getPage(currentEditorPage);
-            const canvas = document.getElementById('editorCanvas');
-            const context = canvas.getContext('2d');
-            
-            // Auto-Escalar para que quepa en el contenedor 70vh sin scroll (Scroll-Free)
-            const containerHeight = window.innerHeight * 0.70;
-            const unscaledViewport = page.getViewport({scale: 1.0});
-            let scale = containerHeight / unscaledViewport.height;
-            if(scale > 1.5) scale = 1.5; // Limitar zoom masivo para que no se deforme
-            if(window.innerWidth < 768) scale = window.innerWidth / unscaledViewport.width; // Responsivo celular
-            
-            const viewport = page.getViewport({scale: scale}); 
-            
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            
-            await page.render({canvasContext: context, viewport: viewport}).promise;
-            
-            // Sincronizar capa de anotaciones (WYSIWYG)
-            const layer = document.getElementById('annotationLayer');
-            layer.style.width = canvas.clientWidth + 'px';
-            layer.style.height = canvas.clientHeight + 'px';
-            layer.style.top = canvas.offsetTop + 'px';
-            layer.style.left = canvas.offsetLeft + 'px';
-            
-            // Guardar escalas reales de conversión a PDF para cuando se imprima
-            renderScaleX = unscaledViewport.width / canvas.clientWidth;
-            renderScaleY = unscaledViewport.height / canvas.clientHeight;
-
-            renderAnnotationsOverlay();
-
-            // EVENTO CLIC EN CANVAS PARA INYECTAR
-            canvas.onclick = function(e) {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                if(editorConfig.tool === 'text') {
-                    let text = prompt("Escribe el texto a inyectar:");
-                    if(text && text.trim() !== "") {
-                        editorAnnotations.push({ page: currentEditorPage, type: 'text', text: text, x: x, y: y, color: editorConfig.color, size: editorConfig.size });
-                        renderAnnotationsOverlay();
-                    }
-                } 
-                else if(editorConfig.tool === 'check') {
-                    editorAnnotations.push({ page: currentEditorPage, type: 'text', text: '✓', x: x, y: y, color: editorConfig.color, size: editorConfig.size * 1.5 });
-                    renderAnnotationsOverlay();
-                }
-                else if(editorConfig.tool === 'cross') {
-                    editorAnnotations.push({ page: currentEditorPage, type: 'text', text: '✗', x: x, y: y, color: editorConfig.color, size: editorConfig.size * 1.5 });
-                    renderAnnotationsOverlay();
-                }
-                else if(editorConfig.tool === 'box') {
-                    editorAnnotations.push({ page: currentEditorPage, type: 'box', text: '', x: x, y: y, color: editorConfig.color, size: editorConfig.size });
-                    renderAnnotationsOverlay();
-                }
-            };
-
-        } catch(e) {
-            console.error("Fallo Editor Visual: ", e);
-        }
-    }
-
-    function renderAnnotationsOverlay() {
-        const layer = document.getElementById('annotationLayer');
-        layer.innerHTML = '';
-        
-        editorAnnotations.forEach((ann) => {
-            if(ann.page !== currentEditorPage) return;
-
-            const el = document.createElement('div');
-            el.className = 'annotation-item';
-            el.style.left = ann.x + 'px';
-            
-            if(ann.type === 'text') {
-                el.innerText = ann.text;
-                el.style.color = ann.color;
-                el.style.fontSize = ann.size + 'px';
-                // Ajuste de altura para que el click corresponda a la base de la letra
-                el.style.top = (ann.y - ann.size) + 'px'; 
-            } else if (ann.type === 'box') {
-                el.style.top = (ann.y - (ann.size/2)) + 'px';
-                el.style.width = (ann.size * 4) + 'px';
-                el.style.height = (ann.size * 1.2) + 'px';
-                el.style.backgroundColor = ann.color;
-                el.style.opacity = '1';
-            }
-            layer.appendChild(el);
-        });
-    }
-
-    function cambiarPaginaEditor(dir) {
-        currentEditorPage += dir;
-        if(currentEditorPage < 1) currentEditorPage = 1;
-        if(currentEditorPage > totalEditorPages) currentEditorPage = totalEditorPages;
-        renderEditorPDF();
-    }
-
-    function deshacerAnotacion() {
-        if(editorAnnotations.length > 0) {
-            editorAnnotations.pop();
-            renderAnnotationsOverlay();
-        }
     }
 
     // =========================================================================
@@ -898,18 +644,10 @@
         return Array.from(set);
     }
 
-    // Hex a RGB para PDF-Lib
-    function hexToRgb(hex) {
-        let r = 0, g = 0, b = 0;
-        if (hex.length == 4) { r = "0x" + hex[1] + hex[1]; g = "0x" + hex[2] + hex[2]; b = "0x" + hex[3] + hex[3]; } 
-        else if (hex.length == 7) { r = "0x" + hex[1] + hex[2]; g = "0x" + hex[3] + hex[4]; b = "0x" + hex[5] + hex[6]; }
-        return { r: r / 255, g: g / 255, b: b / 255 };
-    }
-
     // =========================================================================
     // MOTOR CENTRAL DE BYTES BLINDADO (AQUÍ VIVEN LAS SÚPER FUNCIONES)
     // =========================================================================
-    async function ejecutarMotorCentral() {
+    async function procesarPDF() {
         if(currentFiles.length === 0) {
             if(typeof window.showToast === 'function') window.showToast("Sube archivos a la bóveda primero.", "error");
             else alert("La bóveda está vacía. Sube archivos primero.");
@@ -922,45 +660,18 @@
         document.getElementById('resultPanel').style.display = 'none';
 
         try {
-            
-            // ==========================================
-            // 1. EDITOR LIBRE PRO (CANVAS WYSIWYG)
-            // ==========================================
-            if(activeTool === 'editor') {
-                const arrayBuffer = await currentFiles[0].arrayBuffer();
-                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                const pages = pdfDoc.getPages();
-                const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-                
-                // Inyectar todas las anotaciones guardadas
-                editorAnnotations.forEach(ann => {
-                    const page = pages[ann.page - 1];
-                    const { width, height } = page.getSize();
-                    
-                    // Traducción matemática de coordenadas Screen -> PDF
-                    const pdfX = ann.x * renderScaleX;
-                    const pdfY = height - (ann.y * renderScaleY); // Invertir Y para PDF-Lib
-                    const cRgb = hexToRgb(ann.color);
-
-                    if(ann.type === 'text') {
-                        // Offset visual para que quede exactamente donde se hizo el click
-                        page.drawText(ann.text, { x: pdfX, y: pdfY - (ann.size*0.8), size: ann.size, font: helveticaFont, color: PDFLib.rgb(cRgb.r, cRgb.g, cRgb.b) });
-                    } else if (ann.type === 'box') {
-                        page.drawRectangle({ x: pdfX, y: pdfY - (ann.size), width: ann.size * 4, height: ann.size * 1.2, color: PDFLib.rgb(cRgb.r, cRgb.g, cRgb.b), opacity: 1 });
-                    }
-                });
-                
-                descargarBlob(await pdfDoc.save(), `PDF_Editado_${Date.now()}.pdf`);
-            }
 
             // ==========================================
             // 2. FUSIÓN DINÁMICA
             // ==========================================
-            else if(activeTool === 'fusion') {
+            if(activeTool === 'fusion') {
                 const mode = document.getElementById('mergeMode').value;
                 const finalPdf = await PDFLib.PDFDocument.create();
                 let loadedPdfs = [];
-                for(let file of currentFiles) loadedPdfs.push(await PDFLib.PDFDocument.load(await file.arrayBuffer()));
+                for(let file of currentFiles) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    loadedPdfs.push(await PDFLib.PDFDocument.load(arrayBuffer));
+                }
 
                 if(mode === 'standard') {
                     for(let donorPdf of loadedPdfs) {
@@ -1009,7 +720,7 @@
                     else pagesToExtract = new Set(parseRange(rangeStr, totalPages));
                     
                     let extractArr = Array.from(pagesToExtract).sort((a,b)=>a-b);
-                    if(extractArr.length === 0) throw new Error("Filtro no válido.");
+                    if(extractArr.length === 0) throw new Error("Filtro no válido o fuera de rango.");
 
                     const newPdf = await PDFLib.PDFDocument.create();
                     const copiedPages = await newPdf.copyPages(sourcePdf, extractArr);
@@ -1216,7 +927,7 @@
             if(typeof window.showToast === 'function') window.showToast(e.message, "error");
             else alert("Error: " + e.message);
         } finally {
-            btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span id="txtBtnEjecutar">${activeTool === 'editor' ? 'GUARDAR CAMBIOS E IMPRIMIR PDF' : 'EJECUTAR ALGORITMO FORENSE'}</span>`;
+            btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span id="txtBtnEjecutar">EJECUTAR ALGORITMO FORENSE</span>`;
             btn.disabled = false;
         }
     }
