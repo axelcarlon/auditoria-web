@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos de Servicio y Uso | AuditorIA</title>
+    <meta name="robots" content="noindex, follow">
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -8,36 +15,87 @@
       gtag('js', new Date());
       gtag('config', 'G-KJW30G9ETZ');
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Términos de Servicio | AuditorIA</title>
-    <meta name="robots" content="noindex, follow">
+    <script src="despertador.js"></script>
+
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: #F9FAFB; color: #374151; line-height: 1.6; margin: 0; padding: 40px 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
-        h1 { color: #111827; font-size: 28px; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; margin-bottom: 30px; }
-        h2 { color: #111827; font-size: 20px; margin-top: 30px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #2563EB; text-decoration: none; font-weight: 500; }
-        .back-link:hover { text-decoration: underline; }
+        :root { 
+            --bg-primary: #0F172A; 
+            --bg-secondary: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8; 
+            --border: rgba(255,255,255,0.1); 
+            --brand: #3B82F6; 
+            --accent: #E11D48;
+        }
+        
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; line-height: 1.8; overflow-x: hidden; }
+
+        .legal-container { max-width: 900px; margin: 60px auto; padding: 50px; background: var(--bg-secondary); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        
+        .legal-header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 40px; text-align: center;}
+        .legal-title { font-size: 32px; font-weight: 900; color: white; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+        .legal-date { color: var(--text-muted); font-size: 14px; font-family: monospace; }
+
+        .legal-content h2 { color: #93C5FD; font-size: 20px; margin-top: 40px; margin-bottom: 15px; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .legal-content p { color: #CBD5E1; font-size: 15px; margin-bottom: 20px; text-align: justify; }
+        .legal-content strong { color: white; }
+        .legal-content ul { color: #CBD5E1; font-size: 15px; margin-bottom: 20px; padding-left: 20px;}
+        .legal-content li { margin-bottom: 10px; }
+
+        .warning-box { background: rgba(225, 29, 72, 0.1); border-left: 4px solid var(--accent); padding: 20px; border-radius: 0 8px 8px 0; margin: 30px 0; }
+        .warning-box p { margin: 0; color: #FCA5A5; font-weight: 600; font-size: 14px;}
+
+        @media (max-width: 768px) {
+            .legal-container { margin: 30px 20px; padding: 30px 20px; }
+            .legal-title { font-size: 26px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/" class="back-link">← Volver al inicio</a>
-        <h1>Términos de Servicio</h1>
-        <p><strong>Última actualización:</strong> 28 de Febrero de 2026</p>
-        
-        <h2>1. Aceptación de los Términos</h2>
-        <p>Al acceder y utilizar AuditorIA, aceptas estar sujeto a estos términos. El uso de la herramienta constituye un acuerdo legal vinculante. Si no estás de acuerdo, debes cesar el uso de la plataforma inmediatamente.</p>
 
-        <h2>2. Naturaleza del Servicio</h2>
-        <p>AuditorIA proporciona una herramienta tecnológica para la extracción de datos y validación matemática de archivos XML (CFDI 4.0). <strong>No somos un despacho contable, no emitimos opiniones legales vinculantes ni somos una entidad gubernamental.</strong> Los dictámenes generados son de carácter estrictamente preventivo e informativo.</p>
+<script src="navbar.js"></script>
 
-        <h2>3. Limitación de Responsabilidad</h2>
-        <p>El usuario es el único responsable de las decisiones fiscales, contables o legales tomadas a partir de los reportes generados. AuditorIA no asume responsabilidad civil, penal o administrativa por multas, recargos, auditorías o requerimientos emitidos por autoridades fiscales. El usuario reconoce que el cálculo se basa exclusivamente en los datos contenidos en el XML proporcionado.</p>
-
-        <h2>4. Disponibilidad del Sistema</h2>
-        <p>El servicio se proporciona "tal cual" y "según disponibilidad". No garantizamos que el servicio sea ininterrumpido o libre de errores. AuditorIA se reserva el derecho de modificar, suspender o discontinuar el servicio en cualquier momento.</p>
+<div class="legal-container">
+    <div class="legal-header">
+        <h1 class="legal-title">Términos y Condiciones de Servicio</h1>
+        <div class="legal-date">Última actualización: Marzo 2026</div>
     </div>
+    
+    <div class="legal-content">
+        <h2>1. Aceptación de los Términos</h2>
+        <p>Al acceder y utilizar el ecosistema tecnológico de <strong>AuditorIA</strong> (incluyendo módulos de análisis de XML, prevención de riesgos SAT y AuditorIA PDF Studio), aceptas estar sujeto a los presentes términos. El uso de nuestras herramientas constituye un acuerdo legal vinculante. Si no estás de acuerdo con alguna cláusula, debes cesar el uso de la plataforma inmediatamente.</p>
+
+        <h2>2. Naturaleza del Servicio (SaaS)</h2>
+        <p>AuditorIA proporciona herramientas de ingeniería de software para la extracción de datos, validación matemática y manipulación de estructura de archivos locales. <strong>No somos un despacho contable, no emitimos opiniones legales vinculantes, ni representamos a ninguna entidad gubernamental u oficial.</strong> Los dictámenes, alertas y sugerencias de la IA son de carácter estrictamente preventivo, analítico e informativo.</p>
+
+        <h2>3. Arquitectura Local y Privacidad (Zero-Retention)</h2>
+        <p>A diferencia de los servicios en la nube tradicionales, la mayoría de nuestras herramientas (incluyendo PDF Studio) utilizan tecnología <em>Edge Computing</em>. Esto significa que el procesamiento binario, aplanado y censura de tus archivos ocurre en la memoria RAM (memoria volátil) de tu propio dispositivo. <strong>AuditorIA no almacena, retiene, ni transmite copias de tus documentos PDF o XML a bases de datos de terceros.</strong> Al cerrar tu navegador, la información procesada se destruye irrevocablemente.</p>
+
+        <h2>4. Uso Legítimo y Herramientas Forenses (PDF Studio)</h2>
+        <p>AuditorIA provee herramientas avanzadas de manipulación binaria (inyección de anexos, censura, aplanado de capas y sellado). Al utilizarlas, el usuario se compromete a:</p>
+        <ul>
+            <li>Utilizar las herramientas exclusivamente con fines administrativos, de auditoría legal y compliance corporativo.</li>
+            <li><strong>No utilizar</strong> la plataforma para la falsificación de documentos oficiales, evasión fiscal, suplantación de identidad o alteración maliciosa de evidencia legal.</li>
+            <li>Reconocer que cualquier modificación realizada a facturas, estados de cuenta o contratos es entera y absoluta responsabilidad legal del usuario final que opera el software.</li>
+        </ul>
+
+        <div class="warning-box">
+            <p>IMPORTANTE: AuditorIA coopera plenamente con las autoridades competentes en caso de investigaciones sobre delitos cibernéticos o fraude fiscal. Nos deslindamos de cualquier uso ilícito de nuestra tecnología de manipulación de archivos.</p>
+        </div>
+
+        <h2>5. Limitación de Responsabilidad</h2>
+        <p>El usuario es el único responsable de las decisiones fiscales, corporativas o legales tomadas a partir de los reportes generados en esta plataforma. AuditorIA, sus desarrolladores y empresas matrices no asumen responsabilidad civil, penal o administrativa por multas, recargos, auditorías, requerimientos del SAT o pérdida de datos. El servicio y los motores de Inteligencia Artificial se proporcionan "tal cual", sin garantías expresas de infalibilidad.</p>
+
+        <h2>6. Disponibilidad y Cambios en el Servicio</h2>
+        <p>Nos esforzamos por mantener la plataforma operativa de forma continua; sin embargo, no garantizamos que el servicio esté libre de interrupciones o fallos. AuditorIA se reserva el derecho exclusivo de modificar, actualizar, suspender o discontinuar herramientas específicas o el servicio completo en cualquier momento sin previo aviso.</p>
+        
+        <h2>7. Propiedad Intelectual</h2>
+        <p>El código fuente, los algoritmos matemáticos, el diseño de la interfaz, logotipos y la marca <strong>AuditorIA</strong> están protegidos por leyes de propiedad intelectual y derechos de autor. Queda estrictamente prohibida la ingeniería inversa, copia, distribución o comercialización no autorizada del software contenido en esta plataforma.</p>
+    </div>
+</div>
+
+<script src="footer.js"></script>
+
 </body>
 </html>
