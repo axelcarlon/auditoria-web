@@ -3,149 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor PRO | AuditorIA PDF</title>
+    <title>AuditorIA Editor PRO</title>
+    <meta name="description" content="Motor Gráfico Forense de Alta Precisión para la inyección y edición de código binario PDF.">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
+        /* =========================================================
+           1. VARIABLES Y DISEÑO DARK STUDIO
+           ========================================================= */
         :root {
             --bg-base: #09090B;
             --bg-panel: #18181B;
             --bg-hover: #27272A;
             --border: #3F3F46;
             --brand: #E11D48;
+            --brand-hover: #BE123C;
             --accent: #3B82F6;
             --text-main: #F8FAFC;
             --text-muted: #A1A1AA;
+            --success: #10B981;
             --canvas-bg: #111113;
+            --shadow-float: 0 10px 30px rgba(0,0,0,0.6);
+            --shadow-doc: 0 0 50px rgba(0,0,0,0.9);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; user-select: none;}
-        body { background: var(--bg-base); color: var(--text-main); overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; user-select: none; }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        /* =========================================
-           TOPBAR (¡AHORA SÍ SE HARÁ VISIBLE!)
-           ========================================= */
-        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; padding: 0 20px; z-index: 100; flex-shrink: 0;}
-        .topbar-left { display: flex; align-items: center; gap: 15px; }
-        .btn-exit { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; text-decoration: none; transition: 0.2s;}
-        .btn-exit:hover { border-color: var(--brand); color: white; }
-        .logo-container { font-size: 18px; font-weight: 900; }
-        .pro-badge { background: var(--brand); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px;}
-
-        /* Clases para revelar los controles */
-        .topbar-center { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 8px; border: 1px solid var(--border); visibility: hidden; opacity: 0; transition: opacity 0.3s;}
-        .topbar-center.visible { visibility: visible; opacity: 1; }
+        /* =========================================================
+           2. TOPBAR DE NAVEGACIÓN Y CONTROLES
+           ========================================================= */
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; padding: 0 25px; z-index: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-shrink: 0;}
         
-        .nav-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 5px; transition: 0.2s;}
-        .nav-btn:hover { color: white; }
-        .indicator { font-family: monospace; font-size: 13px; font-weight: bold; min-width: 60px; text-align: center; }
+        .topbar-left { display: flex; align-items: center; gap: 20px; }
+        .btn-exit { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: 0.2s;}
+        .btn-exit:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted); color: white;}
+        .logo-container { display: flex; align-items: center; font-size: 18px; font-weight: 900; letter-spacing: -0.5px;}
+
+        .topbar-center { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); padding: 6px 20px; border-radius: 10px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
+        .topbar-center.visible { visibility: visible; opacity: 1; }
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
+        .nav-btn:hover { color: white; background: var(--bg-hover); }
+        .indicator { font-family: monospace; font-size: 14px; font-weight: bold; color: var(--text-main); min-width: 70px; text-align: center; }
+        .zoom-val { color: var(--accent); }
+        .divider-v { width: 1px; height: 20px; background: var(--border); margin: 0 5px; }
 
         .topbar-right { display: flex; align-items: center; gap: 15px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
         .topbar-right.visible { visibility: visible; opacity: 1; }
         
-        .btn-undo { background: transparent; border: 1px solid var(--border); color: white; cursor: pointer; font-size: 12px; font-weight: bold; padding: 8px 15px; border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 6px;}
-        .btn-undo:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
-        .btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
+        /* Botón Deshacer Blanco (Sobrio) */
+        .btn-undo { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--text-muted); color: white; cursor: pointer; font-size: 13px; font-weight: 900; padding: 10px 20px; border-radius: 8px; transition: 0.2s; text-transform: uppercase;}
+        .btn-undo:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: white; }
+        .btn-undo:disabled { color: var(--border); border-color: rgba(255,255,255,0.05); cursor: not-allowed; }
         
-        /* BOTÓN EXPORTAR PRO ROJO */
-        .btn-export { background: var(--brand); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; gap: 8px;}
-        .btn-export:hover { background: var(--brand-hover); box-shadow: 0 0 15px rgba(225, 29, 72, 0.4); transform: translateY(-1px);}
+        /* Botón Exportar PDF con Insignia PRO Latente */
+        .btn-export { display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--brand); color: white; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 900; text-transform: uppercase; transition: 0.2s; box-shadow: inset 0 0 15px rgba(220, 38, 38, 0.2);}
+        .btn-export:hover { background: rgba(220, 38, 38, 0.1); border-color: var(--brand-hover); box-shadow: inset 0 0 20px rgba(220, 38, 38, 0.4);}
+        .pro-badge { background: var(--brand); color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
-        /* =========================================
-           WORKSPACE & PANELS
-           ========================================= */
-        .workspace { display: flex; flex: 1; overflow: hidden; }
+        /* =========================================================
+           3. WORKSPACE Y BARRA LATERAL (HERRAMIENTAS)
+           ========================================================= */
+        .main-workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        .sidebar-left { width: 70px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 10px; z-index: 50; overflow-y: auto;}
-        .tool-btn { width: 44px; height: 44px; border-radius: 10px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
-        .tool-btn:hover { color: white; background: var(--bg-hover); }
-        .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
-
-        .tool-btn::after { content: attr(data-tooltip); position: absolute; left: 55px; background: #000; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.2s; transform: translateX(-10px); z-index: 1000;}
-        .tool-btn:hover::after { opacity: 1; transform: translateX(0); }
+        .toolbar-left { width: 75px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 100; overflow-y: auto; overflow-x: visible;}
+        .tool-group { display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center;}
         .divider-h { width: 40px; height: 1px; background: var(--border); margin: 5px 0; }
 
-        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 50px; position: relative;}
+        .tool-btn { width: 48px; height: 48px; border-radius: 12px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
+        .tool-btn:hover { color: white; background: var(--bg-hover); }
+        .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); box-shadow: inset 0 0 10px rgba(59,130,246,0.2);}
+
+        /* Tooltip Dinámico JavaScript */
+        #dynamicTooltip { position: fixed; background: #000; border: 1px solid var(--border); color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 900; white-space: nowrap; pointer-events: none; z-index: 99999; box-shadow: var(--shadow-float); display: none; opacity: 0; transition: opacity 0.2s; transform: translateY(-50%);}
+        #dynamicTooltip::before { content: ''; position: absolute; top: 50%; left: -6px; transform: translateY(-50%); border-width: 6px 6px 6px 0; border-style: solid; border-color: transparent var(--border) transparent transparent; }
+
+        /* =========================================================
+           4. LIENZO CENTRAL Y MOTOR RENDER
+           ========================================================= */
+        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 60px; position: relative; cursor: grab;}
+        .canvas-area:active { cursor: grabbing; }
         
-        .page-wrapper { position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.8); margin: 0 auto; transform-origin: top center; background: white;}
+        .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); margin: 0 auto; transition: transform 0.1s ease-out; transform-origin: top center; margin-bottom: 80px;}
         #pdfCanvas { display: block; width: 100%; height: auto; }
-        #interactiveLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
+        #interactiveLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; overflow: hidden; }
 
-        .sidebar-right { width: 300px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 20px; overflow-y: auto; z-index: 50; }
-        .prop-section { display: flex; flex-direction: column; gap: 10px; }
-        .prop-title { font-size: 11px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; margin: 0; }
+        /* Panel de Propiedades Derecho */
+        .sidebar-right { width: 320px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 30px; overflow-y: auto; z-index: 100; }
         
-        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.1s;}
-        .color-swatch.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3);}
+        .prop-section { display: flex; flex-direction: column; gap: 15px; }
+        .prop-title { font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
         
-        .prop-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: bold;}
-        .custom-slider { width: 100%; accent-color: var(--accent); }
-        .custom-select { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; font-family: monospace; width: 100%; outline: none; }
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: 0.2s;}
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.active { border-color: white; transform: scale(1.2); box-shadow: 0 0 15px rgba(255,255,255,0.4); z-index: 2;}
+        
+        .prop-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-main); font-weight: bold;}
+        .prop-val { font-family: monospace; color: var(--accent); font-size: 15px; }
+        .custom-slider { width: 100%; cursor: pointer; accent-color: var(--accent); margin-bottom: 5px;}
+        .custom-select { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 14px; width: 100%; cursor: pointer; outline: none; }
 
-        .btn-danger-outline { background: transparent; border: 1px dashed var(--danger); color: var(--danger); padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; width: 100%; text-align: center;}
-        .btn-danger-outline:hover:not(:disabled) { background: rgba(239, 68, 68, 0.1); border-style: solid;}
+        .btn-danger-outline { background: transparent; border: 1px dashed var(--danger); color: var(--danger); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; font-size: 13px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-danger-outline:hover:not(:disabled) { background: rgba(239, 68, 68, 0.15); border-style: solid;}
         .btn-danger-outline:disabled { border-color: var(--border); color: var(--border); cursor: not-allowed; }
 
-        .btn-ocr { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; width: 100%; transition: 0.2s;}
-        .btn-ocr:hover { background: #2563EB; }
+        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; width: 100%; transition: 0.2s;}
+        .btn-secondary:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); color: var(--accent);}
 
-        /* =========================================
-           ELEMENTOS DOM (TEXTO, CAJAS, FIRMAS)
-           ========================================= */
-        .drag-element { position: absolute; transform: translate(-50%, -50%); cursor: grab; pointer-events: auto;}
+        /* =========================================================
+           5. ELEMENTOS DEL DOM INTERACTIVOS
+           ========================================================= */
+        .drag-element { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); transform-origin: center; cursor: grab; user-select: none; }
         .drag-element:active { cursor: grabbing; }
-        .drag-element.is-selected { z-index: 100; }
-        .drag-element.is-selected::before { content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border: 2px dashed var(--accent); pointer-events: none; }
-
-        .el-text { font-family: 'Helvetica', Arial, sans-serif; white-space: pre; outline: none; cursor: text; line-height: 1.2; min-width: 10px; }
-        .el-text:empty::after { content: 'Escribir...'; color: rgba(0,0,0,0.4); }
         
-        .el-box { background: black; }
-        .el-whiteout { background: white; border: 1px solid #E5E7EB; }
-        .el-highlight { background: yellow; opacity: 0.4; mix-blend-mode: multiply; }
-        .el-stamp { font-family: 'Courier New', monospace; font-weight: bold; border: 3px solid; padding: 5px 15px; border-radius: 8px; text-transform: uppercase; opacity: 0.8; transform: translate(-50%, -50%) rotate(-15deg) !important; background: rgba(255,255,255,0.7); }
-        .el-image { background-size: 100% 100%; }
+        .drag-element.is-selected { z-index: 1000; }
+        .drag-element.is-selected::before { content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border: 2px dashed var(--accent); pointer-events: none; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .drag-element.is-selected::after { content: ''; position: absolute; right: -10px; bottom: -10px; width: 12px; height: 12px; background: white; border: 2px solid var(--accent); border-radius: 50%; cursor: nwse-resize; pointer-events: auto; }
 
-        #drawGuide { position: absolute; border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.2); pointer-events: none; display: none; z-index: 999; }
-
-        /* =========================================
-           SCREENS & MODALS
-           ========================================= */
-        #initScreen { position: absolute; top: 60px; left: 0; right: 0; bottom: 0; background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
-        .upload-area { border: 2px dashed var(--border); padding: 60px; border-radius: 16px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s;}
-        .upload-area:hover { border-color: var(--accent); transform: translateY(-5px);}
+        .el-text { font-family: 'Helvetica', Arial, sans-serif; white-space: pre; outline: none; cursor: text; min-width: 20px; line-height: 1.1; }
+        .el-text:empty::after { content: 'Escribir...'; color: rgba(0,0,0,0.4); pointer-events: none; }
         
-        #sysLoader { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: monospace; font-weight: bold;}
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px;}
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .el-box { background: black; } 
+        .el-whiteout { background: white; border: 1px solid #E5E7EB; } 
+        .el-highlight { background: #FDE047; opacity: 0.4; mix-blend-mode: multiply; }
+        .el-stamp { font-family: 'Courier New', Courier, monospace; font-weight: 900; border: 4px solid; padding: 5px 15px; border-radius: 8px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; transform: translate(-50%, -50%) rotate(-15deg) !important; background: rgba(255,255,255,0.7); backdrop-filter: blur(2px); }
+        .el-image { background-size: 100% 100%; background-repeat: no-repeat; background-position: center; }
+        .el-rect { border-style: solid; background: transparent; }
+        .el-circle { border-style: solid; background: transparent; border-radius: 50%; }
+        .el-line { background: transparent; transform-origin: left center; } 
 
-        /* Modal OCR Elegante */
-        #ocrModal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
-        .ocr-content { background: var(--bg-panel); border: 1px solid var(--border); width: 600px; max-width: 90%; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px;}
-        .ocr-textarea { width: 100%; height: 300px; background: var(--bg-base); color: var(--success); border: 1px solid var(--border); padding: 15px; border-radius: 8px; font-family: monospace; resize: none; outline: none; }
+        #drawGuide { position: absolute; border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.1); pointer-events: none; display: none; z-index: 9999; }
 
-        /* Toasts Nivel Dios */
+        /* =========================================================
+           6. PANTALLAS DE CARGA Y TOASTS (NIVEL DIOS)
+           ========================================================= */
+        #initScreen { position: absolute; top: 60px; left: 0; width: 100%; height: calc(100vh - 60px); background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
+        .upload-area { border: 2px dashed var(--accent); padding: 80px 100px; border-radius: 20px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s; box-shadow: var(--shadow-float); max-width: 600px; width: 90%;}
+        .upload-area:hover { background: var(--bg-hover); border-color: white; transform: translateY(-5px); box-shadow: 0 20px 50px rgba(59, 130, 246, 0.2);}
+        
+        #sysLoader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: monospace; font-size: 16px; font-weight: bold;}
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 20px;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Modal OCR Limpio */
+        #ocrModal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
+        .ocr-content { background: var(--bg-panel); border: 1px solid var(--border); width: 650px; max-width: 90%; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-float);}
+        .ocr-textarea { width: 100%; height: 350px; background: var(--bg-base); color: var(--success); border: 1px solid var(--border); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; resize: none; outline: none; }
+
+        /* Toasts Rediseñados con colores dinámicos */
         #toastContainer { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
-        .toast { background: #000; border: 1px solid var(--border); border-left: 4px solid var(--success); color: white; padding: 15px 20px; border-radius: 8px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 12px; transform: translateX(120%); transition: 0.3s; pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .toast { background: #000; border: 1px solid var(--border); border-left: 5px solid var(--success); color: white; padding: 18px 25px; border-radius: 10px; box-shadow: var(--shadow-doc); font-size: 14px; font-weight: 900; display: flex; align-items: center; gap: 15px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto;}
         .toast.show { transform: translateX(0); }
         .toast.error { border-left-color: var(--brand); }
-        .toast.info { border-left-color: var(--accent); }
+        
+        /* Estilo Específico "Deshacer" (Negro, Rojo y Blanco) */
+        .toast.undo { background: #000; border: 1px solid var(--brand); border-left: 5px solid var(--brand); color: white; }
+        .toast.redo { background: #000; border: 1px solid var(--accent); border-left: 5px solid var(--accent); color: white; }
+
     </style>
 </head>
 <body>
 
+    <div id="dynamicTooltip">Tooltip</div>
+
     <header class="topbar">
         <div class="topbar-left">
-            <a href="editor-pdf.html" class="btn-exit">Volver</a>
-            <div class="logo-container">Editor <span class="pro-badge">PRO</span></div>
+            <a href="editor-pdf.html" class="btn-exit">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Volver
+            </a>
+            <div class="logo-container">AuditorIA Editor</div>
         </div>
 
         <div class="topbar-center" id="uiTopbarCenter">
@@ -171,60 +206,85 @@
             <div class="divider-v"></div>
 
             <button class="btn-export" onclick="ExportEngine.buildPDF()">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Exportar <span style="background: white; color: var(--brand); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px;">PRO</span>
+                Exportar PDF <span class="pro-badge">PRO</span>
             </button>
         </div>
     </header>
 
     <div id="initScreen">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-            <svg width="48" height="48" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <h2 style="margin: 0 0 10px;">Lienzo Forense</h2>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Sube el PDF para iniciar el motor en RAM.</p>
+            <svg width="72" height="72" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <h2 style="margin: 0 0 10px; font-size: 26px;">Entorno de Edición Forense</h2>
+            <p style="color: var(--text-muted); font-size: 15px; margin: 0; line-height: 1.6;">Arrastra un documento PDF para iniciar la inyección binaria en la memoria RAM.</p>
             <input type="file" id="fileInput" accept=".pdf" style="display: none;">
         </div>
     </div>
 
-    <div class="workspace" id="workspaceContainer" style="visibility: hidden;">
+    <div class="main-workspace" id="workspaceContainer" style="visibility: hidden;">
         
-        <aside class="sidebar-left">
-            <button class="tool-btn active" data-tool="select" data-tooltip="Cursor (V)" onclick="ToolManager.set('select')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
-            </button>
-            <div class="divider-h"></div>
-            
-            <button class="tool-btn" data-tool="text" data-tooltip="Texto (T)" onclick="ToolManager.set('text')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="check" data-tooltip="Palomita" onclick="ToolManager.set('check')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="cross" data-tooltip="Tache" onclick="ToolManager.set('cross')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+        <aside class="toolbar-left">
+            <div class="tool-group">
+                <button class="tool-btn active" data-tool="select" data-tooltip="Cursor / Seleccionar (V)" onclick="ToolManager.set('select')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                </button>
+            </div>
             
             <div class="divider-h"></div>
             
-            <button class="tool-btn" data-tool="redact" data-tooltip="Censurar (Negro)" onclick="ToolManager.set('redact')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="whiteout" data-tooltip="Corrector Líquido" onclick="ToolManager.set('whiteout')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador" onclick="ToolManager.set('highlight')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-            </button>
-            
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="text" data-tooltip="Inyectar Texto Libre (T)" onclick="ToolManager.set('text')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="check" data-tooltip="Marca de Aprobación (✓)" onclick="ToolManager.set('check')">
+                    <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="cross" data-tooltip="Marca de Rechazo (✗)" onclick="ToolManager.set('cross')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
             <div class="divider-h"></div>
 
-            <button class="tool-btn" data-tool="stamp" data-tooltip="Sellos" onclick="ToolManager.set('stamp')">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            </button>
-            <button class="tool-btn" data-tooltip="Insertar Imagen" onclick="document.getElementById('imgInput').click()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            </button>
-            <input type="file" id="imgInput" accept="image/png, image/jpeg" style="display:none;">
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="rect" data-tooltip="Dibujar Rectángulo" onclick="ToolManager.set('rect')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+                </button>
+                <button class="tool-btn" data-tool="circle" data-tooltip="Dibujar Círculo/Elipse" onclick="ToolManager.set('circle')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>
+                </button>
+                <button class="tool-btn" data-tool="line" data-tooltip="Línea Recta" onclick="ToolManager.set('line')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5"></line></svg>
+                </button>
+            </div>
+            
+            <div class="divider-h"></div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="redact" data-tooltip="Censura (Caja Negra)" onclick="ToolManager.set('redact')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="whiteout" data-tooltip="Borrador Mágico (Corrector)" onclick="ToolManager.set('whiteout')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador Amarillo" onclick="ToolManager.set('highlight')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+            </div>
+
+            <div class="divider-h"></div>
+
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="stamp" data-tooltip="Sellos de Auditoría" onclick="ToolManager.set('stamp')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="date" data-tooltip="Sello de Fecha Exacta" onclick="ToolManager.set('date')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </button>
+                <button class="tool-btn" data-tooltip="Cargar Firma o Imagen (.PNG)" onclick="document.getElementById('imgInput').click()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </button>
+                <input type="file" id="imgInput" accept="image/png, image/jpeg" style="display:none;">
+            </div>
         </aside>
 
         <main class="canvas-area" id="scrollArea">
@@ -238,57 +298,106 @@
         <aside class="sidebar-right">
             
             <div class="prop-section">
-                <h4 class="prop-title">Apariencia</h4>
-                <div class="color-grid">
+                <h4 class="prop-title">Paleta Forense</h4>
+                <div class="color-grid" id="colorPicker">
                     <div class="color-swatch active" style="background: #000000;" data-color="#000000"></div>
+                    <div class="color-swatch" style="background: #374151;" data-color="#374151"></div>
+                    <div class="color-swatch" style="background: #6B7280;" data-color="#6B7280"></div>
+                    <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div>
                     <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div>
                     <div class="color-swatch" style="background: #2563EB;" data-color="#2563EB"></div>
+                    <div class="color-swatch" style="background: #60A5FA;" data-color="#60A5FA"></div>
+                    <div class="color-swatch" style="background: #0D9488;" data-color="#0D9488"></div>
+                    <div class="color-swatch" style="background: #991B1B;" data-color="#991B1B"></div>
                     <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div>
-                    <div class="color-swatch" style="background: #16A34A;" data-color="#16A34A"></div>
+                    <div class="color-swatch" style="background: #F43F5E;" data-color="#F43F5E"></div>
+                    <div class="color-swatch" style="background: #D97706;" data-color="#D97706"></div>
                     <div class="color-swatch" style="background: #FBBF24;" data-color="#FBBF24"></div>
-                    <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div>
+                    <div class="color-swatch" style="background: #FDE047;" data-color="#FDE047"></div>
+                    <div class="color-swatch" style="background: #A3E635;" data-color="#A3E635"></div>
+                    <div class="color-swatch" style="background: #F472B6;" data-color="#F472B6"></div>
                 </div>
 
-                <div class="prop-row" style="margin-top: 10px;">
-                    <span>Tamaño Base</span>
+                <div class="prop-row" style="margin-top: 15px;">
+                    <span>Escala / Tamaño</span>
                     <span class="prop-val" id="lblSize">14pt</span>
                 </div>
-                <input type="range" class="custom-slider" id="sliderSize" min="8" max="72" value="14">
+                <input type="range" class="custom-slider" id="sliderSize" min="6" max="120" value="14">
+
+                <div class="prop-row" style="margin-top: 10px;">
+                    <span>Grosor de Borde</span>
+                    <span class="prop-val" id="lblStroke">2px</span>
+                </div>
+                <input type="range" class="custom-slider" id="sliderStroke" min="1" max="15" value="2">
+                
+                <div class="prop-row" style="margin-top: 10px;">
+                    <span>Opacidad</span>
+                    <span class="prop-val" id="lblOpacity">100%</span>
+                </div>
+                <input type="range" class="custom-slider" id="sliderOpacity" min="10" max="100" value="100">
             </div>
 
-            <div class="prop-section" id="panelStamp" style="display: none; padding-top: 10px; border-top: 1px dashed var(--border);">
+            <div class="prop-section" id="panelStamp" style="display: none; padding-top: 15px; border-top: 1px dashed var(--border);">
                 <h4 class="prop-title">Macro de Sello</h4>
                 <select id="stampText" class="custom-select">
                     <option value="AUDITADO">AUDITADO</option>
                     <option value="APROBADO">APROBADO</option>
-                    <option value="CANCELADO">CANCELADO</option>
+                    <option value="RECHAZADO">RECHAZADO</option>
+                    <option value="CONFIDENCIAL">CONFIDENCIAL</option>
+                    <option value="COPIA FIEL">COPIA FIEL</option>
                     <option value="PAGADO">PAGADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
                 </select>
             </div>
 
-            <div class="prop-section" style="padding-top: 10px; border-top: 1px dashed var(--border);">
-                <h4 class="prop-title">Escáner IA</h4>
-                <button class="btn-ocr" onclick="OCREngine.scan()">Extraer Texto (OCR)</button>
+            <div class="prop-section" style="padding-top: 15px; border-top: 1px dashed var(--border);">
+                <h4 class="prop-title">Inteligencia OCR</h4>
+                <button class="btn-secondary" onclick="OCREngine.scan()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Escanear Texto de la Hoja
+                </button>
             </div>
 
-            <div class="prop-section" style="padding-top: 10px; border-top: 1px dashed var(--border);">
-                <h4 class="prop-title">Inspector</h4>
-                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-family: monospace; font-size: 11px; color: var(--text-muted);">
-                    X: <span id="inspX">--</span> | Y: <span id="inspY">--</span>
+            <div class="prop-section" style="padding-top: 15px; border-top: 1px dashed var(--border);">
+                <h4 class="prop-title">Inspector Vectorial</h4>
+                <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div class="prop-row" style="color: var(--text-muted); font-size: 11px; margin-bottom: 5px;">
+                        <span>Eje X:</span> <span id="inspX">--</span>
+                    </div>
+                    <div class="prop-row" style="color: var(--text-muted); font-size: 11px;">
+                        <span>Eje Y:</span> <span id="inspY">--</span>
+                    </div>
                 </div>
-                <button class="btn-danger-outline" id="btnDelete" disabled onclick="ObjectManager.deleteSelected()">Eliminar Elemento</button>
+
+                <button class="btn-danger-outline" id="btnDelete" disabled onclick="ObjectManager.deleteSelected()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Eliminar Objeto
+                </button>
             </div>
             
+            <div style="margin-top: auto; font-size: 10px; color: var(--text-muted); line-height: 1.6; text-align: center; border-top: 1px solid var(--border); padding-top: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px;">
+                <strong style="color:white;">V</strong> : Cursor<br>
+                <strong style="color:white;">T</strong> : Texto<br>
+                <strong style="color:white;">Supr</strong> : Borrar Objeto<br>
+                <strong style="color:white;">Ctrl+Z</strong> : Deshacer<br>
+                <strong style="color:white;">Ctrl+Shift+Z</strong> : Rehacer
+            </div>
         </aside>
+
     </div>
 
     <div id="ocrModal">
         <div class="ocr-content">
-            <h3 style="margin:0; font-size: 16px;">Texto Extraído (OCR)</h3>
-            <textarea id="ocrOutput" class="ocr-textarea"></textarea>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size: 16px; display:flex; align-items:center; gap:8px;">
+                    <svg width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Texto Extraído de la Hoja
+                </h3>
+            </div>
+            <textarea id="ocrOutput" class="ocr-textarea" readonly></textarea>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
                 <button class="btn-exit" onclick="document.getElementById('ocrModal').style.display='none'">Cerrar</button>
-                <button class="btn-ocr" style="width: auto; padding: 10px 20px;" onclick="navigator.clipboard.writeText(document.getElementById('ocrOutput').value); Toast.show('Copiado al portapapeles', 'info');">Copiar Todo</button>
+                <button class="btn-secondary" style="width: auto; padding: 10px 25px;" onclick="navigator.clipboard.writeText(document.getElementById('ocrOutput').value); Toast.show('Copiado al portapapeles', 'info');">Copiar Texto</button>
             </div>
         </div>
     </div>
@@ -297,21 +406,33 @@
         <div class="spinner"></div>
         <span id="loaderText">Iniciando Motor...</span>
     </div>
+    
     <div id="toastContainer"></div>
 
     <script>
+        // ---------------------------------------------------------
+        // 1. SISTEMA DE TOASTS PROFESIONAL & TOOLTIPS
+        // ---------------------------------------------------------
         const Toast = {
             show(msg, type = 'success') {
-                const c = document.getElementById('toastContainer');
+                const container = document.getElementById('toastContainer');
                 const el = document.createElement('div');
                 el.className = `toast ${type}`;
-                let icon = type==='error'?'⚠️':type==='info'?'⚡':'✓';
-                if(type === 'undo') icon = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>';
-                if(type === 'redo') icon = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path></svg>';
-                el.innerHTML = `<span style="font-size:16px;">${icon}</span> ${msg}`;
-                c.appendChild(el);
+                
+                let icon = '✓';
+                if(type === 'error') icon = '⚠️';
+                else if(type === 'info') icon = '⚡';
+                else if(type === 'undo') icon = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>';
+                else if(type === 'redo') icon = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path></svg>';
+
+                el.innerHTML = `<span style="font-size:18px; display:flex; align-items:center;">${icon}</span> ${msg}`;
+                
+                container.appendChild(el);
                 requestAnimationFrame(() => el.classList.add('show'));
-                setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3000);
+                setTimeout(() => {
+                    el.classList.remove('show');
+                    setTimeout(() => el.remove(), 400);
+                }, 3000);
             }
         };
 
@@ -320,48 +441,78 @@
             hide() { document.getElementById('sysLoader').style.display = 'none'; }
         };
 
-        // Estado Global PDF
+        // Tooltips Dinámicos JS (Para que no se corten con el scroll)
+        const tooltipEl = document.getElementById('dynamicTooltip');
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                const text = btn.getAttribute('data-tooltip');
+                if(!text) return;
+                tooltipEl.innerText = text;
+                tooltipEl.style.display = 'block';
+                const rect = btn.getBoundingClientRect();
+                tooltipEl.style.top = (rect.top + (rect.height/2)) + 'px';
+                tooltipEl.style.left = (rect.right + 15) + 'px';
+                requestAnimationFrame(() => tooltipEl.style.opacity = '1');
+            });
+            btn.addEventListener('mouseleave', () => {
+                tooltipEl.style.opacity = '0';
+                setTimeout(() => tooltipEl.style.display = 'none', 200);
+            });
+        });
+
+        // ---------------------------------------------------------
+        // 2. ESTADO GLOBAL & MEMORIA RAM
+        // ---------------------------------------------------------
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-        let pdfBytes = null;
+
+        let pdfBytesOriginal = null;
         let pdfProxy = null;
         let totalPages = 0;
         let currentPage = 1;
-        let zoom = 1.0;
         
-        // Memoria RAM de Objetos (Coordenadas Relativas Porcentuales)
+        let zoom = 1.0;
+        const MIN_Z = 0.5, MAX_Z = 4.0, STEP_Z = 0.25;
+
+        // Base de Datos en RAM (Coordenadas en Porcentajes 0.0 - 1.0)
         let DB = {}; 
+        
+        // Time Machine
         let historyStack = [];
         let redoStack = [];
 
         // UI State
         let currentTool = 'select';
-        let currentProps = { color: '#000000', size: 14 };
+        let currentProps = { color: '#000000', size: 14, stroke: 2, opacity: 100 };
         let selectedId = null;
 
-        // Variables Drag/Draw
+        // Interacción Ratón
         let isDrawing = false;
         let isDragging = false;
         let startX = 0, startY = 0;
         let dragOffsetX = 0, dragOffsetY = 0;
 
+        // Caché del DOM
         const layer = document.getElementById('interactiveLayer');
         const guide = document.getElementById('drawGuide');
         const wrapper = document.getElementById('pageWrapper');
         const canvas = document.getElementById('pdfCanvas');
+        const ctx = canvas.getContext('2d');
 
         // ---------------------------------------------------------
-        // INGESTA Y RENDERIZADO SEGURO
+        // 3. INGESTA Y RENDER (PDF.JS)
         // ---------------------------------------------------------
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if(!file || file.type !== 'application/pdf') return Toast.show("Sube un PDF.", "error");
+            if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF.", "error");
 
-            Loader.show("Renderizando Vectores...");
+            Loader.show("Desensamblando Vectores y Fuentes...");
             try {
                 const reader = new FileReader();
                 reader.onload = async function() {
-                    pdfBytes = this.result;
-                    pdfProxy = await pdfjsLib.getDocument({data: new Uint8Array(pdfBytes)}).promise;
+                    // Respaldar ArrayBuffer íntegro para la exportación final
+                    pdfBytesOriginal = this.result; 
+                    
+                    pdfProxy = await pdfjsLib.getDocument({data: new Uint8Array(pdfBytesOriginal)}).promise;
                     
                     totalPages = pdfProxy.numPages;
                     currentPage = 1;
@@ -375,13 +526,14 @@
 
                     await Workspace.autoFit();
                     await Workspace.renderPage();
-                    Toast.show("Documento listo en RAM.");
+                    Toast.show("Motor gráfico activado. Listo para edición.");
                     Loader.hide();
                 };
                 reader.readAsArrayBuffer(file);
             } catch (err) {
+                console.error(err);
                 Loader.hide();
-                Toast.show("Error al cargar PDF protegido.", "error");
+                Toast.show("Error de lectura. El documento puede estar protegido.", "error");
             }
         });
 
@@ -390,21 +542,22 @@
                 const p = await pdfProxy.getPage(1);
                 const vp = p.getViewport({scale: 1.0});
                 const containerW = document.getElementById('scrollArea').clientWidth;
-                zoom = Math.min(Math.max(Math.round(((containerW - 100) / vp.width) * 4)/4, 0.5), 2.0);
+                let autoZ = (containerW - 100) / vp.width;
+                zoom = Math.min(Math.max(Math.round(autoZ * 4)/4, MIN_Z), 2.0);
                 this.updateUI();
             },
-            async zoomIn() { if(zoom < 3.0) { zoom += 0.25; this.updateUI(); await this.renderPage(); } },
-            async zoomOut() { if(zoom > 0.5) { zoom -= 0.25; this.updateUI(); await this.renderPage(); } },
-            async prevPage() { if(currentPage > 1) { currentPage--; ObjectManager.deselect(); await this.renderPage(); document.getElementById('ocrOutput').style.display = 'none';} },
-            async nextPage() { if(currentPage < totalPages) { currentPage++; ObjectManager.deselect(); await this.renderPage(); document.getElementById('ocrOutput').style.display = 'none';} },
+            async zoomIn() { if(zoom < MAX_Z) { zoom += STEP_Z; this.updateUI(); await this.renderPage(); } },
+            async zoomOut() { if(zoom > MIN_Z) { zoom -= STEP_Z; this.updateUI(); await this.renderPage(); } },
+            async prevPage() { if(currentPage > 1) { currentPage--; ObjectManager.deselect(); await this.renderPage(); } },
+            async nextPage() { if(currentPage < totalPages) { currentPage++; ObjectManager.deselect(); await this.renderPage(); } },
             updateUI() {
                 document.getElementById('lblZoom').innerText = `${Math.round(zoom*100)}%`;
                 document.getElementById('lblPage').innerText = `${currentPage} / ${totalPages}`;
             },
             async renderPage() {
                 const p = await pdfProxy.getPage(currentPage);
-                const vp = p.getViewport({scale: zoom});
                 const scale = window.devicePixelRatio || 1;
+                const vp = p.getViewport({scale: zoom});
 
                 canvas.width = Math.floor(vp.width * scale);
                 canvas.height = Math.floor(vp.height * scale);
@@ -414,32 +567,32 @@
                 canvas.style.width = cssW; canvas.style.height = cssH;
                 wrapper.style.width = cssW; wrapper.style.height = cssH;
 
-                await p.render({ canvasContext: canvas.getContext('2d'), transform: scale !== 1 ? [scale,0,0,scale,0,0] : null, viewport: vp }).promise;
+                await p.render({ canvasContext: ctx, transform: scale !== 1 ? [scale,0,0,scale,0,0] : null, viewport: vp }).promise;
                 
                 ObjectManager.drawAll();
             }
         };
 
         // ---------------------------------------------------------
-        // OCR MODAL ENGINE
+        // 4. OCR SCANNER ENGINE
         // ---------------------------------------------------------
         const OCREngine = {
             async scan() {
-                Loader.show("Escaneando texto (OCR)...");
+                Loader.show("Escaneando texto vivo...");
                 try {
                     const page = await pdfProxy.getPage(currentPage);
                     const textContent = await page.getTextContent();
                     const text = textContent.items.map(i => i.str).join(' ');
-                    document.getElementById('ocrOutput').value = text.trim() === '' ? 'No se detectó texto vivo.' : text;
+                    document.getElementById('ocrOutput').value = text.trim() === '' ? 'No se detectó texto editable en esta hoja. Es probable que sea una imagen escaneada.' : text;
                     document.getElementById('ocrModal').style.display = 'flex';
                 } catch(e) {
-                    Toast.show("Fallo en OCR.", "error");
+                    Toast.show("Fallo en el motor OCR.", "error");
                 } finally { Loader.hide(); }
             }
         };
 
         // ---------------------------------------------------------
-        // UI TOOLS & PROPERTIES
+        // 5. GESTIÓN DE HERRAMIENTAS Y EVENTOS UI
         // ---------------------------------------------------------
         const ToolManager = {
             set(t) {
@@ -448,8 +601,12 @@
                 const btn = document.querySelector(`.tool-btn[data-tool="${t}"]`);
                 if(btn) btn.classList.add('active');
                 
-                document.getElementById('panelStamp').style.display = t === 'stamp' ? 'flex' : 'none';
-                layer.style.cursor = (t==='select'||t==='image') ? 'default' : (t==='text' ? 'text' : 'crosshair');
+                document.getElementById('panelStamp').style.display = t === 'stamp' ? 'block' : 'none';
+                
+                if(t === 'select' || t === 'image') layer.style.cursor = 'default';
+                else if(t === 'text') layer.style.cursor = 'text';
+                else layer.style.cursor = 'crosshair';
+                
                 ObjectManager.deselect();
             }
         };
@@ -468,6 +625,18 @@
             document.getElementById('lblSize').innerText = `${currentProps.size}pt`;
             if(selectedId) ObjectManager.updateProp('size', currentProps.size);
         };
+        
+        document.getElementById('sliderStroke').oninput = (e) => {
+            currentProps.stroke = parseInt(e.target.value);
+            document.getElementById('lblStroke').innerText = `${currentProps.stroke}px`;
+            if(selectedId) ObjectManager.updateProp('stroke', currentProps.stroke);
+        };
+
+        document.getElementById('sliderOpacity').oninput = (e) => {
+            currentProps.opacity = parseInt(e.target.value);
+            document.getElementById('lblOpacity').innerText = `${currentProps.opacity}%`;
+            if(selectedId) ObjectManager.updateProp('opacity', currentProps.opacity);
+        };
 
         document.getElementById('imgInput').onchange = (e) => {
             const f = e.target.files[0]; if(!f) return;
@@ -479,19 +648,26 @@
             r.readAsDataURL(f);
         };
 
-        // Shortcuts
+        // Atajos de teclado Pro
         document.addEventListener('keydown', (e) => {
-            if(e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if(e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+            
             if(e.key.toLowerCase() === 'v') ToolManager.set('select');
             if(e.key.toLowerCase() === 't') ToolManager.set('text');
-            if((e.key === 'Delete' || e.key === 'Backspace') && selectedId) ObjectManager.deleteSelected();
+            if(e.key === 'Delete' || e.key === 'Backspace') ObjectManager.deleteSelected();
+            
+            // Undo / Redo
             if(e.ctrlKey || e.metaKey) {
-                if(e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? History.redo() : History.undo(); }
+                if(e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    if(e.shiftKey) History.redo();
+                    else History.undo();
+                }
             }
         });
 
         // ---------------------------------------------------------
-        // MOTOR DE DIBUJO Y ARRASTRE (PORCENTAJES RELATIVOS)
+        // 6. MÁQUINA DE DIBUJO Y SELECCIÓN (COORDENADAS RELATIVAS %)
         // ---------------------------------------------------------
         layer.addEventListener('mousedown', (e) => {
             if(currentTool === 'select' || currentTool === 'image') return;
@@ -500,54 +676,85 @@
             const r = layer.getBoundingClientRect();
             startX = e.clientX - r.left; startY = e.clientY - r.top;
 
-            if(['redact', 'whiteout', 'highlight'].includes(currentTool)) {
+            const isBoxTool = ['redact', 'whiteout', 'highlight', 'rect', 'circle', 'line'].includes(currentTool);
+
+            if(isBoxTool) {
                 isDrawing = true;
                 guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
                 guide.style.width = '0px'; guide.style.height = '0px';
-                guide.style.backgroundColor = currentTool === 'redact' ? '#000' : currentTool === 'whiteout' ? '#FFF' : 'rgba(253,224,71,0.4)';
+                guide.style.transform = 'none'; 
+                
+                guide.style.backgroundColor = 'transparent';
+                guide.style.border = `2px dashed ${currentProps.color}`;
+                if(currentTool === 'redact') guide.style.backgroundColor = '#000';
+                if(currentTool === 'whiteout') { guide.style.backgroundColor = '#FFF'; guide.style.border = '1px solid #CCC'; }
+                if(currentTool === 'highlight') guide.style.backgroundColor = 'rgba(253,224,71,0.4)';
+                if(currentTool === 'circle') guide.style.borderRadius = '50%';
+                else guide.style.borderRadius = '0';
+
                 guide.style.display = 'block';
             } else {
-                // Convertir clic a porcentajes matemáticos (0.0 a 1.0)
+                // Guardar en RAM como Porcentaje
                 ObjectManager.create(currentTool, startX / r.width, startY / r.height);
             }
         });
 
         document.addEventListener('mousemove', (e) => {
             const r = layer.getBoundingClientRect();
-            let curX = e.clientX - r.left; let curY = e.clientY - r.top;
+            let curX = e.clientX - r.left;
+            let curY = e.clientY - r.top;
 
             if(isDrawing) {
-                const w = Math.abs(curX - startX); const h = Math.abs(curY - startY);
-                guide.style.left = Math.min(curX, startX) + 'px';
-                guide.style.top = Math.min(curY, startY) + 'px';
-                guide.style.width = w + 'px'; guide.style.height = h + 'px';
+                if(currentTool === 'line') {
+                    const w = curX - startX; const h = curY - startY;
+                    const length = Math.sqrt(w*w + h*h);
+                    const angle = Math.atan2(h, w) * 180 / Math.PI;
+                    guide.style.width = length + 'px';
+                    guide.style.height = currentProps.stroke + 'px';
+                    guide.style.left = startX + 'px';
+                    guide.style.top = startY + 'px';
+                    guide.style.transform = `rotate(${angle}deg)`;
+                    guide.style.transformOrigin = 'left center';
+                    guide.style.backgroundColor = currentProps.color;
+                    guide.style.border = 'none';
+                } else {
+                    const w = Math.abs(curX - startX); 
+                    const h = Math.abs(curY - startY);
+                    guide.style.left = Math.min(curX, startX) + 'px';
+                    guide.style.top = Math.min(curY, startY) + 'px';
+                    guide.style.width = w + 'px'; 
+                    guide.style.height = h + 'px';
+                }
             } 
             else if(isDragging && selectedId) {
                 const el = document.getElementById(selectedId);
                 if(el) {
                     let nx = curX - dragOffsetX; let ny = curY - dragOffsetY;
-                    // Limitar dentro del lienzo
                     nx = Math.max(0, Math.min(nx, r.width));
                     ny = Math.max(0, Math.min(ny, r.height));
                     el.style.left = nx + 'px'; el.style.top = ny + 'px';
                     
-                    // Actualizar Inspector visual (No guarda en RAM hasta soltar)
                     document.getElementById('inspX').innerText = Math.round((nx/r.width)*100) + '%';
                     document.getElementById('inspY').innerText = Math.round((ny/r.height)*100) + '%';
                 }
             }
         });
 
-        document.addEventListener('mouseup', () => {
+        document.addEventListener('mouseup', (e) => {
             const r = layer.getBoundingClientRect();
             if(isDrawing) {
                 isDrawing = false; guide.style.display = 'none';
                 const w = parseFloat(guide.style.width); const h = parseFloat(guide.style.height);
-                if(w > 10 || h > 10) {
-                    const cx = parseFloat(guide.style.left) + (w/2);
-                    const cy = parseFloat(guide.style.top) + (h/2);
-                    // Guardamos en RAM como proporciones (0.0 a 1.0) para que resistan al zoom
-                    ObjectManager.create(currentTool, cx/r.width, cy/r.height, w/r.width, h/r.height);
+                
+                if(w > 5 || h > 5) {
+                    if(currentTool === 'line') {
+                        const endX = e.clientX - r.left; const endY = e.clientY - r.top;
+                        ObjectManager.create(currentTool, startX/r.width, startY/r.height, (endX-startX)/r.width, (endY-startY)/r.height);
+                    } else {
+                        let cx = parseFloat(guide.style.left) + (w/2);
+                        let cy = parseFloat(guide.style.top) + (h/2);
+                        ObjectManager.create(currentTool, cx/r.width, cy/r.height, w/r.width, h/r.height);
+                    }
                 }
                 ToolManager.set('select');
             }
@@ -569,24 +776,38 @@
         });
 
         // ---------------------------------------------------------
-        // 7. GESTIÓN DE OBJETOS EN RAM (CRUD PRO)
+        // 7. GESTIÓN DE OBJETOS (LA BÓVEDA)
         // ---------------------------------------------------------
         const ObjectManager = {
             create(type, x, y, w=0, h=0, ext={}) {
                 const id = 'obj_' + Math.random().toString(36).substr(2, 9);
-                let obj = { id, type, x, y, w, h, color: currentProps.color, size: currentProps.size, text: '', img: ext.imgData||null };
+                let obj = { 
+                    id, type, x, y, w, h, 
+                    color: currentProps.color, 
+                    size: currentProps.size, 
+                    stroke: currentProps.stroke,
+                    opacity: currentProps.opacity,
+                    text: '', img: ext.imgData||null 
+                };
                 
                 if(type==='text') obj.text = "";
                 if(type==='check') { obj.text = "✓"; obj.size *= 1.5; }
                 if(type==='cross') { obj.text = "✗"; obj.size *= 1.5; }
                 if(type==='stamp') { obj.text = document.getElementById('stampText').value; obj.size *= 2; }
+                
+                if(type==='date') { 
+                    const d = new Date(); 
+                    obj.type = 'text'; 
+                    obj.text = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`; 
+                }
+                
                 if(type==='whiteout') { obj.type = 'redact'; obj.color = '#FFFFFF'; }
 
                 DB[currentPage].push(obj);
                 History.add({ act: 'add', p: currentPage, obj: {...obj} });
                 
                 this.drawAll();
-                if(!['redact','whiteout','highlight'].includes(type)) ToolManager.set('select');
+                if(!['redact','whiteout','highlight','rect','circle','line'].includes(type)) ToolManager.set('select');
                 
                 setTimeout(() => {
                     this.select(id);
@@ -596,21 +817,23 @@
             
             drawAll() {
                 layer.innerHTML = '';
-                const r = layer.getBoundingClientRect(); // Ancho real actual del canvas
+                const r = layer.getBoundingClientRect(); 
 
                 (DB[currentPage] || []).forEach(o => {
-                    // Validar integridad matemática
                     if(isNaN(o.x) || isNaN(o.y)) return;
 
                     const el = document.createElement('div');
                     el.className = `drag-element el-${o.type}`;
                     el.id = o.id;
-                    // Traducir porcentaje a pixeles de pantalla
                     el.style.left = (o.x * 100) + '%'; 
                     el.style.top = (o.y * 100) + '%';
+                    
+                    const opVal = parseFloat(o.opacity);
+                    el.style.opacity = isNaN(opVal) ? 1 : (opVal / 100);
 
                     if(['text','check','cross','stamp'].includes(o.type)) {
                         el.innerText = o.text; el.style.color = o.color; el.style.fontSize = (o.size * zoom) + 'px';
+                        
                         if(o.type==='text') {
                             el.contentEditable = true;
                             el.onblur = (e) => { 
@@ -623,10 +846,22 @@
                         if(o.type==='stamp') el.style.borderColor = o.color;
                     } 
                     else if(o.type==='redact' || o.type==='highlight') {
-                        el.style.width = (o.w * 100) + '%'; 
-                        el.style.height = (o.h * 100) + '%'; 
-                        el.style.backgroundColor = o.color;
-                        if(o.color === '#FFFFFF') el.style.border = '1px solid #E5E7EB';
+                        el.style.width = (o.w * 100) + '%'; el.style.height = (o.h * 100) + '%'; el.style.backgroundColor = o.color;
+                        if(o.color === '#FFFFFF') el.style.border = "1px solid rgba(0,0,0,0.1)";
+                    }
+                    else if(o.type==='rect') {
+                        el.style.width = (o.w * 100) + '%'; el.style.height = (o.h * 100) + '%'; el.style.borderColor = o.color; el.style.borderWidth = o.stroke+'px';
+                    }
+                    else if(o.type==='circle') {
+                        el.style.width = (o.w * 100) + '%'; el.style.height = (o.h * 100) + '%'; el.style.borderColor = o.color; el.style.borderWidth = o.stroke+'px';
+                    }
+                    else if(o.type==='line') {
+                        const pxW = o.w * r.width; const pxH = o.h * r.height;
+                        const length = Math.sqrt(pxW*pxW + pxH*pxH);
+                        const angle = Math.atan2(pxH, pxW) * 180 / Math.PI;
+                        el.style.width = length + 'px'; el.style.height = o.stroke + 'px'; el.style.backgroundColor = o.color;
+                        el.style.transform = `translate(0, -50%) rotate(${angle}deg)`;
+                        el.style.transformOrigin = "left center";
                     }
                     else if(o.type==='image') {
                         el.style.backgroundImage = `url(${o.img})`;
@@ -638,11 +873,17 @@
                         if(currentTool !== 'select') return;
                         this.select(o.id);
                         isDragging = true;
-                        const rc = el.getBoundingClientRect();
-                        const cx = rc.left - r.left + (rc.width/2);
-                        const cy = rc.top - r.top + (rc.height/2);
-                        dragOffsetX = (e.clientX - r.left) - cx;
-                        dragOffsetY = (e.clientY - r.top) - cy;
+                        
+                        if(o.type === 'line') {
+                            dragOffsetX = e.clientX - layer.getBoundingClientRect().left - (o.x * r.width);
+                            dragOffsetY = e.clientY - layer.getBoundingClientRect().top - (o.y * r.height);
+                        } else {
+                            const rc = el.getBoundingClientRect(); const rl = layer.getBoundingClientRect();
+                            const cx = rc.left - rl.left + (rc.width/2);
+                            const cy = rc.top - rl.top + (rc.height/2);
+                            dragOffsetX = (e.clientX - rl.left) - cx;
+                            dragOffsetY = (e.clientY - rl.top) - cy;
+                        }
                     });
 
                     if(selectedId === o.id) el.classList.add('is-selected');
@@ -661,6 +902,12 @@
                 if(o) {
                     document.getElementById('sliderSize').value = o.type==='stamp' ? o.size/2 : (o.type==='check'||o.type==='cross'? o.size/1.5 : o.size);
                     document.getElementById('lblSize').innerText = document.getElementById('sliderSize').value + 'pt';
+                    
+                    document.getElementById('sliderStroke').value = o.stroke || 2;
+                    document.getElementById('lblStroke').innerText = (o.stroke || 2) + 'px';
+                    
+                    document.getElementById('sliderOpacity').value = o.opacity || 100;
+                    document.getElementById('lblOpacity').innerText = (o.opacity || 100) + '%';
                     
                     document.querySelectorAll('.color-swatch').forEach(sw => {
                         sw.classList.remove('active');
@@ -684,8 +931,11 @@
                 if(!selectedId) return;
                 const o = DB[currentPage].find(x => x.id === selectedId);
                 if(!o) return;
+                
                 const oldObj = {...o};
                 if(prop === 'color') o.color = val;
+                if(prop === 'stroke') o.stroke = val;
+                if(prop === 'opacity') o.opacity = val;
                 if(prop === 'size') {
                     if(o.type==='check' || o.type==='cross') o.size = val * 1.5;
                     else if(o.type==='stamp') o.size = val * 2;
@@ -710,7 +960,7 @@
         });
 
         // ---------------------------------------------------------
-        // 8. TIME MACHINE (UNDO / REDO)
+        // 8. TIME MACHINE V2 (UNDO / REDO)
         // ---------------------------------------------------------
         const History = {
             add(item) {
@@ -752,7 +1002,7 @@
         };
 
         // ---------------------------------------------------------
-        // 9. EXPORTADOR BINARIO PDF-LIB (SHIELD ACTIVO)
+        // 9. MOTOR DE EXPORTACIÓN NATIVO (BLINDADO - ZERO CRASH)
         // ---------------------------------------------------------
         function hex2rgb(hex) {
             hex = hex.replace('#', '');
@@ -760,11 +1010,26 @@
             return { r: parseInt(hex.substring(0,2), 16)/255, g: parseInt(hex.substring(2,4), 16)/255, b: parseInt(hex.substring(4,6), 16)/255 };
         }
 
+        // Sistema Nativo de Descarga (Bypass de FileSaver.js para mayor seguridad)
+        function nativeDownload(bytes, filename) {
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
         const ExportEngine = {
             async buildPDF() {
-                Loader.show("Forzando Compilación Binaria...");
+                Loader.show("Compilando código binario y quemando vectores...");
+                
                 try {
-                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal);
+                    // Cargar desde una copia exacta del buffer original para evitar corrupción de RAM
+                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal.slice(0));
                     const pages = pdfDoc.getPages();
                     
                     const fHelv = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
@@ -779,79 +1044,86 @@
                         const { width: pW, height: pH } = pPdf.getSize();
 
                         for(let o of objs) {
-                            try { // BLINDAJE EXTREMO POR CADA OBJETO
-                                if(isNaN(o.x) || isNaN(o.y)) continue;
+                            try { // SHIELD: Si el objeto está mal construido, PDF-Lib no se bloquea.
+                                if(typeof o.x !== 'number' || typeof o.y !== 'number') continue;
 
                                 const c = hex2rgb(o.color || '#000000');
                                 const pColor = PDFLib.rgb(c.r, c.g, c.b);
                                 const pSize = parseFloat(o.size) || 14; 
+                                const pOpac = (parseFloat(o.opacity) || 100) / 100;
+                                const pStroke = parseFloat(o.stroke) || 2;
                                 
-                                // Traducción matemática perfecta (Porcentajes a Puntos PDF)
+                                // Traducción matemática exacta (Porcentaje * Total Puntos PDF)
                                 const pdfX = o.x * pW;
-                                const pdfY = pH - (o.y * pH); // Invierte eje Y
+                                const pdfY = pH - (o.y * pH); // Invertimos Y porque PDF-Lib lee desde abajo
 
                                 if(o.type === 'check') {
                                     const w = fSym.widthOfTextAtSize('4', pSize);
-                                    pPdf.drawText('4', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor });
+                                    pPdf.drawText('4', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor, opacity: pOpac });
                                 }
                                 else if(o.type === 'cross') {
                                     const w = fSym.widthOfTextAtSize('8', pSize);
-                                    pPdf.drawText('8', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor });
+                                    pPdf.drawText('8', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor, opacity: pOpac });
                                 }
                                 else if(o.type === 'text') {
+                                    // Limpieza de caracteres no compatibles con WinAnsi
                                     let safeText = o.text ? o.text.replace(/[^\x00-\xFF]/g, "") : ""; 
-                                    if(!safeText.trim()) continue;
-                                    
-                                    const lines = safeText.split('\n');
-                                    lines.forEach((line, idx) => {
-                                        if(!line) return;
-                                        const w = fHelv.widthOfTextAtSize(line, pSize);
-                                        pPdf.drawText(line, { x: pdfX - (w/2), y: pdfY - (pSize/3) - (idx * pSize * 1.2), size: pSize, font: fHelv, color: pColor });
-                                    });
+                                    if(safeText.trim().length > 0) {
+                                        const lines = safeText.split('\n');
+                                        lines.forEach((line, idx) => {
+                                            if(line) {
+                                                const w = fHelv.widthOfTextAtSize(line, pSize);
+                                                pPdf.drawText(line, { x: pdfX - (w/2), y: pdfY - (pSize/3) - (idx * pSize * 1.2), size: pSize, font: fHelv, color: pColor, opacity: pOpac });
+                                            }
+                                        });
+                                    }
                                 }
                                 else if(o.type === 'stamp') {
                                     let textStr = o.text || "SELLO";
                                     const w = fCour.widthOfTextAtSize(textStr, pSize);
-                                    pPdf.drawRectangle({ x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5, width: w + 20, height: pSize + 10, borderColor: pColor, borderWidth: 3, opacity: 0.8 });
-                                    pPdf.drawText(textStr, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: 0.8 });
+                                    pPdf.drawRectangle({ x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5, width: w + 20, height: pSize + 10, borderColor: pColor, borderWidth: 3, opacity: pOpac });
+                                    pPdf.drawText(textStr, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: pOpac });
                                 }
-                                else if(o.type === 'redact' || o.type === 'highlight') {
+                                else if(o.type === 'redact' || o.type === 'highlight' || o.type === 'rect') {
                                     const wPdf = o.w * pW; const hPdf = o.h * pH;
-                                    pPdf.drawRectangle({
-                                        x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf,
-                                        color: pColor, opacity: o.type === 'highlight' ? 0.4 : 1.0,
-                                        blendMode: o.type === 'highlight' ? PDFLib.BlendMode.Multiply : PDFLib.BlendMode.Normal
-                                    });
+                                    let opt = { x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf, opacity: pOpac };
+                                    if(o.type === 'rect') { opt.borderColor = pColor; opt.borderWidth = pStroke; }
+                                    else { opt.color = pColor; }
+                                    if(o.type === 'highlight') opt.blendMode = PDFLib.BlendMode.Multiply;
+                                    pPdf.drawRectangle(opt);
+                                }
+                                else if (o.type === 'circle') {
+                                    const rxPdf = (o.w * pW) / 2; const ryPdf = (o.h * pH) / 2;
+                                    pPdf.drawEllipse({ x: pdfX, y: pdfY, xScale: Math.abs(rxPdf), yScale: Math.abs(ryPdf), borderColor: pColor, borderWidth: pStroke, opacity: pOpac });
+                                }
+                                else if(o.type === 'line') {
+                                    const endX = (o.x + o.w) * pW; const endY = pH - ((o.y + o.h) * pH);
+                                    pPdf.drawLine({ start: {x: pdfX, y: pdfY}, end: {x: endX, y: endY}, thickness: pStroke, color: pColor, opacity: pOpac });
                                 }
                                 else if(o.type === 'image' && o.img) {
-                                    let embed = o.img.includes('png') ? await pdfDoc.embedPng(o.img) : await pdfDoc.embedJpg(o.img);
-                                    // Cálculo de proporción de pantalla para no deformar en PDF
-                                    const pInfo = await pdfProxy.getPage(i);
-                                    const vBase = pInfo.getViewport({scale: 1.0});
-                                    const htmlH = 150 * (pSize/14); 
-                                    const pdfImgH = htmlH * (pH / vBase.height);
-                                    const dims = embed.scaleToFit(9999, pdfImgH);
-
-                                    pPdf.drawImage(embed, { x: pdfX - (dims.width/2), y: pdfY - (dims.height/2), width: dims.width, height: dims.height });
+                                    let embed = o.img.startsWith('data:image/png') ? await pdfDoc.embedPng(o.img) : await pdfDoc.embedJpg(o.img);
+                                    // Escala aproximada basándose en el size (150px html = escala)
+                                    const dims = embed.scale(0.5 * (pSize/14)); 
+                                    pPdf.drawImage(embed, { x: pdfX - (dims.width/2), y: pdfY - (dims.height/2), width: dims.width, height: dims.height, opacity: pOpac });
                                 }
                             } catch(objError) {
-                                console.warn("Objeto corrupto ignorado por el escudo de seguridad.");
+                                console.warn("Objeto omitido por corrupción de datos.");
                             }
                         }
                     }
 
-                    const form = pdfDoc.getForm();
-                    if(form) { try { form.flatten(); } catch(e){} }
+                    // Aplanado final seguro
+                    try { const form = pdfDoc.getForm(); if(form) form.flatten(); } catch(e){}
 
                     const bytes = await pdfDoc.save();
-                    saveAs(new Blob([bytes], {type: 'application/pdf'}), `AuditorIA_PRO_${Date.now()}.pdf`);
-                    Toast.show("Documento descargado con éxito.", "success");
+                    nativeDownload(bytes, `AuditorIA_PRO_${Date.now()}.pdf`);
+                    Toast.show("Exportación Completada con Éxito.", "success");
 
                 } catch(e) {
-                    console.error("Error crítico evitado:", e);
-                    // FALLBACK: Si todo falla, descarga el original para no perder información
-                    saveAs(new Blob([pdfBytesOriginal], {type: 'application/pdf'}), `Backup_Seguridad.pdf`);
-                    Toast.show("Fallo evitado. Copia de seguridad descargada.", "warning");
+                    console.error("Critical Engine Error:", e);
+                    Toast.show("Fallo en la compilación principal. Intentando recuperación...", "warning");
+                    // Protocolo de Emergencia: Descarga el PDF Original para no perder el archivo.
+                    try { nativeDownload(pdfBytesOriginal, `Recuperado_${Date.now()}.pdf`); } catch(fallbackErr) {}
                 } finally {
                     Loader.hide();
                 }
