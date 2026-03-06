@@ -5,6 +5,7 @@ const navbarHTML = `
         --text-nav: #F8FAFC; 
         --brand-nav: #3B82F6; 
         --border-nav: rgba(255, 255, 255, 0.08);
+        --accent-nav: #E11D48; /* Carmesí */
     }
     
     body { margin: 0; padding: 0; overflow-x: hidden; }
@@ -24,52 +25,57 @@ const navbarHTML = `
     .nav-link { display: flex; align-items: center; gap: 6px; color: #94A3B8; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; letter-spacing: 0.3px; white-space: nowrap; }
     .nav-link:hover { color: #FFFFFF; }
 
+    /* MEGA MENÚ DE SOLUCIONES */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-toggle { color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 14.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
     .dropdown:hover .dropdown-toggle { color: #FFFFFF; }
     
-    /* Mega Menú de 4 Columnas */
-    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 980px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box;}
-    .dropdown:hover .dropdown-menu { display: grid; animation: dropFade 0.2s ease-out; }
+    .mega-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 980px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box;}
+    .dropdown:hover .mega-menu { display: grid; animation: dropFade 0.2s ease-out; }
     @keyframes dropFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
     .menu-category { font-size: 11px; text-transform: uppercase; color: var(--brand-nav); font-weight: 900; margin-bottom: 15px; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
     .dropdown-column a { color: #E2E8F0; text-decoration: none; display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 12px; transition: 0.2s; padding-left: 8px; border-left: 2px solid transparent; line-height: 1.4;}
     .dropdown-column a:hover:not(.link-pdf-pro) { color: #FFFFFF; border-left-color: var(--brand-nav); background: rgba(255,255,255,0.02); }
 
-    /* ESTILO EXCLUSIVO LATENCIA ROJA PARA PDF STUDIO PRO */
-    .link-pdf-pro {
-        color: #FCA5A5 !important;
-        background: rgba(220, 38, 38, 0.1) !important;
-        border: 1px solid #DC2626 !important;
-        border-radius: 6px;
-        padding: 6px 8px !important;
-        font-weight: 900 !important;
-        animation: pulseNav 2s infinite;
-        margin-top: 4px;
-        margin-bottom: 12px;
-    }
-    .link-pdf-pro:hover {
-        color: #FFFFFF !important;
-        background: rgba(220, 38, 38, 0.25) !important;
-    }
-    @keyframes pulseNav { 
-        0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 
-        70% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); } 
-        100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } 
-    }
+    .link-pdf-pro { color: #FCA5A5 !important; background: rgba(220, 38, 38, 0.1) !important; border: 1px solid #DC2626 !important; border-radius: 6px; padding: 6px 8px !important; font-weight: 900 !important; animation: pulseNav 2s infinite; margin-top: 4px; margin-bottom: 12px; }
+    .link-pdf-pro:hover { color: #FFFFFF !important; background: rgba(220, 38, 38, 0.25) !important; }
+    
+    @keyframes pulseNav { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
+    /* MENÚ "MI CUENTA" (ESTADO LOGUEADO) */
+    .user-dropdown { position: relative; display: inline-block; }
+    .user-btn { display: flex; align-items: center; gap: 8px; background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); color: white; padding: 8px 18px; border-radius: 30px; font-weight: 800; font-size: 13.5px; cursor: pointer; transition: 0.3s; }
+    .user-btn:hover { background: rgba(225, 29, 72, 0.2); border-color: rgba(225, 29, 72, 0.5); }
+    
+    .live-dot { width: 8px; height: 8px; background: var(--accent-nav); border-radius: 50%; box-shadow: 0 0 8px var(--accent-nav); animation: pulseDot 2s infinite; }
+    @keyframes pulseDot { 0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); } 70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); } 100% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
+
+    .user-menu { display: none; position: absolute; top: 100%; right: 0; background: #1E293B; width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); flex-direction: column; gap: 4px; margin-top: 15px;}
+    .user-dropdown:hover .user-menu { display: flex; animation: dropFadeUser 0.2s ease-out; }
+    @keyframes dropFadeUser { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .user-menu a { color: #E2E8F0; text-decoration: none; font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+    .user-menu a:hover { background: rgba(255,255,255,0.05); color: white; }
+    .user-menu hr { border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 6px 0; }
+    .logout-btn { color: #FCA5A5 !important; }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.1) !important; color: #EF4444 !important; }
+
+    /* BOTONES ESTADO DESLOGUEADO */
+    .nav-auth-group { display: flex; align-items: center; gap: 24px; }
     .btn-pro-nav { background: var(--brand-nav); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 800; font-size: 13px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); white-space: nowrap;}
     .btn-pro-nav:hover { background: #2563EB; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4); }
 
-    /* PARCHE MÓVIL CRÍTICO */
     @media (max-width: 1024px) {
         .header-core { flex-wrap: wrap; padding: 15px 20px; gap: 15px; justify-content: center;}
         .nav-right { flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%;}
         .dropdown { position: static; width: 100%; text-align: center; }
         .dropdown-toggle { justify-content: center; width: 100%; border-bottom: 1px solid var(--border-nav);}
-        .dropdown-menu { width: 100%; left: 0; transform: none; grid-template-columns: 1fr; max-height: 60vh; overflow-y: auto; padding: 15px; gap: 15px; position: relative;}
-        .dropdown:hover .dropdown-menu { display: grid; animation: none; }
+        .mega-menu { width: 100%; left: 0; transform: none; grid-template-columns: 1fr; max-height: 60vh; overflow-y: auto; padding: 15px; gap: 15px; position: relative;}
+        .dropdown:hover .mega-menu { display: grid; animation: none; }
+        
+        .user-dropdown { position: relative; width: auto; }
+        .user-menu { right: 50%; transform: translateX(50%); }
     }
 </style>
 
@@ -98,7 +104,7 @@ const navbarHTML = `
                 Ecosistema de Soluciones
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
             </div>
-            <div class="dropdown-menu">
+            <div class="mega-menu">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría SAT y Riesgo</div>
                     <a href="auditoria-masiva.html">Auditoría Masiva de Datos</a>
@@ -114,7 +120,7 @@ const navbarHTML = `
                     <a href="auditoria-activos.html">Auditoría de Activos Fijos</a>
                     <a href="prueba-servicio.html">Expediente de Materialidad</a>
                     <a href="validador-csf-32d.html">Auditor de Constancias (CSF / 32-D)</a>
-                    <a href="auditoria-viaticos.html">Escáner de Viáticos y Gastos de Viaje</a>
+                    <a href="auditoria-viaticos.html">Escáner de Viáticos y Viajes</a>
                     <a href="precios-aduana.html">Simulador de Costos Aduanales</a>
                 </div>
                 <div class="dropdown-column">
@@ -123,29 +129,63 @@ const navbarHTML = `
                     <a href="visor-xml.html">Visor y Decodificador XML</a>
                     <a href="dashboard-xml.html">Dashboard Financiero XML</a>
                     <a href="proyector-iva.html">Proyector Forense de IVA</a>
-                    <a href="analisis-proveedores.html">Análisis Estratégico de Proveedores</a>
+                    <a href="analisis-proveedores.html">Estrategia de Proveedores</a>
                     <a href="auditor-nomina.html">Auditoría de Nómina y Riesgos</a>
-                    <a href="buscador-conceptos.html">Auditoría de Compras y Conceptos</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Automatización y PDF</div>
                     <a href="editor-pdf.html" class="link-pdf-pro">AuditorIA PDF Studio PRO</a>
                     <a href="conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
                     <a href="escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
-                    <a href="conversor-bancario.html">Conversor Bancario PDF a Excel</a>
+                    <a href="conversor-bancario.html">Bancos PDF a Excel</a>
                     <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
                     <a href="generador-polizas.html">Generador Layout Pólizas</a>
                 </div>
             </div>
         </div>
-        <a href="login.html" class="nav-link">Acceso Cliente</a>
-        <a href="planes.html" class="btn-pro-nav">Licencia Corporativa</a>
+
+        <div id="nav-auth-section">
+            <div class="nav-auth-group" id="auth-logged-out">
+                <a href="login.html" class="nav-link">Acceso Cliente</a>
+                <a href="planes.html" class="btn-pro-nav">Licencia Corporativa</a>
+            </div>
+
+            <div class="user-dropdown" id="auth-logged-in" style="display: none;">
+                <div class="user-btn">
+                    <span class="live-dot"></span> Mi Cuenta
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div class="user-menu">
+                    <a href="dashboard-xml.html">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> 
+                        Mi Dashboard
+                    </a>
+                    <a href="planes.html" style="color: #93C5FD;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> 
+                        Mejorar a PRO
+                    </a>
+                    <a href="privacidad.html">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 
+                        Privacidad
+                    </a>
+                    <hr>
+                    <a href="#" onclick="cerrarSesionGlobal(event)" class="logout-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> 
+                        Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </header>
 `;
 
 document.write(navbarHTML);
+
+// ----------------------------------------------------
+// LÓGICA DE INTERFAZ Y AUTENTICACIÓN
+// ----------------------------------------------------
 
 window.showToast = function(message, type = 'info') {
     const container = document.getElementById('toast-container');
@@ -157,4 +197,33 @@ window.showToast = function(message, type = 'info') {
     container.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('show'));
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 5000);
+};
+
+// Evaluamos silenciosamente si existe la sesión de Supabase en el LocalStorage
+setTimeout(() => {
+    // La llave oficial que guarda Supabase para tu proyecto
+    const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
+    const userSession = localStorage.getItem(sessionKey);
+    
+    if (userSession) {
+        // Usuario Logueado -> Mostrar "Mi Cuenta"
+        document.getElementById('auth-logged-out').style.display = 'none';
+        document.getElementById('auth-logged-in').style.display = 'inline-block';
+    }
+}, 50); // Ligero delay para asegurar que el DOM cargó
+
+// Función para desconectar y limpiar la bóveda del navegador
+window.cerrarSesionGlobal = function(e) {
+    e.preventDefault();
+    
+    // Destruimos la llave de sesión de Supabase y los créditos locales
+    localStorage.removeItem('sb-qhuctouhkxyqhdfwcctl-auth-token');
+    localStorage.removeItem('auditoria_creditos');
+    
+    window.showToast("Sesión cerrada de forma segura.", "success");
+    
+    // Lo expulsamos amablemente al inicio
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
 };
