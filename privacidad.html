@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviso de Privacidad | AuditorIA</title>
+    <meta name="robots" content="noindex, follow">
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -8,41 +15,86 @@
       gtag('js', new Date());
       gtag('config', 'G-KJW30G9ETZ');
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aviso de Privacidad | AuditorIA</title>
-    <meta name="robots" content="noindex, follow">
+    <script src="despertador.js"></script>
+
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: #F9FAFB; color: #374151; line-height: 1.6; margin: 0; padding: 40px 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
-        h1 { color: #111827; font-size: 28px; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; margin-bottom: 30px; }
-        h2 { color: #111827; font-size: 20px; margin-top: 30px; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #2563EB; text-decoration: none; font-weight: 500; }
-        .back-link:hover { text-decoration: underline; }
+        :root { 
+            --bg-primary: #0F172A; 
+            --bg-secondary: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8; 
+            --border: rgba(255,255,255,0.1); 
+            --brand: #3B82F6; 
+            --success: #10B981;
+        }
+        
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; line-height: 1.8; overflow-x: hidden; }
+
+        .legal-container { max-width: 900px; margin: 60px auto; padding: 50px; background: var(--bg-secondary); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        
+        .legal-header { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 40px; text-align: center;}
+        .legal-title { font-size: 32px; font-weight: 900; color: white; margin: 0 0 10px 0; letter-spacing: -0.5px; }
+        .legal-date { color: var(--text-muted); font-size: 14px; font-family: monospace; }
+
+        .legal-content h2 { color: #93C5FD; font-size: 20px; margin-top: 40px; margin-bottom: 15px; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .legal-content p { color: #CBD5E1; font-size: 15px; margin-bottom: 20px; text-align: justify; }
+        .legal-content strong { color: white; }
+        .legal-content ul { color: #CBD5E1; font-size: 15px; margin-bottom: 20px; padding-left: 20px;}
+        .legal-content li { margin-bottom: 10px; }
+
+        .shield-box { background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--success); padding: 20px; border-radius: 0 8px 8px 0; margin: 30px 0; }
+        .shield-box p { margin: 0; color: #6EE7B7; font-weight: 600; font-size: 14px;}
+
+        @media (max-width: 768px) {
+            .legal-container { margin: 30px 20px; padding: 30px 20px; }
+            .legal-title { font-size: 26px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/" class="back-link">← Volver al inicio</a>
-        <h1>Aviso de Privacidad</h1>
-        <p><strong>Última actualización:</strong> 28 de Febrero de 2026</p>
-        
-        <p>En cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP) de México, AuditorIA informa sobre el tratamiento de la información procesada a través de nuestra plataforma web.</p>
 
-        <h2>1. Procesamiento en Memoria Volátil (Zero Retention)</h2>
-        <p>AuditorIA funciona bajo una arquitectura de procesamiento en memoria volátil. <strong>No almacenamos, guardamos, copiamos ni respaldamos los archivos XML (CFDI)</strong> cargados por los usuarios. Los archivos se procesan temporalmente en la memoria RAM del servidor exclusivamente para la extracción de nodos y el cálculo matemático, e inmediatamente son destruidos del sistema al finalizar la generación del dictamen en Excel.</p>
+<script src="navbar.js"></script>
 
-        <h2>2. Datos Personales Sensibles y Fiscales</h2>
-        <p>La plataforma extrae información fiscal (RFC, UUID, importes de IVA e ISR, Subtotal) contenida en los comprobantes fiscales digitales por internet (CFDI 4.0). Esta extracción tiene como único fin la validación estructural y matemática solicitada por el usuario. AuditorIA no vincula esta información a perfiles de usuario, no crea bases de datos históricas ni la comparte con terceros, entidades gubernamentales o agencias de publicidad.</p>
-
-        <h2>3. Rastreo y Cookies</h2>
-        <p>El sitio web público utiliza tecnologías estándar de alojamiento para garantizar la seguridad de la conexión (SSL/HTTPS). No utilizamos cookies de rastreo publicitario invasivo ni recopilamos información de identificación personal para retargeting.</p>
-
-        <h2>4. Seguridad de la Información</h2>
-        <p>La transferencia de archivos se realiza mediante protocolos de cifrado de extremo a extremo. Al no existir persistencia de datos, se mitiga el riesgo de vulneración o exposición de información fiscal.</p>
-
-        <h2>5. Cambios al Aviso de Privacidad</h2>
-        <p>Cualquier modificación a las políticas de procesamiento de datos será notificada a través de esta misma URL.</p>
+<div class="legal-container">
+    <div class="legal-header">
+        <h1 class="legal-title">Aviso de Privacidad y Tratamiento de Datos</h1>
+        <div class="legal-date">Última actualización: Marzo 2026</div>
     </div>
+    
+    <div class="legal-content">
+        <p>En cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP) de México y normativas internacionales de ciberseguridad corporativa, <strong>AuditorIA</strong> informa a sus usuarios, despachos y empresas sobre el tratamiento de la información procesada a través de nuestra plataforma tecnológica.</p>
+
+        <h2>1. Procesamiento Edge Computing (Zero-Retention)</h2>
+        <p>El núcleo de AuditorIA opera bajo una arquitectura descentralizada de procesamiento en memoria volátil (Edge Computing). <strong>Nosotros no almacenamos, guardamos, copiamos ni respaldamos los archivos XML o PDF</strong> que arrastras a la plataforma. La lectura de nodos, extracción de texto y manipulación binaria ocurre localmente en la memoria RAM del navegador web de tu propio dispositivo. Al cerrar la pestaña, los datos se destruyen permanentemente.</p>
+
+        <div class="shield-box">
+            <p>GARANTÍA FORENSE: Tus facturas, estados de cuenta y contratos nunca viajan en bruto a nuestros servidores. Todo el procesamiento matemático y visual ocurre dentro de tu propia computadora.</p>
+        </div>
+
+        <h2>2. Uso de Inteligencia Artificial y Transmisión de Datos</h2>
+        <p>Para la generación de dictámenes, justificaciones legales o análisis cualitativos, la plataforma utiliza modelos de Inteligencia Artificial alojados en servidores seguros. El tratamiento de datos en este caso es el siguiente:</p>
+        <ul>
+            <li>Solo se envían paquetes de datos estructurados (Ej. resúmenes matemáticos o anomalías detectadas).</li>
+            <li>El servidor de IA recibe la consulta de forma cifrada, redacta el análisis en milisegundos y devuelve la respuesta.</li>
+            <li>La información transmitida <strong>no se utiliza para entrenar modelos de lenguaje</strong> y es purgada inmediatamente de la memoria del servidor al finalizar la petición (Zero-Retention Policy).</li>
+        </ul>
+
+        <h2>3. Datos Personales Sensibles y Fiscales</h2>
+        <p>Reconocemos que la plataforma procesa información altamente sensible (RFC, UUID, importes de IVA e ISR, nombres de empresas y descripciones de servicios). Esta información se procesa con el único fin de ejecutar las herramientas forenses, contables o de validación solicitadas por el usuario. <strong>AuditorIA no crea bases de datos históricas ni vende, alquila o comparte información con terceros, entidades gubernamentales, o agencias de publicidad.</strong></p>
+
+        <h2>4. Seguridad y Cifrado</h2>
+        <p>Toda comunicación entre el navegador del usuario y nuestros servidores de validación (API/IA) se realiza mediante protocolos de seguridad HTTPS con cifrado TLS avanzado (End-to-End Encryption). Al eliminar la persistencia de datos, mitigamos de raíz el riesgo de vulneraciones, hackeos o exposición de información fiscal ("No se puede robar lo que no se almacena").</p>
+
+        <h2>5. Analítica Web y Cookies</h2>
+        <p>Utilizamos cookies y tecnologías de seguimiento estándar única y exclusivamente para medir el rendimiento de la plataforma y garantizar su correcto funcionamiento técnico. No desplegamos cookies de retargeting invasivo ni rastreamos tu actividad fuera de nuestro ecosistema.</p>
+
+        <h2>6. Modificaciones al Aviso de Privacidad</h2>
+        <p>AuditorIA se reserva el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente aviso de privacidad, para la atención de novedades legislativas, políticas internas o nuevos requerimientos para la prestación de nuestros servicios tecnológicos. Toda actualización estará disponible inmediatamente en esta URL.</p>
+    </div>
+</div>
+
+<script src="footer.js"></script>
+
 </body>
 </html>
