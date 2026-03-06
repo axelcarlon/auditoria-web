@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planes y Precios | AuditorIA PRO</title>
+    <meta name="description" content="Desbloquea el ecosistema forense fiscal. Auditoría masiva de XML, prevención de EFOS y acceso total a PDF Studio por un precio único.">
+    <link rel="canonical" href="https://auditoriaxml.mx/planes.html" />
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
+    <script src="despertador.js"></script>
+
+    <style>
+        :root { 
+            --bg-primary: #0F172A; 
+            --bg-secondary: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8; 
+            --border: rgba(255,255,255,0.1); 
+            --brand: #3B82F6; 
+            --accent: #E11D48; /* Carmesí para la oferta */
+            --success: #10B981;
+            --warning: #F59E0B;
+        }
+        
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; line-height: 1.6;}
+
+        /* Background Grid */
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px; opacity: 0.05; z-index: -1; pointer-events: none;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 80px 20px; position: relative; }
+        
+        .header-section { text-align: center; margin-bottom: 60px; }
+        .header-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(225, 29, 72, 0.1); border: 1px solid var(--accent); color: #FDA4AF; padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;}
+        .header-badge .pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulseRed 2s infinite;}
+        
+        .title { font-size: 48px; font-weight: 900; margin: 0 0 15px 0; letter-spacing: -1.5px; line-height: 1.1;}
+        .title span { color: var(--brand); }
+        .subtitle { font-size: 18px; color: var(--text-muted); max-width: 700px; margin: 0 auto; }
+
+        @keyframes pulseRed { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
+
+        /* Pricing Card */
+        .pricing-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(20px); 
+            border: 2px solid var(--accent); 
+            border-radius: 24px; 
+            padding: 50px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(225, 29, 72, 0.05); 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 100px; background: rgba(225, 29, 72, 0.3); filter: blur(60px); pointer-events: none;
+        }
+
+        .price-header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 30px; margin-bottom: 30px; position: relative; z-index: 1;}
+        .plan-name { font-size: 24px; font-weight: 900; color: white; margin: 0 0 10px; }
+        
+        .price-strike { font-size: 24px; color: #64748B; text-decoration: line-through; font-weight: 700; margin-bottom: 5px; display: block;}
+        .price-amount { font-size: 64px; font-weight: 900; color: white; line-height: 1;}
+        .price-currency { font-size: 24px; color: var(--text-muted); font-weight: 600;}
+        .price-period { font-size: 16px; color: var(--text-muted); font-weight: 500;}
+        .price-note { color: var(--success); font-size: 13px; font-weight: 700; margin-top: 15px; background: rgba(16, 185, 129, 0.1); display: inline-block; padding: 4px 12px; border-radius: 20px;}
+
+        /* Lista de Beneficios */
+        .features-list { list-style: none; padding: 0; margin: 0 0 40px 0; position: relative; z-index: 1;}
+        .features-list li { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; font-size: 16px; color: #E2E8F0; font-weight: 500;}
+        .features-list .check-icon { color: var(--success); flex-shrink: 0; margin-top: 2px;}
+        .features-list strong { color: white; font-weight: 800;}
+
+        /* Botón de Compra Carmesí */
+        .btn-buy { 
+            background: var(--accent); color: white; border: 1px solid #FDA4AF; padding: 20px; border-radius: 12px; font-weight: 900; font-size: 18px; width: 100%; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            animation: pulseCarmesí 2s infinite; position: relative; z-index: 1; text-decoration: none;
+        }
+        .btn-buy:hover { background: #BE123C; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(225, 29, 72, 0.4); animation: none;}
+        
+        @keyframes pulseCarmesí { 
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); } 
+            70% { box-shadow: 0 0 0 20px rgba(225, 29, 72, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } 
+        }
+
+        .guarantee { text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px; position: relative; z-index: 1;}
+
+        /* FAQ Section */
+        .faq-section { margin-top: 100px; }
+        .faq-title { text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 50px;}
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .faq-card { background: rgba(30, 41, 59, 0.5); border: 1px solid var(--border); padding: 30px; border-radius: 16px;}
+        .faq-card h4 { color: white; font-size: 18px; font-weight: 800; margin: 0 0 15px 0;}
+        .faq-card p { color: var(--text-muted); font-size: 15px; margin: 0; line-height: 1.6;}
+
+        @media (max-width: 768px) {
+            .title { font-size: 36px; }
+            .pricing-card { padding: 40px 25px; }
+            .price-amount { font-size: 52px; }
+            .faq-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<script src="navbar.js"></script>
+
+<div class="container">
+    
+    <div class="header-section">
+        <div class="header-badge">
+            <div class="pulse"></div>
+            PRECIO DE FUNDADOR (TIEMPO LIMITADO)
+        </div>
+        <h1 class="title">Desbloquea el Poder Total de <span>AuditorIA</span></h1>
+        <p class="subtitle">Deja de cruzar datos a mano. Automatiza tus auditorías, blinda tu información y accede al arsenal forense que utilizan los grandes corporativos.</p>
+    </div>
+
+    <div class="pricing-card">
+        <div class="price-header">
+            <h2 class="plan-name">Licencia PRO Universal</h2>
+            <span class="price-strike">Valor real: $999 MXN</span>
+            <div style="display: flex; align-items: baseline; justify-content: center; gap: 5px;">
+                <span class="price-amount">$199</span>
+                <span class="price-currency">MXN</span>
+                <span class="price-period">/ mes</span>
+            </div>
+            <div class="price-note">Precio congelado de por vida al suscribirte hoy</div>
+        </div>
+
+        <ul class="features-list">
+            <li>
+                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <span><strong>Auditoría Masiva de XML:</strong> Procesa miles de facturas, cuadra impuestos y exporta a Excel al instante.</span>
+            </li>
+            <li>
+                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <span><strong>Detección EFOS (Art. 69-B):</strong> Cruza todo tu catálogo de proveedores contra las listas negras del SAT ilimitadamente.</span>
+            </li>
+            <li>
+                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <span><strong>AuditorIA PDF Studio:</strong> Acceso total a las 34 Súper Herramientas forenses (Bóveda Criptográfica, Aplanado, Censura, Extracción OCR, etc).</span>
+            </li>
+            <li>
+                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <span><strong>Generador Batch DIOT & Pólizas:</strong> Ahorra decenas de horas automatizando el envío de obligaciones fiscales.</span>
+            </li>
+            <li>
+                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <span><strong>IA Legal Forense:</strong> Consulta ilimitada al Asesor Jurídico entrenado en la LISR, LIVA y CFF.</span>
+            </li>
+            <li>
+                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <span><strong>Privacidad Zero-Retention:</strong> Toda tu información se procesa en tu RAM. Jamás tocamos tus datos.</span>
+            </li>
+        </ul>
+
+        <a href="#" class="btn-buy" onclick="alert('Aquí se integrará tu pasarela de pagos (Stripe, PayPal, MercadoPago).')">
+            ACTIVAR LICENCIA PRO AHORA
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+
+        <div class="guarantee">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Cancela cuando quieras. Sin contratos ni letras chiquitas.
+        </div>
+    </div>
+
+    <div class="faq-section">
+        <h3 class="faq-title">Preguntas Frecuentes</h3>
+        <div class="faq-grid">
+            <div class="faq-card">
+                <h4>¿Por qué el precio es tan bajo en comparación a la competencia?</h4>
+                <p>Nuestra tecnología Edge Computing nos permite ahorrar miles de dólares en servidores, ya que tu computadora hace el procesamiento pesado. Te pasamos ese ahorro directamente a ti, con la condición de que aproveches este precio de lanzamiento.</p>
+            </div>
+            <div class="faq-card">
+                <h4>¿Tienen acceso a la facturación de mis clientes?</h4>
+                <p><strong>Absolutamente NO.</strong> AuditorIA no es un ERP en la nube. Tu información no se sube a bases de datos ni se almacena. Se procesa en la memoria RAM de tu navegador web. Al cerrar la pestaña, los datos se destruyen. Es seguridad forense.</p>
+            </div>
+            <div class="faq-card">
+                <h4>¿Hay plazos forzosos o penalizaciones por cancelar?</h4>
+                <p>Cero plazos forzosos. Creemos que el software debe ser tan bueno que quieras quedarte. Si decides irte, puedes cancelar tu suscripción mensual en cualquier momento con un solo clic desde tu panel, sin preguntas.</p>
+            </div>
+            <div class="faq-card">
+                <h4>¿Necesito instalar algo en mi computadora?</h4>
+                <p>No. AuditorIA funciona 100% en la nube (vía web) desde cualquier navegador moderno (Chrome, Edge, Safari, Firefox). No requieres equipos costosos ni mantenimiento de sistemas informáticos.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="footer.js"></script>
+
+</body>
+</html>
