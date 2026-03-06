@@ -30,13 +30,14 @@ const navbarHTML = `
     .dropdown-toggle { color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 14.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
     .dropdown:hover .dropdown-toggle { color: #FFFFFF; }
     
-    .mega-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 980px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box; margin-top: 8px;}
+    /* CORRECCIÓN DE CORTE: Anclado a la derecha (-60px para no estorbar al botón Mi Cuenta) */
+    .mega-menu { display: none; position: absolute; top: 100%; right: -60px; left: auto; background: #1E293B; width: 980px; max-width: 92vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box; margin-top: 8px;}
     
     /* PUENTE INVISIBLE MEGA MENÚ */
     .mega-menu::before { content: ''; position: absolute; top: -15px; left: 0; width: 100%; height: 15px; background: transparent; }
 
     .dropdown:hover .mega-menu { display: grid; animation: dropFade 0.2s ease-out; }
-    @keyframes dropFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @keyframes dropFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .menu-category { font-size: 11px; text-transform: uppercase; color: var(--brand-nav); font-weight: 900; margin-bottom: 15px; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
     .dropdown-column a { color: #E2E8F0; text-decoration: none; display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 12px; transition: 0.2s; padding-left: 8px; border-left: 2px solid transparent; line-height: 1.4;}
@@ -60,8 +61,7 @@ const navbarHTML = `
     /* PUENTE INVISIBLE MI CUENTA */
     .user-menu::before { content: ''; position: absolute; top: -15px; left: 0; width: 100%; height: 15px; background: transparent; }
 
-    .user-dropdown:hover .user-menu { display: flex; animation: dropFadeUser 0.2s ease-out; }
-    @keyframes dropFadeUser { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .user-dropdown:hover .user-menu { display: flex; animation: dropFade 0.2s ease-out; }
     
     .user-menu a { color: #E2E8F0; text-decoration: none; font-size: 13.5px; font-weight: 600; padding: 10px 12px; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
     .user-menu a:hover { background: rgba(255,255,255,0.05); color: white; }
@@ -79,7 +79,8 @@ const navbarHTML = `
         .nav-right { flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%;}
         .dropdown { position: static; width: 100%; text-align: center; }
         .dropdown-toggle { justify-content: center; width: 100%; border-bottom: 1px solid var(--border-nav);}
-        .mega-menu { width: 100%; left: 0; transform: none; grid-template-columns: 1fr; max-height: 60vh; overflow-y: auto; padding: 15px; gap: 15px; position: relative;}
+        /* CORRECCIÓN MÓVIL */
+        .mega-menu { width: 100%; left: 0; right: auto; transform: none; grid-template-columns: 1fr; max-height: 60vh; overflow-y: auto; padding: 15px; gap: 15px; position: relative;}
         .dropdown:hover .mega-menu { display: grid; animation: none; }
         
         .user-dropdown { position: relative; width: auto; }
@@ -209,12 +210,10 @@ window.showToast = function(message, type = 'info') {
 
 // Evaluamos silenciosamente si existe la sesión de Supabase en el LocalStorage
 setTimeout(() => {
-    // La llave oficial que guarda Supabase para tu proyecto
     const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
     const userSession = localStorage.getItem(sessionKey);
     
     if (userSession) {
-        // Usuario Logueado -> Mostrar "Mi Cuenta"
         document.getElementById('auth-logged-out').style.display = 'none';
         document.getElementById('auth-logged-in').style.display = 'inline-block';
     }
@@ -223,8 +222,6 @@ setTimeout(() => {
 // Función para desconectar y limpiar la bóveda del navegador
 window.cerrarSesionGlobal = function(e) {
     e.preventDefault();
-    
-    // Destruimos la llave de sesión de Supabase y los créditos locales
     localStorage.removeItem('sb-qhuctouhkxyqhdfwcctl-auth-token');
     localStorage.removeItem('auditoria_creditos');
     
