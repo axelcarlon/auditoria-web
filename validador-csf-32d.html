@@ -304,17 +304,22 @@
             if(cpMatch) docData.cp = cpMatch[1];
 
             // -- EXTRACCIÓN DE RÉGIMEN FISCAL (Soporta múltiples regímenes) --
-            // Busca cadenas que empiecen con Régimen y topen contra una fecha (dd/mm/yyyy)
             let regMatches = [...t.matchAll(/(R[ée]gimen\s+[A-Za-zÁÉÍÓÚáéíóúÑñ\s,y]+?)(?=\s*\d{2}\/\d{2}\/\d{4})/gi)];
             if(regMatches.length > 0) {
-                let regs = regMatches.map(m => m[1].trim().replace(/\s+/g, ' ')).filter(r => r.length > 8);
+                let regs = regMatches.map(m => {
+                    // Limpieza quirúrgica de los encabezados de tabla del SAT
+                    let limpio = m[1].replace(/R[ée]gimen\s+Fecha\s+Inicio\s+Fecha\s+Fin/gi, '')
+                                     .replace(/Reg[íi]menes:?\s*/gi, '')
+                                     .trim().replace(/\s+/g, ' ');
+                    return limpio;
+                }).filter(r => r.length > 8 && !r.toLowerCase().includes("fecha inicio"));
+                
                 if(regs.length > 0) docData.regimen = [...new Set(regs)].join(" | ");
             } else {
                 // Fallback tradicional
                 const regMatch = t.match(/(?:Régimen:|Régimen Fiscal:)\s*(.*?)(?=\s*Fecha|$)/i);
                 if(regMatch) docData.regimen = regMatch[1].trim();
             }
-        }
 
         // 4. Lógica para 32-D (Opinión)
         if(docData.is32D) {
@@ -510,3 +515,4 @@
 </script>
 </body>
 </html>
+
