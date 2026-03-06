@@ -37,7 +37,7 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; min-height: 80vh;}
         
         /* Hero Section */
-        .hero-section { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.6s ease-out; }
+        .hero-section { text-align: center; margin-bottom: 50px; animation: fadeInDown 0.6s ease-out; }
         .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 20px; border-radius: 30px; font-size: 12px; font-weight: 800; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;}
         .hero-badge .pulse { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite;}
         .hero-title { font-size: 48px; font-weight: 900; margin: 0 0 20px; letter-spacing: -1.5px; line-height: 1.1;}
@@ -47,42 +47,115 @@
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
 
+        /* =========================================================
+           TARJETA SUPER (CÚSPIDE CENTRADA CON LATENCIA PROFUNDA)
+           ========================================================= */
+        .card-super-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: rgba(220, 38, 38, 0.04);
+            border: 2px solid rgba(220, 38, 38, 0.4);
+            border-radius: 24px;
+            padding: 50px 40px;
+            margin: 0 auto 70px auto;
+            max-width: 900px;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            /* Latencia profunda, lenta y expansiva */
+            animation: pulseDeepSlow 4s ease-in-out infinite;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-super-hero:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(220, 38, 38, 0.1);
+            border-color: #EF4444;
+            box-shadow: 0 20px 60px rgba(220, 38, 38, 0.3);
+            animation: none; /* Pausa la latencia para el hover interactivo */
+        }
+
+        @keyframes pulseDeepSlow {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 60px 20px rgba(220, 38, 38, 0.15); transform: scale(1.005); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); transform: scale(1); }
+        }
+
+        .badge-super {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(220, 38, 38, 0.2);
+            color: #FDA4AF;
+            border: 1px solid #DC2626;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .super-icon {
+            width: 70px;
+            height: 70px;
+            background: #EF4444;
+            color: white;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+        }
+
+        .super-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            margin: 0 0 15px 0;
+            letter-spacing: -1px;
+        }
+        
+        .super-title span { color: #FCA5A5; }
+
+        .super-desc {
+            color: var(--text-muted);
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+
+        .super-action {
+            color: #FCA5A5;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-super-hero:hover .super-action { gap: 15px; color: white; }
+
         /* Categorías del Dashboard */
         .category-title { font-size: 14px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin: 50px 0 20px; display: flex; align-items: center; gap: 15px;}
         .category-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
-        /* Bento Grid */
+        /* Bento Grid Normal */
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         
         .tool-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none; color: inherit; display: flex; flex-direction: column; position: relative; overflow: hidden;}
         .tool-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
         
-        /* Efecto Glow en Hover basado en el color del módulo */
         .tool-card.mod-fiscal:hover { border-color: var(--color-fiscal); }
         .tool-card.mod-legal:hover { border-color: var(--color-legal); }
         .tool-card.mod-finance:hover { border-color: var(--color-finance); }
         .tool-card.mod-rh:hover { border-color: var(--color-rh); }
         .tool-card.mod-core:hover { border-color: var(--color-core); }
         .tool-card.mod-data:hover { border-color: var(--color-data); }
-
-        /* Estilo Único Animado para PDF Studio PRO */
-        .tool-card.mod-pdf-pro {
-            border-color: rgba(220, 38, 38, 0.5); 
-            background: rgba(220, 38, 38, 0.05);
-            animation: pulseCard 3s infinite;
-        }
-        .tool-card.mod-pdf-pro:hover {
-            border-color: #EF4444;
-            background: rgba(220, 38, 38, 0.1);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(220, 38, 38, 0.2);
-            animation: none; /* Pausa la latencia en hover */
-        }
-        @keyframes pulseCard { 
-            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.1); } 
-            70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 
-            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } 
-        }
 
         .tool-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
         .tool-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
@@ -93,7 +166,6 @@
         .mod-rh .tool-icon { background: rgba(225, 29, 72, 0.1); color: var(--color-rh); }
         .mod-core .tool-icon { background: rgba(6, 182, 212, 0.1); color: var(--color-core); }
         .mod-data .tool-icon { background: rgba(249, 115, 22, 0.1); color: var(--color-data); }
-        .mod-pdf-pro .tool-icon { background: #EF4444; color: white; }
 
         .tool-title { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
         .tool-desc { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0; flex-grow: 1;}
@@ -107,12 +179,11 @@
         .mod-rh .tool-action { color: var(--color-rh); }
         .mod-core .tool-action { color: var(--color-core); }
         .mod-data .tool-action { color: var(--color-data); }
-        .mod-pdf-pro .tool-action { color: #FCA5A5; }
-
-        .badge-king { position: absolute; top: 20px; right: 20px; background: rgba(220, 38, 38, 0.2); color: #FDA4AF; border: 1px solid #DC2626; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 1px; }
 
         @media (max-width: 768px) {
             .hero-title { font-size: 36px; }
+            .card-super-hero { padding: 40px 20px; }
+            .super-title { font-size: 26px; }
             .bento-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -131,6 +202,17 @@
         <h1 class="hero-title">Suite Integral de <span>Compliance Financiero</span></h1>
         <p class="hero-subtitle">Selecciona el módulo pericial que deseas ejecutar. Todos los procesamientos algorítmicos se realizan en la memoria RAM local de tu equipo para garantizar el absoluto secreto fiscal de tu información.</p>
     </div>
+
+    <a href="editor-pdf.html" class="card-super-hero">
+        <div class="badge-super">SUPER</div>
+        <div class="super-icon">
+            <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        </div>
+        <h2 class="super-title">AuditorIA PDF Studio <span>PRO</span></h2>
+        <p class="super-desc">Nuestra Suite Masiva Exclusiva. 34 motores forenses integrados. Visualiza PDFs completos, inyecta textos, sellos, firmas masivas, aplica censura interactiva y aplanado criptográfico 100% en la memoria RAM de tu computadora. El Asesino de Adobe.</p>
+        <div class="super-action">INICIAR ENTORNO PROFESIONAL <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></div>
+    </a>
+
 
     <div class="category-title">I. Compliance y Riesgo Fiscal (SAT)</div>
     <div class="bento-grid">
@@ -422,18 +504,6 @@
             </div>
             <p class="tool-desc">Cruce de facturación a crédito. Enlaza masivamente las facturas madre (PPD) contra sus respectivos Complementos de Recepción de Pago.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
-        </a>
-
-        <a href="editor-pdf.html" class="tool-card mod-pdf-pro">
-            <div class="badge-king">CÚSPIDE</div>
-            <div class="tool-header">
-                <div class="tool-icon">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                </div>
-                <h3 class="tool-title" style="color: white;">AuditorIA PDF Studio <span style="color:#FCA5A5;">PRO</span></h3>
-            </div>
-            <p class="tool-desc" style="color: #E2E8F0;">Suite masiva con 34 motores forenses. Incluye un Editor Libre para inyectar textos, firmas, censura, aplanado y manipulación binaria avanzada 100% en RAM.</p>
-            <div class="tool-action">Abrir Studio PRO →</div>
         </a>
 
     </div>
