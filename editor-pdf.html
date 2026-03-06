@@ -49,6 +49,14 @@
 
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
+
+        /* Panel de Resultados (Para Metadatos y Feedback) */
+        .result-panel { display: none; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; font-family: monospace;}
+        .meta-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);}
+        .meta-row:last-child { border-bottom: none;}
+        .meta-key { color: var(--text-muted); font-weight: bold;}
+        .meta-val { color: var(--success); font-weight: 900; text-align: right; max-width: 60%; word-wrap: break-word;}
 
         /* BENTO GRID 20 TOOLS */
         .grid-header { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 20px; text-transform: uppercase; letter-spacing: 1px;}
@@ -103,6 +111,8 @@
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             EJECUTAR ALGORITMO BINARIO
         </button>
+
+        <div class="result-panel" id="resultPanel"></div>
     </div>
 
     <div id="toolsGrid">
@@ -128,10 +138,10 @@
                 <h3 class="tool-title">4. Purga y Rotación IA</h3>
                 <p class="tool-desc">Gira documentos escaneados al revés. El algoritmo detecta y borra automáticamente las "hojas en blanco".</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('pagination')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg></div>
                 <h3 class="tool-title">5. Paginación y Foliado</h3>
-                <p class="tool-desc">Estampa "Folio 1 de 500" o números Romanos en la esquina exacta que pida el tribunal o el SAT.</p>
+                <p class="tool-desc">Estampa "Folio 1 de 500" en la esquina exacta que pida el tribunal o el SAT. Soporta control de índice.</p>
             </div>
         </div>
 
@@ -140,7 +150,7 @@
             <div class="tool-card" onclick="abrirHerramienta('watermark')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
                 <h3 class="tool-title">6. Sello de Agua Forense</h3>
-                <p class="tool-desc">Inyecta textos irreplicables en diagonal. Permite ajustar el color, la opacidad y la posición estratégica.</p>
+                <p class="tool-desc">Inyecta textos irreplicables en diagonal. Permite ajustar el color y la posición estratégica en todo el documento.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
@@ -158,10 +168,10 @@
                 <h3 class="tool-title">9. Estampador de Firmas Masivo</h3>
                 <p class="tool-desc">Sube tu firma (PNG). Define escala y coordenadas para estamparla en 500 contratos a la vez, en la última hoja.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('unlock')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">10. Desbloqueador Bancario</h3>
-                <p class="tool-desc">Quita contraseñas de estados de cuenta. Opción "Batch": Usa una misma contraseña (RFC) para liberar 100 archivos.</p>
+                <p class="tool-desc">Quita contraseñas de estados de cuenta. Útil para poder enviar archivos libres a tu auditor o despacho contable.</p>
             </div>
         </div>
 
@@ -188,10 +198,10 @@
                 <h3 class="tool-title">14. Radar de Códigos QR</h3>
                 <p class="tool-desc">Escanea internamente los QR. Función avanzada: Valida si la URL es oficial del SAT o un enlace malicioso.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('metadata')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
                 <h3 class="tool-title">15. Autopsia de Metadatos</h3>
-                <p class="tool-desc">Revela datos ocultos. Compara la "Fecha de Creación" interna vs "Fecha Impresa" para cazar fraudes documentales.</p>
+                <p class="tool-desc">Revela datos ocultos (ADN del PDF). Descubre la Fecha de Creación original y el Software base (Caza-fraudes).</p>
             </div>
         </div>
 
@@ -207,10 +217,10 @@
                 <h3 class="tool-title">17. Conversor de Materialidad</h3>
                 <p class="tool-desc">Arma layouts perfectos: 1 imagen por hoja, o cuadrículas 2x2 con el nombre del archivo como pie de foto automático.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('flatten')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
                 <h3 class="tool-title">18. Aplanadora Total (Flatten)</h3>
-                <p class="tool-desc">Funde todo (texto, firmas, formularios) en una sola imagen incrustada. Imposibilita la edición oculta posterior.</p>
+                <p class="tool-desc">Funde campos editables y formularios en una sola imagen incrustada. Imposibilita la alteración oculta de números.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
@@ -247,7 +257,7 @@
         if(validFiles.length === 0) return;
         currentFiles = validFiles;
         drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM listos para ${activeTool.toUpperCase()}`;
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM listos para procesar.`;
     }
 
     function abrirHerramienta(tool) {
@@ -255,6 +265,7 @@
         currentFiles = [];
         drop.classList.remove('filled');
         document.getElementById('statusFile').innerText = "";
+        document.getElementById('resultPanel').style.display = 'none';
         
         const ws = document.getElementById('workspace');
         const grid = document.getElementById('toolsGrid');
@@ -286,7 +297,21 @@
             dInputs.innerHTML = `
                 <div class="control-group" style="grid-column: span 2;">
                     <label class="control-label">Filtro de Extracción Inteligente</label>
-                    <input type="text" id="pagesInput" class="control-input" placeholder='Ej. "1-5", "1,8,10", "pares", "impares", o dejar vacío para explotar todo.'>
+                    <input type="text" id="pagesInput" class="control-input" placeholder='Ej. "1-5", "1,8,10", "pares", "impares" o vacío para todo.'>
+                </div>
+            `;
+        }
+        else if (tool === 'pagination') {
+            wsTitle.innerText = "5. Paginación y Foliado";
+            inputF.multiple = false;
+            dInputs.innerHTML = `
+                <div class="control-group">
+                    <label class="control-label">Prefijo (Ej. Folio, Página)</label>
+                    <input type="text" id="pagPrefix" class="control-input" placeholder="Folio" value="Folio">
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Empezar conteo desde:</label>
+                    <input type="number" id="pagStart" class="control-input" value="1" min="1">
                 </div>
             `;
         }
@@ -296,7 +321,7 @@
             dInputs.innerHTML = `
                 <div class="control-group">
                     <label class="control-label">Texto a estampar</label>
-                    <input type="text" id="wmInput" class="control-input" placeholder="Ej. CONFIDENCIAL - AUDITORÍA 2026">
+                    <input type="text" id="wmInput" class="control-input" placeholder="Ej. CONFIDENCIAL - AUDITORÍA">
                 </div>
                 <div class="control-group">
                     <label class="control-label">Color del Sello</label>
@@ -308,11 +333,32 @@
                 </div>
             `;
         }
+        else if (tool === 'unlock') {
+            wsTitle.innerText = "10. Desbloqueador Bancario";
+            inputF.multiple = false;
+            dInputs.innerHTML = `
+                <div class="control-group" style="grid-column: span 2;">
+                    <label class="control-label">Contraseña Original (Suele ser tu RFC)</label>
+                    <input type="text" id="pdfPwd" class="control-input" placeholder="Escribe la clave del PDF bancario">
+                </div>
+            `;
+        }
+        else if (tool === 'metadata') {
+            wsTitle.innerText = "15. Autopsia de Metadatos";
+            inputF.multiple = false;
+            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">El motor leerá el ADN del documento. No se descargará nada, la información aparecerá en pantalla.</p>`;
+        }
+        else if (tool === 'flatten') {
+            wsTitle.innerText = "18. Aplanadora Total (Flatten)";
+            inputF.multiple = false;
+            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">Bloquea edición. Convierte formatos del SAT o Acuses con campos rellenables en imágenes planas inalterables.</p>`;
+        }
     }
 
     function cerrarWorkspace() {
         document.getElementById('workspace').style.display = 'none';
         document.getElementById('toolsGrid').style.display = 'block';
+        document.getElementById('resultPanel').style.display = 'none';
     }
 
     function toastConstruccion() {
@@ -320,7 +366,7 @@
         else alert("Módulo avanzado en construcción. Pronto disponible.");
     }
 
-    // EL MOTOR DE BYTES BLINDADO (A Prueba de Capa 8)
+    // EL MOTOR DE BYTES BLINDADO
     async function procesarPDF() {
         if(currentFiles.length === 0) {
             if(typeof window.showToast === 'function') window.showToast("Sube al menos un PDF a la bóveda.", "error");
@@ -331,17 +377,16 @@
         const btn = document.getElementById('btnEjecutar');
         btn.innerText = "PROCESANDO MATRIZ BINARIA...";
         btn.disabled = true;
+        document.getElementById('resultPanel').style.display = 'none';
 
         try {
             // ==========================================
-            // 1. FUSIÓN DINÁMICA (MERGE) - BLINDADO
+            // 1. FUSIÓN DINÁMICA (MERGE)
             // ==========================================
             if(activeTool === 'fusion') {
                 const mode = document.getElementById('mergeMode').value;
                 const finalPdf = await PDFLib.PDFDocument.create();
-                
                 let loadedPdfs = [];
-                // Carga en RAM protegida
                 for(let file of currentFiles) {
                     const arrayBuffer = await file.arrayBuffer();
                     const doc = await PDFLib.PDFDocument.load(arrayBuffer);
@@ -355,7 +400,6 @@
                     }
                 } 
                 else if (mode === 'interleave') {
-                    // Intercalado: Encuentra el PDF más largo para el ciclo
                     let maxPages = Math.max(...loadedPdfs.map(p => p.getPageCount()));
                     for(let i = 0; i < maxPages; i++) {
                         for(let donorPdf of loadedPdfs) {
@@ -366,13 +410,12 @@
                         }
                     }
                 }
-
                 const pdfBytes = await finalPdf.save();
                 descargarBlob(pdfBytes, `Expediente_Fusionado_${Date.now()}.pdf`);
             }
             
             // ==========================================
-            // 2. DESFRAGMENTADOR QUIRÚRGICO - BLINDADO
+            // 2. DESFRAGMENTADOR QUIRÚRGICO
             // ==========================================
             else if (activeTool === 'split') {
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
@@ -381,7 +424,6 @@
                 let rangeStr = document.getElementById('pagesInput').value.trim().toLowerCase();
 
                 if (rangeStr === "") {
-                    // DESFRAGMENTACIÓN TOTAL (ZIP)
                     const zip = new JSZip();
                     for(let i=0; i<totalPages; i++) {
                         const newPdf = await PDFLib.PDFDocument.create();
@@ -394,30 +436,18 @@
                     saveAs(content, `PDF_Explotado_${Date.now()}.zip`);
                 } 
                 else {
-                    // LÓGICA DE PARSEO VERSÁTIL
                     let pagesToExtract = new Set();
-                    
-                    if(rangeStr === 'pares') {
-                        for(let i=1; i<totalPages; i+=2) pagesToExtract.add(i); // Índice base 0, página visual 2 es índice 1
-                    } 
-                    else if (rangeStr === 'impares') {
-                        for(let i=0; i<totalPages; i+=2) pagesToExtract.add(i);
-                    } 
+                    if(rangeStr === 'pares') { for(let i=1; i<totalPages; i+=2) pagesToExtract.add(i); } 
+                    else if (rangeStr === 'impares') { for(let i=0; i<totalPages; i+=2) pagesToExtract.add(i); } 
                     else {
-                        // Parsea rangos como "1, 3, 8-5" y los blinda
                         let groups = rangeStr.split(',');
                         for(let g of groups) {
                             if(g.includes('-')) {
                                 let [start, end] = g.split('-');
                                 start = parseInt(start); end = parseInt(end);
                                 if(!isNaN(start) && !isNaN(end)) {
-                                    // Reparación automática si el usuario pone rango al revés (ej. 5-2)
-                                    let realStart = Math.min(start, end);
-                                    let realEnd = Math.max(start, end);
-                                    // Blindaje contra números que superen el PDF
-                                    if(realStart < 1) realStart = 1;
-                                    if(realEnd > totalPages) realEnd = totalPages;
-
+                                    let realStart = Math.max(1, Math.min(start, end));
+                                    let realEnd = Math.min(totalPages, Math.max(start, end));
                                     for(let i=realStart; i<=realEnd; i++) pagesToExtract.add(i-1);
                                 }
                             } else {
@@ -426,9 +456,8 @@
                             }
                         }
                     }
-
                     let extractArr = Array.from(pagesToExtract).sort((a,b)=>a-b);
-                    if(extractArr.length === 0) throw new Error("Filtro no válido o páginas inexistentes.");
+                    if(extractArr.length === 0) throw new Error("Filtro no válido.");
 
                     const newPdf = await PDFLib.PDFDocument.create();
                     const copiedPages = await newPdf.copyPages(sourcePdf, extractArr);
@@ -439,7 +468,38 @@
             }
 
             // ==========================================
-            // 3. SELLO DE AGUA PARAMÉTRICO - BLINDADO
+            // 5. PAGINACIÓN Y FOLIADO LEGAL (NUEVA)
+            // ==========================================
+            else if (activeTool === 'pagination') {
+                const prefix = document.getElementById('pagPrefix').value.trim() || "Folio";
+                const startNum = parseInt(document.getElementById('pagStart').value) || 1;
+                
+                const arrayBuffer = await currentFiles[0].arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                const pages = pdfDoc.getPages();
+                
+                // Blindaje: Fuente estándar para evitar errores de renderizado
+                const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
+                pages.forEach((page, idx) => {
+                    const { width, height } = page.getSize();
+                    const text = `${prefix} ${startNum + idx} de ${startNum + pages.length - 1}`;
+                    // Coordenada inferior derecha (Blindada matemáticamente)
+                    page.drawText(text, {
+                        x: width - 120, // Margen derecho
+                        y: 30, // Margen inferior
+                        size: 11,
+                        font: helveticaFont,
+                        color: PDFLib.rgb(0.2, 0.2, 0.2) // Gris oscuro profesional
+                    });
+                });
+                
+                const pdfBytes = await pdfDoc.save();
+                descargarBlob(pdfBytes, `Foliado_Legal_${Date.now()}.pdf`);
+            }
+
+            // ==========================================
+            // 6. SELLO DE AGUA
             // ==========================================
             else if (activeTool === 'watermark') {
                 const textWM = document.getElementById('wmInput').value.trim() || "CONFIDENCIAL";
@@ -449,8 +509,7 @@
                 const pages = pdfDoc.getPages();
                 const { rgb, degrees } = PDFLib;
 
-                // Mapeo versátil de colores
-                let selectedRGB = rgb(0.86, 0.15, 0.15); // Default Rojo
+                let selectedRGB = rgb(0.86, 0.15, 0.15); 
                 if(colorCode === 'gray') selectedRGB = rgb(0.6, 0.6, 0.6);
                 if(colorCode === 'blue') selectedRGB = rgb(0.15, 0.38, 0.86);
 
@@ -465,12 +524,76 @@
                         rotate: degrees(45)
                     });
                 });
-                
                 const pdfBytes = await pdfDoc.save();
                 descargarBlob(pdfBytes, `PDF_Sellado_${Date.now()}.pdf`);
             }
 
-            if(typeof window.showToast === 'function') window.showToast("Operación Exitosa en RAM.", "success");
+            // ==========================================
+            // 10. DESBLOQUEADOR BANCARIO (NUEVA)
+            // ==========================================
+            else if (activeTool === 'unlock') {
+                const pwd = document.getElementById('pdfPwd').value.trim();
+                const arrayBuffer = await currentFiles[0].arrayBuffer();
+                
+                try {
+                    // Blindaje: Intentamos abrirlo con la contraseña proporcionada
+                    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { password: pwd });
+                    const pdfBytes = await pdfDoc.save(); // Al guardar, pdf-lib elimina la encriptación
+                    descargarBlob(pdfBytes, `Desbloqueado_${Date.now()}.pdf`);
+                } catch(err) {
+                    throw new Error("Contraseña incorrecta o documento no encriptado. Revisa tus datos.");
+                }
+            }
+
+            // ==========================================
+            // 15. AUTOPSIA DE METADATOS (NUEVA)
+            // ==========================================
+            else if (activeTool === 'metadata') {
+                const arrayBuffer = await currentFiles[0].arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                // Extracción de ADN del Documento con Fallbacks (Blindaje)
+                const title = pdfDoc.getTitle() || "NO DETECTADO";
+                const author = pdfDoc.getAuthor() || "NO DETECTADO";
+                const creator = pdfDoc.getCreator() || "NO DETECTADO (Software base oculto)";
+                const cDate = pdfDoc.getCreationDate() ? pdfDoc.getCreationDate().toLocaleString() : "NO DETECTADA";
+                const mDate = pdfDoc.getModificationDate() ? pdfDoc.getModificationDate().toLocaleString() : "NO DETECTADA";
+                const pages = pdfDoc.getPageCount();
+
+                // Renderizar Panel
+                const panel = document.getElementById('resultPanel');
+                panel.style.display = 'block';
+                panel.innerHTML = `
+                    <div style="color:var(--brand); font-weight:900; font-size:18px; margin-bottom:15px; text-transform:uppercase;">Resultado Forense:</div>
+                    <div class="meta-row"><span class="meta-key">Nombre Interno (Título):</span> <span class="meta-val" style="color:var(--text-main)">${title}</span></div>
+                    <div class="meta-row"><span class="meta-key">Autor Registrado:</span> <span class="meta-val">${author}</span></div>
+                    <div class="meta-row"><span class="meta-key">Software Creador:</span> <span class="meta-val" style="color:var(--warning)">${creator}</span></div>
+                    <div class="meta-row"><span class="meta-key">Fecha Original de Creación:</span> <span class="meta-val">${cDate}</span></div>
+                    <div class="meta-row"><span class="meta-key">Última Modificación:</span> <span class="meta-val">${mDate}</span></div>
+                    <div class="meta-row"><span class="meta-key">Total de Páginas:</span> <span class="meta-val" style="color:var(--text-main)">${pages}</span></div>
+                `;
+            }
+
+            // ==========================================
+            // 18. APLANADORA TOTAL - FLATTEN (NUEVA)
+            // ==========================================
+            else if (activeTool === 'flatten') {
+                const arrayBuffer = await currentFiles[0].arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                const form = pdfDoc.getForm();
+                // Blindaje: Si no hay formulario, no hace nada pero no rompe
+                if(form) {
+                    form.flatten(); 
+                }
+                
+                const pdfBytes = await pdfDoc.save();
+                descargarBlob(pdfBytes, `Contrato_Aplanado_${Date.now()}.pdf`);
+            }
+
+            if(activeTool !== 'metadata') {
+                if(typeof window.showToast === 'function') window.showToast("Operación Exitosa en RAM.", "success");
+            }
 
         } catch(e) {
             console.error(e);
