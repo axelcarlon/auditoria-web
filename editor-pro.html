@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor PRO | AuditorIA PDF Studio</title>
-    <meta name="description" content="Entorno dedicado de edición forense. Motor gráfico renderizado en RAM con inyección de código binario.">
+    <title>Editor Libre PRO | AuditorIA</title>
+    <meta name="description" content="El motor de edición PDF más avanzado del mercado. Inyección binaria, figuras, censura y firmas forenses en tiempo real.">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -22,21 +22,18 @@
             --brand: #E11D48;
             --brand-hover: #BE123C;
             --accent: #3B82F6;
-            --accent-hover: #2563EB;
             --text-main: #F8FAFC;
             --text-muted: #A1A1AA;
             --success: #10B981;
             --warning: #F59E0B;
-            --danger: #EF4444;
             --canvas-bg: #111113;
             --shadow-float: 0 10px 30px rgba(0,0,0,0.5);
-            --shadow-doc: 0 0 40px rgba(0,0,0,0.8);
+            --shadow-doc: 0 0 40px rgba(0,0,0,0.9);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; user-select: none; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -45,31 +42,37 @@
         /* =========================================================
            2. TOPBAR DE NAVEGACIÓN Y CONTROLES
            ========================================================= */
-        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 55px; padding: 0 20px; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.3); flex-shrink: 0;}
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; padding: 0 20px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.4); flex-shrink: 0;}
         
         .topbar-left { display: flex; align-items: center; gap: 20px; }
-        .btn-exit { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase; transition: 0.2s;}
-        .btn-exit:hover { background: rgba(225, 29, 72, 0.1); border-color: var(--brand); color: white;}
-        .logo-container { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 900; letter-spacing: -0.5px;}
-        .pro-badge { background: var(--brand); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; letter-spacing: 1px;}
+        .btn-exit { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase; transition: 0.2s;}
+        .btn-exit:hover { background: rgba(255,255,255,0.1); color: white;}
+        
+        .logo-container { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 900; letter-spacing: -0.5px;}
+        /* Latencia Cúspide Roja */
+        .pro-badge { background: rgba(220, 38, 38, 0.2); color: #FDA4AF; border: 1px solid var(--brand); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
-        .topbar-center { display: flex; align-items: center; gap: 10px; background: var(--bg-base); border: 1px solid var(--border); padding: 4px 15px; border-radius: 8px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
+        .topbar-center { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 5px 15px; border-radius: 8px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
         .topbar-center.visible { visibility: visible; opacity: 1; }
-        .nav-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 5px; border-radius: 4px; display: flex; align-items: center; transition: 0.2s;}
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 6px; display: flex; align-items: center; transition: 0.2s;}
         .nav-btn:hover { color: white; background: var(--bg-hover); }
         .indicator { font-family: monospace; font-size: 13px; font-weight: bold; color: var(--text-main); min-width: 60px; text-align: center; }
         .zoom-val { color: var(--accent); }
-        .divider-v { width: 1px; height: 16px; background: var(--border); margin: 0 5px; }
+        .divider-v { width: 1px; height: 18px; background: var(--border); margin: 0 5px; }
 
-        .topbar-right { display: flex; align-items: center; gap: 12px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
+        .topbar-right { display: flex; align-items: center; gap: 15px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
         .topbar-right.visible { visibility: visible; opacity: 1; }
         
-        .btn-undo { display: flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--warning); cursor: pointer; font-size: 13px; font-weight: bold; padding: 8px 15px; border-radius: 6px; transition: 0.2s;}
-        .btn-undo:hover:not(:disabled) { background: rgba(245, 158, 11, 0.1); }
-        .btn-undo:disabled { color: var(--border); cursor: not-allowed; }
+        /* Botón Deshacer Blanco/Sobrio */
+        .btn-undo { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--border); color: white; cursor: pointer; font-size: 12px; font-weight: bold; padding: 8px 15px; border-radius: 6px; transition: 0.2s;}
+        .btn-undo:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: var(--text-muted); }
+        .btn-undo:disabled { color: var(--border); border-color: rgba(255,255,255,0.05); cursor: not-allowed; }
         
-        .btn-export { display: flex; align-items: center; gap: 8px; background: var(--success); color: #022C22; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 900; text-transform: uppercase; transition: 0.2s;}
-        .btn-export:hover { background: #34D399; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); transform: translateY(-1px);}
+        /* Botón Exportar Rojo PRO */
+        .btn-export { display: flex; align-items: center; gap: 8px; background: var(--brand); color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 900; text-transform: uppercase; transition: 0.2s; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);}
+        .btn-export:hover { background: var(--brand-hover); box-shadow: 0 4px 15px rgba(220, 38, 38, 0.6); transform: translateY(-1px);}
+        .btn-export .export-badge { background: white; color: var(--brand); padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900;}
 
         /* =========================================================
            3. ESTRUCTURA DEL WORKSPACE (SIDEBARS Y LIENZO)
@@ -77,91 +80,87 @@
         .main-workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
 
         /* Barra de Herramientas Izquierda */
-        .toolbar-left { width: 65px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 50; overflow-y: auto;}
-        
-        .tool-group { display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center;}
-        .divider-h { width: 30px; height: 1px; background: var(--border); margin: 5px 0; }
+        .toolbar-left { width: 65px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 12px; z-index: 50; overflow-y: auto;}
+        .tool-group { display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center;}
+        .divider-h { width: 35px; height: 1px; background: var(--border); margin: 5px 0; }
 
         .tool-btn { width: 44px; height: 44px; border-radius: 10px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
         .tool-btn:hover { color: white; background: var(--bg-hover); }
         .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
 
-        /* Tooltips CSS Puros */
-        .tool-btn::after { content: attr(data-tooltip); position: absolute; left: 55px; background: #000; border: 1px solid var(--border); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.1s; transform: translateX(-10px); z-index: 1000; box-shadow: var(--shadow-float);}
-        .tool-btn:hover::after { opacity: 1; transform: translateX(0); }
+        /* Tooltips ARRIBA del botón */
+        .tool-btn::after { content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(5px); background: #000; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.2s; z-index: 1000; box-shadow: var(--shadow-float);}
+        .tool-btn:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* Flechita del tooltip */
+        .tool-btn::before { content: ''; position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); border-width: 5px; border-style: solid; border-color: var(--border) transparent transparent transparent; opacity: 0; transition: 0.2s; pointer-events: none; z-index: 1001;}
+        .tool-btn:hover::before { opacity: 1; }
 
-        /* Lienzo Central (El Papel) */
-        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 50px; position: relative; }
+        /* CANVAS CENTRAL (EL LIENZO INFINITO) */
+        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 50px; position: relative; cursor: grab;}
+        .canvas-area:active { cursor: grabbing; }
         
-        .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); transition: transform 0.1s ease-out; transform-origin: top center; margin-bottom: 50px;}
-        #pdfRenderCanvas { display: block; width: 100%; height: auto; }
+        .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); margin: 0 auto; transition: transform 0.1s ease-out; transform-origin: top center; margin-bottom: 50px;}
+        #pdfCanvas { display: block; width: 100%; height: auto; }
         
-        /* Capa Interactiva (DOM Overlay para elementos) */
         #interactiveLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; overflow: hidden; }
 
         /* Panel de Propiedades Derecha */
-        .sidebar-right { width: 280px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 30px; overflow-y: auto; z-index: 50; }
+        .sidebar-right { width: 300px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 25px; overflow-y: auto; z-index: 50; }
         
-        .prop-section { display: flex; flex-direction: column; gap: 15px; }
-        .prop-title { font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
+        .prop-section { display: flex; flex-direction: column; gap: 12px; }
+        .prop-title { font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; }
+        
+        /* Paleta de 16 Colores */
+        .color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.2s;}
+        .color-swatch.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 12px rgba(255,255,255,0.3); z-index: 2;}
         
         .prop-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-main); font-weight: bold;}
-        .prop-val { font-family: monospace; color: var(--accent); font-size: 14px; }
-        
-        /* Paleta de Colores y Sliders */
-        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.2s;}
-        .color-swatch.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 12px rgba(255,255,255,0.3);}
-        
-        .custom-slider { width: 100%; cursor: pointer; accent-color: var(--accent); }
-        .custom-select { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 13px; width: 100%; cursor: pointer; outline: none; }
-        .custom-select:focus { border-color: var(--accent); }
-
-        .btn-action-outline { background: transparent; border: 1px dashed var(--danger); color: var(--danger); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .btn-action-outline:hover:not(:disabled) { background: rgba(239, 68, 68, 0.1); }
-        .btn-action-outline:disabled { border-color: var(--border); color: var(--border); cursor: not-allowed; }
+        .prop-val { font-family: monospace; color: var(--accent); font-size: 13px; }
+        .custom-slider { width: 100%; cursor: pointer; accent-color: var(--accent); margin-bottom: 10px;}
 
         /* =========================================================
-           4. ELEMENTOS DEL DOM INTERACTIVOS (TEXTO, CAJAS)
+           4. ELEMENTOS DEL DOM INTERACTIVOS
            ========================================================= */
         .drag-element { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); transform-origin: center; cursor: grab; user-select: none; }
         .drag-element:active { cursor: grabbing; }
         
-        /* Efecto de Selección Adobe */
         .drag-element.is-selected { z-index: 1000; }
-        .drag-element.is-selected::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 2px dashed var(--accent); pointer-events: none; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .drag-element.is-selected::before { content: ''; position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border: 2px dashed var(--accent); pointer-events: none; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+        .drag-element.is-selected::after { content: ''; position: absolute; right: -10px; bottom: -10px; width: 12px; height: 12px; background: white; border: 2px solid var(--accent); border-radius: 50%; cursor: nwse-resize; pointer-events: auto; }
 
         /* Tipos de Elementos */
         .el-text { font-family: 'Helvetica', Arial, sans-serif; white-space: pre; outline: none; cursor: text; min-width: 20px; line-height: 1.1; }
         .el-text:empty::after { content: 'Escribe...'; color: rgba(0,0,0,0.4); pointer-events: none; }
-        
-        .el-box { background: black; }
-        .el-highlight { background: #FDE047; opacity: 0.4; mix-blend-mode: multiply; }
-        
+        .el-box { background: black; } /* Redact */
+        .el-highlight { background: yellow; opacity: 0.4; mix-blend-mode: multiply; }
         .el-stamp { font-family: 'Courier New', Courier, monospace; font-weight: 900; border: 4px solid; padding: 5px 15px; border-radius: 8px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; transform: translate(-50%, -50%) rotate(-15deg) !important; background: rgba(255,255,255,0.5); backdrop-filter: blur(2px); }
-        
         .el-image { background-size: 100% 100%; background-repeat: no-repeat; background-position: center; }
+        
+        /* Figuras nuevas */
+        .el-rect { border-style: solid; background: transparent; }
+        .el-circle { border-style: solid; background: transparent; border-radius: 50%; }
+        .el-line { background: transparent; transform-origin: left center; } /* Línea es un div rotado */
 
-        /* Caja Temporal de Dibujo (Para Arrastrar Redact/Highlight) */
         #drawGuide { position: absolute; border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.1); pointer-events: none; display: none; z-index: 9999; }
 
         /* =========================================================
-           5. PANTALLAS DE CARGA Y NOTIFICACIONES
+           5. PANTALLAS DE CARGA Y TOASTS
            ========================================================= */
-        #initScreen { position: absolute; top: 55px; left: 0; width: 100%; height: calc(100vh - 55px); background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
-        .upload-area { border: 2px dashed var(--accent); padding: 60px 80px; border-radius: 16px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s; box-shadow: var(--shadow-float); max-width: 500px; width: 90%;}
-        .upload-area:hover { background: var(--bg-hover); border-color: white; transform: translateY(-5px);}
+        #initScreen { position: absolute; top: 60px; left: 0; width: 100%; height: calc(100vh - 60px); background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
+        .upload-area { border: 2px dashed var(--border); padding: 80px; border-radius: 20px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s; max-width: 500px; width: 90%;}
+        .upload-area:hover { background: var(--bg-hover); border-color: var(--accent); transform: translateY(-5px); box-shadow: var(--shadow-float);}
         
-        #sysLoader { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: monospace; font-size: 14px; font-weight: bold;}
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;}
+        #sysLoader { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: monospace; font-size: 14px; font-weight: bold;}
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--brand); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Toasts Custom */
+        /* Toasts Rediseñados */
         #toastContainer { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
-        .toast { background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--success); color: white; padding: 15px 25px; border-radius: 8px; box-shadow: var(--shadow-float); font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto;}
+        .toast { background: #000; border: 1px solid var(--border); border-left: 4px solid var(--success); color: white; padding: 15px 25px; border-radius: 8px; box-shadow: var(--shadow-float); font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 12px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto;}
         .toast.show { transform: translateX(0); }
-        .toast.error { border-left-color: var(--danger); }
-        .toast.warning { border-left-color: var(--warning); }
+        .toast.error { border-left-color: var(--brand); }
+        .toast.undo { border-left-color: var(--brand); } /* Alerta de Deshacer en Rojo */
     </style>
 </head>
 <body>
@@ -169,38 +168,45 @@
     <header class="topbar">
         <div class="topbar-left">
             <a href="editor-pdf.html" class="btn-exit">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Cerrar
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Volver
             </a>
-            <div class="logo-container">Editor <span class="pro-badge">PRO</span></div>
+            <div class="logo-container">AuditorIA Editor <span class="pro-badge">PRO</span></div>
         </div>
 
         <div class="topbar-center" id="uiTopbarCenter">
-            <button class="nav-btn" onclick="Workspace.zoomOut()" title="Alejar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
+            <button class="nav-btn" onclick="Workspace.zoomOut()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
             <span class="indicator zoom-val" id="lblZoom">100%</span>
-            <button class="nav-btn" onclick="Workspace.zoomIn()" title="Acercar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
+            <button class="nav-btn" onclick="Workspace.zoomIn()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
             
             <div class="divider-v"></div>
 
-            <button class="nav-btn" onclick="Workspace.prevPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg></button>
+            <button class="nav-btn" onclick="Workspace.prevPage()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg></button>
             <span class="indicator" id="lblPage">0 / 0</span>
-            <button class="nav-btn" onclick="Workspace.nextPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg></button>
+            <button class="nav-btn" onclick="Workspace.nextPage()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg></button>
         </div>
 
         <div class="topbar-right" id="uiTopbarRight">
-            <button class="btn-undo" id="btnUndo" onclick="History.undo()" disabled>
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg> Deshacer
+            <button class="btn-undo" id="btnUndo" onclick="History.undo()" disabled title="Ctrl + Z">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg> Deshacer
             </button>
+            <button class="btn-undo" id="btnRedo" onclick="History.redo()" disabled title="Ctrl + Shift + Z">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path></svg>
+            </button>
+            
+            <div class="divider-v"></div>
+
             <button class="btn-export" onclick="ExportEngine.buildPDF()">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Exportar
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> 
+                Exportar <span class="export-badge">PRO</span>
             </button>
         </div>
     </header>
 
     <div id="initScreen">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-            <svg width="64" height="64" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <h2 style="margin: 0 0 10px; font-size: 22px;">Cargar Documento PDF</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6;">El archivo se procesará 100% en la memoria RAM de tu navegador, garantizando confidencialidad.</p>
+            <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <h2 style="margin: 0 0 10px; font-size: 24px;">Lienzo de Operaciones</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6;">Arrastra un documento PDF a este sector o haz clic para explorar. Todo el procesamiento ocurre en local.</p>
             <input type="file" id="fileInput" accept=".pdf" style="display: none;">
         </div>
     </div>
@@ -209,7 +215,7 @@
         
         <aside class="toolbar-left">
             <div class="tool-group">
-                <button class="tool-btn active" data-tool="select" data-tooltip="Cursor (V)" onclick="ToolManager.set('select')">
+                <button class="tool-btn active" data-tool="select" data-tooltip="Selección Múltiple (V)" onclick="ToolManager.set('select')">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
                 </button>
             </div>
@@ -217,24 +223,38 @@
             <div class="divider-h"></div>
             
             <div class="tool-group">
-                <button class="tool-btn" data-tool="text" data-tooltip="Texto Libre (T)" onclick="ToolManager.set('text')">
+                <button class="tool-btn" data-tool="text" data-tooltip="Inyectar Texto Libre (T)" onclick="ToolManager.set('text')">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
                 </button>
-                <button class="tool-btn" data-tool="check" data-tooltip="Palomita (SAT)" onclick="ToolManager.set('check')">
+                <button class="tool-btn" data-tool="check" data-tooltip="Marca de Verificación (SAT)" onclick="ToolManager.set('check')">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </button>
-                <button class="tool-btn" data-tool="cross" data-tooltip="Tache (X)" onclick="ToolManager.set('cross')">
+                <button class="tool-btn" data-tool="cross" data-tooltip="Marca de Rechazo (X)" onclick="ToolManager.set('cross')">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="divider-h"></div>
+
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="rect" data-tooltip="Dibujar Rectángulo" onclick="ToolManager.set('rect')">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+                </button>
+                <button class="tool-btn" data-tool="circle" data-tooltip="Dibujar Círculo/Elipse" onclick="ToolManager.set('circle')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>
+                </button>
+                <button class="tool-btn" data-tool="line" data-tooltip="Dibujar Línea Recta" onclick="ToolManager.set('line')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="19" x2="19" y2="5"></line></svg>
                 </button>
             </div>
             
             <div class="divider-h"></div>
             
             <div class="tool-group">
-                <button class="tool-btn" data-tool="redact" data-tooltip="Censurar (Caja Negra)" onclick="ToolManager.set('redact')">
+                <button class="tool-btn" data-tool="redact" data-tooltip="Caja de Censura (Redact)" onclick="ToolManager.set('redact')">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
                 </button>
-                <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador Amarillo" onclick="ToolManager.set('highlight')">
+                <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador de Lectura" onclick="ToolManager.set('highlight')">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
             </div>
@@ -242,10 +262,13 @@
             <div class="divider-h"></div>
 
             <div class="tool-group">
-                <button class="tool-btn" data-tool="stamp" data-tooltip="Sellos Administrativos" onclick="ToolManager.set('stamp')">
+                <button class="tool-btn" data-tool="stamp" data-tooltip="Sellos de Auditoría" onclick="ToolManager.set('stamp')">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 </button>
-                <button class="tool-btn" data-tooltip="Insertar Imagen / Firma" onclick="document.getElementById('imgInput').click()">
+                <button class="tool-btn" data-tool="date" data-tooltip="Inyectar Fecha Actual" onclick="ToolManager.set('date')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </button>
+                <button class="tool-btn" data-tooltip="Cargar Firma o Imagen (.PNG)" onclick="document.getElementById('imgInput').click()">
                     <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </button>
                 <input type="file" id="imgInput" accept="image/png, image/jpeg" style="display:none;">
@@ -263,50 +286,76 @@
         <aside class="sidebar-right">
             
             <div class="prop-section">
-                <h4 class="prop-title">Apariencia</h4>
-                
+                <h4 class="prop-title">Paleta Forense</h4>
                 <div class="color-grid" id="colorPicker">
-                    <div class="color-swatch active" style="background: #000000;" data-color="#000000"></div> <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div> <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div> <div class="color-swatch" style="background: #16A34A;" data-color="#16A34A"></div> <div class="color-swatch" style="background: #FBBF24;" data-color="#FBBF24"></div> <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div> </div>
+                    <div class="color-swatch active" style="background: #000000;" data-color="#000000"></div>
+                    <div class="color-swatch" style="background: #374151;" data-color="#374151"></div>
+                    <div class="color-swatch" style="background: #6B7280;" data-color="#6B7280"></div>
+                    <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div>
+                    <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div>
+                    <div class="color-swatch" style="background: #2563EB;" data-color="#2563EB"></div>
+                    <div class="color-swatch" style="background: #60A5FA;" data-color="#60A5FA"></div>
+                    <div class="color-swatch" style="background: #0D9488;" data-color="#0D9488"></div>
+                    <div class="color-swatch" style="background: #991B1B;" data-color="#991B1B"></div>
+                    <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div>
+                    <div class="color-swatch" style="background: #F43F5E;" data-color="#F43F5E"></div>
+                    <div class="color-swatch" style="background: #D97706;" data-color="#D97706"></div>
+                    <div class="color-swatch" style="background: #FBBF24;" data-color="#FBBF24"></div>
+                    <div class="color-swatch" style="background: #FDE047;" data-color="#FDE047"></div>
+                    <div class="color-swatch" style="background: #A3E635;" data-color="#A3E635"></div>
+                    <div class="color-swatch" style="background: #F472B6;" data-color="#F472B6"></div>
+                </div>
+
+                <div class="prop-row" style="margin-top: 15px;">
+                    <span>Escala / Tamaño</span>
+                    <span class="prop-val" id="lblSize">14pt</span>
+                </div>
+                <input type="range" class="custom-slider" id="sliderSize" min="6" max="120" value="14">
 
                 <div class="prop-row" style="margin-top: 10px;">
-                    <span>Tamaño Ppt</span>
-                    <span class="prop-val" id="lblSize">14</span>
+                    <span>Grosor de Borde</span>
+                    <span class="prop-val" id="lblStroke">2px</span>
                 </div>
-                <input type="range" class="custom-slider" id="sliderSize" min="8" max="72" value="14">
+                <input type="range" class="custom-slider" id="sliderStroke" min="1" max="15" value="2">
+                
+                <div class="prop-row" style="margin-top: 10px;">
+                    <span>Opacidad</span>
+                    <span class="prop-val" id="lblOpacity">100%</span>
+                </div>
+                <input type="range" class="custom-slider" id="sliderOpacity" min="10" max="100" value="100">
             </div>
 
             <div class="prop-section" id="panelStamp" style="display: none; padding-top: 15px; border-top: 1px dashed var(--border);">
-                <h4 class="prop-title">Texto del Sello</h4>
-                <select id="stampText" class="custom-select">
+                <h4 class="prop-title">Macro de Sello</h4>
+                <select id="stampText" style="background:var(--bg-base); border:1px solid var(--border); color:white; padding:8px; border-radius:6px; font-family:monospace; width:100%;">
                     <option value="AUDITADO">AUDITADO</option>
                     <option value="APROBADO">APROBADO</option>
                     <option value="RECHAZADO">RECHAZADO</option>
                     <option value="CONFIDENCIAL">CONFIDENCIAL</option>
-                    <option value="COPIA">COPIA</option>
+                    <option value="COPIA FIEL">COPIA FIEL</option>
                     <option value="PAGADO">PAGADO</option>
                     <option value="CANCELADO">CANCELADO</option>
                 </select>
             </div>
 
             <div class="prop-section" style="padding-top: 15px; border-top: 1px dashed var(--border);">
-                <h4 class="prop-title">Inspector</h4>
-                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+                <h4 class="prop-title">Coordenadas Vectoriales</h4>
+                <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div class="prop-row" style="color: var(--text-muted); font-size: 11px; margin-bottom: 5px;">
-                        <span>Coordenada X:</span> <span id="inspX">--</span>
+                        <span>Eje X:</span> <span id="inspX">--</span>
                     </div>
                     <div class="prop-row" style="color: var(--text-muted); font-size: 11px;">
-                        <span>Coordenada Y:</span> <span id="inspY">--</span>
+                        <span>Eje Y:</span> <span id="inspY">--</span>
                     </div>
                 </div>
-
-                <button class="btn-action-outline" id="btnDelete" disabled onclick="ObjectManager.deleteSelected()">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Eliminar Objeto
-                </button>
             </div>
             
-            <div style="margin-top: auto; font-size: 10px; color: var(--text-muted); line-height: 1.5; text-align: center; border-top: 1px solid var(--border); padding-top: 15px;">
-                Shortcuts: <br><strong style="color:white;">V</strong> (Cursor) | <strong style="color:white;">T</strong> (Texto) | <strong style="color:white;">Supr</strong> (Borrar)<br><strong style="color:white;">Ctrl+Z</strong> (Deshacer)
+            <div style="margin-top: auto; font-size: 11px; color: var(--text-muted); line-height: 1.6; text-align: center; border-top: 1px solid var(--border); padding-top: 15px; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px;">
+                <strong style="color:white;">V</strong> : Cursor<br>
+                <strong style="color:white;">T</strong> : Texto<br>
+                <strong style="color:white;">Supr</strong> : Borrar Objeto<br>
+                <strong style="color:white;">Ctrl+Z</strong> : Deshacer<br>
+                <strong style="color:white;">Ctrl+Shift+Z</strong> : Rehacer
             </div>
         </aside>
 
@@ -321,21 +370,29 @@
 
     <script>
         // ---------------------------------------------------------
-        // 1. SISTEMA DE TOASTS (Notificaciones Limpias)
+        // 1. SISTEMA DE TOASTS PROFESIONAL
         // ---------------------------------------------------------
         const Toast = {
             show(msg, type = 'success') {
                 const container = document.getElementById('toastContainer');
                 const el = document.createElement('div');
                 el.className = `toast ${type}`;
-                el.innerHTML = `<span style="font-size:16px;">${type==='error'?'⚠️':type==='warning'?'⚡':'✓'}</span> ${msg}`;
-                container.appendChild(el);
                 
+                let icon = '✓';
+                if(type === 'error') icon = '⚠️';
+                if(type === 'undo') icon = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>';
+                if(type === 'redo') icon = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path></svg>';
+
+                el.innerHTML = `<div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:16px; display:flex; align-items:center;">${icon}</span> ${msg}
+                </div>`;
+                
+                container.appendChild(el);
                 requestAnimationFrame(() => el.classList.add('show'));
                 setTimeout(() => {
                     el.classList.remove('show');
-                    setTimeout(() => el.remove(), 300);
-                }, 4000);
+                    setTimeout(() => el.remove(), 400);
+                }, 3500);
             }
         };
 
@@ -345,7 +402,7 @@
         };
 
         // ---------------------------------------------------------
-        // 2. ESTADO GLOBAL DE LA APLICACIÓN
+        // 2. ESTADO GLOBAL & MEMORIA RAM
         // ---------------------------------------------------------
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
@@ -355,24 +412,27 @@
         let currentPage = 1;
         
         let zoom = 1.0;
-        const MIN_Z = 0.5, MAX_Z = 3.0, STEP_Z = 0.25;
+        const MIN_Z = 0.5, MAX_Z = 4.0, STEP_Z = 0.25;
 
-        // Base de Datos en RAM
-        let DB = {}; // DB[pageNum] = [{id, type, x, y, w, h, color, size, text, img}]
+        // Base de Datos en RAM (El Documento Vivo)
+        let DB = {}; 
+        
+        // Motor de Máquina del Tiempo (Undo/Redo)
         let historyStack = [];
+        let redoStack = [];
 
         // Estado UI
         let currentTool = 'select';
-        let currentProps = { color: '#000000', size: 14 };
+        let currentProps = { color: '#000000', size: 14, stroke: 2, opacity: 100 };
         let selectedId = null;
 
-        // Estado Interacción
+        // Interacción Ratón
         let isDrawing = false;
         let isDragging = false;
         let startX = 0, startY = 0;
         let dragOffsetX = 0, dragOffsetY = 0;
 
-        // Elementos Frecuentes
+        // Caché del DOM
         const layer = document.getElementById('interactiveLayer');
         const guide = document.getElementById('drawGuide');
         const wrapper = document.getElementById('pageWrapper');
@@ -386,7 +446,7 @@
             const file = e.target.files[0];
             if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF.", "error");
 
-            Loader.show("Desensamblando Vectores...");
+            Loader.show("Desensamblando Vectores y Fuentes...");
             try {
                 const reader = new FileReader();
                 reader.onload = async function() {
@@ -395,7 +455,7 @@
                     
                     totalPages = pdfProxy.numPages;
                     currentPage = 1;
-                    DB = {}; historyStack = [];
+                    DB = {}; historyStack = []; redoStack = [];
                     for(let i=1; i<=totalPages; i++) DB[i] = [];
 
                     document.getElementById('initScreen').style.display = 'none';
@@ -405,14 +465,14 @@
 
                     await Workspace.autoFit();
                     await Workspace.renderPage();
-                    Toast.show("Documento listo para edición forense.");
+                    Toast.show("Motor gráfico activado. Listo para edición.");
                     Loader.hide();
                 };
                 reader.readAsArrayBuffer(file);
             } catch (err) {
                 console.error(err);
                 Loader.hide();
-                Toast.show("Error de lectura (Posible encriptación).", "error");
+                Toast.show("Error de lectura. El documento puede estar protegido.", "error");
             }
         });
 
@@ -421,8 +481,8 @@
                 const p = await pdfProxy.getPage(1);
                 const vp = p.getViewport({scale: 1.0});
                 const containerW = document.getElementById('scrollArea').clientWidth;
-                let autoZ = (containerW - 100) / vp.width; // 50px padding lados
-                zoom = Math.min(Math.max(Math.round(autoZ * 4)/4, MIN_Z), 1.5);
+                let autoZ = (containerW - 100) / vp.width;
+                zoom = Math.min(Math.max(Math.round(autoZ * 4)/4, MIN_Z), 2.0);
                 this.updateUI();
             },
             async zoomIn() { if(zoom < MAX_Z) { zoom += STEP_Z; this.updateUI(); await this.renderPage(); } },
@@ -463,13 +523,17 @@
                 const btn = document.querySelector(`.tool-btn[data-tool="${t}"]`);
                 if(btn) btn.classList.add('active');
                 
-                document.getElementById('panelStamp').style.display = t === 'stamp' ? 'flex' : 'none';
-                layer.style.cursor = (t === 'select' || t === 'image') ? 'default' : (t === 'text' ? 'text' : 'crosshair');
+                document.getElementById('panelStamp').style.display = t === 'stamp' ? 'block' : 'none';
+                
+                if(t === 'select' || t === 'image') layer.style.cursor = 'default';
+                else if(t === 'text') layer.style.cursor = 'text';
+                else layer.style.cursor = 'crosshair';
+                
                 ObjectManager.deselect();
             }
         };
 
-        // Panel de Propiedades
+        // Escuchadores del Panel Derecho
         document.querySelectorAll('.color-swatch').forEach(sw => {
             sw.onclick = (e) => {
                 document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
@@ -484,31 +548,43 @@
             document.getElementById('lblSize').innerText = `${currentProps.size}pt`;
             if(selectedId) ObjectManager.updateProp('size', currentProps.size);
         };
-
-        document.getElementById('imgInput').onchange = (e) => {
-            const f = e.target.files[0];
-            if(!f) return;
-            const r = new FileReader();
-            r.onload = (ev) => {
-                ObjectManager.create('image', wrapper.clientWidth/2, wrapper.clientHeight/2, 0, 0, {imgData: ev.target.result});
-                ToolManager.set('select');
-            };
-            r.readAsDataURL(f);
+        
+        document.getElementById('sliderStroke').oninput = (e) => {
+            currentProps.stroke = parseInt(e.target.value);
+            document.getElementById('lblStroke').innerText = `${currentProps.stroke}px`;
+            if(selectedId) ObjectManager.updateProp('stroke', currentProps.stroke);
         };
 
-        // Shortcuts
+        document.getElementById('sliderOpacity').oninput = (e) => {
+            currentProps.opacity = parseInt(e.target.value);
+            document.getElementById('lblOpacity').innerText = `${currentProps.opacity}%`;
+            if(selectedId) ObjectManager.updateProp('opacity', currentProps.opacity);
+        };
+
+        // Atajos de teclado Pro
         document.addEventListener('keydown', (e) => {
-            // Ignorar si está escribiendo
-            if(e.target.isContentEditable || e.target.tagName === 'INPUT') return;
+            if(e.target.isContentEditable || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
             
             if(e.key.toLowerCase() === 'v') ToolManager.set('select');
             if(e.key.toLowerCase() === 't') ToolManager.set('text');
-            if((e.key === 'Delete' || e.key === 'Backspace') && selectedId) ObjectManager.deleteSelected();
-            if(e.ctrlKey && e.key.toLowerCase() === 'z') History.undo();
+            if(e.key === 'Delete' || e.key === 'Backspace') ObjectManager.deleteSelected();
+            
+            // Undo / Redo
+            if(e.ctrlKey || e.metaKey) {
+                if(e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    if(e.shiftKey) History.redo();
+                    else History.undo();
+                }
+                if(e.key.toLowerCase() === 'y') {
+                    e.preventDefault();
+                    History.redo();
+                }
+            }
         });
 
         // ---------------------------------------------------------
-        // 5. MOTOR DE CAPAS (DOM OVERLAY & EVENTOS RATÓN)
+        // 5. MÁQUINA DE DIBUJO Y SELECCIÓN (DOM OVERLAY)
         // ---------------------------------------------------------
         layer.addEventListener('mousedown', (e) => {
             if(currentTool === 'select' || currentTool === 'image') return;
@@ -517,11 +593,21 @@
             const r = layer.getBoundingClientRect();
             startX = e.clientX - r.left; startY = e.clientY - r.top;
 
-            if(currentTool === 'redact' || currentTool === 'highlight') {
+            const isBoxTool = ['redact', 'highlight', 'rect', 'circle', 'line'].includes(currentTool);
+
+            if(isBoxTool) {
                 isDrawing = true;
                 guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
                 guide.style.width = '0px'; guide.style.height = '0px';
-                guide.style.backgroundColor = currentTool === 'redact' ? '#000' : 'rgba(253,224,71,0.4)';
+                
+                // Estilo temporal de la guía
+                guide.style.backgroundColor = 'transparent';
+                guide.style.border = `2px dashed ${currentProps.color}`;
+                if(currentTool === 'redact') guide.style.backgroundColor = '#000';
+                if(currentTool === 'highlight') guide.style.backgroundColor = 'rgba(253,224,71,0.4)';
+                if(currentTool === 'circle') guide.style.borderRadius = '50%';
+                else guide.style.borderRadius = '0';
+
                 guide.style.display = 'block';
             } else {
                 ObjectManager.create(currentTool, startX, startY);
@@ -530,20 +616,23 @@
 
         document.addEventListener('mousemove', (e) => {
             const r = layer.getBoundingClientRect();
-            const curX = e.clientX - r.left;
-            const curY = e.clientY - r.top;
+            let curX = e.clientX - r.left;
+            let curY = e.clientY - r.top;
 
             if(isDrawing) {
-                const w = Math.abs(curX - startX); const h = Math.abs(curY - startY);
+                // Para líneas, el w/h y top/left se calculan distinto, pero para visual visual, mantenemos caja.
+                const w = Math.abs(curX - startX); 
+                const h = Math.abs(curY - startY);
                 guide.style.left = Math.min(curX, startX) + 'px';
                 guide.style.top = Math.min(curY, startY) + 'px';
-                guide.style.width = w + 'px'; guide.style.height = h + 'px';
+                guide.style.width = w + 'px'; 
+                guide.style.height = h + 'px';
             } 
             else if(isDragging && selectedId) {
                 const el = document.getElementById(selectedId);
                 if(el) {
                     let nx = curX - dragOffsetX; let ny = curY - dragOffsetY;
-                    // Prevenir salir del documento
+                    // Limites del papel
                     nx = Math.max(0, Math.min(nx, r.width));
                     ny = Math.max(0, Math.min(ny, r.height));
                     el.style.left = nx + 'px'; el.style.top = ny + 'px';
@@ -551,14 +640,22 @@
             }
         });
 
-        document.addEventListener('mouseup', () => {
+        document.addEventListener('mouseup', (e) => {
             if(isDrawing) {
                 isDrawing = false; guide.style.display = 'none';
                 const w = parseFloat(guide.style.width); const h = parseFloat(guide.style.height);
-                if(w > 10 && h > 10) {
-                    const cx = parseFloat(guide.style.left) + (w/2);
-                    const cy = parseFloat(guide.style.top) + (h/2);
-                    ObjectManager.create(currentTool, cx, cy, w, h);
+                if(w > 5 || h > 5) {
+                    let cx = parseFloat(guide.style.left) + (w/2);
+                    let cy = parseFloat(guide.style.top) + (h/2);
+                    
+                    // Ajuste matemático especial para Líneas (inicio y fin reales)
+                    if(currentTool === 'line') {
+                        const r = layer.getBoundingClientRect();
+                        const endX = e.clientX - r.left; const endY = e.clientY - r.top;
+                        ObjectManager.create(currentTool, startX, startY, endX - startX, endY - startY);
+                    } else {
+                        ObjectManager.create(currentTool, cx, cy, w, h);
+                    }
                 }
                 ToolManager.set('select');
             }
@@ -567,33 +664,51 @@
                 const el = document.getElementById(selectedId);
                 const obj = DB[currentPage].find(o => o.id === selectedId);
                 if(obj && el) {
-                    obj.x = parseFloat(el.style.left);
-                    obj.y = parseFloat(el.style.top);
+                    // Solo registrar en historial si realmente se movió
+                    if(Math.abs(obj.x - parseFloat(el.style.left)) > 2 || Math.abs(obj.y - parseFloat(el.style.top)) > 2) {
+                        const oldObj = {...obj};
+                        obj.x = parseFloat(el.style.left);
+                        obj.y = parseFloat(el.style.top);
+                        History.add({ act: 'mod', p: currentPage, old: oldObj, new: {...obj} });
+                    }
                     ObjectManager.updateInspector();
                 }
             }
         });
 
         // ---------------------------------------------------------
-        // 6. GESTIÓN DE OBJETOS CRUD
+        // 6. GESTIÓN DE OBJETOS (LA BÓVEDA)
         // ---------------------------------------------------------
         const ObjectManager = {
             create(type, x, y, w=0, h=0, ext={}) {
                 const id = 'obj_' + Math.random().toString(36).substr(2, 9);
-                let obj = { id, type, x, y, w, h, color: currentProps.color, size: currentProps.size, text: '', img: ext.imgData||null };
+                let obj = { 
+                    id, type, x, y, w, h, 
+                    color: currentProps.color, 
+                    size: currentProps.size, 
+                    stroke: currentProps.stroke,
+                    opacity: currentProps.opacity,
+                    text: '', img: ext.imgData||null 
+                };
                 
                 if(type==='text') obj.text = "";
                 if(type==='check') { obj.text = "✓"; obj.size *= 1.5; }
                 if(type==='cross') { obj.text = "✗"; obj.size *= 1.5; }
                 if(type==='stamp') { obj.text = document.getElementById('stampText').value; obj.size *= 2; }
                 
+                // Date injector (Magia extra)
+                if(type==='date') { 
+                    const d = new Date(); 
+                    obj.type = 'text'; 
+                    obj.text = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`; 
+                }
+                
                 DB[currentPage].push(obj);
                 History.add({ act: 'add', p: currentPage, obj: {...obj} });
                 
                 this.drawAll();
-                if(type!=='redact' && type!=='highlight') ToolManager.set('select');
+                if(!['redact','highlight','rect','circle','line'].includes(type)) ToolManager.set('select');
                 
-                // Activar automáticamente
                 setTimeout(() => {
                     this.select(id);
                     if(type==='text') { const el = document.getElementById(id); if(el) el.focus(); }
@@ -607,18 +722,40 @@
                     el.className = `drag-element el-${o.type}`;
                     el.id = o.id;
                     el.style.left = o.x + 'px'; el.style.top = o.y + 'px';
+                    el.style.opacity = o.opacity / 100;
 
                     if(['text','check','cross','stamp'].includes(o.type)) {
                         el.innerText = o.text; el.style.color = o.color; el.style.fontSize = (o.size * zoom) + 'px';
                         if(o.type==='text') {
                             el.contentEditable = true;
-                            el.onblur = (e) => { o.text = e.target.innerText; if(!o.text.trim()) this.deleteObj(o.id); };
+                            el.onblur = (e) => { 
+                                const oldText = o.text;
+                                o.text = e.target.innerText; 
+                                if(!o.text.trim()) this.deleteObj(o.id);
+                                else if (oldText !== o.text) History.add({act:'mod', p:currentPage, old:{...o, text:oldText}, new:{...o}});
+                            };
                             el.onmousedown = (e) => { if(el.classList.contains('is-selected')) e.stopPropagation(); };
                         }
                         if(o.type==='stamp') el.style.borderColor = o.color;
                     } 
                     else if(o.type==='redact' || o.type==='highlight') {
                         el.style.width = o.w + 'px'; el.style.height = o.h + 'px'; el.style.backgroundColor = o.color;
+                    }
+                    else if(o.type==='rect') {
+                        el.style.width = o.w + 'px'; el.style.height = o.h + 'px'; el.style.borderColor = o.color; el.style.borderWidth = o.stroke+'px';
+                    }
+                    else if(o.type==='circle') {
+                        el.style.width = o.w + 'px'; el.style.height = o.h + 'px'; el.style.borderColor = o.color; el.style.borderWidth = o.stroke+'px';
+                    }
+                    else if(o.type==='line') {
+                        // Matemática de Pitágoras para renderizar línea diagonal
+                        const length = Math.sqrt(o.w*o.w + o.h*o.h);
+                        const angle = Math.atan2(o.h, o.w) * 180 / Math.PI;
+                        el.style.width = length + 'px'; el.style.height = o.stroke + 'px'; el.style.backgroundColor = o.color;
+                        el.style.transform = `translate(0, -50%) rotate(${angle}deg)`; // Sobreescribimos el transform base
+                        el.style.transformOrigin = "left center";
+                        // Ajustamos pos a startX,startY real
+                        el.style.left = o.x + 'px'; el.style.top = o.y + 'px';
                     }
                     else if(o.type==='image') {
                         el.style.backgroundImage = `url(${o.img})`;
@@ -630,11 +767,17 @@
                         if(currentTool !== 'select') return;
                         this.select(o.id);
                         isDragging = true;
-                        const rc = el.getBoundingClientRect(); const rl = layer.getBoundingClientRect();
-                        const cx = rc.left - rl.left + (rc.width/2);
-                        const cy = rc.top - rl.top + (rc.height/2);
-                        dragOffsetX = (e.clientX - rl.left) - cx;
-                        dragOffsetY = (e.clientY - rl.top) - cy;
+                        
+                        if(o.type === 'line') {
+                            dragOffsetX = e.clientX - layer.getBoundingClientRect().left - o.x;
+                            dragOffsetY = e.clientY - layer.getBoundingClientRect().top - o.y;
+                        } else {
+                            const rc = el.getBoundingClientRect(); const rl = layer.getBoundingClientRect();
+                            const cx = rc.left - rl.left + (rc.width/2);
+                            const cy = rc.top - rl.top + (rc.height/2);
+                            dragOffsetX = (e.clientX - rl.left) - cx;
+                            dragOffsetY = (e.clientY - rl.top) - cy;
+                        }
                     });
 
                     if(selectedId === o.id) el.classList.add('is-selected');
@@ -651,10 +794,14 @@
                 document.getElementById('btnDelete').disabled = false;
                 const o = DB[currentPage].find(x => x.id === id);
                 if(o) {
-                    // Update Right Panel UI
-                    const s = document.getElementById('sliderSize');
-                    s.value = o.type==='stamp' ? o.size/2 : (o.type==='check'||o.type==='cross'? o.size/1.5 : o.size);
-                    document.getElementById('lblSize').innerText = s.value + 'pt';
+                    document.getElementById('sliderSize').value = o.type==='stamp' ? o.size/2 : (o.type==='check'||o.type==='cross'? o.size/1.5 : o.size);
+                    document.getElementById('lblSize').innerText = document.getElementById('sliderSize').value + 'pt';
+                    
+                    document.getElementById('sliderStroke').value = o.stroke || 2;
+                    document.getElementById('lblStroke').innerText = o.stroke + 'px';
+                    
+                    document.getElementById('sliderOpacity').value = o.opacity || 100;
+                    document.getElementById('lblOpacity').innerText = o.opacity + '%';
                     
                     document.querySelectorAll('.color-swatch').forEach(sw => {
                         sw.classList.remove('active');
@@ -676,13 +823,19 @@
                 if(!selectedId) return;
                 const o = DB[currentPage].find(x => x.id === selectedId);
                 if(!o) return;
+                
+                const oldObj = {...o};
+                
                 if(prop === 'color') o.color = val;
+                if(prop === 'stroke') o.stroke = val;
+                if(prop === 'opacity') o.opacity = val;
                 if(prop === 'size') {
                     if(o.type==='check' || o.type==='cross') o.size = val * 1.5;
                     else if(o.type==='stamp') o.size = val * 2;
                     else o.size = val;
-                    if(o.type==='redact' || o.type==='highlight') o.h = val * 1.5; // Altura base a pt
                 }
+                
+                History.add({ act: 'mod', p: currentPage, old: oldObj, new: {...o} });
                 this.drawAll();
             },
 
@@ -710,12 +863,13 @@
         });
 
         // ---------------------------------------------------------
-        // 7. HISTORY ENGINE (UNDO)
+        // 7. TIME MACHINE (UNDO / REDO ENGINE)
         // ---------------------------------------------------------
         const History = {
             add(item) {
                 historyStack.push(item);
-                document.getElementById('btnUndo').disabled = false;
+                redoStack = []; // Si haces algo nuevo, pierdes el futuro
+                this.updateBtns();
             },
             async undo() {
                 const i = historyStack.pop();
@@ -723,17 +877,43 @@
                 
                 if(i.act === 'add') DB[i.p] = DB[i.p].filter(x => x.id !== i.obj.id);
                 else if(i.act === 'del') DB[i.p].push(i.obj);
+                else if(i.act === 'mod') {
+                    const idx = DB[i.p].findIndex(x => x.id === i.old.id);
+                    if(idx !== -1) DB[i.p][idx] = {...i.old};
+                }
 
-                if(currentPage !== i.p) { currentPage = i.p; await Workspace.renderPage(); }
+                redoStack.push(i);
+                await this.applyChange(i.p);
+                Toast.show("Deshecho", "undo");
+            },
+            async redo() {
+                const i = redoStack.pop();
+                if(!i) return;
+
+                if(i.act === 'add') DB[i.p].push(i.obj);
+                else if(i.act === 'del') DB[i.p] = DB[i.p].filter(x => x.id !== i.obj.id);
+                else if(i.act === 'mod') {
+                    const idx = DB[i.p].findIndex(x => x.id === i.new.id);
+                    if(idx !== -1) DB[i.p][idx] = {...i.new};
+                }
+
+                historyStack.push(i);
+                await this.applyChange(i.p);
+                Toast.show("Rehecho", "redo");
+            },
+            async applyChange(p) {
+                if(currentPage !== p) { currentPage = p; await Workspace.renderPage(); }
                 else ObjectManager.drawAll();
-                
+                this.updateBtns();
+            },
+            updateBtns() {
                 document.getElementById('btnUndo').disabled = historyStack.length === 0;
-                Toast.show("Acción deshecha", "warning");
+                document.getElementById('btnRedo').disabled = redoStack.length === 0;
             }
         };
 
         // ---------------------------------------------------------
-        // 8. MOTOR DE COMPILACIÓN PDF-LIB (TRADUCCIÓN MATEMÁTICA)
+        // 8. MOTOR CÚSPIDE: PDF-LIB EXPORTER (BLINDADO CON TRY-CATCH)
         // ---------------------------------------------------------
         function hex2rgb(hex) {
             hex = hex.replace('#', '');
@@ -743,15 +923,15 @@
 
         const ExportEngine = {
             async buildPDF() {
-                Loader.show("Calculando matrices e incrustando vectores...");
+                Loader.show("Calculando Algoritmos de Fusión...");
                 try {
                     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal);
                     const pages = pdfDoc.getPages();
                     
-                    // Fuentes del Sistema Adobe
+                    // Diccionarios Tipográficos
                     const fHelv = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
                     const fCour = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
-                    const fSym = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats); // Para palomitas y taches
+                    const fSym = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats); // Palomitas y Taches nativos
 
                     for(let i=1; i<=totalPages; i++) {
                         const objs = DB[i];
@@ -760,87 +940,108 @@
                         const pPdf = pages[i-1];
                         const { width: pW, height: pH } = pPdf.getSize();
                         
-                        // Necesitamos el Viewport Base (Escala 1.0) para la traducción
                         const pInfo = await pdfProxy.getPage(i);
                         const vBase = pInfo.getViewport({scale: 1.0});
                         
-                        // Ratios de conversión: Punto_PDF / Pixel_HTML
+                        // Ratio matemático
                         const rX = pW / (vBase.width * zoom);
                         const rY = pH / (vBase.height * zoom);
 
                         for(let o of objs) {
-                            // Convertimos del centro HTML (x,y) a esquina PDF
-                            const pdfX = o.x * rX;
-                            const pdfY = pH - (o.y * rY); // INVERSIÓN DEL EJE Y
-                            
-                            const c = hex2rgb(o.color);
-                            const pColor = PDFLib.rgb(c.r, c.g, c.b);
-                            const pSize = o.size; // El point size es absoluto
+                            try {
+                                const c = hex2rgb(o.color);
+                                const pColor = PDFLib.rgb(c.r, c.g, c.b);
+                                const pSize = o.size; 
+                                const pOpac = o.opacity / 100;
+                                const pStroke = o.stroke * rX; // Escalar el grosor
 
-                            if(o.type === 'check') {
-                                const w = fSym.widthOfTextAtSize('4', pSize);
-                                pPdf.drawText('4', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor });
-                            }
-                            else if(o.type === 'cross') {
-                                const w = fSym.widthOfTextAtSize('8', pSize);
-                                pPdf.drawText('8', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor });
-                            }
-                            else if(o.type === 'text') {
-                                // Limpieza estricta de emojis para evitar el WinAnsi Error
-                                const safeText = o.text.replace(/[^\x00-\xFF]/g, ""); 
-                                if(safeText) {
+                                // BLINDAJE DE COORDENADAS
+                                if(isNaN(o.x) || isNaN(o.y)) continue;
+
+                                // --- LÍNEA DIAGONAL (Matemática especial) ---
+                                if(o.type === 'line') {
+                                    const startX = o.x * rX; const startY = pH - (o.y * rY);
+                                    const endX = (o.x + o.w) * rX; const endY = pH - ((o.y + o.h) * rY);
+                                    pPdf.drawLine({ start: {x: startX, y: startY}, end: {x: endX, y: endY}, thickness: pStroke, color: pColor, opacity: pOpac });
+                                    continue;
+                                }
+
+                                // --- RESTO DE OBJETOS (Centro X, Centro Y) ---
+                                const pdfX = o.x * rX;
+                                const pdfY = pH - (o.y * rY); // INVERSIÓN EJE Y
+                                
+                                if(o.type === 'check') {
+                                    const w = fSym.widthOfTextAtSize('4', pSize);
+                                    pPdf.drawText('4', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor, opacity: pOpac });
+                                }
+                                else if(o.type === 'cross') {
+                                    const w = fSym.widthOfTextAtSize('8', pSize);
+                                    pPdf.drawText('8', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor, opacity: pOpac });
+                                }
+                                else if(o.type === 'text') {
+                                    // Blindaje de Emojis que crashean WinAnsi
+                                    let safeText = o.text ? o.text.replace(/[^\x00-\xFF]/g, "") : "";
+                                    if(safeText.trim() === "") safeText = " "; // Prevenir error de string vacío
+                                    
                                     const lines = safeText.split('\n');
                                     lines.forEach((line, idx) => {
+                                        if(!line) return;
                                         const w = fHelv.widthOfTextAtSize(line, pSize);
                                         pPdf.drawText(line, { 
-                                            x: pdfX - (w/2), 
-                                            y: pdfY - (pSize/3) - (idx * pSize * 1.2), // Soporte Multilínea
-                                            size: pSize, font: fHelv, color: pColor 
+                                            x: pdfX - (w/2), y: pdfY - (pSize/3) - (idx * pSize * 1.2), 
+                                            size: pSize, font: fHelv, color: pColor, opacity: pOpac 
                                         });
                                     });
                                 }
-                            }
-                            else if(o.type === 'stamp') {
-                                const w = fCour.widthOfTextAtSize(o.text, pSize);
-                                pPdf.drawRectangle({
-                                    x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5,
-                                    width: w + 20, height: pSize + 10,
-                                    borderColor: pColor, borderWidth: 3, opacity: 0.8
-                                });
-                                pPdf.drawText(o.text, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: 0.8 });
-                            }
-                            else if(o.type === 'redact' || o.type === 'highlight') {
-                                const wPdf = o.w * rX; const hPdf = o.h * rY;
-                                pPdf.drawRectangle({
-                                    x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf,
-                                    color: pColor, opacity: o.type === 'highlight' ? 0.4 : 1.0,
-                                    blendMode: o.type === 'highlight' ? PDFLib.BlendMode.Multiply : PDFLib.BlendMode.Normal
-                                });
-                            }
-                            else if(o.type === 'image') {
-                                let embed;
-                                if(o.img.includes('png')) embed = await pdfDoc.embedPng(o.img);
-                                else embed = await pdfDoc.embedJpg(o.img);
-                                
-                                const htmlH = 150 * (o.size/14); 
-                                const pdfImgH = htmlH * rY;
-                                const dims = embed.scaleToFit(9999, pdfImgH);
-
-                                pPdf.drawImage(embed, { x: pdfX - (dims.width/2), y: pdfY - (dims.height/2), width: dims.width, height: dims.height });
+                                else if(o.type === 'stamp') {
+                                    let textStr = o.text || "SELLO";
+                                    const w = fCour.widthOfTextAtSize(textStr, pSize);
+                                    pPdf.drawRectangle({
+                                        x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5,
+                                        width: w + 20, height: pSize + 10,
+                                        borderColor: pColor, borderWidth: 3, opacity: pOpac
+                                    });
+                                    pPdf.drawText(textStr, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: pOpac });
+                                }
+                                else if(o.type === 'redact' || o.type === 'highlight' || o.type === 'rect') {
+                                    const wPdf = o.w * rX; const hPdf = o.h * rY;
+                                    let opt = { x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf, opacity: pOpac };
+                                    
+                                    if(o.type === 'rect') { opt.borderColor = pColor; opt.borderWidth = pStroke; }
+                                    else { opt.color = pColor; }
+                                    
+                                    if(o.type === 'highlight') opt.blendMode = PDFLib.BlendMode.Multiply;
+                                    pPdf.drawRectangle(opt);
+                                }
+                                else if (o.type === 'circle') {
+                                    const rxPdf = (o.w * rX) / 2; const ryPdf = (o.h * rY) / 2;
+                                    pPdf.drawEllipse({ x: pdfX, y: pdfY, xScale: rxPdf, yScale: ryPdf, borderColor: pColor, borderWidth: pStroke, opacity: pOpac });
+                                }
+                                else if(o.type === 'image' && o.img) {
+                                    let embed;
+                                    if(o.img.includes('png')) embed = await pdfDoc.embedPng(o.img);
+                                    else embed = await pdfDoc.embedJpg(o.img);
+                                    const htmlH = 150 * (o.size/14); 
+                                    const pdfImgH = htmlH * rY;
+                                    const dims = embed.scaleToFit(9999, pdfImgH);
+                                    pPdf.drawImage(embed, { x: pdfX - (dims.width/2), y: pdfY - (dims.height/2), width: dims.width, height: dims.height, opacity: pOpac });
+                                }
+                            } catch(objError) {
+                                console.warn("Blindaje Activo: Objeto omitido por corrupción.", objError);
                             }
                         }
                     }
 
                     const form = pdfDoc.getForm();
-                    if(form) form.flatten();
+                    if(form) { try { form.flatten(); } catch(e){} } // Blindaje de formularios corruptos
 
                     const bytes = await pdfDoc.save();
                     saveAs(new Blob([bytes], {type: 'application/pdf'}), `AuditorIA_Documento_${Date.now()}.pdf`);
-                    Toast.show("Exportación Completada Exitosamente.");
+                    Toast.show("Exportación Completada Nivel PRO.");
 
                 } catch(e) {
                     console.error("Critical Engine Error:", e);
-                    Toast.show("Error al compilar el documento final.", "error");
+                    Toast.show("Error al compilar el documento.", "error");
                 } finally {
                     Loader.hide();
                 }
