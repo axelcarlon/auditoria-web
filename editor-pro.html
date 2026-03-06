@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditorIA PDF Editor PRO</title>
-    <meta name="description" content="Editor PDF Forense de Alta Precisión.">
+    <title>Editor PRO | AuditorIA PDF Studio</title>
+    <meta name="description" content="Entorno dedicado de edición forense. Motor gráfico renderizado en RAM con inyección de código binario.">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -12,864 +12,837 @@
 
     <style>
         /* =========================================================
-           1. VARIABLES Y RESET (DARK STUDIO THEME)
+           1. CORE & DARK THEME (DISEÑO PROFESIONAL ADOBE-LIKE)
            ========================================================= */
         :root {
-            --bg-base: #09090B;      /* Fondo más profundo */
-            --bg-panel: #18181B;     /* Fondo de paneles */
-            --bg-hover: #27272A;     /* Hover states */
-            --border: #3F3F46;       /* Bordes sutiles */
-            --brand: #E11D48;        /* Rojo AuditorIA */
+            --bg-base: #09090B;
+            --bg-panel: #18181B;
+            --bg-hover: #27272A;
+            --border: #3F3F46;
+            --brand: #E11D48;
             --brand-hover: #BE123C;
-            --accent: #3B82F6;       /* Azul selecciones */
+            --accent: #3B82F6;
+            --accent-hover: #2563EB;
             --text-main: #F8FAFC;
             --text-muted: #A1A1AA;
             --success: #10B981;
-            --canvas-bg: #111113;    /* Fondo detrás del papel */
-            --shadow-doc: 0 0 30px rgba(0,0,0,0.8);
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --canvas-bg: #111113;
+            --shadow-float: 0 10px 30px rgba(0,0,0,0.5);
+            --shadow-doc: 0 0 40px rgba(0,0,0,0.8);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; user-select: none; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
         /* =========================================================
-           2. BARRA DE MENÚ SUPERIOR (TOPBAR)
+           2. TOPBAR DE NAVEGACIÓN Y CONTROLES
            ========================================================= */
-        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 50px; padding: 0 15px; flex-shrink: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 55px; padding: 0 20px; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.3); flex-shrink: 0;}
         
         .topbar-left { display: flex; align-items: center; gap: 20px; }
-        .logo-area { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 900; letter-spacing: -0.5px;}
+        .btn-exit { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 800; text-decoration: none; text-transform: uppercase; transition: 0.2s;}
+        .btn-exit:hover { background: rgba(225, 29, 72, 0.1); border-color: var(--brand); color: white;}
+        .logo-container { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 900; letter-spacing: -0.5px;}
         .pro-badge { background: var(--brand); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; letter-spacing: 1px;}
-        
-        .btn-exit { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; text-decoration: none; transition: 0.2s;}
-        .btn-exit:hover { background: var(--bg-hover); color: white;}
 
-        .topbar-center { display: flex; align-items: center; gap: 10px; background: var(--bg-base); border: 1px solid var(--border); padding: 4px 15px; border-radius: 8px;}
-        .tool-icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; transition: 0.2s;}
-        .tool-icon-btn:hover { color: white; background: var(--bg-hover); }
-        .page-indicator { font-family: monospace; font-size: 13px; font-weight: bold; color: var(--text-main); min-width: 80px; text-align: center; }
-        .zoom-indicator { font-family: monospace; font-size: 12px; color: var(--accent); min-width: 50px; text-align: center; }
+        .topbar-center { display: flex; align-items: center; gap: 10px; background: var(--bg-base); border: 1px solid var(--border); padding: 4px 15px; border-radius: 8px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
+        .topbar-center.visible { visibility: visible; opacity: 1; }
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 5px; border-radius: 4px; display: flex; align-items: center; transition: 0.2s;}
+        .nav-btn:hover { color: white; background: var(--bg-hover); }
+        .indicator { font-family: monospace; font-size: 13px; font-weight: bold; color: var(--text-main); min-width: 60px; text-align: center; }
+        .zoom-val { color: var(--accent); }
         .divider-v { width: 1px; height: 16px; background: var(--border); margin: 0 5px; }
 
-        .topbar-right { display: flex; align-items: center; gap: 10px; }
-        .btn-undo { display: flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: 0.2s;}
-        .btn-undo:hover:not(:disabled) { color: white; background: var(--bg-hover); }
-        .btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
+        .topbar-right.visible { visibility: visible; opacity: 1; }
         
-        .btn-export { display: flex; align-items: center; gap: 8px; background: var(--brand); color: white; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 900; letter-spacing: 0.5px; transition: 0.2s;}
-        .btn-export:hover { background: var(--brand-hover); box-shadow: 0 0 10px rgba(225, 29, 72, 0.4); }
+        .btn-undo { display: flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--warning); cursor: pointer; font-size: 13px; font-weight: bold; padding: 8px 15px; border-radius: 6px; transition: 0.2s;}
+        .btn-undo:hover:not(:disabled) { background: rgba(245, 158, 11, 0.1); }
+        .btn-undo:disabled { color: var(--border); cursor: not-allowed; }
+        
+        .btn-export { display: flex; align-items: center; gap: 8px; background: var(--success); color: #022C22; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 900; text-transform: uppercase; transition: 0.2s;}
+        .btn-export:hover { background: #34D399; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); transform: translateY(-1px);}
 
         /* =========================================================
-           3. ÁREA DE TRABAJO (WORKSPACE)
+           3. ESTRUCTURA DEL WORKSPACE (SIDEBARS Y LIENZO)
            ========================================================= */
-        .workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .main-workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
 
-        /* TOOLBAR IZQUIERDA (HERRAMIENTAS ADOBE STYLE) */
-        .toolbar-left { width: 60px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 15px 0; gap: 12px; z-index: 50; }
+        /* Barra de Herramientas Izquierda */
+        .toolbar-left { width: 65px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 50; overflow-y: auto;}
         
-        .tool-group { display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center;}
+        .tool-group { display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center;}
         .divider-h { width: 30px; height: 1px; background: var(--border); margin: 5px 0; }
 
-        .tool-btn { width: 40px; height: 40px; border-radius: 8px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
+        .tool-btn { width: 44px; height: 44px; border-radius: 10px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
         .tool-btn:hover { color: white; background: var(--bg-hover); }
         .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
 
-        /* Tooltips Profesionales Flotantes */
-        .tool-btn::after { content: attr(data-tooltip); position: absolute; left: 55px; background: #000; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.1s; transform: translateX(-5px); z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+        /* Tooltips CSS Puros */
+        .tool-btn::after { content: attr(data-tooltip); position: absolute; left: 55px; background: #000; border: 1px solid var(--border); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.1s; transform: translateX(-10px); z-index: 1000; box-shadow: var(--shadow-float);}
         .tool-btn:hover::after { opacity: 1; transform: translateX(0); }
 
-        /* CANVAS CENTRAL (EL LIENZO INFINITO) */
-        .canvas-container { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 40px; position: relative; cursor: grab;}
-        .canvas-container:active { cursor: grabbing; } /* Efecto de paneo */
+        /* Lienzo Central (El Papel) */
+        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 50px; position: relative; }
         
-        /* Contenedor exacto de la hoja PDF */
-        .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); margin: 0 auto; transition: transform 0.1s ease-out; transform-origin: top center;}
-        #pdfCanvas { display: block; }
+        .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); transition: transform 0.1s ease-out; transform-origin: top center; margin-bottom: 50px;}
+        #pdfRenderCanvas { display: block; width: 100%; height: auto; }
         
-        /* Capa de Dibujo y Selección (DOM Overlay) */
-        #drawingLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+        /* Capa Interactiva (DOM Overlay para elementos) */
+        #interactiveLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; overflow: hidden; }
 
-        /* =========================================================
-           4. ELEMENTOS INTERACTIVOS (TEXTO, CAJAS, FIRMAS)
-           ========================================================= */
-        .pdf-element { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); transform-origin: center; cursor: move; }
-        
-        /* Contorno de selección estilo Adobe */
-        .pdf-element.selected::before { content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border: 2px solid var(--accent); pointer-events: none; z-index: -1;}
-        .pdf-element.selected::after { content: ''; position: absolute; right: -8px; bottom: -8px; width: 10px; height: 10px; background: white; border: 2px solid var(--accent); border-radius: 50%; cursor: nwse-resize; pointer-events: auto; }
-
-        /* Estilos Específicos por Tipo */
-        .el-text { font-family: 'Helvetica', Arial, sans-serif; white-space: nowrap; outline: none; line-height: 1; min-width: 10px; cursor: text; }
-        .el-text:empty::before { content: 'Escribe aquí...'; color: rgba(0,0,0,0.3); pointer-events: none; }
-        
-        .el-box { background: black; /* Redact */ }
-        .el-highlight { background: yellow; opacity: 0.4; mix-blend-mode: multiply; }
-        .el-image { background-size: 100% 100%; background-repeat: no-repeat; }
-
-        /* Capa temporal para dibujar cajas (Arrastrar el mouse) */
-        #tempDrawBox { position: absolute; border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.2); pointer-events: none; display: none; z-index: 9999;}
-
-        /* =========================================================
-           5. PANEL DE PROPIEDADES DERECHO
-           ========================================================= */
-        .sidebar-right { width: 260px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; gap: 25px; overflow-y: auto; z-index: 50; }
+        /* Panel de Propiedades Derecha */
+        .sidebar-right { width: 280px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 30px; overflow-y: auto; z-index: 50; }
         
         .prop-section { display: flex; flex-direction: column; gap: 15px; }
-        .prop-title { font-size: 10px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
-        
-        /* Paleta de Colores Forenses */
-        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.1s;}
-        .color-swatch.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.2);}
+        .prop-title { font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
         
         .prop-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-main); font-weight: bold;}
-        .control-slider { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        .prop-val { font-family: monospace; color: var(--accent); font-size: 14px; }
         
-        .delete-obj-btn { background: rgba(225, 29, 72, 0.1); border: 1px solid var(--brand); color: #FCA5A5; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px; width: 100%; margin-top: 10px;}
-        .delete-obj-btn:hover:not(:disabled) { background: var(--brand); color: white; }
-        .delete-obj-btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); color: var(--text-muted);}
+        /* Paleta de Colores y Sliders */
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.2s;}
+        .color-swatch.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 12px rgba(255,255,255,0.3);}
+        
+        .custom-slider { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        .custom-select { background: var(--bg-base); border: 1px solid var(--border); color: white; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 13px; width: 100%; cursor: pointer; outline: none; }
+        .custom-select:focus { border-color: var(--accent); }
+
+        .btn-action-outline { background: transparent; border: 1px dashed var(--danger); color: var(--danger); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-action-outline:hover:not(:disabled) { background: rgba(239, 68, 68, 0.1); }
+        .btn-action-outline:disabled { border-color: var(--border); color: var(--border); cursor: not-allowed; }
 
         /* =========================================================
-           6. PANTALLAS DE CARGA
+           4. ELEMENTOS DEL DOM INTERACTIVOS (TEXTO, CAJAS)
            ========================================================= */
-        #initScreen { position: absolute; top: 50px; left: 0; width: 100%; height: calc(100vh - 50px); background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
-        .upload-box { border: 2px dashed var(--accent); padding: 50px 80px; border-radius: 16px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.5);}
-        .upload-box:hover { background: var(--bg-hover); border-color: white; transform: translateY(-5px);}
+        .drag-element { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); transform-origin: center; cursor: grab; user-select: none; }
+        .drag-element:active { cursor: grabbing; }
         
-        #globalLoader { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: white; font-family: monospace; font-size: 14px;}
-        .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;}
+        /* Efecto de Selección Adobe */
+        .drag-element.is-selected { z-index: 1000; }
+        .drag-element.is-selected::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 2px dashed var(--accent); pointer-events: none; box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+
+        /* Tipos de Elementos */
+        .el-text { font-family: 'Helvetica', Arial, sans-serif; white-space: pre; outline: none; cursor: text; min-width: 20px; line-height: 1.1; }
+        .el-text:empty::after { content: 'Escribe...'; color: rgba(0,0,0,0.4); pointer-events: none; }
+        
+        .el-box { background: black; }
+        .el-highlight { background: #FDE047; opacity: 0.4; mix-blend-mode: multiply; }
+        
+        .el-stamp { font-family: 'Courier New', Courier, monospace; font-weight: 900; border: 4px solid; padding: 5px 15px; border-radius: 8px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; transform: translate(-50%, -50%) rotate(-15deg) !important; background: rgba(255,255,255,0.5); backdrop-filter: blur(2px); }
+        
+        .el-image { background-size: 100% 100%; background-repeat: no-repeat; background-position: center; }
+
+        /* Caja Temporal de Dibujo (Para Arrastrar Redact/Highlight) */
+        #drawGuide { position: absolute; border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.1); pointer-events: none; display: none; z-index: 9999; }
+
+        /* =========================================================
+           5. PANTALLAS DE CARGA Y NOTIFICACIONES
+           ========================================================= */
+        #initScreen { position: absolute; top: 55px; left: 0; width: 100%; height: calc(100vh - 55px); background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
+        .upload-area { border: 2px dashed var(--accent); padding: 60px 80px; border-radius: 16px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s; box-shadow: var(--shadow-float); max-width: 500px; width: 90%;}
+        .upload-area:hover { background: var(--bg-hover); border-color: white; transform: translateY(-5px);}
+        
+        #sysLoader { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: monospace; font-size: 14px; font-weight: bold;}
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Toasts Custom */
+        #toastContainer { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
+        .toast { background: var(--bg-panel); border: 1px solid var(--border); border-left: 4px solid var(--success); color: white; padding: 15px 25px; border-radius: 8px; box-shadow: var(--shadow-float); font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto;}
+        .toast.show { transform: translateX(0); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
     </style>
 </head>
 <body>
 
-    <div class="topbar">
+    <header class="topbar">
         <div class="topbar-left">
             <a href="editor-pdf.html" class="btn-exit">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Cerrar
             </a>
-            <div class="logo-area">
-                Editor Libre <span class="pro-badge">PRO</span>
-            </div>
+            <div class="logo-container">Editor <span class="pro-badge">PRO</span></div>
         </div>
 
-        <div class="topbar-center" id="viewControls" style="display: none;">
-            <button class="tool-icon-btn" onclick="ZoomEngine.out()" title="Alejar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
-            <span class="zoom-indicator" id="uiZoom">100%</span>
-            <button class="tool-icon-btn" onclick="ZoomEngine.in()" title="Acercar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
+        <div class="topbar-center" id="uiTopbarCenter">
+            <button class="nav-btn" onclick="Workspace.zoomOut()" title="Alejar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
+            <span class="indicator zoom-val" id="lblZoom">100%</span>
+            <button class="nav-btn" onclick="Workspace.zoomIn()" title="Acercar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
             
             <div class="divider-v"></div>
 
-            <button class="tool-icon-btn" onclick="RenderEngine.prevPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg></button>
-            <span class="page-indicator" id="uiPage">Pág 0 / 0</span>
-            <button class="tool-icon-btn" onclick="RenderEngine.nextPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg></button>
+            <button class="nav-btn" onclick="Workspace.prevPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg></button>
+            <span class="indicator" id="lblPage">0 / 0</span>
+            <button class="nav-btn" onclick="Workspace.nextPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg></button>
         </div>
 
-        <div class="topbar-right">
-            <button class="btn-undo" id="btnUndo" onclick="HistoryEngine.undo()" disabled>
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
-                Deshacer
+        <div class="topbar-right" id="uiTopbarRight">
+            <button class="btn-undo" id="btnUndo" onclick="History.undo()" disabled>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg> Deshacer
             </button>
-            <button class="btn-export" id="btnExport" style="display: none;" onclick="ExportEngine.execute()">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                EXPORTAR PDF
+            <button class="btn-export" onclick="ExportEngine.buildPDF()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Exportar
             </button>
         </div>
-    </div>
+    </header>
 
     <div id="initScreen">
-        <div class="upload-box" onclick="document.getElementById('pdfUploader').click()">
-            <svg width="50" height="50" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <h2 style="margin: 0 0 10px; font-size: 20px;">Cargar Documento</h2>
-            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Sube el PDF para iniciar el motor de renderizado.</p>
-            <input type="file" id="pdfUploader" accept=".pdf" style="display: none;">
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <svg width="64" height="64" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <h2 style="margin: 0 0 10px; font-size: 22px;">Cargar Documento PDF</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6;">El archivo se procesará 100% en la memoria RAM de tu navegador, garantizando confidencialidad.</p>
+            <input type="file" id="fileInput" accept=".pdf" style="display: none;">
         </div>
     </div>
 
-    <div class="workspace" id="mainWorkspace" style="visibility: hidden;">
+    <div class="main-workspace" id="workspaceContainer" style="visibility: hidden;">
         
-        <div class="toolbar-left">
+        <aside class="toolbar-left">
             <div class="tool-group">
-                <button class="tool-btn active" data-tool="select" data-tooltip="Seleccionar / Mover (V)">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                <button class="tool-btn active" data-tool="select" data-tooltip="Cursor (V)" onclick="ToolManager.set('select')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
                 </button>
             </div>
             
             <div class="divider-h"></div>
             
             <div class="tool-group">
-                <button class="tool-btn" data-tool="text" data-tooltip="Insertar Texto (T)">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                <button class="tool-btn" data-tool="text" data-tooltip="Texto Libre (T)" onclick="ToolManager.set('text')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
                 </button>
-                <button class="tool-btn" data-tool="check" data-tooltip="Añadir Palomita">
-                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                <button class="tool-btn" data-tool="check" data-tooltip="Palomita (SAT)" onclick="ToolManager.set('check')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                 </button>
-                <button class="tool-btn" data-tool="cross" data-tooltip="Añadir Tache">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button class="tool-btn" data-tool="cross" data-tooltip="Tache (X)" onclick="ToolManager.set('cross')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             
             <div class="divider-h"></div>
             
             <div class="tool-group">
-                <button class="tool-btn" data-tool="redact" data-tooltip="Censurar Área (Caja Negra)">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
+                <button class="tool-btn" data-tool="redact" data-tooltip="Censurar (Caja Negra)" onclick="ToolManager.set('redact')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
                 </button>
-                <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador Amarillo">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador Amarillo" onclick="ToolManager.set('highlight')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </button>
             </div>
 
             <div class="divider-h"></div>
 
             <div class="tool-group">
-                <button class="tool-btn" data-tool="image" data-tooltip="Insertar Firma (.PNG)" onclick="document.getElementById('sigUploader').click()">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <button class="tool-btn" data-tool="stamp" data-tooltip="Sellos Administrativos" onclick="ToolManager.set('stamp')">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 </button>
-                <input type="file" id="sigUploader" accept="image/png" style="display:none;">
+                <button class="tool-btn" data-tooltip="Insertar Imagen / Firma" onclick="document.getElementById('imgInput').click()">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </button>
+                <input type="file" id="imgInput" accept="image/png, image/jpeg" style="display:none;">
             </div>
-        </div>
+        </aside>
 
-        <div class="canvas-container" id="scrollContainer">
+        <main class="canvas-area" id="scrollArea">
             <div class="page-wrapper" id="pageWrapper">
                 <canvas id="pdfCanvas"></canvas>
-                
-                <div id="drawingLayer"></div>
-                
-                <div id="tempDrawBox"></div>
+                <div id="interactiveLayer"></div>
+                <div id="drawGuide"></div>
             </div>
-        </div>
+        </main>
 
-        <div class="sidebar-right">
+        <aside class="sidebar-right">
             
             <div class="prop-section">
-                <h4 class="prop-title">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                    Estilos y Color
-                </h4>
+                <h4 class="prop-title">Apariencia</h4>
                 
-                <div class="color-grid" id="uiColors">
-                    <div class="color-swatch active" style="background: #000000;" data-color="#000000"></div>
-                    <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div> <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div> <div class="color-swatch" style="background: #16A34A;" data-color="#16A34A"></div> <div class="color-swatch" style="background: #FBBF24;" data-color="#FBBF24"></div> <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div> </div>
+                <div class="color-grid" id="colorPicker">
+                    <div class="color-swatch active" style="background: #000000;" data-color="#000000"></div> <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div> <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div> <div class="color-swatch" style="background: #16A34A;" data-color="#16A34A"></div> <div class="color-swatch" style="background: #FBBF24;" data-color="#FBBF24"></div> <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div> </div>
 
-                <div class="prop-row" style="margin-top: 15px;">
-                    <span>Tamaño Base</span>
-                    <span id="uiSizeVal" style="color: var(--accent);">14pt</span>
+                <div class="prop-row" style="margin-top: 10px;">
+                    <span>Tamaño Ppt</span>
+                    <span class="prop-val" id="lblSize">14</span>
                 </div>
-                <input type="range" class="control-slider" id="uiSize" min="8" max="72" value="14">
+                <input type="range" class="custom-slider" id="sliderSize" min="8" max="72" value="14">
             </div>
 
-            <div class="prop-section" style="margin-top: 20px;">
-                <h4 class="prop-title">Gestión de Objeto</h4>
-                <p id="uiNoSelection" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">No hay ningún elemento seleccionado. Usa la herramienta Cursor (V) y haz clic sobre un texto o marca para editarla.</p>
-                <button class="delete-obj-btn" id="btnDeleteObj" disabled>
+            <div class="prop-section" id="panelStamp" style="display: none; padding-top: 15px; border-top: 1px dashed var(--border);">
+                <h4 class="prop-title">Texto del Sello</h4>
+                <select id="stampText" class="custom-select">
+                    <option value="AUDITADO">AUDITADO</option>
+                    <option value="APROBADO">APROBADO</option>
+                    <option value="RECHAZADO">RECHAZADO</option>
+                    <option value="CONFIDENCIAL">CONFIDENCIAL</option>
+                    <option value="COPIA">COPIA</option>
+                    <option value="PAGADO">PAGADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
+                </select>
+            </div>
+
+            <div class="prop-section" style="padding-top: 15px; border-top: 1px dashed var(--border);">
+                <h4 class="prop-title">Inspector</h4>
+                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+                    <div class="prop-row" style="color: var(--text-muted); font-size: 11px; margin-bottom: 5px;">
+                        <span>Coordenada X:</span> <span id="inspX">--</span>
+                    </div>
+                    <div class="prop-row" style="color: var(--text-muted); font-size: 11px;">
+                        <span>Coordenada Y:</span> <span id="inspY">--</span>
+                    </div>
+                </div>
+
+                <button class="btn-action-outline" id="btnDelete" disabled onclick="ObjectManager.deleteSelected()">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    Eliminar Elemento
+                    Eliminar Objeto
                 </button>
             </div>
-
-        </div>
+            
+            <div style="margin-top: auto; font-size: 10px; color: var(--text-muted); line-height: 1.5; text-align: center; border-top: 1px solid var(--border); padding-top: 15px;">
+                Shortcuts: <br><strong style="color:white;">V</strong> (Cursor) | <strong style="color:white;">T</strong> (Texto) | <strong style="color:white;">Supr</strong> (Borrar)<br><strong style="color:white;">Ctrl+Z</strong> (Deshacer)
+            </div>
+        </aside>
 
     </div>
 
-    <div id="globalLoader">
+    <div id="sysLoader">
         <div class="spinner"></div>
-        <span id="loaderText">Preparando Motor Forense...</span>
+        <span id="loaderText">Iniciando Motor...</span>
     </div>
+    
+    <div id="toastContainer"></div>
 
     <script>
-        // Declaración de módulos para la Parte 2 y 3.
-        console.log("Parte 1 Cargada: UI y Estructura Adobe-Style lista.");
-    </script>
-    <script>
-        // 1. INICIALIZACIÓN DE WORKERS Y ESTADO GLOBAL
+        // ---------------------------------------------------------
+        // 1. SISTEMA DE TOASTS (Notificaciones Limpias)
+        // ---------------------------------------------------------
+        const Toast = {
+            show(msg, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const el = document.createElement('div');
+                el.className = `toast ${type}`;
+                el.innerHTML = `<span style="font-size:16px;">${type==='error'?'⚠️':type==='warning'?'⚡':'✓'}</span> ${msg}`;
+                container.appendChild(el);
+                
+                requestAnimationFrame(() => el.classList.add('show'));
+                setTimeout(() => {
+                    el.classList.remove('show');
+                    setTimeout(() => el.remove(), 300);
+                }, 4000);
+            }
+        };
+
+        const Loader = {
+            show(msg) { document.getElementById('loaderText').innerText = msg; document.getElementById('sysLoader').style.display = 'flex'; },
+            hide() { document.getElementById('sysLoader').style.display = 'none'; }
+        };
+
+        // ---------------------------------------------------------
+        // 2. ESTADO GLOBAL DE LA APLICACIÓN
+        // ---------------------------------------------------------
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        let pdfBytesOriginal = null;
-        let pdfDocProxy = null;
+        let pdfBytes = null;
+        let pdfProxy = null;
         let totalPages = 0;
         let currentPage = 1;
         
-        let currentZoom = 1.0;
-        const ZOOM_STEP = 0.25;
-        const MAX_ZOOM = 3.0;
-        const MIN_ZOOM = 0.5;
+        let zoom = 1.0;
+        const MIN_Z = 0.5, MAX_Z = 3.0, STEP_Z = 0.25;
 
-        let activeTool = 'select'; 
+        // Base de Datos en RAM
+        let DB = {}; // DB[pageNum] = [{id, type, x, y, w, h, color, size, text, img}]
+        let historyStack = [];
+
+        // Estado UI
+        let currentTool = 'select';
         let currentProps = { color: '#000000', size: 14 };
-        
-        // Memoria RAM de la edición: annotations[numeroPagina] = [ array de objetos ]
-        let annotations = {}; 
-        let actionHistory = []; // Para el botón Deshacer
+        let selectedId = null;
 
-        // Variables de Dibujo / Arrastre
+        // Estado Interacción
         let isDrawing = false;
+        let isDragging = false;
         let startX = 0, startY = 0;
-        let dragElement = null;
         let dragOffsetX = 0, dragOffsetY = 0;
 
-        // Elementos DOM
+        // Elementos Frecuentes
+        const layer = document.getElementById('interactiveLayer');
+        const guide = document.getElementById('drawGuide');
+        const wrapper = document.getElementById('pageWrapper');
         const canvas = document.getElementById('pdfCanvas');
         const ctx = canvas.getContext('2d');
-        const docWrapper = document.getElementById('docWrapper');
-        const drawingLayer = document.getElementById('drawingLayer');
-        const tempDrawBox = document.getElementById('tempDrawBox');
 
-        // ==========================================
-        // 2. INGESTA Y RENDERIZADO DEL PDF
-        // ==========================================
-        document.getElementById('pdfUploader').addEventListener('change', async (e) => {
+        // ---------------------------------------------------------
+        // 3. INGESTA Y RENDER (PDF.JS)
+        // ---------------------------------------------------------
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if(!file || file.type !== 'application/pdf') {
-                alert("Por favor, sube un archivo PDF válido."); return;
-            }
+            if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF.", "error");
 
-            document.getElementById('globalLoader').style.display = 'flex';
-            
+            Loader.show("Desensamblando Vectores...");
             try {
-                pdfBytesOriginal = await file.arrayBuffer();
-                const loadingTask = pdfjsLib.getDocument({data: pdfBytesOriginal});
-                pdfDocProxy = await loadingTask.promise;
-                
-                totalPages = pdfDocProxy.numPages;
-                currentPage = 1;
-                
-                // Inicializar BD en blanco para cada página
-                for(let i=1; i<=totalPages; i++) annotations[i] = [];
-                actionHistory = [];
+                const reader = new FileReader();
+                reader.onload = async function() {
+                    pdfBytes = this.result;
+                    pdfProxy = await pdfjsLib.getDocument({data: new Uint8Array(pdfBytes)}).promise;
+                    
+                    totalPages = pdfProxy.numPages;
+                    currentPage = 1;
+                    DB = {}; historyStack = [];
+                    for(let i=1; i<=totalPages; i++) DB[i] = [];
 
-                // Cambiar UI
-                document.getElementById('initScreen').style.display = 'none';
-                document.getElementById('mainWorkspace').style.visibility = 'visible';
-                document.getElementById('viewControls').style.display = 'flex';
-                document.getElementById('btnExport').style.display = 'flex';
+                    document.getElementById('initScreen').style.display = 'none';
+                    document.getElementById('workspaceContainer').style.visibility = 'visible';
+                    document.getElementById('uiTopbarCenter').classList.add('visible');
+                    document.getElementById('uiTopbarRight').classList.add('visible');
 
-                await autoFitZoom();
-                await renderPage(currentPage);
-
-            } catch (error) {
-                console.error(error);
-                alert("Error crítico. El archivo puede estar encriptado con contraseña maestra.");
-            } finally {
-                document.getElementById('globalLoader').style.display = 'none';
+                    await Workspace.autoFit();
+                    await Workspace.renderPage();
+                    Toast.show("Documento listo para edición forense.");
+                    Loader.hide();
+                };
+                reader.readAsArrayBuffer(file);
+            } catch (err) {
+                console.error(err);
+                Loader.hide();
+                Toast.show("Error de lectura (Posible encriptación).", "error");
             }
         });
 
-        // Motor de Zoom Inteligente
-        const RenderEngine = {
-            async prevPage() {
-                if(currentPage > 1) { currentPage--; await renderPage(currentPage); deactivateAll(); }
+        const Workspace = {
+            async autoFit() {
+                const p = await pdfProxy.getPage(1);
+                const vp = p.getViewport({scale: 1.0});
+                const containerW = document.getElementById('scrollArea').clientWidth;
+                let autoZ = (containerW - 100) / vp.width; // 50px padding lados
+                zoom = Math.min(Math.max(Math.round(autoZ * 4)/4, MIN_Z), 1.5);
+                this.updateUI();
             },
-            async nextPage() {
-                if(currentPage < totalPages) { currentPage++; await renderPage(currentPage); deactivateAll(); }
+            async zoomIn() { if(zoom < MAX_Z) { zoom += STEP_Z; this.updateUI(); await this.renderPage(); } },
+            async zoomOut() { if(zoom > MIN_Z) { zoom -= STEP_Z; this.updateUI(); await this.renderPage(); } },
+            async prevPage() { if(currentPage > 1) { currentPage--; ObjectManager.deselect(); await this.renderPage(); } },
+            async nextPage() { if(currentPage < totalPages) { currentPage++; ObjectManager.deselect(); await this.renderPage(); } },
+            updateUI() {
+                document.getElementById('lblZoom').innerText = `${Math.round(zoom*100)}%`;
+                document.getElementById('lblPage').innerText = `${currentPage} / ${totalPages}`;
+            },
+            async renderPage() {
+                const p = await pdfProxy.getPage(currentPage);
+                const scale = window.devicePixelRatio || 1;
+                const vp = p.getViewport({scale: zoom});
+
+                canvas.width = Math.floor(vp.width * scale);
+                canvas.height = Math.floor(vp.height * scale);
+                const cssW = Math.floor(vp.width) + "px";
+                const cssH = Math.floor(vp.height) + "px";
+                
+                canvas.style.width = cssW; canvas.style.height = cssH;
+                wrapper.style.width = cssW; wrapper.style.height = cssH;
+
+                await p.render({ canvasContext: ctx, transform: scale !== 1 ? [scale,0,0,scale,0,0] : null, viewport: vp }).promise;
+                
+                this.updateUI();
+                ObjectManager.drawAll();
             }
         };
 
-        async function autoFitZoom() {
-            const page = await pdfDocProxy.getPage(1);
-            const viewport = page.getViewport({scale: 1.0});
-            const container = document.getElementById('scrollContainer');
-            // Dejamos 80px de margen (40px de cada lado)
-            let autoScale = (container.clientWidth - 80) / viewport.width;
-            if(autoScale > 1.5) autoScale = 1.5;
-            
-            currentZoom = Math.round(autoScale * 4) / 4; // Redondear a cuartos (Ej. 1.25)
-            if(currentZoom < MIN_ZOOM) currentZoom = MIN_ZOOM;
-            updateZoomUI();
-        }
-
-        const ZoomEngine = {
-            async in() { if(currentZoom < MAX_ZOOM) { currentZoom += ZOOM_STEP; updateZoomUI(); await renderPage(currentPage); } },
-            async out() { if(currentZoom > MIN_ZOOM) { currentZoom -= ZOOM_STEP; updateZoomUI(); await renderPage(currentPage); } }
+        // ---------------------------------------------------------
+        // 4. GESTIÓN DE HERRAMIENTAS Y EVENTOS UI
+        // ---------------------------------------------------------
+        const ToolManager = {
+            set(t) {
+                currentTool = t;
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                const btn = document.querySelector(`.tool-btn[data-tool="${t}"]`);
+                if(btn) btn.classList.add('active');
+                
+                document.getElementById('panelStamp').style.display = t === 'stamp' ? 'flex' : 'none';
+                layer.style.cursor = (t === 'select' || t === 'image') ? 'default' : (t === 'text' ? 'text' : 'crosshair');
+                ObjectManager.deselect();
+            }
         };
 
-        function updateZoomUI() {
-            document.getElementById('uiZoom').innerText = `${Math.round(currentZoom * 100)}%`;
-        }
-
-        async function renderPage(num) {
-            const page = await pdfDocProxy.getPage(num);
-            const outputScale = window.devicePixelRatio || 1; // Alta Definición (Retina Display)
-            const viewport = page.getViewport({scale: currentZoom});
-
-            // Tamaño real del Canvas interno (Multiplicado por DPI)
-            canvas.width = Math.floor(viewport.width * outputScale);
-            canvas.height = Math.floor(viewport.height * outputScale);
-            
-            // Tamaño visual en pantalla (CSS)
-            const cssWidth = Math.floor(viewport.width) + "px";
-            const cssHeight = Math.floor(viewport.height) + "px";
-            canvas.style.width = cssWidth;
-            canvas.style.height = cssHeight;
-            
-            docWrapper.style.width = cssWidth;
-            docWrapper.style.height = cssHeight;
-
-            const renderContext = {
-                canvasContext: ctx,
-                transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null,
-                viewport: viewport
-            };
-            await page.render(renderContext).promise;
-
-            document.getElementById('uiPage').innerText = `${num} / ${totalPages}`;
-            renderAnnotationsDOM(); // Re-dibujar los elementos de esta página
-        }
-
-        // ==========================================
-        // 3. GESTIÓN DE HERRAMIENTAS Y UI
-        // ==========================================
-        function setTool(tool) {
-            activeTool = tool;
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.tool-btn[data-tool="${tool}"]`).classList.add('active');
-            
-            document.getElementById('stampProps').style.display = (tool === 'stamp') ? 'flex' : 'none';
-            
-            // Cursores
-            if(tool === 'select' || tool === 'image') drawingLayer.style.cursor = 'default';
-            else if(tool === 'text') drawingLayer.style.cursor = 'text';
-            else drawingLayer.style.cursor = 'crosshair';
-
-            deactivateAll();
-        }
-
-        // Eventos Panel Derecho (Colores y Tamaños)
-        document.querySelectorAll('.color-swatch').forEach(swatch => {
-            swatch.addEventListener('click', (e) => {
+        // Panel de Propiedades
+        document.querySelectorAll('.color-swatch').forEach(sw => {
+            sw.onclick = (e) => {
                 document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                e.target.classList.add('active');
-                currentProps.color = e.target.getAttribute('data-color');
-                updateActiveElement('color', currentProps.color);
-            });
-        });
-
-        document.getElementById('uiSize').addEventListener('input', (e) => {
-            currentProps.size = parseInt(e.target.value);
-            document.getElementById('uiSizeVal').innerText = `${currentProps.size}pt`;
-            updateActiveElement('size', currentProps.size);
-        });
-
-        // Inyección de Imágenes
-        document.getElementById('imgUploader').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                // Crear objeto en el centro de la pantalla
-                createObject('image', canvas.clientWidth/2, canvas.clientHeight/2, 0, 0, { imgData: event.target.result });
-                setTool('select');
+                sw.classList.add('active');
+                currentProps.color = sw.getAttribute('data-color');
+                if(selectedId) ObjectManager.updateProp('color', currentProps.color);
             };
-            reader.readAsDataURL(file);
         });
 
-        // ==========================================
-        // 4. MOTOR INTERACTIVO (DIBUJO Y ARRASTRE)
-        // ==========================================
-        drawingLayer.addEventListener('mousedown', (e) => {
-            if(activeTool === 'select' || activeTool === 'image') return;
-            if(e.target.closest('.pdf-element')) return; // No dibujar encima de otro objeto
+        document.getElementById('sliderSize').oninput = (e) => {
+            currentProps.size = parseInt(e.target.value);
+            document.getElementById('lblSize').innerText = `${currentProps.size}pt`;
+            if(selectedId) ObjectManager.updateProp('size', currentProps.size);
+        };
 
-            const rect = drawingLayer.getBoundingClientRect();
-            startX = e.clientX - rect.left;
-            startY = e.clientY - rect.top;
+        document.getElementById('imgInput').onchange = (e) => {
+            const f = e.target.files[0];
+            if(!f) return;
+            const r = new FileReader();
+            r.onload = (ev) => {
+                ObjectManager.create('image', wrapper.clientWidth/2, wrapper.clientHeight/2, 0, 0, {imgData: ev.target.result});
+                ToolManager.set('select');
+            };
+            r.readAsDataURL(f);
+        };
 
-            if(activeTool === 'redact' || activeTool === 'highlight') {
+        // Shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ignorar si está escribiendo
+            if(e.target.isContentEditable || e.target.tagName === 'INPUT') return;
+            
+            if(e.key.toLowerCase() === 'v') ToolManager.set('select');
+            if(e.key.toLowerCase() === 't') ToolManager.set('text');
+            if((e.key === 'Delete' || e.key === 'Backspace') && selectedId) ObjectManager.deleteSelected();
+            if(e.ctrlKey && e.key.toLowerCase() === 'z') History.undo();
+        });
+
+        // ---------------------------------------------------------
+        // 5. MOTOR DE CAPAS (DOM OVERLAY & EVENTOS RATÓN)
+        // ---------------------------------------------------------
+        layer.addEventListener('mousedown', (e) => {
+            if(currentTool === 'select' || currentTool === 'image') return;
+            if(e.target.closest('.drag-element')) return; 
+
+            const r = layer.getBoundingClientRect();
+            startX = e.clientX - r.left; startY = e.clientY - r.top;
+
+            if(currentTool === 'redact' || currentTool === 'highlight') {
                 isDrawing = true;
-                tempDrawBox.style.left = startX + 'px';
-                tempDrawBox.style.top = startY + 'px';
-                tempDrawBox.style.width = '0px';
-                tempDrawBox.style.height = '0px';
-                tempDrawBox.style.backgroundColor = activeTool === 'redact' ? '#000' : 'rgba(253, 224, 71, 0.4)';
-                tempDrawBox.style.display = 'block';
+                guide.style.left = startX + 'px'; guide.style.top = startY + 'px';
+                guide.style.width = '0px'; guide.style.height = '0px';
+                guide.style.backgroundColor = currentTool === 'redact' ? '#000' : 'rgba(253,224,71,0.4)';
+                guide.style.display = 'block';
             } else {
-                // Click simple para Texto, Checks, Stamps
-                createObject(activeTool, startX, startY);
+                ObjectManager.create(currentTool, startX, startY);
             }
         });
 
         document.addEventListener('mousemove', (e) => {
-            if(isDrawing) {
-                const rect = drawingLayer.getBoundingClientRect();
-                const currentX = e.clientX - rect.left;
-                const currentY = e.clientY - rect.top;
-                
-                const width = Math.abs(currentX - startX);
-                const height = Math.abs(currentY - startY);
-                const left = Math.min(currentX, startX);
-                const top = Math.min(currentY, startY);
+            const r = layer.getBoundingClientRect();
+            const curX = e.clientX - r.left;
+            const curY = e.clientY - r.top;
 
-                tempDrawBox.style.left = left + 'px';
-                tempDrawBox.style.top = top + 'px';
-                tempDrawBox.style.width = width + 'px';
-                tempDrawBox.style.height = height + 'px';
+            if(isDrawing) {
+                const w = Math.abs(curX - startX); const h = Math.abs(curY - startY);
+                guide.style.left = Math.min(curX, startX) + 'px';
+                guide.style.top = Math.min(curY, startY) + 'px';
+                guide.style.width = w + 'px'; guide.style.height = h + 'px';
             } 
-            else if (dragElement) {
-                const rect = drawingLayer.getBoundingClientRect();
-                let newX = (e.clientX - rect.left) - dragOffsetX;
-                let newY = (e.clientY - rect.top) - dragOffsetY;
-                
-                // Límites
-                if(newX < 0) newX = 0;
-                if(newY < 0) newY = 0;
-                if(newX > rect.width) newX = rect.width;
-                if(newY > rect.height) newY = rect.height;
-
-                dragElement.style.left = newX + 'px';
-                dragElement.style.top = newY + 'px';
+            else if(isDragging && selectedId) {
+                const el = document.getElementById(selectedId);
+                if(el) {
+                    let nx = curX - dragOffsetX; let ny = curY - dragOffsetY;
+                    // Prevenir salir del documento
+                    nx = Math.max(0, Math.min(nx, r.width));
+                    ny = Math.max(0, Math.min(ny, r.height));
+                    el.style.left = nx + 'px'; el.style.top = ny + 'px';
+                }
             }
         });
 
-        document.addEventListener('mouseup', (e) => {
+        document.addEventListener('mouseup', () => {
             if(isDrawing) {
-                isDrawing = false;
-                tempDrawBox.style.display = 'none';
-                const width = parseFloat(tempDrawBox.style.width);
-                const height = parseFloat(tempDrawBox.style.height);
-                
-                if(width > 10 && height > 10) {
-                    const left = parseFloat(tempDrawBox.style.left);
-                    const top = parseFloat(tempDrawBox.style.top);
-                    // Guardamos desde el centro para consistencia de transformación
-                    const centerX = left + (width/2);
-                    const centerY = top + (height/2);
-                    createObject(activeTool, centerX, centerY, width, height);
+                isDrawing = false; guide.style.display = 'none';
+                const w = parseFloat(guide.style.width); const h = parseFloat(guide.style.height);
+                if(w > 10 && h > 10) {
+                    const cx = parseFloat(guide.style.left) + (w/2);
+                    const cy = parseFloat(guide.style.top) + (h/2);
+                    ObjectManager.create(currentTool, cx, cy, w, h);
                 }
-                setTool('select');
+                ToolManager.set('select');
             }
-            
-            if(dragElement) {
-                // Guardar nueva posición
-                const id = dragElement.id;
-                const ann = annotations[currentPage].find(a => a.id === id);
-                if(ann) {
-                    ann.x = parseFloat(dragElement.style.left);
-                    ann.y = parseFloat(dragElement.style.top);
+            if(isDragging && selectedId) {
+                isDragging = false;
+                const el = document.getElementById(selectedId);
+                const obj = DB[currentPage].find(o => o.id === selectedId);
+                if(obj && el) {
+                    obj.x = parseFloat(el.style.left);
+                    obj.y = parseFloat(el.style.top);
+                    ObjectManager.updateInspector();
                 }
-                dragElement = null;
             }
         });
 
-        // ==========================================
-        // 5. BASE DE DATOS LOCAL Y DOM
-        // ==========================================
-        function createObject(type, x, y, width = 0, height = 0, extra = {}) {
-            const id = 'obj_' + Date.now() + Math.floor(Math.random()*1000);
+        // ---------------------------------------------------------
+        // 6. GESTIÓN DE OBJETOS CRUD
+        // ---------------------------------------------------------
+        const ObjectManager = {
+            create(type, x, y, w=0, h=0, ext={}) {
+                const id = 'obj_' + Math.random().toString(36).substr(2, 9);
+                let obj = { id, type, x, y, w, h, color: currentProps.color, size: currentProps.size, text: '', img: ext.imgData||null };
+                
+                if(type==='text') obj.text = "";
+                if(type==='check') { obj.text = "✓"; obj.size *= 1.5; }
+                if(type==='cross') { obj.text = "✗"; obj.size *= 1.5; }
+                if(type==='stamp') { obj.text = document.getElementById('stampText').value; obj.size *= 2; }
+                
+                DB[currentPage].push(obj);
+                History.add({ act: 'add', p: currentPage, obj: {...obj} });
+                
+                this.drawAll();
+                if(type!=='redact' && type!=='highlight') ToolManager.set('select');
+                
+                // Activar automáticamente
+                setTimeout(() => {
+                    this.select(id);
+                    if(type==='text') { const el = document.getElementById(id); if(el) el.focus(); }
+                }, 10);
+            },
             
-            let obj = {
-                id: id, page: currentPage, type: type, x: x, y: y,
-                width: width, height: height,
-                color: currentProps.color, size: currentProps.size,
-                text: '', imgData: extra.imgData || null
-            };
+            drawAll() {
+                layer.innerHTML = '';
+                (DB[currentPage] || []).forEach(o => {
+                    const el = document.createElement('div');
+                    el.className = `drag-element el-${o.type}`;
+                    el.id = o.id;
+                    el.style.left = o.x + 'px'; el.style.top = o.y + 'px';
 
-            if(type === 'text') { obj.text = "Texto..."; }
-            else if(type === 'check') { obj.text = "✓"; obj.size = currentProps.size * 1.5; }
-            else if(type === 'cross') { obj.text = "✗"; obj.size = currentProps.size * 1.5; }
-            else if(type === 'stamp') { obj.text = document.getElementById('stampSelect').value; obj.size = currentProps.size * 2; }
-
-            annotations[currentPage].push(obj);
-            
-            // Guardar en historial
-            actionHistory.push({ action: 'add', page: currentPage, data: obj });
-            updateUndoBtn();
-
-            renderAnnotationsDOM();
-            if(type !== 'redact' && type !== 'highlight') setTool('select');
-            setTimeout(() => activateElement(id), 10);
-        }
-
-        function renderAnnotationsDOM() {
-            drawingLayer.innerHTML = '';
-            const pageObjs = annotations[currentPage] || [];
-            
-            document.getElementById('objCount').innerText = `${pageObjs.length} Elementos`;
-
-            pageObjs.forEach(obj => {
-                const el = document.createElement('div');
-                el.className = `pdf-element el-${obj.type}`;
-                el.id = obj.id;
-                el.style.left = obj.x + 'px';
-                el.style.top = obj.y + 'px';
-
-                if(obj.type === 'text' || obj.type === 'check' || obj.type === 'cross' || obj.type === 'stamp') {
-                    el.innerText = obj.text;
-                    el.style.color = obj.color;
-                    el.style.fontSize = (obj.size * currentZoom) + 'px'; // Escalar a la vista
-                    
-                    if(obj.type === 'text') {
-                        el.contentEditable = true;
-                        el.onblur = (e) => {
-                            obj.text = e.target.innerText;
-                            if(obj.text.trim() === "") deleteObject(obj.id);
-                        };
-                        el.onmousedown = (e) => { if(el.classList.contains('active')) e.stopPropagation(); };
+                    if(['text','check','cross','stamp'].includes(o.type)) {
+                        el.innerText = o.text; el.style.color = o.color; el.style.fontSize = (o.size * zoom) + 'px';
+                        if(o.type==='text') {
+                            el.contentEditable = true;
+                            el.onblur = (e) => { o.text = e.target.innerText; if(!o.text.trim()) this.deleteObj(o.id); };
+                            el.onmousedown = (e) => { if(el.classList.contains('is-selected')) e.stopPropagation(); };
+                        }
+                        if(o.type==='stamp') el.style.borderColor = o.color;
+                    } 
+                    else if(o.type==='redact' || o.type==='highlight') {
+                        el.style.width = o.w + 'px'; el.style.height = o.h + 'px'; el.style.backgroundColor = o.color;
                     }
-                    if(obj.type === 'stamp') {
-                        el.style.borderColor = obj.color;
+                    else if(o.type==='image') {
+                        el.style.backgroundImage = `url(${o.img})`;
+                        el.style.width = (150 * (o.size/14)) + 'px'; el.style.height = (150 * (o.size/14)) + 'px';
                     }
-                } 
-                else if (obj.type === 'redact' || obj.type === 'highlight') {
-                    el.style.width = obj.width + 'px';
-                    el.style.height = obj.height + 'px';
-                    el.style.backgroundColor = obj.color;
-                }
-                else if (obj.type === 'image') {
-                    el.style.backgroundImage = `url(${obj.imgData})`;
-                    // Tamaño base visual 150px
-                    el.style.width = (150 * (obj.size/14)) + 'px'; 
-                    el.style.height = (150 * (obj.size/14)) + 'px';
-                }
 
-                el.addEventListener('mousedown', (e) => {
-                    if(activeTool !== 'select') return;
-                    activateElement(obj.id);
-                    dragElement = el;
-                    const rect = el.getBoundingClientRect();
-                    const parentRect = drawingLayer.getBoundingClientRect();
-                    
-                    // Cálculo de offset desde el centro
-                    const currentCenterX = rect.left - parentRect.left + (rect.width/2);
-                    const currentCenterY = rect.top - parentRect.top + (rect.height/2);
-                    
-                    dragOffsetX = (e.clientX - parentRect.left) - currentCenterX;
-                    dragOffsetY = (e.clientY - parentRect.top) - currentCenterY;
+                    // Evento Mousedown para arrastre
+                    el.addEventListener('mousedown', (e) => {
+                        if(currentTool !== 'select') return;
+                        this.select(o.id);
+                        isDragging = true;
+                        const rc = el.getBoundingClientRect(); const rl = layer.getBoundingClientRect();
+                        const cx = rc.left - rl.left + (rc.width/2);
+                        const cy = rc.top - rl.top + (rc.height/2);
+                        dragOffsetX = (e.clientX - rl.left) - cx;
+                        dragOffsetY = (e.clientY - rl.top) - cy;
+                    });
+
+                    if(selectedId === o.id) el.classList.add('is-selected');
+                    layer.appendChild(el);
                 });
+            },
 
-                drawingLayer.appendChild(el);
-            });
-        }
-
-        function activateElement(id) {
-            deactivateAll();
-            const el = document.getElementById(id);
-            if(el) {
-                el.classList.add('active');
-                document.getElementById('btnDeleteObj').disabled = false;
-                document.getElementById('uiNoSelection').style.display = 'none';
-
-                const obj = annotations[currentPage].find(a => a.id === id);
-                if(obj) {
-                    // Cargar propiedades al panel derecho
-                    document.getElementById('inputSize').value = (obj.type==='image') ? obj.size : (obj.type==='stamp' ? obj.size/2 : obj.size);
-                    document.getElementById('uiSizeVal').innerText = document.getElementById('inputSize').value + 'pt';
+            select(id) {
+                this.deselect();
+                selectedId = id;
+                const el = document.getElementById(id);
+                if(el) el.classList.add('is-selected');
+                
+                document.getElementById('btnDelete').disabled = false;
+                const o = DB[currentPage].find(x => x.id === id);
+                if(o) {
+                    // Update Right Panel UI
+                    const s = document.getElementById('sliderSize');
+                    s.value = o.type==='stamp' ? o.size/2 : (o.type==='check'||o.type==='cross'? o.size/1.5 : o.size);
+                    document.getElementById('lblSize').innerText = s.value + 'pt';
                     
-                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                    const swatch = document.querySelector(`.color-swatch[data-color="${obj.color}"]`);
-                    if(swatch) swatch.classList.add('active');
+                    document.querySelectorAll('.color-swatch').forEach(sw => {
+                        sw.classList.remove('active');
+                        if(sw.getAttribute('data-color') === o.color) sw.classList.add('active');
+                    });
+                    this.updateInspector();
                 }
-            }
-        }
+            },
 
-        function deactivateAll() {
-            document.querySelectorAll('.pdf-element').forEach(e => e.classList.remove('active'));
-            document.getElementById('btnDeleteObj').disabled = true;
-            document.getElementById('uiNoSelection').style.display = 'block';
-        }
+            deselect() {
+                selectedId = null;
+                document.querySelectorAll('.drag-element').forEach(e => e.classList.remove('is-selected'));
+                document.getElementById('btnDelete').disabled = true;
+                document.getElementById('inspX').innerText = '--';
+                document.getElementById('inspY').innerText = '--';
+            },
 
-        docWrapper.addEventListener('mousedown', (e) => {
-            if(activeTool === 'select' && e.target === drawingLayer) deactivateAll();
-        });
-
-        function updateActiveElement(prop, value) {
-            const activeEl = document.querySelector('.pdf-element.active');
-            if(!activeEl) return;
-            const obj = annotations[currentPage].find(a => a.id === activeEl.id);
-            if(!obj) return;
-
-            if(prop === 'color') obj.color = value;
-            else if (prop === 'size') {
-                if(obj.type === 'check' || obj.type === 'cross') obj.size = value * 1.5;
-                else if(obj.type === 'stamp') obj.size = value * 2;
-                else obj.size = value;
-            }
-            renderAnnotationsDOM();
-            activateElement(obj.id);
-        }
-
-        document.getElementById('btnDeleteObj').addEventListener('click', () => {
-            const activeEl = document.querySelector('.pdf-element.active');
-            if(activeEl) deleteObject(activeEl.id);
-        });
-
-        function deleteObject(id) {
-            // Guardar para deshacer
-            const obj = annotations[currentPage].find(a => a.id === id);
-            if(obj) {
-                actionHistory.push({ action: 'delete', page: currentPage, data: obj });
-                updateUndoBtn();
-            }
-            annotations[currentPage] = annotations[currentPage].filter(a => a.id !== id);
-            renderAnnotationsDOM();
-            deactivateAll();
-        }
-
-        const HistoryEngine = {
-            undo() {
-                const last = actionHistory.pop();
-                if(!last) return;
-                
-                if(last.action === 'add') {
-                    annotations[last.page] = annotations[last.page].filter(a => a.id !== last.data.id);
-                } else if (last.action === 'delete') {
-                    annotations[last.page].push(last.data);
+            updateProp(prop, val) {
+                if(!selectedId) return;
+                const o = DB[currentPage].find(x => x.id === selectedId);
+                if(!o) return;
+                if(prop === 'color') o.color = val;
+                if(prop === 'size') {
+                    if(o.type==='check' || o.type==='cross') o.size = val * 1.5;
+                    else if(o.type==='stamp') o.size = val * 2;
+                    else o.size = val;
+                    if(o.type==='redact' || o.type==='highlight') o.h = val * 1.5; // Altura base a pt
                 }
-                
-                if(currentPage !== last.page) {
-                    currentPage = last.page;
-                    renderPage(currentPage);
-                } else {
-                    renderAnnotationsDOM();
+                this.drawAll();
+            },
+
+            deleteObj(id) {
+                const o = DB[currentPage].find(x => x.id === id);
+                if(o) History.add({ act: 'del', p: currentPage, obj: {...o} });
+                DB[currentPage] = DB[currentPage].filter(x => x.id !== id);
+                this.deselect(); this.drawAll();
+            },
+
+            deleteSelected() { if(selectedId) this.deleteObj(selectedId); },
+
+            updateInspector() {
+                if(!selectedId) return;
+                const o = DB[currentPage].find(x => x.id === selectedId);
+                if(o) {
+                    document.getElementById('inspX').innerText = Math.round(o.x) + 'px';
+                    document.getElementById('inspY').innerText = Math.round(o.y) + 'px';
                 }
-                updateUndoBtn();
             }
         };
 
-        function updateUndoBtn() {
-            document.getElementById('btnUndo').disabled = actionHistory.length === 0;
-        }
+        wrapper.addEventListener('mousedown', (e) => {
+            if(currentTool === 'select' && e.target === layer) ObjectManager.deselect();
+        });
 
-        // ==========================================
-        // 6. MOTOR DE EXPORTACIÓN Y QUEMADO PDF-LIB
-        // ==========================================
-        // Convierte un Hex (#FF0000) a objeto RGB para la librería
-        function hex2RgbPdf(hex) {
+        // ---------------------------------------------------------
+        // 7. HISTORY ENGINE (UNDO)
+        // ---------------------------------------------------------
+        const History = {
+            add(item) {
+                historyStack.push(item);
+                document.getElementById('btnUndo').disabled = false;
+            },
+            async undo() {
+                const i = historyStack.pop();
+                if(!i) return;
+                
+                if(i.act === 'add') DB[i.p] = DB[i.p].filter(x => x.id !== i.obj.id);
+                else if(i.act === 'del') DB[i.p].push(i.obj);
+
+                if(currentPage !== i.p) { currentPage = i.p; await Workspace.renderPage(); }
+                else ObjectManager.drawAll();
+                
+                document.getElementById('btnUndo').disabled = historyStack.length === 0;
+                Toast.show("Acción deshecha", "warning");
+            }
+        };
+
+        // ---------------------------------------------------------
+        // 8. MOTOR DE COMPILACIÓN PDF-LIB (TRADUCCIÓN MATEMÁTICA)
+        // ---------------------------------------------------------
+        function hex2rgb(hex) {
             hex = hex.replace('#', '');
             if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-            const r = parseInt(hex.substring(0,2), 16) / 255;
-            const g = parseInt(hex.substring(2,4), 16) / 255;
-            const b = parseInt(hex.substring(4,6), 16) / 255;
-            return { r, g, b };
+            return { r: parseInt(hex.substring(0,2), 16)/255, g: parseInt(hex.substring(2,4), 16)/255, b: parseInt(hex.substring(4,6), 16)/255 };
         }
 
         const ExportEngine = {
-            async execute() {
-                document.getElementById('globalLoader').style.display = 'flex';
-                document.getElementById('loaderText').innerText = "Quemando vectores e imprimiendo documento...";
-                
+            async buildPDF() {
+                Loader.show("Calculando matrices e incrustando vectores...");
                 try {
-                    // Cargar el documento PDF original en PDF-Lib (Virgen)
                     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal);
                     const pages = pdfDoc.getPages();
                     
-                    // Incrustar Tipografías Nativas
-                    const fontHelvetica = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-                    const fontCourierB = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
+                    // Fuentes del Sistema Adobe
+                    const fHelv = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                    const fCour = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
+                    const fSym = await pdfDoc.embedFont(PDFLib.StandardFonts.ZapfDingbats); // Para palomitas y taches
 
-                    // Recorrer las páginas editadas
-                    for(let i = 1; i <= totalPages; i++) {
-                        const pageObjs = annotations[i];
-                        if(!pageObjs || pageObjs.length === 0) continue;
+                    for(let i=1; i<=totalPages; i++) {
+                        const objs = DB[i];
+                        if(!objs || objs.length === 0) continue;
 
-                        const pagePdf = pages[i - 1]; // Índice base 0
-                        const { width: pdfW, height: pdfH } = pagePdf.getSize();
+                        const pPdf = pages[i-1];
+                        const { width: pW, height: pH } = pPdf.getSize();
                         
-                        // Necesitamos el tamaño del canvas HTML "sin escalar" para tener la proporción real
-                        const originalPageInfo = await pdfDocProxy.getPage(i);
-                        const baseViewport = originalPageInfo.getViewport({scale: 1.0});
+                        // Necesitamos el Viewport Base (Escala 1.0) para la traducción
+                        const pInfo = await pdfProxy.getPage(i);
+                        const vBase = pInfo.getViewport({scale: 1.0});
                         
-                        // El factor de conversión: Cuántos puntos PDF mide el HTML
-                        const ratioX = pdfW / (baseViewport.width * currentZoom);
-                        const ratioY = pdfH / (baseViewport.height * currentZoom);
+                        // Ratios de conversión: Punto_PDF / Pixel_HTML
+                        const rX = pW / (vBase.width * zoom);
+                        const rY = pH / (vBase.height * zoom);
 
-                        for(let obj of pageObjs) {
-                            // Convertir Coordenadas HTML (Top-Left) a PDF (Bottom-Left)
-                            // En el DOM, X y Y son el centro del div.
-                            const pdfX = obj.x * ratioX;
-                            const pdfY = pdfH - (obj.y * ratioY); // Se invierte el eje Y
+                        for(let o of objs) {
+                            // Convertimos del centro HTML (x,y) a esquina PDF
+                            const pdfX = o.x * rX;
+                            const pdfY = pH - (o.y * rY); // INVERSIÓN DEL EJE Y
                             
-                            const colorRgb = hex2RgbPdf(obj.color);
-                            const drawColor = PDFLib.rgb(colorRgb.r, colorRgb.g, colorRgb.b);
-                            
-                            // El tamaño de fuente en el DOM estuvo escalado por el zoom. 
-                            // En el PDF debemos inyectar el tamaño puro de los puntos.
-                            const pdfFontSize = obj.size; 
+                            const c = hex2rgb(o.color);
+                            const pColor = PDFLib.rgb(c.r, c.g, c.b);
+                            const pSize = o.size; // El point size es absoluto
 
-                            // --- ESCRITURA SOBRE EL DOCUMENTO BINARIO ---
-
-                            if(obj.type === 'text' || obj.type === 'check' || obj.type === 'cross') {
-                                // PDF-Lib dibuja el texto desde la esquina inferior izquierda.
-                                // Como nuestro X,Y es el centro, restamos la mitad del ancho.
-                                const textW = fontHelvetica.widthOfTextAtSize(obj.text, pdfFontSize);
-                                pagePdf.drawText(obj.text, {
-                                    x: pdfX - (textW / 2),
-                                    y: pdfY - (pdfFontSize / 3), // Ajuste a la línea base
-                                    size: pdfFontSize,
-                                    font: fontHelvetica,
-                                    color: drawColor
+                            if(o.type === 'check') {
+                                const w = fSym.widthOfTextAtSize('4', pSize);
+                                pPdf.drawText('4', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor });
+                            }
+                            else if(o.type === 'cross') {
+                                const w = fSym.widthOfTextAtSize('8', pSize);
+                                pPdf.drawText('8', { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fSym, color: pColor });
+                            }
+                            else if(o.type === 'text') {
+                                // Limpieza estricta de emojis para evitar el WinAnsi Error
+                                const safeText = o.text.replace(/[^\x00-\xFF]/g, ""); 
+                                if(safeText) {
+                                    const lines = safeText.split('\n');
+                                    lines.forEach((line, idx) => {
+                                        const w = fHelv.widthOfTextAtSize(line, pSize);
+                                        pPdf.drawText(line, { 
+                                            x: pdfX - (w/2), 
+                                            y: pdfY - (pSize/3) - (idx * pSize * 1.2), // Soporte Multilínea
+                                            size: pSize, font: fHelv, color: pColor 
+                                        });
+                                    });
+                                }
+                            }
+                            else if(o.type === 'stamp') {
+                                const w = fCour.widthOfTextAtSize(o.text, pSize);
+                                pPdf.drawRectangle({
+                                    x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5,
+                                    width: w + 20, height: pSize + 10,
+                                    borderColor: pColor, borderWidth: 3, opacity: 0.8
+                                });
+                                pPdf.drawText(o.text, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: 0.8 });
+                            }
+                            else if(o.type === 'redact' || o.type === 'highlight') {
+                                const wPdf = o.w * rX; const hPdf = o.h * rY;
+                                pPdf.drawRectangle({
+                                    x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf,
+                                    color: pColor, opacity: o.type === 'highlight' ? 0.4 : 1.0,
+                                    blendMode: o.type === 'highlight' ? PDFLib.BlendMode.Multiply : PDFLib.BlendMode.Normal
                                 });
                             }
-                            else if(obj.type === 'stamp') {
-                                const textW = fontCourierB.widthOfTextAtSize(obj.text, pdfFontSize);
-                                // Dibujar la caja del sello
-                                pagePdf.drawRectangle({
-                                    x: pdfX - (textW/2) - 8,
-                                    y: pdfY - (pdfFontSize/2) - 4,
-                                    width: textW + 16,
-                                    height: pdfFontSize + 8,
-                                    borderColor: drawColor,
-                                    borderWidth: 2,
-                                    opacity: 0.8
-                                });
-                                // Texto del sello
-                                pagePdf.drawText(obj.text, {
-                                    x: pdfX - (textW / 2),
-                                    y: pdfY - (pdfFontSize / 3),
-                                    size: pdfFontSize,
-                                    font: fontCourierB,
-                                    color: drawColor,
-                                    opacity: 0.8
-                                });
-                            }
-                            else if (obj.type === 'redact' || obj.type === 'highlight') {
-                                const rectW = obj.width * ratioX;
-                                const rectH = obj.height * ratioY;
+                            else if(o.type === 'image') {
+                                let embed;
+                                if(o.img.includes('png')) embed = await pdfDoc.embedPng(o.img);
+                                else embed = await pdfDoc.embedJpg(o.img);
                                 
-                                pagePdf.drawRectangle({
-                                    x: pdfX - (rectW/2),
-                                    y: pdfY - (rectH/2),
-                                    width: rectW,
-                                    height: rectH,
-                                    color: drawColor,
-                                    opacity: obj.type === 'highlight' ? 0.4 : 1.0,
-                                    blendMode: obj.type === 'highlight' ? PDFLib.BlendMode.Multiply : PDFLib.BlendMode.Normal
-                                });
-                            }
-                            else if (obj.type === 'image') {
-                                let imgToEmbed;
-                                if(obj.imgData.includes('image/png')) imgToEmbed = await pdfDoc.embedPng(obj.imgData);
-                                else imgToEmbed = await pdfDoc.embedJpg(obj.imgData);
-                                
-                                // Calcular el ancho/alto inyectado
-                                const htmlH = 150 * (obj.size/14); 
-                                const pdfImgH = htmlH * ratioY;
-                                const dims = imgToEmbed.scaleToFit(9999, pdfImgH);
+                                const htmlH = 150 * (o.size/14); 
+                                const pdfImgH = htmlH * rY;
+                                const dims = embed.scaleToFit(9999, pdfImgH);
 
-                                pagePdf.drawImage(imgToEmbed, {
-                                    x: pdfX - (dims.width/2),
-                                    y: pdfY - (dims.height/2),
-                                    width: dims.width,
-                                    height: dims.height
-                                });
+                                pPdf.drawImage(embed, { x: pdfX - (dims.width/2), y: pdfY - (dims.height/2), width: dims.width, height: dims.height });
                             }
                         }
                     }
 
-                    // Aplanar formulario si lo tuviera (Blindaje forense)
                     const form = pdfDoc.getForm();
                     if(form) form.flatten();
 
-                    // Descargar el producto final blindado
-                    const pdfBytesOut = await pdfDoc.save();
-                    const blob = new Blob([pdfBytesOut], { type: 'application/pdf' });
-                    saveAs(blob, `Documento_PRO_${Date.now()}.pdf`);
+                    const bytes = await pdfDoc.save();
+                    saveAs(new Blob([bytes], {type: 'application/pdf'}), `AuditorIA_Documento_${Date.now()}.pdf`);
+                    Toast.show("Exportación Completada Exitosamente.");
 
                 } catch(e) {
-                    console.error(e);
-                    alert("Error crítico de compilación. Refresca la página.");
+                    console.error("Critical Engine Error:", e);
+                    Toast.show("Error al compilar el documento final.", "error");
                 } finally {
-                    document.getElementById('globalLoader').style.display = 'none';
+                    Loader.hide();
                 }
             }
         };
@@ -877,6 +850,3 @@
     </script>
 </body>
 </html>
-</body>
-</html>
-
