@@ -130,6 +130,7 @@ const footerHTML = `
     <div style="max-width: 1300px; margin: 50px auto 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; color: #64748B; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div>&copy; ${new Date().getFullYear()} AuditorIA.mx. Todos los derechos reservados.</div>
         <div style="display: flex; gap: 20px;">
+            <a href="terminos.html" style="margin: 0; color: #94A3B8;">Términos de Servicio</a>
             <a href="planes.html" style="margin: 0; color: #94A3B8;">Licencias</a>
             <a href="empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
             <a href="despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
