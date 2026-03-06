@@ -131,6 +131,7 @@ const footerHTML = `
         <div>&copy; ${new Date().getFullYear()} AuditorIA.mx. Todos los derechos reservados.</div>
         <div style="display: flex; gap: 20px;">
             <a href="terminos.html" style="margin: 0; color: #94A3B8;">Términos de Servicio</a>
+            <a href="privacidad.html" style="margin: 0; color: #94A3B8;">Aviso de Privacidad</a>
             <a href="planes.html" style="margin: 0; color: #94A3B8;">Licencias</a>
             <a href="empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
             <a href="despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
