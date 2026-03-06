@@ -65,6 +65,25 @@
         .tool-card.mod-core:hover { border-color: var(--color-core); }
         .tool-card.mod-data:hover { border-color: var(--color-data); }
 
+        /* Estilo Único Animado para PDF Studio PRO */
+        .tool-card.mod-pdf-pro {
+            border-color: rgba(220, 38, 38, 0.5); 
+            background: rgba(220, 38, 38, 0.05);
+            animation: pulseCard 3s infinite;
+        }
+        .tool-card.mod-pdf-pro:hover {
+            border-color: #EF4444;
+            background: rgba(220, 38, 38, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(220, 38, 38, 0.2);
+            animation: none; /* Pausa la latencia en hover */
+        }
+        @keyframes pulseCard { 
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.1); } 
+            70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } 
+        }
+
         .tool-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
         .tool-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
         
@@ -74,6 +93,7 @@
         .mod-rh .tool-icon { background: rgba(225, 29, 72, 0.1); color: var(--color-rh); }
         .mod-core .tool-icon { background: rgba(6, 182, 212, 0.1); color: var(--color-core); }
         .mod-data .tool-icon { background: rgba(249, 115, 22, 0.1); color: var(--color-data); }
+        .mod-pdf-pro .tool-icon { background: #EF4444; color: white; }
 
         .tool-title { font-size: 18px; font-weight: 800; margin: 0; color: var(--text-main); }
         .tool-desc { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0; flex-grow: 1;}
@@ -87,6 +107,9 @@
         .mod-rh .tool-action { color: var(--color-rh); }
         .mod-core .tool-action { color: var(--color-core); }
         .mod-data .tool-action { color: var(--color-data); }
+        .mod-pdf-pro .tool-action { color: #FCA5A5; }
+
+        .badge-king { position: absolute; top: 20px; right: 20px; background: rgba(220, 38, 38, 0.2); color: #FDA4AF; border: 1px solid #DC2626; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 1px; }
 
         @media (max-width: 768px) {
             .hero-title { font-size: 36px; }
@@ -111,6 +134,18 @@
 
     <div class="category-title">I. Compliance y Riesgo Fiscal (SAT)</div>
     <div class="bento-grid">
+        
+        <a href="auditoria-masiva.html" class="tool-card mod-fiscal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditoría Masiva de Datos</h3>
+            </div>
+            <p class="tool-desc">El Data Lake. Ingesta todos tus XML y genera reportes multidimensionales. Incluye escáner de fraude mediante la Ley de Benford.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
         <a href="validador-efos.html" class="tool-card mod-fiscal">
             <div class="tool-header">
                 <div class="tool-icon">
@@ -119,17 +154,6 @@
                 <h3 class="tool-title">Validador EFOS (Art. 69-B)</h3>
             </div>
             <p class="tool-desc">Audita masivamente tu matriz de proveedores contra las listas negras definitivas del SAT. Genera el Dictamen de Cumplimiento Pericial.</p>
-            <div class="tool-action">Ejecutar Módulo →</div>
-        </a>
-
-        <a href="calculadora-recargos.html" class="tool-card mod-fiscal">
-            <div class="tool-header">
-                <div class="tool-icon">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                </div>
-                <h3 class="tool-title">Calculadora de Recargos</h3>
-            </div>
-            <p class="tool-desc">Proyecta la actualización por INPC y recargos por mora. Evalúa matemáticamente el ahorro fiscal mediante la Corrección Espontánea (Art. 73).</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -143,29 +167,26 @@
             <p class="tool-desc">Compara la rentabilidad fiscal de tu empresa contra los Parámetros de Riesgo del SAT antes de presentar tu Declaración Anual.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
-    </div>
-
-    <div class="category-title">II. Defensa Legal y Materialidad</div>
-    <div class="bento-grid">
-        <a href="prueba-servicio.html" class="tool-card mod-legal">
+        
+        <a href="calculadora-recargos.html" class="tool-card mod-fiscal">
             <div class="tool-header">
                 <div class="tool-icon">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 </div>
-                <h3 class="tool-title">Expediente de Materialidad</h3>
+                <h3 class="tool-title">Calculadora de Recargos</h3>
             </div>
-            <p class="tool-desc">Blinda tus operaciones. Fusiona tus XML con evidencia fotográfica comprimida para emitir anexos probatorios válidos ante revisiones.</p>
+            <p class="tool-desc">Proyecta la actualización por INPC y recargos por mora. Evalúa matemáticamente el ahorro fiscal mediante la Corrección Espontánea.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
-
-        <a href="auditor-materialidad.html" class="tool-card mod-legal">
+        
+        <a href="risk-score.html" class="tool-card mod-fiscal">
             <div class="tool-header">
                 <div class="tool-icon">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h3 class="tool-title">Auditor de Razón de Negocios</h3>
+                <h3 class="tool-title">Auditoría de Riesgo SAT (Risk Score)</h3>
             </div>
-            <p class="tool-desc">Evaluación Semántica. El motor detecta facturas con descripciones genéricas que el SAT podría rechazar por falta de sustento (Art. 5-A).</p>
+            <p class="tool-desc">Ingresa tus ratios financieros y recibe un diagnóstico semaforizado sobre la probabilidad de que el SAT te envíe una carta invitación.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -174,21 +195,102 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                 </div>
-                <h3 class="tool-title">Defensa Legal (Oficios)</h3>
+                <h3 class="tool-title">Generador de Defensa Legal</h3>
             </div>
-            <p class="tool-desc">Genera automáticamente oficios de respuesta, aclaración o solicitud de reducción de multas (Art. 74) con base y fundamentación legal.</p>
+            <p class="tool-desc">Redacta automáticamente oficios de respuesta, aclaración o solicitud de reducción de multas (Art. 74) con base y fundamentación legal.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+    </div>
+
+    <div class="category-title">II. Defensa Legal y Materialidad</div>
+    <div class="bento-grid">
+        <a href="auditor-materialidad.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditor de Razón de Negocios</h3>
+            </div>
+            <p class="tool-desc">Evaluación Semántica. El motor detecta facturas con descripciones genéricas que el SAT podría rechazar por falta de sustancia comercial (Art. 5-A).</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+        
+        <a href="auditoria-activos.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditoría de Activos Fijos</h3>
+            </div>
+            <p class="tool-desc">Blindaje probatorio. Extrae compras de bienes, maquinaria o equipo y construye matrices de depreciación fiscal respaldadas.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="prueba-servicio.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Expediente de Materialidad</h3>
+            </div>
+            <p class="tool-desc">Blinda tus operaciones intangibles. Fusiona tus XML con evidencia fotográfica o "Entregables" para generar anexos probatorios válidos en revisiones.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+        
+        <a href="validador-csf-32d.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="tool-title">Auditor de Constancias (CSF / 32-D)</h3>
+            </div>
+            <p class="tool-desc">Extrae y tabula la información de múltiples Constancias de Situación Fiscal y Opiniones de Cumplimiento en PDF a un formato de datos limpio.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+        
+        <a href="auditoria-viaticos.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="tool-title">Escáner de Viáticos y Gastos</h3>
+            </div>
+            <p class="tool-desc">Revisa topes máximos deducibles en facturas de hospedaje, comidas y renta de autos según la Ley del ISR. Previene rechazos en auditorías.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+        
+        <a href="precios-aduana.html" class="tool-card mod-legal">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Simulador de Costos Aduanales</h3>
+            </div>
+            <p class="tool-desc">Proyecta DTA, IGI, IVA y PRV de importaciones y exportaciones. Valida la correcta valoración aduanera y evita multas en comercio exterior.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
     </div>
 
     <div class="category-title">III. Inteligencia Financiera (CFO)</div>
     <div class="bento-grid">
+        
+        <a href="generador-diot.html" class="tool-card mod-finance">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="tool-title">Generador DIOT SAT (Carga Batch)</h3>
+            </div>
+            <p class="tool-desc">Construye automáticamente el archivo .TXT (Batch) para la carga masiva en el programa DIOT, leyendo tus facturas pagadas al instante.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
         <a href="analisis-proveedores.html" class="tool-card mod-finance">
             <div class="tool-header">
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                 </div>
-                <h3 class="tool-title">Estrategia de Proveedores</h3>
+                <h3 class="tool-title">Análisis Estratégico de Proveedores</h3>
             </div>
             <p class="tool-desc">Motor algorítmico que clasifica tu gasto usando la Ley de Pareto (80/20) para revelar dependencias y riesgos en la cadena de suministro.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
@@ -199,20 +301,20 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
                 </div>
-                <h3 class="tool-title">Dashboard Financiero</h3>
+                <h3 class="tool-title">Dashboard Financiero XML</h3>
             </div>
             <p class="tool-desc">Cruza tus XML de ingresos y egresos para construir gráficas operativas al vuelo y revelar la Utilidad Bruta (EBITDA) real del periodo.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
-
-        <a href="conciliacion-ia.html" class="tool-card mod-finance">
+        
+        <a href="proyector-iva.html" class="tool-card mod-finance">
             <div class="tool-header">
                 <div class="tool-icon">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h3 class="tool-title">Conciliación Bancaria</h3>
+                <h3 class="tool-title">Proyector Forense de IVA</h3>
             </div>
-            <p class="tool-desc">Cruza bancos contra facturación usando algoritmos de similitud de texto (Levenshtein). Detecta capital huérfano y pendientes de cobro.</p>
+            <p class="tool-desc">Anticípate al SAT. Cuantifica el IVA Acreditable y Trasladado con base en método de pago y arroja el flujo de efectivo comprometido mensual.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
     </div>
@@ -224,35 +326,24 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                 </div>
-                <h3 class="tool-title">Auditoría de Nómina (1.2)</h3>
+                <h3 class="tool-title">Auditoría de Nómina y Riesgos</h3>
             </div>
-            <p class="tool-desc">Analiza los recibos de tus colaboradores. Detecta pasivos retenidos y calcula el castigo fiscal de no deducibilidad de viáticos/prestaciones (Art. 28 LISR).</p>
+            <p class="tool-desc">Analiza masivamente recibos CFDI 1.2. Detecta pasivos retenidos, errores en subsidio e ISR y controla el riesgo laboral.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
     </div>
 
-    <div class="category-title">V. Herramientas Core y Minería</div>
+    <div class="category-title">V. Herramientas Core y Ecosistema PDF</div>
     <div class="bento-grid">
-        
-        <a href="auditoria-masiva.html" class="tool-card mod-core" style="border-color: rgba(6, 182, 212, 0.4); box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);">
-            <div class="tool-header">
-                <div class="tool-icon" style="background: rgba(6, 182, 212, 0.15); color: #06B6D4;">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-                </div>
-                <h3 class="tool-title">Auditoría Masiva & Data Lake</h3>
-            </div>
-            <p class="tool-desc">Genera una base de datos maestra (BI-Ready) de todos tus XML. Incluye escáner de fraude mediante el algoritmo matemático de Benford.</p>
-            <div class="tool-action" style="color: #06B6D4;">Ejecutar Módulo Maestro →</div>
-        </a>
 
         <a href="generador-polizas.html" class="tool-card mod-core">
             <div class="tool-header">
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
                 </div>
-                <h3 class="tool-title">Generador de Pólizas ERP</h3>
+                <h3 class="tool-title">Generador Layout Pólizas</h3>
             </div>
-            <p class="tool-desc">Auto-clasifica el gasto de los XML y genera el Layout con asientos de partida doble listos para inyectarse al sistema contable.</p>
+            <p class="tool-desc">Auto-clasifica el gasto de los XML y genera el Layout (Excel) con asientos de partida doble listos para inyectarse al sistema contable.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -261,9 +352,9 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <h3 class="tool-title">Buscador y Variación Precios</h3>
+                <h3 class="tool-title">Auditoría de Compras y Conceptos</h3>
             </div>
-            <p class="tool-desc">Rastrea texto libre en toda la facturación. El motor detecta sobreprecios del mismo producto (inflación interna) y emite alertas de fraude.</p>
+            <p class="tool-desc">Buscador interno. Rastrea conceptos en la facturación y detecta sobreprecios del mismo producto (inflación interna).</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -272,9 +363,9 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 </div>
-                <h3 class="tool-title">Conversor XML a PDF</h3>
+                <h3 class="tool-title">Conversor Masivo XML a PDF</h3>
             </div>
-            <p class="tool-desc">Transforma lotes masivos de facturas XML a representaciones impresas (PDF) inyectando el código QR de alta resolución del SAT. Empaquetado en ZIP.</p>
+            <p class="tool-desc">Transforma lotes masivos de facturas XML a representaciones impresas inyectando el código QR oficial del SAT. Empaquetado en ZIP.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -283,9 +374,20 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 </div>
-                <h3 class="tool-title">Visor Individual CFDI</h3>
+                <h3 class="tool-title">Visor y Decodificador XML</h3>
             </div>
-            <p class="tool-desc">Arrastra un XML unitario para desglosar sus nodos al instante, extraer su tabla de conceptos a Excel o reconstruir su PDF con QR validado.</p>
+            <p class="tool-desc">Arrastra un XML unitario para desglosar su estructura técnica al instante, extraer la tabla a Excel o reconstruir su PDF con QR validado.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="escaner-ocr-fiscal.html" class="tool-card mod-data">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                </div>
+                <h3 class="tool-title">Escáner OCR de Tickets</h3>
+            </div>
+            <p class="tool-desc">Sube fotos de tickets de gasolina, restaurantes o viáticos y el motor extraerá el texto, montos y RFCs para su control contable.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -294,9 +396,20 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </div>
-                <h3 class="tool-title">Extractor Bancario (OCR)</h3>
+                <h3 class="tool-title">Conversor Bancario PDF a Excel</h3>
             </div>
-            <p class="tool-desc">Si el banco solo te entregó PDF, extrae los movimientos financieros a formato Excel tabulado para su posterior análisis o conciliación.</p>
+            <p class="tool-desc">Si el banco solo entregó PDF bloqueados, el motor desfragmenta las tablas y extrae los movimientos a formato CSV contable.</p>
+            <div class="tool-action">Ejecutar Módulo →</div>
+        </a>
+
+        <a href="conciliacion-ia.html" class="tool-card mod-finance">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                </div>
+                <h3 class="tool-title">Conciliación Bancaria IA</h3>
+            </div>
+            <p class="tool-desc">Cruza estados de cuenta contra XMLs de facturación usando algoritmos de similitud Levenshtein para automatizar el matching.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
 
@@ -305,11 +418,24 @@
                 <div class="tool-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                 </div>
-                <h3 class="tool-title">Conciliador PPD / REP</h3>
+                <h3 class="tool-title">Conciliador PPD vs REP</h3>
             </div>
             <p class="tool-desc">Cruce de facturación a crédito. Enlaza masivamente las facturas madre (PPD) contra sus respectivos Complementos de Recepción de Pago.</p>
             <div class="tool-action">Ejecutar Módulo →</div>
         </a>
+
+        <a href="editor-pdf.html" class="tool-card mod-pdf-pro">
+            <div class="badge-king">CÚSPIDE</div>
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </div>
+                <h3 class="tool-title" style="color: white;">AuditorIA PDF Studio <span style="color:#FCA5A5;">PRO</span></h3>
+            </div>
+            <p class="tool-desc" style="color: #E2E8F0;">Suite masiva con 34 motores forenses. Incluye un Editor Libre para inyectar textos, firmas, censura, aplanado y manipulación binaria avanzada 100% en RAM.</p>
+            <div class="tool-action">Abrir Studio PRO →</div>
+        </a>
+
     </div>
 
 </div>
