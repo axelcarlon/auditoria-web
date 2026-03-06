@@ -198,7 +198,7 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
     let currentFiles = [];
-    let dbProveedores = {}; // La base de datos maestra agrupada por RFC
+    let dbProveedores = {}; 
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
@@ -219,13 +219,11 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // EXTRAE EL TEXTO CRUDO DEL PDF
     async function getPdfText(file) {
         let text = "";
         try {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-            // Solo escaneamos las primeras 2 páginas para mayor velocidad (El SAT pone todo al inicio)
             const maxPages = Math.min(pdf.numPages, 2);
             for (let i = 1; i <= maxPages; i++) {
                 const page = await pdf.getPage(i);
@@ -237,7 +235,7 @@
         return text;
     }
 
-    // MOTOR HEURÍSTICO (REGEX) PARA EXTRAER DATA DEL TEXTO CRUDO
+    // MOTOR HEURÍSTICO AVANZADO (REGEX MULTI-DIRECCIONAL) PARA EXTRAER DATA DEL TEXTO CRUDO
     function parseSATDocument(rawText) {
         let docData = {
             isCSF: false,
@@ -250,11 +248,11 @@
             fechaEmision: null
         };
 
-        // Normalizamos espacios largos para que las Regex no fallen
+        // Normalizamos espacios largos y saltos de línea para domar el PDF.js
         let t = rawText.replace(/\s+/g, ' ');
 
         // 1. Detección de Tipo de Documento
-        if(t.includes("CONSTANCIA DE SITUACIÓN FISCAL") || t.includes("CÉDULA DE IDENTIFICACIÓN FISCAL")) {
+        if(t.includes("CONSTANCIA DE SITUACIÓN FISCAL") || t.includes("CÉDULA DE IDENTIFICACIÓN FISCAL") || t.includes("C[EÉ]DULA DE IDENTIFICACI[OÓ]N FISCAL")) {
             docData.isCSF = true;
         }
         if(t.includes("Opinión del Cumplimiento de Obligaciones Fiscales") || t.includes("Respuesta de Opinión:")) {
@@ -267,35 +265,62 @@
 
         // 3. Lógica para CSF (Constancia)
         if(docData.isCSF) {
-            // Nombre (Buscando después de Denominación o Nombre)
-            const nombreMatch = t.match(/(?:Nombre,\s*denominación\s*o\s*razón\s*social:|Nombre\(s\):)\s*([A-ZÑ&\s\.,]+?)(?=\s*(?:idCIF|Registro|Primer|Segundo))/i);
-            if(nombreMatch) {
-                // Limpieza CFDI 4.0: Quitar SA DE CV, S DE RL, etc.
-                let nom = nombreMatch[1].trim().toUpperCase();
-                nom = nom.replace(/,\s*S\.?\s*A\.?\s*DE\s*C\.?\s*V\.?/g, '')
-                         .replace(/\sS\.?\s*A\.?\s*DE\s*C\.?\s*V\.?/g, '')
-                         .replace(/,\s*S\.?\s*DE\s*R\.?\s*L\.?\s*DE\s*C\.?\s*V\.?/g, '')
-                         .replace(/,\s*S\.?\s*A\.?\s*P\.?\s*I\.?\s*DE\s*C\.?\s*V\.?/g, '')
-                         .replace(/,\s*S\.?\s*C\.?/g, '');
-                docData.nombreLegal = nom;
+            
+            // -- EXTRACCIÓN DE NOMBRE (EL RETO DEL PDF.js) --
+            // Intento A: Formato "Persona Física" en tabla inferior
+            let m_n = t.match(/Nombre\s*\(s\):?\s*([A-ZÑ\s]+?)\s*Primer\s*Apellido/i);
+            let m_p = t.match(/Primer\s*Apellido:?\s*([A-ZÑ\s]+?)\s*Segundo\s*Apellido/i);
+            let m_s = t.match(/Segundo\s*Apellido:?\s*([A-ZÑ\s]+?)\s*(?:Fecha|Datos)/i);
+            
+            if (m_n || m_p) {
+                let full = `${m_n?m_n[1].trim():''} ${m_p?m_p[1].trim():''} ${m_s?m_s[1].trim():''}`.replace(/\s+/g, ' ').trim();
+                docData.nombreLegal = full;
+            } 
+            // Intento B: Formato Invertido (PDF dibuja el nombre antes que la etiqueta)
+            else if (docData.rfc) {
+                let rgxInv = new RegExp(docData.rfc + "\\s*(?:Registro Federal de Contribuyentes)?\\s*([A-ZÑ&\\s\\.,]+?)\\s*Nombre,\\s*denominaci", "i");
+                let mInv = t.match(rgxInv);
+                if (mInv && mInv[1].trim().length > 3) docData.nombreLegal = mInv[1].trim();
+            }
+            // Intento C: Formato Tradicional
+            if (!docData.nombreLegal) {
+                let mTrad = t.match(/(?:Nombre,\s*denominación\s*o\s*razón\s*social:|Nombre\(s\):)\s*([A-ZÑ&\s\.,]+?)(?=\s*(?:idCIF|Registro|Primer|Segundo|VALIDA))/i);
+                if(mTrad) docData.nombreLegal = mTrad[1].trim();
             }
 
-            // Código Postal
+            // Limpieza CFDI 4.0 (Remover regímenes de capital)
+            if (docData.nombreLegal) {
+                docData.nombreLegal = docData.nombreLegal
+                    .replace(/,\s*S\.?\s*A\.?\s*DE\s*C\.?\s*V\.?/g, '')
+                    .replace(/\sS\.?\s*A\.?\s*DE\s*C\.?\s*V\.?/g, '')
+                    .replace(/,\s*S\.?\s*DE\s*R\.?\s*L\.?\s*DE\s*C\.?\s*V\.?/g, '')
+                    .replace(/,\s*S\.?\s*A\.?\s*P\.?\s*I\.?\s*DE\s*C\.?\s*V\.?/g, '')
+                    .replace(/,\s*S\.?\s*C\.?/g, '')
+                    .trim().toUpperCase();
+            }
+
+            // -- EXTRACCIÓN DE CÓDIGO POSTAL --
             const cpMatch = t.match(/(?:C[ÓO]DIGO\s*POSTAL:|C\.P\.)\s*(\d{5})/i);
             if(cpMatch) docData.cp = cpMatch[1];
 
-            // Régimen (El primero que encuentre)
-            const regMatch = t.match(/(?:Régimen:|Régimen Fiscal:)\s*(.*?)(?=\s*Fecha|$)/i);
-            if(regMatch) docData.regimen = regMatch[1].trim();
+            // -- EXTRACCIÓN DE RÉGIMEN FISCAL (Soporta múltiples regímenes) --
+            // Busca cadenas que empiecen con Régimen y topen contra una fecha (dd/mm/yyyy)
+            let regMatches = [...t.matchAll(/(R[ée]gimen\s+[A-Za-zÁÉÍÓÚáéíóúÑñ\s,y]+?)(?=\s*\d{2}\/\d{2}\/\d{4})/gi)];
+            if(regMatches.length > 0) {
+                let regs = regMatches.map(m => m[1].trim().replace(/\s+/g, ' ')).filter(r => r.length > 8);
+                if(regs.length > 0) docData.regimen = [...new Set(regs)].join(" | ");
+            } else {
+                // Fallback tradicional
+                const regMatch = t.match(/(?:Régimen:|Régimen Fiscal:)\s*(.*?)(?=\s*Fecha|$)/i);
+                if(regMatch) docData.regimen = regMatch[1].trim();
+            }
         }
 
         // 4. Lógica para 32-D (Opinión)
         if(docData.is32D) {
-            // Estatus Positiva / Negativa
             if(t.match(/opinión\s*POSITIVA/i)) docData.opinion = "POSITIVA";
             else if (t.match(/opinión\s*NEGATIVA/i)) docData.opinion = "NEGATIVA";
 
-            // Fecha de Emisión (Ej. 15-08-2023 o 15 de Agosto de 2023)
             const fechaMatch = t.match(/(?:emisión:|emitido el)\s*(\d{2}[-/]\d{2}[-/]\d{4}|\d{1,2}\s*de\s*[a-z]+\s*de\s*\d{4})/i);
             if(fechaMatch) docData.fechaEmision = fechaMatch[1];
         }
@@ -308,12 +333,11 @@
         if(!fechaStr) return { valida: false, msj: "Fecha ilegible" };
         
         let docDate;
-        // Parsear DD-MM-YYYY
         if(fechaStr.includes("-") || fechaStr.includes("/")) {
             const parts = fechaStr.split(/[-/]/);
             docDate = new Date(parts[2], parts[1] - 1, parts[0]);
         } else {
-            return { valida: true, msj: "Revisión manual requerida" }; // Si el formato es con letras
+            return { valida: true, msj: "Revisión manual" }; 
         }
 
         const hoy = new Date();
@@ -343,16 +367,15 @@
 
         try {
             for(let i=0; i<currentFiles.length; i++) {
-                if(i % 5 === 0) status.innerText = `> Ejecutando escáner de reconocimiento óptico (OCR)... ${((i/currentFiles.length)*100).toFixed(0)}%`;
+                if(i % 2 === 0) status.innerText = `> Ejecutando escáner de reconocimiento óptico (OCR)... ${((i/currentFiles.length)*100).toFixed(0)}%`;
                 
                 const rawText = await getPdfText(currentFiles[i]);
                 const docParsed = parseSATDocument(rawText);
 
-                if(!docParsed.rfc) continue; // Si no hay RFC, el documento no sirve
+                if(!docParsed.rfc) continue; 
 
                 const rfc = docParsed.rfc;
 
-                // Si el proveedor no existe, lo creamos
                 if(!dbProveedores[rfc]) {
                     dbProveedores[rfc] = {
                         rfc: rfc,
@@ -368,7 +391,6 @@
                     };
                 }
 
-                // Inyectar datos si es CSF
                 if(docParsed.isCSF) {
                     dbProveedores[rfc].tieneCSF = true;
                     if(docParsed.nombreLegal) dbProveedores[rfc].nombre = docParsed.nombreLegal;
@@ -376,7 +398,6 @@
                     if(docParsed.regimen) dbProveedores[rfc].regimen = docParsed.regimen;
                 }
 
-                // Inyectar datos si es 32-D
                 if(docParsed.is32D) {
                     dbProveedores[rfc].tiene32D = true;
                     if(docParsed.opinion) dbProveedores[rfc].opinion = docParsed.opinion;
@@ -418,7 +439,6 @@
                 
                 if(p.tieneCSF) kpiCsf++;
 
-                // Lógica Visual 32D
                 let badge32D = `<span class="badge badge-gray">FALTANTE</span>`;
                 let badgeVigencia = `<span style="font-size:11px; color:var(--text-muted);">-</span>`;
 
@@ -429,7 +449,7 @@
                             badge32D = `<span class="badge badge-solid">POSITIVA</span>`;
                             badgeVigencia = `<span style="font-size:11px; font-weight:bold; color:var(--success);">${p.vigenciaMsg}</span>`;
                         } else {
-                            kpiNeg++; // Es positiva pero caducada (Riesgo)
+                            kpiNeg++; 
                             badge32D = `<span class="badge badge-warn">CADUCADA</span>`;
                             badgeVigencia = `<span style="font-size:11px; font-weight:bold; color:var(--danger);">${p.vigenciaMsg}</span>`;
                         }
@@ -439,7 +459,7 @@
                         badgeVigencia = `<span style="font-size:11px; font-weight:bold; color:var(--danger);">SAT RECHAZA COMPRA</span>`;
                     }
                 } else {
-                    kpiNeg++; // No tiene 32D (Es un riesgo)
+                    kpiNeg++; 
                 }
 
                 return `
