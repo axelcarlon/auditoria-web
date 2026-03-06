@@ -21,20 +21,21 @@ const navbarHTML = `
     .header-core .logo-text { font-weight: 900; font-size: 22px; letter-spacing: -0.5px; }
     
     .nav-right { display: flex; align-items: center; gap: 24px; }
-    .nav-link { color: #94A3B8; text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; letter-spacing: 0.3px; white-space: nowrap; }
+    .nav-link { display: flex; align-items: center; gap: 6px; color: #94A3B8; text-decoration: none; font-size: 14.5px; font-weight: 600; transition: color 0.2s; letter-spacing: 0.3px; white-space: nowrap; }
     .nav-link:hover { color: #FFFFFF; }
 
     .dropdown { position: relative; display: inline-block; }
-    .dropdown-toggle { color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
+    .dropdown-toggle { color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 14.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
     .dropdown:hover .dropdown-toggle { color: #FFFFFF; }
     
-    /* Mega Menú de 4 Columnas */
-    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 900px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 25px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box;}
+    /* Mega Menú de 4 Columnas (Más Ancho para los textos nuevos) */
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 980px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box;}
     .dropdown:hover .dropdown-menu { display: grid; animation: dropFade 0.2s ease-out; }
     @keyframes dropFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-    .menu-category { font-size: 10px; text-transform: uppercase; color: var(--brand-nav); font-weight: 900; margin-bottom: 12px; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;}
-    .dropdown-column a { color: #E2E8F0; text-decoration: none; display: block; font-size: 12px; font-weight: 500; margin-bottom: 10px; transition: 0.2s; padding-left: 8px; border-left: 2px solid transparent; line-height: 1.4;}
+    /* Ajuste de tipografías más grandes y didácticas */
+    .menu-category { font-size: 11px; text-transform: uppercase; color: var(--brand-nav); font-weight: 900; margin-bottom: 15px; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;}
+    .dropdown-column a { color: #E2E8F0; text-decoration: none; display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 12px; transition: 0.2s; padding-left: 8px; border-left: 2px solid transparent; line-height: 1.4;}
     .dropdown-column a:hover { color: #FFFFFF; border-left-color: var(--brand-nav); background: rgba(255,255,255,0.02); }
 
     .btn-pro-nav { background: var(--brand-nav); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 800; font-size: 13px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); white-space: nowrap;}
@@ -60,14 +61,21 @@ const navbarHTML = `
     </a>
     
     <div class="nav-right">
+        
+        <a href="index.html" class="nav-link">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            Inicio
+        </a>
+
         <div class="dropdown">
             <div class="dropdown-toggle">
                 Ecosistema de Soluciones
-                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
             </div>
             <div class="dropdown-menu">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría SAT y Riesgo</div>
+                    <a href="auditoria-masiva.html">Auditoría Robótica Masiva</a>
                     <a href="validador-efos.html">Prevención EFOS (Art. 69-B)</a>
                     <a href="tasa-efectiva.html">Tasa Efectiva ISR Sectorial</a>
                     <a href="risk-score.html">RiskScore (Semáforo SAT)</a>
@@ -76,31 +84,32 @@ const navbarHTML = `
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Materialidad y Cumplimiento</div>
-                    <a href="auditor-materialidad.html">Materialidad (Contratos)</a>
-                    <a href="auditoria-activos.html">Materialidad (Activos Fijos)</a>
+                    <a href="auditor-materialidad.html">Blindaje Materialidad (Contratos)</a>
+                    <a href="auditoria-activos.html">Blindaje Materialidad (Activos)</a>
                     <a href="prueba-servicio.html">Prueba de Servicio (Intangibles)</a>
-                    <a href="validador-csf-32d.html">Idoneidad Fiscal (CSF/32-D)</a>
+                    <a href="validador-csf-32d.html">Análisis de Idoneidad (32-D/CSF)</a>
                     <a href="auditoria-viaticos.html">Auditoría Viáticos (Art. 28)</a>
                     <a href="precios-aduana.html">Auditoría Precios Aduana</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Operación e Inteligencia XML</div>
+                    <a href="generador-diot.html">Generador Automático DIOT</a>
                     <a href="visor-xml.html">Visor y Decodificador XML</a>
                     <a href="dashboard-xml.html">Dashboard Financiero XML</a>
                     <a href="proyector-iva.html">Proyector de IVA Mensual</a>
                     <a href="analisis-proveedores.html">Concentración de Proveedores</a>
-                    <a href="auditor-nomina.html">Auditor Masivo de Nómina</a>
+                    <a href="auditor-nomina.html">Auditoría de Nómina (CFDI)</a>
                     <a href="buscador-conceptos.html">Buscador Forense Interno</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Automatización y PDF</div>
+                    <a href="editor-pdf.html" style="color: #3B82F6; font-weight: 800;">AuditorIA PDF Studio (PRO)</a>
+                    <a href="conversor-xml-pdf.html">Conversor XML a PDF (ZIP)</a>
                     <a href="escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
-                    <a href="conversor-bancario.html">Bancos PDF a CSV</a>
+                    <a href="conversor-bancario.html">Bancos PDF a Excel (CSV)</a>
                     <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
                     <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
                     <a href="generador-polizas.html">Generador Layout Pólizas</a>
-                    <a href="conversor-xml-pdf.html">Conversor XML a PDF (ZIP)</a>
-                    <a href="#" style="color: #3B82F6; font-weight: 800;">Suite Forense PDF (NUEVO)</a>
                 </div>
             </div>
         </div>
