@@ -30,7 +30,11 @@ const navbarHTML = `
     .dropdown-toggle { color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 14.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
     .dropdown:hover .dropdown-toggle { color: #FFFFFF; }
     
-    .mega-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 980px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box;}
+    .mega-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #1E293B; width: 980px; max-width: 95vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box; margin-top: 8px;}
+    
+    /* PUENTE INVISIBLE MEGA MENÚ */
+    .mega-menu::before { content: ''; position: absolute; top: -15px; left: 0; width: 100%; height: 15px; background: transparent; }
+
     .dropdown:hover .mega-menu { display: grid; animation: dropFade 0.2s ease-out; }
     @keyframes dropFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
@@ -51,7 +55,11 @@ const navbarHTML = `
     .live-dot { width: 8px; height: 8px; background: var(--accent-nav); border-radius: 50%; box-shadow: 0 0 8px var(--accent-nav); animation: pulseDot 2s infinite; }
     @keyframes pulseDot { 0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); } 70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); } 100% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
 
-    .user-menu { display: none; position: absolute; top: 100%; right: 0; background: #1E293B; width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); flex-direction: column; gap: 4px; margin-top: 15px;}
+    .user-menu { display: none; position: absolute; top: 100%; right: 0; background: #1E293B; width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); flex-direction: column; gap: 4px; margin-top: 8px;}
+    
+    /* PUENTE INVISIBLE MI CUENTA */
+    .user-menu::before { content: ''; position: absolute; top: -15px; left: 0; width: 100%; height: 15px; background: transparent; }
+
     .user-dropdown:hover .user-menu { display: flex; animation: dropFadeUser 0.2s ease-out; }
     @keyframes dropFadeUser { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
@@ -210,7 +218,7 @@ setTimeout(() => {
         document.getElementById('auth-logged-out').style.display = 'none';
         document.getElementById('auth-logged-in').style.display = 'inline-block';
     }
-}, 50); // Ligero delay para asegurar que el DOM cargó
+}, 50);
 
 // Función para desconectar y limpiar la bóveda del navegador
 window.cerrarSesionGlobal = function(e) {
@@ -222,7 +230,6 @@ window.cerrarSesionGlobal = function(e) {
     
     window.showToast("Sesión cerrada de forma segura.", "success");
     
-    // Lo expulsamos amablemente al inicio
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 1000);
