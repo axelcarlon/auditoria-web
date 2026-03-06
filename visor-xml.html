@@ -24,7 +24,7 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
 
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; min-height: 65vh;}
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; min-height: 65vh; display: flex; flex-direction: column;}
         
         .header-section { text-align: center; margin-bottom: 50px; }
         .header-badge { display: inline-block; background: rgba(245, 158, 11, 0.1); border: 1px solid var(--brand); color: #FCD34D; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
@@ -33,8 +33,20 @@
         .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
 
-        .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
+        /* SPLIT VIEW (Panel Dividido) */
+        .workspace { display: none; width: 100%; gap: 30px; align-items: flex-start; animation: fadeIn 0.4s ease-out; margin-bottom: 50px;}
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Lista Izquierda */
+        .sidebar-xml { width: 320px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; height: 75vh; overflow-y: auto; flex-shrink: 0; padding: 15px;}
+        .xml-item { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; gap: 5px;}
+        .xml-item:hover { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.3); }
+        .xml-item.active { background: rgba(245, 158, 11, 0.1); border-color: var(--brand); }
+        .xml-item-title { font-size: 13px; font-weight: bold; color: var(--text-main); word-break: break-all; line-height: 1.3;}
+        .xml-item-sub { font-size: 11px; color: var(--text-muted); font-family: monospace;}
+
+        /* Contenido Derecho */
+        .results-container { flex: 1; min-width: 0;}
 
         .invoice-card { background: white; color: #111827; border-radius: 12px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); margin-bottom: 30px;}
         .inv-header { display: flex; justify-content: space-between; border-bottom: 2px solid #E5E7EB; padding-bottom: 20px; margin-bottom: 20px;}
@@ -53,7 +65,7 @@
         .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;}
         .total-row.grand { font-size: 18px; font-weight: 900; color: var(--brand); margin-top: 10px; border-top: 1px solid #D1D5DB; padding-top: 10px;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-toolbar { display: flex; gap: 15px; margin-bottom: 20px;}
         .btn-action { background: var(--brand); color: #000; border: none; padding: 16px 24px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--brand-glow);}
         .btn-action:hover { background: #D97706; transform: translateY(-2px); color: white;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
@@ -72,6 +84,8 @@
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
+            .workspace { flex-direction: column; }
+            .sidebar-xml { width: 100%; height: 300px; }
             .btn-toolbar { flex-direction: column; }
             .inv-grid { grid-template-columns: 1fr; }
         }
@@ -85,91 +99,98 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">VISUALIZADOR FORENSE CFDI</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Microscopio XML a PDF</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Arrastra tu archivo XML para renderizar la factura instantáneamente. Descarga el PDF con Código QR Oficial del SAT en Alta Resolución o extrae los conceptos a Excel.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Arrastra uno o múltiples archivos XML para renderizar las facturas instantáneamente en una lista lateral. Descarga el PDF con Código QR Oficial del SAT en Alta Resolución o extrae los conceptos a Excel.</p>
     </div>
 
     <div id="mainForm">
         <div class="upload-section" id="dropZone">
             <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-            <h3 style="margin: 0 0 10px; font-size: 20px;">Lanzar Archivo XML</h3>
+            <h3 style="margin: 0 0 10px; font-size: 20px;">Lanzar Lote de Archivos XML</h3>
             <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Soporta CFDI 3.3 y 4.0 (Ingreso, Egreso o Pago)</p>
-            <input type="file" id="inputFile" accept=".xml" style="display: none;">
+            <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
         </div>
     </div>
 
-    <div class="results-container" id="results">
+    <div class="workspace" id="workspace">
         
-        <div class="btn-toolbar" style="margin-bottom: 20px;">
-            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Volver
-            </button>
-            <button onclick="descargarExcelIndividual()" class="btn-secondary" style="border-color: #065F46; color: #34D399;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Tabla (Excel)
-            </button>
-            <button id="btnDescargarPDF" onclick="exportarPDF()" class="btn-action">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR PDF ORIGINAL (CON QR)
-            </button>
-        </div>
-
-        <div class="invoice-card" id="printArea">
-            <div class="inv-header">
-                <div>
-                    <h2 class="inv-title" id="valEmisorNombre">EMISOR S.A. DE C.V.</h2>
-                    <div class="inv-label">RFC EMISOR: <span class="inv-value" id="valEmisorRFC" style="font-weight:normal; color:#4B5563;"></span></div>
-                </div>
-                <div style="text-align: right;">
-                    <h3 style="margin: 0 0 5px; font-size: 16px; color: #374151;">FACTURA ELECTRÓNICA</h3>
-                    <div class="inv-label">FOLIO: <span class="inv-value" id="valFolio" style="color:var(--brand);"></span></div>
-                    <div class="inv-label">FECHA: <span class="inv-value" id="valFecha" style="font-weight:normal; color:#4B5563;"></span></div>
-                </div>
+        <div class="sidebar-xml" id="xmlList">
             </div>
 
-            <div class="inv-grid">
-                <div>
-                    <div class="inv-label">RECEPTOR</div>
-                    <div class="inv-value" id="valReceptorNombre" style="margin-bottom: 5px;"></div>
-                    <div class="inv-label">RFC: <span class="inv-value" id="valReceptorRFC" style="font-weight:normal; color:#4B5563;"></span></div>
-                </div>
-                <div>
-                    <div class="inv-label">DATOS FISCALES</div>
-                    <div class="inv-label">UUID: <span class="inv-value" id="valUUID" style="font-family: monospace; font-size:11px;"></span></div>
-                    <div class="inv-label">USO CFDI: <span class="inv-value" id="valUso" style="font-weight:normal; color:#4B5563;"></span></div>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Cant.</th>
-                            <th>Cve. SAT</th>
-                            <th>Descripción</th>
-                            <th style="text-align: right;">Precio U.</th>
-                            <th style="text-align: right;">Importe</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaConceptos">
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="inv-totals">
-                <div class="totals-box">
-                    <div class="total-row"><span>Subtotal:</span> <strong id="valSubtotal">$0.00</strong></div>
-                    <div class="total-row"><span>IVA Trasladado:</span> <strong id="valIVA">$0.00</strong></div>
-                    <div class="total-row" style="color:var(--danger);"><span>Retenciones:</span> <strong id="valRet">$0.00</strong></div>
-                    <div class="total-row grand"><span>TOTAL:</span> <span id="valTotal">$0.00</span></div>
-                </div>
-            </div>
+        <div class="results-container" id="results">
             
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #D1D5DB; display: flex; gap: 20px;">
-                <div id="qrContainer" style="width: 100px; height: 100px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 4px; padding: 5px; display:flex; align-items:center; justify-content:center;"></div>
-                <div>
-                    <div style="font-size: 10px; font-weight: bold; color: #6B7280; margin-bottom: 5px;">SELLO DIGITAL DEL CFDI</div>
-                    <div id="valSello" style="font-size: 8px; font-family: monospace; color: #9CA3AF; word-break: break-all; line-height: 1.4;"></div>
+            <div class="btn-toolbar">
+                <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Volver
+                </button>
+                <button onclick="descargarExcelIndividual()" class="btn-secondary" style="border-color: #065F46; color: #34D399;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Tabla (Excel)
+                </button>
+                <button id="btnDescargarPDF" onclick="exportarPDF()" class="btn-action">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    DESCARGAR PDF ORIGINAL (CON QR)
+                </button>
+            </div>
+
+            <div class="invoice-card" id="printArea">
+                <div class="inv-header">
+                    <div>
+                        <h2 class="inv-title" id="valEmisorNombre">Seleccione un documento</h2>
+                        <div class="inv-label">RFC EMISOR: <span class="inv-value" id="valEmisorRFC" style="font-weight:normal; color:#4B5563;"></span></div>
+                    </div>
+                    <div style="text-align: right;">
+                        <h3 style="margin: 0 0 5px; font-size: 16px; color: #374151;">FACTURA ELECTRÓNICA</h3>
+                        <div class="inv-label">FOLIO: <span class="inv-value" id="valFolio" style="color:var(--brand);"></span></div>
+                        <div class="inv-label">FECHA: <span class="inv-value" id="valFecha" style="font-weight:normal; color:#4B5563;"></span></div>
+                    </div>
+                </div>
+
+                <div class="inv-grid">
+                    <div>
+                        <div class="inv-label">RECEPTOR</div>
+                        <div class="inv-value" id="valReceptorNombre" style="margin-bottom: 5px;"></div>
+                        <div class="inv-label">RFC: <span class="inv-value" id="valReceptorRFC" style="font-weight:normal; color:#4B5563;"></span></div>
+                    </div>
+                    <div>
+                        <div class="inv-label">DATOS FISCALES</div>
+                        <div class="inv-label">UUID: <span class="inv-value" id="valUUID" style="font-family: monospace; font-size:11px;"></span></div>
+                        <div class="inv-label">USO CFDI: <span class="inv-value" id="valUso" style="font-weight:normal; color:#4B5563;"></span></div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cant.</th>
+                                <th>Cve. SAT</th>
+                                <th>Descripción</th>
+                                <th style="text-align: right;">Precio U.</th>
+                                <th style="text-align: right;">Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaConceptos">
+                            <tr><td colspan="5" style="text-align: center; color: #6B7280;">Haga clic en un XML de la lista izquierda</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="inv-totals">
+                    <div class="totals-box">
+                        <div class="total-row"><span>Subtotal:</span> <strong id="valSubtotal">$0.00</strong></div>
+                        <div class="total-row"><span>IVA Trasladado:</span> <strong id="valIVA">$0.00</strong></div>
+                        <div class="total-row" style="color:var(--danger);"><span>Retenciones:</span> <strong id="valRet">$0.00</strong></div>
+                        <div class="total-row grand"><span>TOTAL:</span> <span id="valTotal">$0.00</span></div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #D1D5DB; display: flex; gap: 20px;">
+                    <div id="qrContainer" style="width: 100px; height: 100px; background: #ffffff; border: 1px solid #E5E7EB; border-radius: 4px; padding: 5px; display:flex; align-items:center; justify-content:center;"></div>
+                    <div>
+                        <div style="font-size: 10px; font-weight: bold; color: #6B7280; margin-bottom: 5px;">SELLO DIGITAL DEL CFDI</div>
+                        <div id="valSello" style="font-size: 8px; font-family: monospace; color: #9CA3AF; word-break: break-all; line-height: 1.4;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -194,14 +215,14 @@
             <div>
                 <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></div>
                 <h3 class="bento-title">Conversor Masivo a PDF</h3>
-                <p class="bento-desc">¿Tienes más de 10 facturas? Utiliza el motor batch para convertirlas todas a PDF con un solo clic.</p>
+                <p class="bento-desc">¿Tienes más de 10 facturas? Utiliza el motor batch para convertirlas todas a PDF con un solo clic y descargarlas en un archivo ZIP.</p>
             </div>
         </a>
         <a href="escaner-ocr-fiscal.html" class="bento-card">
             <div>
                 <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg></div>
                 <h3 class="bento-title">Escáner de Tickets (OCR)</h3>
-                <p class="bento-desc">Si no tienes el XML, toma una foto del ticket. Nuestra IA extraerá el folio y el RFC para que puedas deducirlo.</p>
+                <p class="bento-desc">Si no tienes el XML, toma una foto del ticket físico. Nuestra IA extraerá el folio y el RFC para que puedas deducirlo contablemente.</p>
             </div>
         </a>
     </div>
@@ -216,8 +237,9 @@
         }
     });
 
-    let currentInvoiceData = null;
-    let qrDataURI = null; // Almacenará el PNG del QR
+    let uploadedFilesData = []; // Array que almacena los objetos procesados
+    let currentInvoiceData = null; // El que está viéndose en pantalla actualmente
+    let qrDataURI = null; 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
     const drop = document.getElementById('dropZone');
@@ -226,8 +248,8 @@
     drop.onclick = () => input.click();
     ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
     ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
-    drop.addEventListener('drop', e => processFile(e.dataTransfer.files[0]));
-    input.addEventListener('change', e => processFile(e.target.files[0]));
+    drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+    input.addEventListener('change', e => processFiles(e.target.files));
 
     function getNodes(node, tagName) {
         return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(
@@ -235,75 +257,103 @@
                Array.from(node.getElementsByTagName(`tfd:${tagName}`)));
     }
 
-    async function processFile(file) {
-        if(!file || !file.name.toLowerCase().endsWith('.xml')) {
+    async function processFiles(files) {
+        const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
+        if(validFiles.length === 0) {
             if(typeof window.showToast === 'function') window.showToast("Solo archivos XML admitidos.", "error");
             return;
         }
 
         document.getElementById('headerSection').style.display = 'none';
         document.getElementById('mainForm').style.display = 'none';
+        document.getElementById('workspace').style.display = 'flex';
         
-        try {
-            const text = await file.text();
-            const xml = new DOMParser().parseFromString(text, "text/xml");
-            
-            const cfdi = getNodes(xml, 'Comprobante')[0];
-            const emisor = getNodes(xml, 'Emisor')[0];
-            const receptor = getNodes(xml, 'Receptor')[0];
-            const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
-            
-            if(!cfdi) throw new Error("Documento XML Inválido");
+        uploadedFilesData = [];
+        const xmlListDiv = document.getElementById('xmlList');
+        xmlListDiv.innerHTML = '';
 
-            const usoCFDI = receptor ? receptor.getAttribute('UsoCFDI') : "G03";
-            const sello = cfdi.getAttribute('Sello') || "";
+        for(let i = 0; i < validFiles.length; i++) {
+            try {
+                const text = await validFiles[i].text();
+                const xml = new DOMParser().parseFromString(text, "text/xml");
+                
+                const cfdi = getNodes(xml, 'Comprobante')[0];
+                const emisor = getNodes(xml, 'Emisor')[0];
+                const receptor = getNodes(xml, 'Receptor')[0];
+                const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
+                
+                if(!cfdi) continue;
 
-            currentInvoiceData = {
-                folio: cfdi.getAttribute('Folio') || "S/F",
-                fecha: (cfdi.getAttribute('Fecha') || "").split('T')[0],
-                total: parseFloat(cfdi.getAttribute('Total') || 0),
-                subtotal: parseFloat(cfdi.getAttribute('SubTotal') || 0),
-                emisorNombre: emisor ? (emisor.getAttribute('Nombre') || "DESCONOCIDO") : "DESCONOCIDO",
-                emisorRfc: emisor ? emisor.getAttribute('Rfc') : "XAXX010101000",
-                receptorNombre: receptor ? (receptor.getAttribute('Nombre') || "DESCONOCIDO") : "DESCONOCIDO",
-                receptorRfc: receptor ? receptor.getAttribute('Rfc') : "XAXX010101000",
-                uuid: timbre ? timbre.getAttribute('UUID') : "NO-TIMBRADO",
-                uso: usoCFDI,
-                sello: sello,
-                conceptos: [],
-                iva: 0,
-                retenciones: 0
-            };
+                let data = {
+                    id: i,
+                    fileName: validFiles[i].name,
+                    folio: cfdi.getAttribute('Folio') || "S/F",
+                    fecha: (cfdi.getAttribute('Fecha') || "").split('T')[0],
+                    total: parseFloat(cfdi.getAttribute('Total') || 0),
+                    subtotal: parseFloat(cfdi.getAttribute('SubTotal') || 0),
+                    emisorNombre: emisor ? (emisor.getAttribute('Nombre') || "DESCONOCIDO") : "DESCONOCIDO",
+                    emisorRfc: emisor ? emisor.getAttribute('Rfc') : "XAXX010101000",
+                    receptorNombre: receptor ? (receptor.getAttribute('Nombre') || "DESCONOCIDO") : "DESCONOCIDO",
+                    receptorRfc: receptor ? receptor.getAttribute('Rfc') : "XAXX010101000",
+                    uuid: timbre ? timbre.getAttribute('UUID') : "NO-TIMBRADO",
+                    uso: receptor ? receptor.getAttribute('UsoCFDI') : "G03",
+                    sello: cfdi.getAttribute('Sello') || "",
+                    conceptos: [],
+                    iva: 0,
+                    retenciones: 0
+                };
 
-            const conceptosNodos = getNodes(xml, 'Concepto');
-            conceptosNodos.forEach(c => {
-                currentInvoiceData.conceptos.push({
-                    cant: parseFloat(c.getAttribute('Cantidad') || 0),
-                    cve: c.getAttribute('ClaveProdServ') || "",
-                    desc: c.getAttribute('Descripcion') || "",
-                    pu: parseFloat(c.getAttribute('ValorUnitario') || 0),
-                    importe: parseFloat(c.getAttribute('Importe') || 0)
+                const conceptosNodos = getNodes(xml, 'Concepto');
+                conceptosNodos.forEach(c => {
+                    data.conceptos.push({
+                        cant: parseFloat(c.getAttribute('Cantidad') || 0),
+                        cve: c.getAttribute('ClaveProdServ') || "",
+                        desc: c.getAttribute('Descripcion') || "",
+                        pu: parseFloat(c.getAttribute('ValorUnitario') || 0),
+                        importe: parseFloat(c.getAttribute('Importe') || 0)
+                    });
                 });
-            });
 
-            const traslados = getNodes(xml, 'Traslado');
-            traslados.forEach(t => { if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') currentInvoiceData.iva += parseFloat(t.getAttribute('Importe') || 0); });
-            const retenciones = getNodes(xml, 'Retencion');
-            retenciones.forEach(r => { currentInvoiceData.retenciones += parseFloat(r.getAttribute('Importe') || 0); });
+                const traslados = getNodes(xml, 'Traslado');
+                traslados.forEach(t => { if(t.getAttribute('Impuesto') === '002' || t.getAttribute('Impuesto') === 'IVA') data.iva += parseFloat(t.getAttribute('Importe') || 0); });
+                const retenciones = getNodes(xml, 'Retencion');
+                retenciones.forEach(r => { data.retenciones += parseFloat(r.getAttribute('Importe') || 0); });
 
-            renderVista();
+                uploadedFilesData.push(data);
 
-        } catch(e) {
-            console.error(e);
-            if(typeof window.showToast === 'function') window.showToast("Error de lectura XML.", "error");
-            setTimeout(() => window.location.reload(), 2000);
+                // Crear el ítem en la barra lateral
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'xml-item';
+                itemDiv.innerHTML = `
+                    <div class="xml-item-title">${data.emisorNombre}</div>
+                    <div class="xml-item-sub">Total: ${formatMoney(data.total)} | Folio: ${data.folio}</div>
+                `;
+                itemDiv.onclick = () => renderVista(data.id, itemDiv);
+                xmlListDiv.appendChild(itemDiv);
+
+            } catch(e) {
+                console.error("Error parseando " + validFiles[i].name, e);
+            }
+        }
+
+        if(uploadedFilesData.length > 0) {
+            // Renderizar el primero por defecto
+            renderVista(uploadedFilesData[0].id, xmlListDiv.firstChild);
+        } else {
+            alert("Ningún XML válido detectado.");
+            window.location.reload();
         }
     }
 
-    function renderVista() {
-        document.getElementById('results').style.display = 'block';
+    function renderVista(id, element) {
+        // Estilos de selección
+        document.querySelectorAll('.xml-item').forEach(el => el.classList.remove('active'));
+        if(element) element.classList.add('active');
+
+        const d = uploadedFilesData.find(x => x.id === id);
+        if(!d) return;
+        currentInvoiceData = d;
         
-        const d = currentInvoiceData;
         document.getElementById('valEmisorNombre').innerText = d.emisorNombre;
         document.getElementById('valEmisorRFC').innerText = d.emisorRfc;
         document.getElementById('valFolio').innerText = d.folio;
@@ -330,19 +380,16 @@
             </tr>
         `).join('');
 
-        // Generador QR a través de Canvas Síncrono (qrcodejs)
+        // Generador QR
         try {
+            document.getElementById('qrContainer').innerHTML = ''; // Limpiar anterior
+            qrDataURI = null;
             if(d.uuid !== "NO-TIMBRADO") {
                 const selloCorto = d.sello ? d.sello.substring(d.sello.length - 8) : "";
                 const satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${d.uuid}&re=${d.emisorRfc}&rr=${d.receptorRfc}&tt=${d.total}&fe=${selloCorto}`;
                 
                 let tempDiv = document.createElement("div");
-                new QRCode(tempDiv, {
-                    text: satUrl,
-                    width: 400,
-                    height: 400,
-                    correctLevel: QRCode.CorrectLevel.M
-                });
+                new QRCode(tempDiv, { text: satUrl, width: 400, height: 400, correctLevel: QRCode.CorrectLevel.M });
                 
                 let canvas = tempDiv.querySelector("canvas");
                 if(canvas) {
@@ -356,6 +403,7 @@
     }
 
     function exportarPDF() {
+        if(!currentInvoiceData) return;
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
         btn.innerHTML = `COMPILANDO VECTORES...`;
@@ -376,7 +424,6 @@
                     ]);
                 });
 
-                // Inyección del PNG exacto en el PDF
                 let qrContent = qrDataURI ? { image: qrDataURI, width: 85, height: 85, alignment: 'center' } : { text: '' };
 
                 const docDefinition = {
@@ -429,6 +476,7 @@
     }
 
     function descargarExcelIndividual() {
+        if(!currentInvoiceData) return;
         const d = currentInvoiceData;
         const results = [["CANTIDAD", "CVE SAT", "DESCRIPCIÓN", "PRECIO UNITARIO", "IMPORTE"]];
         d.conceptos.forEach(c => results.push([c.cant, c.cve, c.desc, c.pu, c.importe]));
