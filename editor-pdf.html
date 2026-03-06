@@ -8,7 +8,6 @@
     <link rel="canonical" href="https://auditoriaxml.mx/editor-pdf.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -29,11 +28,10 @@
         
         .header-section { text-align: center; margin-bottom: 50px; }
         
-        /* Animación de Latencia para el Badge Principal */
+        /* Latencia en el Badge Superior */
         .header-badge { display: inline-block; background: rgba(220, 38, 38, 0.1); border: 1px solid var(--brand); color: #FCA5A5; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; animation: pulseMain 2s infinite;}
         @keyframes pulseMain { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
-        /* Modal Workspace Dinámico */
         .workspace { display: none; background: var(--bg-secondary); border: 1px solid var(--brand); border-radius: 16px; padding: 40px; margin-bottom: 50px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); animation: fadeIn 0.3s ease-out;}
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         
@@ -54,15 +52,19 @@
         .control-input, .control-select { width: 100%; background: var(--bg-primary); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 14px 15px; border-radius: 8px; font-size: 14px; font-family: monospace; outline: none; transition: 0.3s;}
         .control-input:focus, .control-select:focus { border-color: var(--brand); box-shadow: 0 0 10px var(--brand-glow);}
 
+        /* Custom File Button para XML */
+        .file-custom-btn { background: rgba(255,255,255,0.05); border: 1px dashed var(--text-muted); color: white; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.2s; display: block; width: 100%;}
+        .file-custom-btn:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); color: var(--accent);}
+
         .btn-action { background: var(--brand); color: white; border: none; padding: 20px 40px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
+        .btn-action:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
         .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
 
-        .result-panel { display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; font-family: monospace;}
-        .meta-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);}
+        .result-panel { display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; font-family: monospace; font-size: 13px;}
+        .meta-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); align-items: flex-start;}
         .meta-row:last-child { border-bottom: none;}
-        .meta-key { color: var(--text-muted); font-weight: bold;}
-        .meta-val { color: var(--success); font-weight: 900; text-align: right; max-width: 60%; word-wrap: break-word;}
+        .meta-key { color: var(--text-muted); font-weight: bold; flex-shrink: 0; width: 30%;}
+        .meta-val { color: var(--success); font-weight: 900; text-align: left; word-wrap: break-word; width: 70%;}
 
         /* BENTO GRID 34 TOOLS */
         .grid-header { font-size: 20px; font-weight: 900; color: white; margin: 50px 0 20px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border); padding-bottom: 10px;}
@@ -93,7 +95,7 @@
     <div class="header-section" id="mainHeader">
         <div class="header-badge">FRAMEWORK DE MANIPULACIÓN BINARIA (RAM)</div>
         <h1 style="font-size: 42px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">AuditorIA PDF Studio</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 900px; margin: 0 auto;">El ecosistema definitivo. 34 súper herramientas paramétricas para editar, extraer, auditar y blindar expedientes. El procesamiento ocurre al 100% en la memoria de tu equipo. Cero servidores, cero fugas de información, confidencialidad extrema.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 900px; margin: 0 auto;">El ecosistema definitivo. 34 súper herramientas paramétricas para editar, extraer, auditar y blindar expedientes. El procesamiento ocurre al 100% en la memoria de tu equipo. Cero servidores, confidencialidad extrema.</p>
     </div>
 
     <div class="workspace" id="workspace">
@@ -132,48 +134,48 @@
             <div class="tool-card" style="border-color: var(--brand); background: rgba(220, 38, 38, 0.05);" onclick="window.location.href='editor-pro.html'">
                 <div class="tool-icon" style="background: var(--brand); color: white;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></div>
                 <h3 class="tool-title">1. Editor Libre (Canvas Pro)</h3>
-                <p class="tool-desc">Entorno dedicado. Visualiza el PDF completo y utiliza herramientas fundamentales para inyectar textos, marcas y censura interactiva en tiempo real.</p>
+                <p class="tool-desc">Entorno dedicado. Visualiza el PDF completo y utiliza herramientas vectoriales para inyectar textos, marcas y censura interactiva en tiempo real.</p>
                 <div class="badge-king">PRO</div>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('fusion')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></div>
                 <h3 class="tool-title">2. Fusión Dinámica</h3>
-                <p class="tool-desc">Une expedientes. Modos: Estándar, Intercalado (A, B, A, B) o Inverso. Soporta cientos de archivos simultáneos.</p>
+                <p class="tool-desc">Une múltiples expedientes. Modos: Estándar o Intercalado Forense (mezcla las páginas A y B sucesivamente).</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('split')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></div>
                 <h3 class="tool-title">3. Desfragmentador Quirúrgico</h3>
-                <p class="tool-desc">Explota el PDF en hojas individuales. Extrae rangos específicos (1,5-8) o filtra por hojas pares/impares inteligentemente.</p>
+                <p class="tool-desc">Explota el PDF en hojas. Extrae rangos específicos (ej. "1-5") o usa lógica avanzada como "pares" o "impares".</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('rotate')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></div>
                 <h3 class="tool-title">4. Rotación Matemática</h3>
-                <p class="tool-desc">Gira documentos escaneados de cabeza. Elige rotar todo el archivo o solo el rango de páginas que indiques.</p>
+                <p class="tool-desc">Gira 90°, 180° o 270° documentos escaneados al revés. Elige aplicar a todo el archivo o solo al rango que indiques.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('reorder')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg></div>
-                <h3 class="tool-title">5. Reordenador de Matriz</h3>
-                <p class="tool-desc">Invierte el orden de todo un documento de 1000 hojas en 1 segundo (De la última a la primera).</p>
+                <h3 class="tool-title">5. Reordenador Inverso</h3>
+                <p class="tool-desc">Si escaneaste un libro o expediente y quedó de atrás hacia adelante, esto lo voltea en 1 segundo exacto.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('pagination')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg></div>
                 <h3 class="tool-title">6. Paginación y Foliado Legal</h3>
-                <p class="tool-desc">Estampa "Folio X de Y". Elige prefijos y márgenes para cumplir con los requisitos del Juzgado o SAT.</p>
+                <p class="tool-desc">Estampa "Folio X de Y" o números consecutivos en la esquina para cumplir con requisitos de juzgados y SAT.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('xml_inject')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
-                <h3 class="tool-title">7. Inyector de Anexos (XML a PDF)</h3>
-                <p class="tool-desc">Incrusta el archivo XML real de la factura dentro del código binario del PDF (Estándar Factura-E).</p>
+                <h3 class="tool-title">7. Inyector de Anexos (XML)</h3>
+                <p class="tool-desc">Oculta el archivo XML (CFDI) dentro del código binario del PDF. Crea una factura electrónica con estándar ZUGFeRD.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('resize')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg></div>
                 <h3 class="tool-title">8. Escalador de Lienzo (Resize)</h3>
-                <p class="tool-desc">Convierte automáticamente PDFs de tamaño A4 a tamaño Carta o Legal, escalando vectores matemáticamente.</p>
+                <p class="tool-desc">Obliga automáticamente a todas las páginas de diferentes tamaños a escalar matemáticamente a tamaño Carta (Letter).</p>
             </div>
-            <div class="tool-card" onclick="abrirHerramienta('booklet')">
-                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
-                <h3 class="tool-title">9. Compaginador de Libros</h3>
-                <p class="tool-desc">Toma hojas sueltas y las ordena algorítmicamente (1, Última, 2, Penúltima) para impresión en formato cuadernillo.</p>
+            <div class="tool-card" onclick="abrirHerramienta('purge_blanks')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></div>
+                <h3 class="tool-title">9. Purgador de Hojas en Blanco</h3>
+                <p class="tool-desc">Escanea el interior de un expediente masivo y elimina automáticamente todas las hojas que no contengan información.</p>
             </div>
         </div>
 
@@ -181,44 +183,44 @@
         <div class="tools-grid">
             <div class="tool-card" onclick="abrirHerramienta('sign')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div>
-                <h3 class="tool-title">10. Estampador de Firmas Táctico</h3>
-                <p class="tool-desc">Firma masiva. Elige qué páginas firmar y estampa tu firma automáticamente en la esquina de cientos de contratos.</p>
+                <h3 class="tool-title">10. Estampador de Lotes (Firmas)</h3>
+                <p class="tool-desc">Automatización masiva. Elige una página ('todas', 'ultima', '1-5') y el motor estampará tu firma PNG en 500 contratos a la vez.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('watermark')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
                 <h3 class="tool-title">11. Sello de Agua Paramétrico</h3>
-                <p class="tool-desc">Inyecta textos irreplicables en diagonal. Ajusta opacidad y colores de alerta.</p>
+                <p class="tool-desc">Inyecta textos irreplicables en diagonal por debajo de la capa de texto. Elige la frase y colores de confidencialidad.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('encrypt')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
-                <h3 class="tool-title">12. Bóveda Criptográfica (XOR)</h3>
-                <p class="tool-desc">Cifrado de bytes en RAM. Destruye la legibilidad del archivo y lo guarda como .locked para máxima privacidad.</p>
+                <h3 class="tool-title">12. Bóveda Criptográfica</h3>
+                <p class="tool-desc">Cifrado lógico XOR en RAM. Altera matemáticamente los bytes y lo guarda como un formato `.locked` indescifrable.</p>
                 <div class="badge-pro">PRO</div>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('unlock')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">13. Desbloqueador Bancario</h3>
-                <p class="tool-desc">Ingresa tu RFC y libera estados de cuenta financieros para quitarles la contraseña de lectura permanentemente.</p>
+                <p class="tool-desc">Destruye candados estándar. Ingresa el RFC de apertura y libera masivamente los Estados de Cuenta de lectura.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('redact_ai')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
                 <h3 class="tool-title">14. Cuarentena Forense (Censura)</h3>
-                <p class="tool-desc">Busca una palabra sensible (Ej. un RFC). Si el motor la encuentra, aplicará censura masiva sobre toda la página.</p>
+                <p class="tool-desc">Busca una palabra sensible (Ej. un RFC). Si el motor la encuentra, censurará automáticamente TODA esa hoja por seguridad.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('unlink')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg></div>
-                <h3 class="tool-title">15. Destructor de Enlaces (Anti-Phishing)</h3>
-                <p class="tool-desc">Escanea el PDF y desactiva todos los hipervínculos clickeables ocultos eliminando la capa de Anotaciones.</p>
+                <h3 class="tool-title">15. Destructor de Enlaces</h3>
+                <p class="tool-desc">Elimina el diccionario "Annots" a nivel fuente. Desactiva todos los hipervínculos clickeables para evitar ataques Phishing.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('timestamp')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
                 <h3 class="tool-title">16. Sello de Tiempo (Timestamping)</h3>
-                <p class="tool-desc">Inyecta una marca de tiempo inalterable en la esquina de cada hoja certificando la fecha de la auditoría.</p>
+                <p class="tool-desc">Inyecta una marca visual en la esquina superior derecha que certifica la fecha y hora exacta del procesamiento.</p>
             </div>
-            <div class="tool-card" onclick="abrirHerramienta('pseudonymize')">
-                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="tool-title">17. Anagramador Básico</h3>
-                <p class="tool-desc">Destruye los metadatos de autoría y estampa "DOCUMENTO CIEGO" para compartir reportes de forma anónima.</p>
+            <div class="tool-card" onclick="abrirHerramienta('anti_copy')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
+                <h3 class="tool-title">17. Protector Anti-Copia</h3>
+                <p class="tool-desc">Rasteriza el texto del PDF. Lo convierte visualmente en una imagen inalterable para que nadie pueda subrayarlo ni copiarlo.</p>
             </div>
         </div>
 
@@ -227,33 +229,43 @@
             <div class="tool-card" onclick="abrirHerramienta('metadata')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
                 <h3 class="tool-title">18. Autopsia de Metadatos</h3>
-                <p class="tool-desc">El detector de fraudes. Extrae el ADN del archivo para revelar la fecha de creación real y el software usado.</p>
+                <p class="tool-desc">El detector de fraudes. Extrae el ADN del archivo para revelar la fecha de creación real y el software generador.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('search')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
-                <h3 class="tool-title">19. Buscador Forense IA</h3>
-                <p class="tool-desc">Ingresa una palabra o RFC. El motor escaneará internamente el documento y te dirá si existe y dónde.</p>
+                <h3 class="tool-title">19. Buscador Forense Contextual</h3>
+                <p class="tool-desc">Escribe una palabra y el motor te extraerá la página y el fragmento del párrafo exacto donde la localizó en todo el documento.</p>
                 <div class="badge-pro">IA</div>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('excel')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
-                <h3 class="tool-title">20. Extractor Tabular (A Excel)</h3>
-                <p class="tool-desc">Lee los vectores de texto de todo el PDF y los descarga directamente en un archivo .CSV compatible con Excel.</p>
+                <h3 class="tool-title">20. Extractor Tabular (CSV)</h3>
+                <p class="tool-desc">Lee los vectores de texto de todo el PDF y los descarga directamente en un archivo .CSV compatible con Excel y Data.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('extract_img')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">21. Extractor de Evidencia Pura</h3>
-                <p class="tool-desc">Convierte cada página del PDF en una imagen de alta calidad y empaqueta todo en un archivo ZIP descargable.</p>
+                <p class="tool-desc">Convierte cada página del PDF en una imagen de alta calidad y empaqueta todo automáticamente en un archivo ZIP.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('qr_radar')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
-                <h3 class="tool-title">22. Radar de Links y QRs</h3>
-                <p class="tool-desc">Escanea las anotaciones del documento y extrae todos los enlaces URL ocultos para detectar Phishing.</p>
+                <h3 class="tool-title">22. Radar de Links (Phishing)</h3>
+                <p class="tool-desc">Escanea los diccionarios internos (URIs) del documento y te lista en pantalla todos los enlaces ocultos hacia donde dirigen los clics.</p>
+            </div>
+            <div class="tool-card" onclick="abrirHerramienta('rfc_finder')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div>
+                <h3 class="tool-title">23. Cazador Automático de RFCs</h3>
+                <p class="tool-desc">Aplica un modelo Regex inteligente. Extrae en una lista limpia todos los RFCs de personas y empresas detectados en el texto.</p>
+            </div>
+            <div class="tool-card" onclick="abrirHerramienta('validator')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg></div>
+                <h3 class="tool-title">24. Validador de Alteraciones</h3>
+                <p class="tool-desc">Caza falsificaciones revisando inconsistencias en el autor, el creador base y la cantidad de imágenes vectoriales inyectadas.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('txt')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path></svg></div>
                 <h3 class="tool-title">25. Extractor de Texto Puro</h3>
-                <p class="tool-desc">Destruye todo el diseño y te entrega un archivo .TXT plano con todo el texto. Ideal para entrenar IAs propias.</p>
+                <p class="tool-desc">Destruye todo el diseño vectorial y te entrega un archivo .TXT con el texto. Ideal para entrenar modelos propios.</p>
             </div>
         </div>
 
@@ -262,42 +274,47 @@
             <div class="tool-card" onclick="abrirHerramienta('img2pdf')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">26. Conversor de Materialidad</h3>
-                <p class="tool-desc">Pasa fotos (JPG/PNG) a PDF. Modos: "Hoja Blanca Centrada" o "Adaptación Nativa". Soporta imágenes gigantes.</p>
+                <p class="tool-desc">Pasa fotos (JPG/PNG) a PDF. Escala imágenes gigantes automáticamente a formato Carta con márgenes profesionales.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('flatten')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
                 <h3 class="tool-title">27. Aplanadora Total (Flatten)</h3>
-                <p class="tool-desc">Funde campos editables y formularios en una sola capa incrustada. Imposibilita la alteración oculta.</p>
+                <p class="tool-desc">Funde campos editables, firmas y formularios en una sola capa incrustada. Imposibilita la alteración oculta de la información.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('compress')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
-                <h3 class="tool-title">28. Compresión Extrema</h3>
-                <p class="tool-desc">Aplica renderizado inverso para destruir el peso del PDF, permitiendo que pase en el Buzón Tributario.</p>
+                <h3 class="tool-title">28. Compresión Tributaria HD</h3>
+                <p class="tool-desc">Rasteriza a 150% de escala pero guarda en JPG comprimido al 70%. Mantiene legibilidad y baja el peso para el Buzón Tributario.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('ghost')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
                 <h3 class="tool-title">29. Purga de Metadatos (Ghost)</h3>
-                <p class="tool-desc">Borra tu huella digital. Elimina al creador original y sobreescribe las fechas en el código fuente.</p>
+                <p class="tool-desc">Borra tu huella digital. Elimina al creador original y limpia las cadenas de software en el código fuente.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('heal')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
                 <h3 class="tool-title">30. Sanador de PDFs Corruptos</h3>
-                <p class="tool-desc">Fuerza la reconstrucción de tablas XREF dañadas. Revive archivos que envían error al abrirlos.</p>
+                <p class="tool-desc">Fuerza el traspaso de la información a un contenedor PDF nuevo. Revive archivos que envían error grave al abrirlos.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('ocr_opt')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
                 <h3 class="tool-title">31. Optimizador de Contraste</h3>
-                <p class="tool-desc">Convierte documentos borrosos a Blanco y Negro puro para facilitar auditorías y bajar peso.</p>
+                <p class="tool-desc">Convierte documentos borrosos o a color a un formato Blanco y Negro puro para facilitar auditorías estrictas.</p>
             </div>
-            <div class="tool-card" onclick="abrirHerramienta('rename')">
+            <div class="tool-card" onclick="abrirHerramienta('rename_auto')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg></div>
-                <h3 class="tool-title">32. Renombrador Inteligente</h3>
-                <p class="tool-desc">Lee el interior del PDF y cambia el nombre del archivo basándose en la primera línea de texto.</p>
+                <h3 class="tool-title">32. Organizador Automático</h3>
+                <p class="tool-desc">Extrae la primera línea de texto del interior del documento y la usa para nombrar automáticamente tu archivo al descargarlo.</p>
             </div>
-            <div class="tool-card" onclick="abrirHerramienta('pdfa')">
-                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                <h3 class="tool-title">34. Convertidor PDF/A Simulado</h3>
-                <p class="tool-desc">Inyecta etiquetas base de estándar ISO para engañar validadores básicos de juzgados.</p>
+            <div class="tool-card" onclick="abrirHerramienta('purge_annots')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+                <h3 class="tool-title">33. Purgador de Capas Ocultas</h3>
+                <p class="tool-desc">Remueve de golpe todas las anotaciones, dibujos, post-its y comentarios que otras personas hayan dejado escondidos.</p>
+            </div>
+            <div class="tool-card" onclick="abrirHerramienta('extract_email')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+                <h3 class="tool-title">34. Extractor de Correos</h3>
+                <p class="tool-desc">Escanea masivamente un archivo e imprime un listado con todas las direcciones de email encontradas en el texto.</p>
             </div>
         </div>
     </div>
@@ -325,7 +342,11 @@
         if (activeTool === 'img2pdf') {
             validFiles = Array.from(files).filter(f => f.type === 'image/jpeg' || f.type === 'image/png');
         } else if (activeTool === 'xml_inject') {
-            validFiles = Array.from(files); // Acepta XML y PDF
+            // No restringimos por aquí, el botón custom maneja el XML
+            validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+        } else if (activeTool === 'unlock') {
+            // Acepta .locked o .pdf
+            validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf') || f.name.toLowerCase().endsWith('.locked'));
         } else {
             validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
         }
@@ -364,80 +385,86 @@
         
         window.scrollTo(0, 0);
 
-        // CONFIGURADOR PARAMÉTRICO DE TODAS LAS HERRAMIENTAS
+        // CONFIGURADOR PARAMÉTRICO DE LAS 34 HERRAMIENTAS
         switch(tool) {
             case 'fusion':
                 wsTitle.innerText = "2. Fusión Dinámica"; wsDesc.innerText = "Une múltiples archivos."; inputF.multiple = true;
                 dInputs.innerHTML = `<div class="control-group"><label class="control-label">Modo</label><select id="mergeMode" class="control-select"><option value="standard">Apilar Secuencial</option><option value="interleave">Intercalado Forense</option></select></div>`; break;
             case 'split':
                 wsTitle.innerText = "3. Desfragmentador Quirúrgico"; wsDesc.innerText = "Destruye un PDF en pedazos.";
-                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Filtro de Extracción</label><input type="text" id="pagesInput" class="control-input" placeholder='Ej. "1-5", "pares"'></div>`; break;
+                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Filtro de Extracción</label><input type="text" id="pagesInput" class="control-input" placeholder='Ej. "1-5", "pares", "impares"'></div>`; break;
             case 'rotate':
                 wsTitle.innerText = "4. Rotación Matemática"; wsDesc.innerText = "Gira documentos escaneados de cabeza.";
-                dInputs.innerHTML = `<div class="control-group"><label class="control-label">Rango</label><input type="text" id="rotPages" class="control-input" placeholder='Vacío = Todas'></div><div class="control-group"><label class="control-label">Ángulo</label><select id="rotAngle" class="control-select"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>`; break;
+                dInputs.innerHTML = `<div class="control-group"><label class="control-label">Rango</label><input type="text" id="rotPages" class="control-input" placeholder='Ej. "1, 3". Vacío = Todas'></div><div class="control-group"><label class="control-label">Ángulo</label><select id="rotAngle" class="control-select"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>`; break;
             case 'reorder':
-                wsTitle.innerText = "5. Reordenador de Matriz"; wsDesc.innerText = "Invierte todo el documento."; break;
+                wsTitle.innerText = "5. Reordenador Inverso"; wsDesc.innerText = "Da la vuelta a todo el documento desde la última a la primera hoja."; break;
             case 'pagination':
                 wsTitle.innerText = "6. Paginación y Foliado"; wsDesc.innerText = "Estampa Folios.";
                 dInputs.innerHTML = `<div class="control-group"><label class="control-label">Prefijo</label><input type="text" id="pagPrefix" class="control-input" value="Folio"></div><div class="control-group"><label class="control-label">Inicio</label><input type="number" id="pagStart" class="control-input" value="1"></div>`; break;
             case 'xml_inject':
-                wsTitle.innerText = "7. Inyector de Anexos"; wsDesc.innerText = "Sube primero el PDF base. Luego selecciona aquí abajo el archivo XML para incrustarlo.";
-                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Archivo Anexo (XML)</label><input type="file" id="xmlInput" class="control-input" style="padding:10px;"></div>`; break;
+                wsTitle.innerText = "7. Inyector de Anexos"; wsDesc.innerText = "Sube primero el PDF base arriba. Luego selecciona el archivo XML para incrustarlo abajo.";
+                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="file-custom-btn" for="xmlInput">Seleccionar Archivo XML Oculto</label><input type="file" id="xmlInput" accept=".xml" style="display:none;" onchange="this.previousElementSibling.innerText = this.files[0].name; this.previousElementSibling.style.borderColor='var(--success)'; this.previousElementSibling.style.color='var(--success)';"></div>`; break;
             case 'resize':
-                wsTitle.innerText = "8. Escalador de Lienzo"; wsDesc.innerText = "Convierte automáticamente páginas al tamaño estándar Carta (Letter)."; break;
-            case 'booklet':
-                wsTitle.innerText = "9. Compaginador de Libros"; wsDesc.innerText = "Ordena las páginas para impresión en formato de cuadernillo."; break;
+                wsTitle.innerText = "8. Escalador de Lienzo"; wsDesc.innerText = "Convierte automáticamente páginas al tamaño Carta (Letter)."; break;
+            case 'purge_blanks':
+                wsTitle.innerText = "9. Purgador de Hojas en Blanco"; wsDesc.innerText = "Elimina hojas que no tengan información valiosa."; break;
             case 'sign':
-                wsTitle.innerText = "10. Estampador de Firmas"; wsDesc.innerText = "Firma masiva automática."; inputF.multiple = true;
-                dInputs.innerHTML = `<div class="control-group"><label class="control-label">Página (Ej. 'ultima')</label><input type="text" id="signPageNum" class="control-input" value="ultima"></div><div class="control-group"><label class="control-label">Firma PNG</label><input type="file" id="sigInput" accept="image/png" class="control-input" style="padding:10px;"></div>`; break;
+                wsTitle.innerText = "10. Estampador de Lotes"; wsDesc.innerText = "Firma masiva automática. Estampa abajo a la derecha."; inputF.multiple = true;
+                dInputs.innerHTML = `<div class="control-group"><label class="control-label">Página (Ej. 'todas', 'ultima', '1')</label><input type="text" id="signPageNum" class="control-input" value="ultima"></div><div class="control-group"><label class="file-custom-btn" for="sigInput">Seleccionar Firma (PNG)</label><input type="file" id="sigInput" accept="image/png" style="display:none;" onchange="this.previousElementSibling.innerText = 'Firma Cargada ✓'; this.previousElementSibling.style.borderColor='var(--success)'; this.previousElementSibling.style.color='var(--success)';"></div>`; break;
             case 'watermark':
                 wsTitle.innerText = "11. Sello de Agua"; wsDesc.innerText = "Inyecta textos irreplicables."; inputF.multiple = true;
                 dInputs.innerHTML = `<div class="control-group"><label class="control-label">Texto</label><input type="text" id="wmInput" class="control-input" placeholder="CONFIDENCIAL"></div><div class="control-group"><label class="control-label">Color</label><select id="wmColor" class="control-select"><option value="red">Rojo</option><option value="gray">Gris</option></select></div>`; break;
             case 'encrypt':
-                wsTitle.innerText = "12. Bóveda Criptográfica"; wsDesc.innerText = "Cifra los bytes del archivo para que nadie pueda abrirlo sin usar nuestra herramienta de desbloqueo.";
+                wsTitle.innerText = "12. Bóveda Criptográfica"; wsDesc.innerText = "Cifra los bytes del archivo para que nadie pueda abrirlo.";
                 dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Contraseña Maestra</label><input type="text" id="cryptoPwd" class="control-input" placeholder="Escribe una contraseña segura"></div>`; break;
             case 'unlock':
-                wsTitle.innerText = "13. Desbloqueador"; wsDesc.innerText = "Libera PDFs bloqueados estándar o los cifrados por nuestra Bóveda.";
-                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Contraseña</label><input type="text" id="pdfPwd" class="control-input"></div>`; break;
+                wsTitle.innerText = "13. Desbloqueador Bancario"; wsDesc.innerText = "Libera PDFs bloqueados o Bóvedas (.locked)."; inputF.accept=".pdf,.locked"; dropDesc.innerText="Arrastra PDFs o archivos .locked aquí.";
+                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Contraseña Original / RFC</label><input type="text" id="pdfPwd" class="control-input"></div>`; break;
             case 'redact_ai':
-                wsTitle.innerText = "14. Cuarentena Forense"; wsDesc.innerText = "Si encuentra la palabra clave, pondrá una caja negra gigante en TODA esa hoja por seguridad.";
+                wsTitle.innerText = "14. Cuarentena Forense"; wsDesc.innerText = "Si encuentra la palabra clave, censurará TODA esa hoja por seguridad.";
                 dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Palabra Clave o RFC</label><input type="text" id="redactKey" class="control-input" placeholder="Ej. XAXX010101000"></div>`; break;
             case 'unlink':
-                wsTitle.innerText = "15. Destructor de Enlaces"; wsDesc.innerText = "Borra hipervínculos maliciosos ocultos."; break;
+                wsTitle.innerText = "15. Destructor de Enlaces"; wsDesc.innerText = "Borra hipervínculos maliciosos de la estructura."; break;
             case 'timestamp':
-                wsTitle.innerText = "16. Sello de Tiempo"; wsDesc.innerText = "Estampa la fecha y hora de la computadora en la esquina superior derecha."; break;
-            case 'pseudonymize':
-                wsTitle.innerText = "17. Anagramador Básico"; wsDesc.innerText = "Borra el autor y estampa 'DOCUMENTO CIEGO'."; break;
+                wsTitle.innerText = "16. Sello de Tiempo"; wsDesc.innerText = "Estampa la fecha y hora en la esquina superior derecha."; break;
+            case 'anti_copy':
+                wsTitle.innerText = "17. Protector Anti-Copia"; wsDesc.innerText = "Convierte el texto en imagen. Nadie podrá hacer 'Copiar y Pegar'."; break;
             case 'metadata':
                 wsTitle.innerText = "18. Autopsia de Metadatos"; wsDesc.innerText = "Lee el ADN oculto del archivo."; break;
             case 'search':
-                wsTitle.innerText = "19. Buscador Forense IA"; wsDesc.innerText = "Busca texto internamente.";
-                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Término a Buscar</label><input type="text" id="searchKey" class="control-input"></div>`; break;
+                wsTitle.innerText = "19. Buscador Forense IA"; wsDesc.innerText = "Busca contexto interno.";
+                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Palabra a Buscar</label><input type="text" id="searchKey" class="control-input"></div>`; break;
             case 'excel':
-                wsTitle.innerText = "20. Extractor Tabular"; wsDesc.innerText = "Lee el texto y lo exporta a CSV para abrirlo en Excel."; break;
+                wsTitle.innerText = "20. Extractor Tabular"; wsDesc.innerText = "Lee el texto y lo exporta a CSV."; break;
             case 'extract_img':
-                wsTitle.innerText = "21. Extractor de Evidencia Pura"; wsDesc.innerText = "Convierte cada página a JPG y las descarga en un archivo ZIP."; break;
+                wsTitle.innerText = "21. Extractor de Evidencia Pura"; wsDesc.innerText = "Convierte páginas a JPG y descarga ZIP."; break;
             case 'qr_radar':
-                wsTitle.innerText = "22. Radar de Links"; wsDesc.innerText = "Extrae todos los enlaces URL programados en las anotaciones."; break;
+                wsTitle.innerText = "22. Radar de Links Ocultos"; wsDesc.innerText = "Extrae los URLs reales donde te llevan los botones o QRs del documento."; break;
+            case 'rfc_finder':
+                wsTitle.innerText = "23. Cazador de RFCs"; wsDesc.innerText = "Escanea e imprime todos los RFC detectados."; break;
+            case 'validator':
+                wsTitle.innerText = "24. Validador de Alteraciones"; wsDesc.innerText = "Checa si la info original se manipuló externamente."; break;
             case 'txt':
-                wsTitle.innerText = "25. Extractor a TXT"; wsDesc.innerText = "Extrae el texto puro en un block de notas."; break;
+                wsTitle.innerText = "25. Extractor a TXT"; wsDesc.innerText = "Extrae el texto puro en un archivo block de notas."; break;
             case 'img2pdf':
-                wsTitle.innerText = "26. Conversor de Materialidad"; wsDesc.innerText = "Convierte fotos a PDF."; inputF.multiple = true; inputF.accept = ".jpg,.png"; dropDesc.innerText="Arrastra FOTOS aquí";
-                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Modo</label><select id="imgMode" class="control-select"><option value="white">Centrar en Hoja Blanca</option><option value="native">Tamaño Nativo</option></select></div>`; break;
+                wsTitle.innerText = "26. Conversor de Materialidad"; wsDesc.innerText = "Convierte fotos a PDF."; inputF.multiple = true; inputF.accept = ".jpg,.png"; dropDesc.innerText="Arrastra FOTOS (JPG/PNG)";
+                dInputs.innerHTML = `<div class="control-group" style="grid-column: span 2;"><label class="control-label">Modo</label><select id="imgMode" class="control-select"><option value="white">Carta Centrado</option><option value="native">Tamaño Nativo</option></select></div>`; break;
             case 'flatten':
-                wsTitle.innerText = "27. Aplanadora Total"; wsDesc.innerText = "Funde formularios editables."; break;
+                wsTitle.innerText = "27. Aplanadora Total"; wsDesc.innerText = "Funde formularios editables en papel."; break;
             case 'compress':
-                wsTitle.innerText = "28. Compresión Extrema"; wsDesc.innerText = "Rasteriza el documento para bajar el peso dramáticamente."; break;
+                wsTitle.innerText = "28. Compresión Tributaria HD"; wsDesc.innerText = "Baja el peso usando rasterizado de alta definición (70% Quality)."; break;
             case 'ghost':
                 wsTitle.innerText = "29. Purga de Metadatos"; wsDesc.innerText = "Limpia la huella digital del creador."; break;
             case 'heal':
-                wsTitle.innerText = "30. Sanador de PDFs"; wsDesc.innerText = "Reescribe la tabla XREF corrupta."; break;
+                wsTitle.innerText = "30. Sanador de PDFs Corruptos"; wsDesc.innerText = "Reescribe la estructura en un PDF en blanco para curarlo."; break;
             case 'ocr_opt':
-                wsTitle.innerText = "31. Optimizador de Contraste"; wsDesc.innerText = "Filtro de grises para auditoría."; break;
-            case 'rename':
-                wsTitle.innerText = "32. Renombrador Inteligente"; wsDesc.innerText = "Renombra el archivo basado en el texto interno."; break;
-            case 'pdfa':
-                wsTitle.innerText = "34. Convertidor PDF/A Simulado"; wsDesc.innerText = "Inyecta etiquetas básicas de estandarización."; break;
+                wsTitle.innerText = "31. Optimizador de Contraste"; wsDesc.innerText = "Convierte a Escala de Grises intenso."; break;
+            case 'rename_auto':
+                wsTitle.innerText = "32. Organizador Automático"; wsDesc.innerText = "Lee la primera frase del PDF y usa eso de nombre de archivo."; break;
+            case 'purge_annots':
+                wsTitle.innerText = "33. Purgador de Capas Ocultas"; wsDesc.innerText = "Elimina Post-its y comentarios dibujados."; break;
+            case 'extract_email':
+                wsTitle.innerText = "34. Extractor de Correos"; wsDesc.innerText = "Extrae todos los emails en el texto."; break;
         }
     }
 
@@ -448,38 +475,47 @@
         window.scrollTo(0, lastScrollPos);
     }
 
+    // Parser robusto 0-indexed
     function parseRange(str, maxPages) {
-        if(str === 'todas' || str === '') return Array.from({length: maxPages}, (_, i) => i);
-        if(str === 'ultima') return [maxPages - 1];
         let set = new Set();
+        if(!str || str==='todas') { for(let i=0;i<maxPages;i++) set.add(i); return Array.from(set); }
+        if(str === 'ultima') { set.add(maxPages - 1); return Array.from(set); }
+        if(str === 'pares') { for(let i=1;i<maxPages;i+=2) set.add(i); return Array.from(set); }
+        if(str === 'impares') { for(let i=0;i<maxPages;i+=2) set.add(i); return Array.from(set); }
+        
         str.split(',').forEach(part => {
             if(part.includes('-')) {
                 let [s, e] = part.split('-').map(n => parseInt(n.trim()));
-                for(let i=Math.min(s,e); i<=Math.max(s,e); i++) if(i>0 && i<=maxPages) set.add(i-1);
+                let rStart = Math.min(s,e); let rEnd = Math.max(s,e);
+                for(let i=rStart; i<=rEnd; i++) if(i>0 && i<=maxPages) set.add(i-1);
             } else { let n = parseInt(part.trim()); if(!isNaN(n) && n>0 && n<=maxPages) set.add(n-1); }
         });
-        return Array.from(set);
+        return Array.from(set).sort((a,b)=>a-b);
     }
 
-    // SISTEMA CRIPTOGRÁFICO BINARIO (XOR)
     function xorCipher(bytes, key) {
         let result = new Uint8Array(bytes.length);
         for(let i=0; i<bytes.length; i++) result[i] = bytes[i] ^ key.charCodeAt(i % key.length);
         return result;
     }
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
     // EL MOTOR CENTRAL 
     async function procesarPDF() {
         if(currentFiles.length === 0) { alert("Sube archivos a la bóveda primero."); return; }
 
         const btn = document.getElementById('btnEjecutar');
-        btn.innerText = "PROCESANDO..."; btn.disabled = true;
+        btn.innerText = "MATRIZ EN PROCESO..."; btn.disabled = true;
         const panel = document.getElementById('resultPanel'); panel.style.display = 'none';
 
         try {
-            // FUSIÓN
+            // Buffer Manager (Clonamos para evitar que pdf.js destruya la RAM de pdf-lib)
+            const fileBuf = await currentFiles[0].arrayBuffer();
+            const getPdfJsBuf = () => fileBuf.slice(0);
+            const getPdfLibBuf = () => fileBuf.slice(0);
+
+            // =====================================
+            // I. EDICIÓN
+            // =====================================
             if(activeTool === 'fusion') {
                 const finalPdf = await PDFLib.PDFDocument.create();
                 for(let file of currentFiles) {
@@ -489,11 +525,11 @@
                 }
                 descargarBlob(await finalPdf.save(), `Fusión_${Date.now()}.pdf`);
             }
-            // SPLIT
             else if (activeTool === 'split') {
-                const sourcePdf = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                const sourcePdf = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 const total = sourcePdf.getPageCount();
-                const range = document.getElementById('pagesInput').value.trim();
+                const range = document.getElementById('pagesInput').value.trim().toLowerCase();
+                
                 if(range === "") {
                     const zip = new JSZip();
                     for(let i=0; i<total; i++) {
@@ -506,118 +542,135 @@
                 } else {
                     const newPdf = await PDFLib.PDFDocument.create();
                     const extractArr = parseRange(range, total);
+                    if(extractArr.length === 0) throw new Error("Filtro no válido");
                     const copiedPages = await newPdf.copyPages(sourcePdf, extractArr);
                     copiedPages.forEach(p => newPdf.addPage(p));
                     descargarBlob(await newPdf.save(), `Extracto.pdf`);
                 }
             }
-            // ROTATE
             else if (activeTool === 'rotate') {
                 const angle = parseInt(document.getElementById('rotAngle').value);
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                pdfDoc.getPages().forEach(p => p.setRotation(PDFLib.degrees(angle)));
+                const rangeStr = document.getElementById('rotPages').value.trim();
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                const pages = pdfDoc.getPages();
+                
+                let toRotate = rangeStr ? parseRange(rangeStr, pages.length) : Array.from({length: pages.length}, (_, i) => i);
+                toRotate.forEach(i => { if(pages[i]) pages[i].setRotation(PDFLib.degrees(angle)); });
                 descargarBlob(await pdfDoc.save(), `Rotado.pdf`);
             }
-            // REORDER
             else if (activeTool === 'reorder') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 const newPdf = await PDFLib.PDFDocument.create();
                 const total = pdfDoc.getPageCount();
-                const indices = Array.from({length: total}, (_, i) => total - 1 - i); // Inverso
+                const indices = Array.from({length: total}, (_, i) => total - 1 - i); 
                 const copiedPages = await newPdf.copyPages(pdfDoc, indices);
                 copiedPages.forEach(p => newPdf.addPage(p));
                 descargarBlob(await newPdf.save(), `Invertido.pdf`);
             }
-            // PAGINATION
             else if (activeTool === 'pagination') {
                 const pref = document.getElementById('pagPrefix').value;
                 let start = parseInt(document.getElementById('pagStart').value);
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 const pages = pdfDoc.getPages();
                 const f = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-                pages.forEach((p, i) => {
-                    p.drawText(`${pref} ${start + i}`, { x: p.getWidth() - 100, y: 30, size: 10, font: f });
-                });
+                pages.forEach((p, i) => { p.drawText(`${pref} ${start + i} de ${pages.length}`, { x: p.getWidth() - 120, y: 30, size: 10, font: f }); });
                 descargarBlob(await pdfDoc.save(), `Foliado.pdf`);
             }
-            // XML INJECT
             else if (activeTool === 'xml_inject') {
                 const xmlFile = document.getElementById('xmlInput').files[0];
                 if(!xmlFile) throw new Error("Falta el archivo XML");
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                await pdfDoc.attach(await xmlFile.arrayBuffer(), xmlFile.name, { mimeType: 'text/xml', description: 'Anexo Factura' });
-                descargarBlob(await pdfDoc.save(), `Inyectado.pdf`);
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                await pdfDoc.attach(await xmlFile.arrayBuffer(), xmlFile.name, { mimeType: 'text/xml', description: 'Factura XML' });
+                // Estampar sello visual para confirmacion
+                const f = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+                pdfDoc.getPages()[0].drawText("CONTIENE XML", { x: 10, y: 10, size: 8, font: f, color: PDFLib.rgb(0, 0.7, 0) });
+                descargarBlob(await pdfDoc.save(), `Factura_ZUGFeRD.pdf`);
             }
-            // RESIZE
             else if (activeTool === 'resize') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 pdfDoc.getPages().forEach(p => {
                     const { width, height } = p.getSize();
-                    // Escalar a Carta (612 x 792)
                     const scale = Math.min(612 / width, 792 / height);
-                    p.scaleContent(scale, scale);
-                    p.setSize(612, 792);
+                    p.scaleContent(scale, scale); p.setSize(612, 792);
                 });
                 descargarBlob(await pdfDoc.save(), `Carta.pdf`);
             }
-            // BOOKLET
-            else if (activeTool === 'booklet') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+            else if (activeTool === 'purge_blanks') {
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 const newPdf = await PDFLib.PDFDocument.create();
-                const total = pdfDoc.getPageCount();
-                let indices = [];
-                for(let i=0; i<Math.floor(total/2); i++) { indices.push(i); indices.push(total - 1 - i); }
-                if(total % 2 !== 0) indices.push(Math.floor(total/2));
-                const copiedPages = await newPdf.copyPages(pdfDoc, indices);
-                copiedPages.forEach(p => newPdf.addPage(p));
-                descargarBlob(await newPdf.save(), `Booklet.pdf`);
+                let keep = [];
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const txt = await (await pdf.getPage(i)).getTextContent();
+                    if(txt.items.length > 5) keep.push(i-1); // Mas de 5 elementos = No blanco
+                }
+                if(keep.length > 0) {
+                    const copiedPages = await newPdf.copyPages(pdfDoc, keep);
+                    copiedPages.forEach(p => newPdf.addPage(p));
+                    descargarBlob(await newPdf.save(), `Purgado.pdf`);
+                } else alert("No se detectaron hojas útiles.");
             }
-            // SIGN MASIVO
+
+            // =====================================
+            // II. LEGAL Y CRYPTO
+            // =====================================
             else if (activeTool === 'sign') {
                 const sigFile = document.getElementById('sigInput').files[0];
                 if(!sigFile) throw new Error("Falta firma PNG");
                 const sigBytes = await sigFile.arrayBuffer();
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                const sigImg = await pdfDoc.embedPng(sigBytes);
-                const pages = pdfDoc.getPages();
-                pages[pages.length-1].drawImage(sigImg, { x: pages[pages.length-1].getWidth()-150, y: 50, width: 100, height: 100 });
-                descargarBlob(await pdfDoc.save(), `Firmado.pdf`);
+                const range = document.getElementById('signPageNum').value.trim().toLowerCase();
+
+                const zip = new JSZip();
+                for(let file of currentFiles) {
+                    const pdfDoc = await PDFLib.PDFDocument.load(await file.arrayBuffer());
+                    const sigImg = await pdfDoc.embedPng(sigBytes);
+                    const pages = pdfDoc.getPages();
+                    const targetIdx = parseRange(range, pages.length);
+                    
+                    targetIdx.forEach(i => {
+                        if(pages[i]) {
+                            const dims = sigImg.scaleToFit(150, 150);
+                            pages[i].drawImage(sigImg, { x: pages[i].getWidth()-dims.width-20, y: 50, width: dims.width, height: dims.height });
+                        }
+                    });
+                    if(currentFiles.length === 1) descargarBlob(await pdfDoc.save(), `Firmado.pdf`);
+                    else zip.file(`Firmado_${file.name}`, await pdfDoc.save());
+                }
+                if(currentFiles.length > 1) saveAs(await zip.generateAsync({type:"blob"}), `LoteFirmado.zip`);
             }
-            // WATERMARK
             else if (activeTool === 'watermark') {
                 const text = document.getElementById('wmInput').value;
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                pdfDoc.getPages().forEach(p => p.drawText(text, { x: 100, y: 300, size: 40, opacity: 0.3, rotate: PDFLib.degrees(45) }));
+                const color = document.getElementById('wmColor').value === 'gray' ? PDFLib.rgb(0.6,0.6,0.6) : PDFLib.rgb(0.8,0.1,0.1);
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                pdfDoc.getPages().forEach(p => p.drawText(text, { x: 100, y: 300, size: 40, color: color, opacity: 0.3, rotate: PDFLib.degrees(45) }));
                 descargarBlob(await pdfDoc.save(), `Sellado.pdf`);
             }
-            // ENCRYPT (BOVEDA XOR)
             else if (activeTool === 'encrypt') {
                 const pwd = document.getElementById('cryptoPwd').value;
                 if(!pwd) throw new Error("Escribe una clave");
-                const bytes = new Uint8Array(await currentFiles[0].arrayBuffer());
+                const bytes = new Uint8Array(getPdfLibBuf());
                 const locked = xorCipher(bytes, pwd);
                 saveAs(new Blob([locked]), `Documento.locked`);
             }
-            // UNLOCK (XOR + PDF-LIB)
             else if (activeTool === 'unlock') {
                 const pwd = document.getElementById('pdfPwd').value;
-                const buffer = await currentFiles[0].arrayBuffer();
+                const buffer = getPdfLibBuf();
                 try {
+                    // Try XOR first
                     const unlocked = xorCipher(new Uint8Array(buffer), pwd);
-                    const doc = await PDFLib.PDFDocument.load(unlocked); // Verifica si es PDF válido
+                    const doc = await PDFLib.PDFDocument.load(unlocked);
                     descargarBlob(await doc.save(), `Liberado.pdf`);
                 } catch(e) {
-                    // Try normal pdf password
+                    // Try Native
                     const doc2 = await PDFLib.PDFDocument.load(buffer, {password: pwd});
                     descargarBlob(await doc2.save(), `Liberado.pdf`);
                 }
             }
-            // CUARENTENA FORENSE (REDACT AI)
             else if (activeTool === 'redact_ai') {
                 const word = document.getElementById('redactKey').value.toLowerCase();
-                const buffer = await currentFiles[0].arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(buffer)}).promise;
-                const pdfDoc = await PDFLib.PDFDocument.load(buffer);
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                const font = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
                 
                 for(let i=1; i<=pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
@@ -626,185 +679,226 @@
                     if(text.includes(word)) {
                         const pPdf = pdfDoc.getPages()[i-1];
                         pPdf.drawRectangle({ x:0, y:0, width: pPdf.getWidth(), height: pPdf.getHeight(), color: PDFLib.rgb(0,0,0) });
-                        pPdf.drawText("CENSURADO POR SEGURIDAD", { x: 50, y: pPdf.getHeight()/2, size: 30, color: PDFLib.rgb(1,0,0) });
+                        pPdf.drawText("CENSURADO", { x: 50, y: pPdf.getHeight()/2, size: 40, color: PDFLib.rgb(1,0,0), font: font });
                     }
                 }
                 descargarBlob(await pdfDoc.save(), `Cuarentena.pdf`);
             }
-            // UNLINK
             else if (activeTool === 'unlink') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 pdfDoc.getPages().forEach(p => { p.node.delete(PDFLib.PDFName.of('Annots')); });
-                descargarBlob(await pdfDoc.save(), `Sin_Links.pdf`);
+                descargarBlob(await pdfDoc.save(), `Seguro.pdf`);
             }
-            // TIMESTAMP
             else if (activeTool === 'timestamp') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                const dateStr = new Date().toISOString();
-                pdfDoc.getPages().forEach(p => p.drawText(dateStr, { x: 10, y: p.getHeight() - 20, size: 10 }));
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                const dateStr = new Date().toLocaleString();
+                const f = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                pdfDoc.getPages().forEach(p => p.drawText(`AuditorIA Time: ${dateStr}`, { x: p.getWidth() - 180, y: p.getHeight() - 20, size: 9, font: f, color: PDFLib.rgb(0,0,1) }));
                 descargarBlob(await pdfDoc.save(), `Timestamp.pdf`);
             }
-            // PSEUDONYMIZE
-            else if (activeTool === 'pseudonymize') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                pdfDoc.setTitle("DOCUMENTO CIEGO"); pdfDoc.setAuthor("ID-001");
-                descargarBlob(await pdfDoc.save(), `Anonimo.pdf`);
-            }
-            // METADATA
-            else if (activeTool === 'metadata') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                panel.style.display = 'block';
-                panel.innerHTML = `<div style="color:var(--brand); font-weight:900; font-size:18px;">Resultado:</div>
-                    <div class="meta-row"><span>Título:</span> <span>${pdfDoc.getTitle() || "N/A"}</span></div>
-                    <div class="meta-row"><span>Autor:</span> <span>${pdfDoc.getAuthor() || "N/A"}</span></div>
-                    <div class="meta-row"><span>Software:</span> <span style="color:var(--warning)">${pdfDoc.getCreator() || "N/A"}</span></div>
-                    <div class="meta-row"><span>Páginas:</span> <span>${pdfDoc.getPageCount()}</span></div>`;
-            }
-            // SEARCH
-            else if (activeTool === 'search') {
-                const word = document.getElementById('searchKey').value.toLowerCase();
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
-                let found = [];
+            else if (activeTool === 'anti_copy') {
+                // Convierte PDF a imágenes, y las mete en un nuevo PDF
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                const newPdf = await PDFLib.PDFDocument.create();
+                const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
                 for(let i=1; i<=pdf.numPages; i++) {
-                    const content = await (await pdf.getPage(i)).getTextContent();
-                    if(content.items.map(s => s.str).join(" ").toLowerCase().includes(word)) found.push(i);
-                }
-                panel.style.display = 'block';
-                panel.innerHTML = `<div style="color:var(--success); font-weight:900;">Encontrado en páginas: ${found.join(', ') || 'Ninguna'}</div>`;
-            }
-            // EXCEL CSV
-            else if (activeTool === 'excel') {
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
-                let csv = "";
-                for(let i=1; i<=pdf.numPages; i++) {
-                    const content = await (await pdf.getPage(i)).getTextContent();
-                    csv += content.items.map(s => s.str).join(",") + "\n";
-                }
-                saveAs(new Blob([csv], {type: "text/csv"}), `Datos.csv`);
-            }
-            // EXTRACT IMAGES (Render a JPG ZIP)
-            else if (activeTool === 'extract_img') {
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
-                const zip = new JSZip();
-                const cvs = document.createElement('canvas');
-                const ctx = cvs.getContext('2d');
-                for(let i=1; i<=pdf.numPages; i++) {
-                    const p = await pdf.getPage(i);
-                    const vp = p.getViewport({scale: 1.5});
+                    const p = await pdf.getPage(i); const vp = p.getViewport({scale: 1.5});
                     cvs.width = vp.width; cvs.height = vp.height;
                     await p.render({canvasContext: ctx, viewport: vp}).promise;
-                    const imgData = cvs.toDataURL("image/jpeg").split('base64,')[1];
-                    zip.file(`Pagina_${i}.jpg`, imgData, {base64: true});
+                    const img = await newPdf.embedJpg(cvs.toDataURL("image/jpeg", 0.8));
+                    const np = newPdf.addPage([vp.width, vp.height]);
+                    np.drawImage(img, { x:0, y:0, width:vp.width, height:vp.height });
+                }
+                descargarBlob(await newPdf.save(), `Anti_Copy.pdf`);
+            }
+
+            // =====================================
+            // III. EXTRACCIÓN Y AUDITORÍA
+            // =====================================
+            else if (activeTool === 'metadata') {
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                panel.style.display = 'block';
+                panel.innerHTML = `<div style="color:var(--brand); font-weight:900; font-size:18px; margin-bottom:10px;">ADN del Archivo:</div>
+                    <div class="meta-row"><span class="meta-key">Título:</span> <span class="meta-val">${pdfDoc.getTitle() || "N/A"}</span></div>
+                    <div class="meta-row"><span class="meta-key">Autor:</span> <span class="meta-val">${pdfDoc.getAuthor() || "N/A"}</span></div>
+                    <div class="meta-row"><span class="meta-key">Software Base:</span> <span class="meta-val" style="color:var(--warning)">${pdfDoc.getCreator() || "N/A"}</span></div>
+                    <div class="meta-row"><span class="meta-key">Páginas:</span> <span class="meta-val">${pdfDoc.getPageCount()}</span></div>`;
+            }
+            else if (activeTool === 'search') {
+                const word = document.getElementById('searchKey').value.toLowerCase();
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                let results = "";
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const txt = await (await pdf.getPage(i)).getTextContent();
+                    const fullText = txt.items.map(s => s.str).join(" ");
+                    if(fullText.toLowerCase().includes(word)) {
+                        // Extract context
+                        const idx = fullText.toLowerCase().indexOf(word);
+                        const context = fullText.substring(Math.max(0, idx - 30), Math.min(fullText.length, idx + 30));
+                        results += `<div style="margin-bottom:10px;"><strong style="color:var(--accent);">Pág ${i}:</strong> ...${context}...</div>`;
+                    }
+                }
+                panel.style.display = 'block';
+                panel.innerHTML = `<div style="color:var(--brand); font-weight:900; font-size:16px; margin-bottom:10px;">Análisis Completado:</div>${results || '<span style="color:var(--text-muted)">No hubo coincidencias.</span>'}`;
+            }
+            else if (activeTool === 'excel') {
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                let csv = "";
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const txt = await (await pdf.getPage(i)).getTextContent();
+                    csv += txt.items.map(s => s.str.replace(/,/g,'')).join(",") + "\n";
+                }
+                saveAs(new Blob([csv], {type: "text/csv;charset=utf-8"}), `Datos.csv`);
+            }
+            else if (activeTool === 'extract_img') {
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                const zip = new JSZip();
+                const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const p = await pdf.getPage(i); const vp = p.getViewport({scale: 1.5});
+                    cvs.width = vp.width; cvs.height = vp.height;
+                    await p.render({canvasContext: ctx, viewport: vp}).promise;
+                    zip.file(`Pagina_${i}.jpg`, cvs.toDataURL("image/jpeg").split('base64,')[1], {base64: true});
                 }
                 saveAs(await zip.generateAsync({type:"blob"}), `Evidencia.zip`);
             }
-            // QR RADAR (Links)
             else if (activeTool === 'qr_radar') {
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
                 let links = [];
                 for(let i=1; i<=pdf.numPages; i++) {
                     const annots = await (await pdf.getPage(i)).getAnnotations();
-                    annots.forEach(a => { if(a.url) links.push(a.url); });
+                    annots.forEach(a => { if(a.url) links.push(`Pág ${i}: ${a.url}`); });
                 }
                 panel.style.display = 'block';
-                panel.innerHTML = `<div style="color:var(--brand); font-weight:900;">Links Encontrados:</div>` + links.map(l => `<div>${l}</div>`).join('');
+                panel.innerHTML = `<div style="color:var(--brand); font-weight:900; font-size:16px; margin-bottom:10px;">URL's Ocultos Detectados:</div>` + 
+                                  (links.length > 0 ? links.map(l => `<div style="font-size:12px; margin-bottom:5px; word-break:break-all;">${l}</div>`).join('') : "Ninguno.");
             }
-            // TXT
+            else if (activeTool === 'rfc_finder') {
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                const rfcRegex = /[A-Z&Ñ]{3,4}\d{6}[A-V1-9][A-Z1-9][0-9A]/gi;
+                let rfcs = new Set();
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const txt = await (await pdf.getPage(i)).getTextContent();
+                    const fullText = txt.items.map(s => s.str).join(" ");
+                    let match; while((match = rfcRegex.exec(fullText)) !== null) rfcs.add(match[0]);
+                }
+                panel.style.display = 'block';
+                panel.innerHTML = `<div style="color:var(--brand); font-weight:900; font-size:16px; margin-bottom:10px;">RFCs Detectados:</div>` + 
+                                  (rfcs.size > 0 ? Array.from(rfcs).map(r => `<div style="color:var(--success); font-family:monospace; margin-bottom:5px;">${r}</div>`).join('') : "Ninguno.");
+            }
+            else if (activeTool === 'validator') {
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                const c = pdfDoc.getCreator() || ""; const p = pdfDoc.getProducer() || "";
+                let altered = (c !== p && p !== "");
+                panel.style.display = 'block';
+                panel.innerHTML = `<div style="color:${altered?'var(--danger)':'var(--success)'}; font-weight:900; font-size:16px;">Veredicto Forense:</div>
+                                   <div style="font-size:13px; margin-top:10px;">${altered?'⚠️ Posible alteración. Diferentes softwares detectados en la vida del archivo.':'✓ Estructura consistente. Sin rastros de alteración.'}</div>
+                                   <div style="font-size:11px; margin-top:5px; color:var(--text-muted);">Creator: ${c} <br> Producer: ${p}</div>`;
+            }
             else if (activeTool === 'txt') {
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
                 let txt = "";
                 for(let i=1; i<=pdf.numPages; i++) txt += (await (await pdf.getPage(i)).getTextContent()).items.map(s=>s.str).join(" ") + "\n";
-                saveAs(new Blob([txt], {type: "text/plain"}), `TextoPuro.txt`);
+                saveAs(new Blob([txt], {type: "text/plain;charset=utf-8"}), `TextoPuro.txt`);
             }
-            // IMG 2 PDF
+
+            // =====================================
+            // IV. OPTIMIZACIÓN Y REPARACIÓN
+            // =====================================
             else if (activeTool === 'img2pdf') {
                 const pdfDoc = await PDFLib.PDFDocument.create();
                 const mode = document.getElementById('imgMode').value;
                 for (let file of currentFiles) {
-                    const arrayBuffer = await file.arrayBuffer();
-                    let img = file.type.includes('png') ? await pdfDoc.embedPng(arrayBuffer) : await pdfDoc.embedJpg(arrayBuffer);
+                    const arr = await file.arrayBuffer();
+                    let img = file.type.includes('png') ? await pdfDoc.embedPng(arr) : await pdfDoc.embedJpg(arr);
                     if(mode === 'white') {
-                        const page = pdfDoc.addPage([612, 792]);
-                        const dims = img.scaleToFit(500, 700);
-                        page.drawImage(img, { x: (612 - dims.width)/2, y: (792 - dims.height)/2, width: dims.width, height: dims.height });
+                        const p = pdfDoc.addPage([612, 792]);
+                        const d = img.scaleToFit(500, 700);
+                        p.drawImage(img, { x: (612-d.width)/2, y: (792-d.height)/2, width: d.width, height: d.height });
                     } else {
-                        const page = pdfDoc.addPage([img.width, img.height]);
-                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                        const p = pdfDoc.addPage([img.width, img.height]);
+                        p.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
                     }
                 }
                 descargarBlob(await pdfDoc.save(), `Fotos.pdf`);
             }
-            // FLATTEN
             else if (activeTool === 'flatten') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
                 const form = pdfDoc.getForm(); if(form) form.flatten(); 
                 descargarBlob(await pdfDoc.save(), `Aplanado.pdf`);
             }
-            // COMPRESS
             else if (activeTool === 'compress') {
-                // Truco de renderizado a baja escala
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
                 const newPdf = await PDFLib.PDFDocument.create();
-                const cvs = document.createElement('canvas');
-                const ctx = cvs.getContext('2d');
+                const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
                 for(let i=1; i<=pdf.numPages; i++) {
-                    const p = await pdf.getPage(i);
-                    const vp = p.getViewport({scale: 0.8}); // Baja resolución
+                    const p = await pdf.getPage(i); const vp = p.getViewport({scale: 1.5}); // HD Render
                     cvs.width = vp.width; cvs.height = vp.height;
                     await p.render({canvasContext: ctx, viewport: vp}).promise;
-                    const imgData = cvs.toDataURL("image/jpeg", 0.5); // Compresión 50%
-                    const img = await newPdf.embedJpg(imgData);
+                    const img = await newPdf.embedJpg(cvs.toDataURL("image/jpeg", 0.7)); // Compresión 70%
                     const np = newPdf.addPage([vp.width, vp.height]);
                     np.drawImage(img, { x:0, y:0, width:vp.width, height:vp.height });
                 }
                 descargarBlob(await newPdf.save(), `Comprimido.pdf`);
             }
-            // GHOST
             else if (activeTool === 'ghost') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                pdfDoc.setTitle(' '); pdfDoc.setAuthor(' '); pdfDoc.setCreator(' ');
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                pdfDoc.setTitle(' '); pdfDoc.setAuthor(' '); pdfDoc.setCreator(' '); pdfDoc.setProducer(' ');
                 descargarBlob(await pdfDoc.save(), `Ghost.pdf`);
             }
-            // HEAL
             else if (activeTool === 'heal') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer(), { ignoreEncryption: true });
-                descargarBlob(await pdfDoc.save(), `Sanado.pdf`);
+                // Reconstrucción copiando a un documento virgen para regenerar tabla XREF
+                const doc = await PDFLib.PDFDocument.load(getPdfLibBuf(), { ignoreEncryption: true });
+                const newDoc = await PDFLib.PDFDocument.create();
+                const copiedPages = await newDoc.copyPages(doc, doc.getPageIndices());
+                copiedPages.forEach(p => newDoc.addPage(p));
+                descargarBlob(await newDoc.save(), `Sanado.pdf`);
             }
-            // OCR OPTIMIZER (Grayscale)
             else if (activeTool === 'ocr_opt') {
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
                 const newPdf = await PDFLib.PDFDocument.create();
                 const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
                 for(let i=1; i<=pdf.numPages; i++) {
-                    const p = await pdf.getPage(i); const vp = p.getViewport({scale: 1.0});
+                    const p = await pdf.getPage(i); const vp = p.getViewport({scale: 1.5});
                     cvs.width = vp.width; cvs.height = vp.height;
                     await p.render({canvasContext: ctx, viewport: vp}).promise;
-                    // Blanco y Negro nativo
-                    ctx.globalCompositeOperation = 'saturation';
-                    ctx.fillStyle = "black"; ctx.fillRect(0,0,cvs.width,cvs.height);
-                    const img = await newPdf.embedJpg(cvs.toDataURL("image/jpeg"));
+                    // Filtro Grayscale JS
+                    ctx.globalCompositeOperation = 'color';
+                    ctx.fillStyle = "#fff"; ctx.fillRect(0,0,cvs.width,cvs.height);
+                    const img = await newPdf.embedJpg(cvs.toDataURL("image/jpeg", 0.8));
                     const np = newPdf.addPage([vp.width, vp.height]);
                     np.drawImage(img, { x:0, y:0, width:vp.width, height:vp.height });
                 }
                 descargarBlob(await newPdf.save(), `B_N.pdf`);
             }
-            // RENAME
-            else if (activeTool === 'rename') {
-                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(await currentFiles[0].arrayBuffer())}).promise;
+            else if (activeTool === 'rename_auto') {
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
                 const txt = await (await pdf.getPage(1)).getTextContent();
-                let name = txt.items.length > 0 ? txt.items[0].str.substring(0, 15).replace(/[^a-zA-Z0-9]/g, '') : "Renombrado";
-                saveAs(new Blob([await currentFiles[0].arrayBuffer()]), `${name}.pdf`);
+                let name = txt.items.length > 0 ? txt.items[0].str.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20) : "Organizado";
+                descargarBlob(getPdfLibBuf(), `${name}.pdf`);
             }
-            // PDF/A
-            else if (activeTool === 'pdfa') {
-                const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
-                pdfDoc.setTitle('Documento PDF/A'); // Simulación Metadata base
-                descargarBlob(await pdfDoc.save(), `PDFA.pdf`);
+            else if (activeTool === 'purge_annots') {
+                const pdfDoc = await PDFLib.PDFDocument.load(getPdfLibBuf());
+                pdfDoc.getPages().forEach(p => { p.node.delete(PDFLib.PDFName.of('Annots')); });
+                descargarBlob(await pdfDoc.save(), `Sin_Capas.pdf`);
+            }
+            else if (activeTool === 'extract_email') {
+                const pdf = await pdfjsLib.getDocument({data: new Uint8Array(getPdfJsBuf())}).promise;
+                const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+                let emails = new Set();
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const txt = await (await pdf.getPage(i)).getTextContent();
+                    const fullText = txt.items.map(s => s.str).join(" ");
+                    let match; while((match = emailRegex.exec(fullText)) !== null) emails.add(match[0]);
+                }
+                panel.style.display = 'block';
+                panel.innerHTML = `<div style="color:var(--brand); font-weight:900; font-size:16px; margin-bottom:10px;">Emails Extraídos:</div>` + 
+                                  (emails.size > 0 ? Array.from(emails).map(r => `<div style="color:var(--accent); font-family:monospace; margin-bottom:5px;">${r}</div>`).join('') : "Ninguno.");
             }
 
         } catch(e) {
             console.error(e);
-            alert("Error en la ejecución del algoritmo: " + e.message);
+            alert("Error en el motor de ejecución: " + e.message);
         } finally {
             btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> EJECUTAR ALGORITMO FORENSE`;
             btn.disabled = false;
