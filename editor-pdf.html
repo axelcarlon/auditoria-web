@@ -51,19 +51,15 @@
         .control-input, .control-select { width: 100%; background: var(--bg-primary); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 14px 15px; border-radius: 8px; font-size: 14px; font-family: monospace; outline: none; transition: 0.3s;}
         .control-input:focus, .control-select:focus { border-color: var(--brand); box-shadow: 0 0 10px var(--brand-glow);}
 
-        .btn-action { background: var(--brand); color: white; border: none; padding: 20px 40px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
+        /* Contenedor Interactivo (Sign Táctico Normal) */
+        .preview-container { display: none; background: #000000; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px; text-align: center; position: relative; overflow: auto; max-height: 600px;}
+        .preview-title { font-size: 12px; color: var(--warning); text-transform: uppercase; font-weight: 900; margin-bottom: 15px; letter-spacing: 1px;}
+        #pdfCanvas { max-width: 100%; height: auto; border: 1px solid rgba(255,255,255,0.2); cursor: crosshair; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: white;}
+        .coords-badge { position: absolute; top: 20px; left: 20px; background: var(--brand); color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 900; font-family: monospace; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none; z-index: 10;}
 
-        .result-panel { display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; font-family: monospace;}
-        .meta-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);}
-        .meta-row:last-child { border-bottom: none;}
-        .meta-key { color: var(--text-muted); font-weight: bold;}
-        .meta-val { color: var(--success); font-weight: 900; text-align: right; max-width: 60%; word-wrap: break-word;}
-
-        /* ---------------------------------------------------
-           LA CÚSPIDE: EDITOR LIBRE PRO (CANVAS INTERACTIVO)
-           --------------------------------------------------- */
+        /* ===================================================
+           ESTILOS LA CÚSPIDE: EDITOR LIBRE PRO (CANVAS INTERACTIVO)
+           =================================================== */
         .editor-pro-container { display: none; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: #000; grid-template-columns: 280px 1fr; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
         .editor-sidebar { background: var(--bg-primary); padding: 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px; overflow-y: auto;}
@@ -89,6 +85,16 @@
         .page-btn { background: transparent; border: none; color: var(--brand); font-weight: bold; padding: 10px; cursor: pointer;}
         .page-btn:hover { color: white;}
 
+        .btn-action { background: var(--brand); color: white; border: none; padding: 20px 40px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;}
+
+        .result-panel { display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-top: 20px; font-family: monospace;}
+        .meta-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);}
+        .meta-row:last-child { border-bottom: none;}
+        .meta-key { color: var(--text-muted); font-weight: bold;}
+        .meta-val { color: var(--success); font-weight: 900; text-align: right; max-width: 60%; word-wrap: break-word;}
+
         /* BENTO GRID 34 TOOLS */
         .grid-header { font-size: 20px; font-weight: 900; color: white; margin: 50px 0 20px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--border); padding-bottom: 10px;}
         .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;}
@@ -106,6 +112,7 @@
 
         @media (max-width: 900px) {
             .workspace { padding: 20px; }
+            .workspace-header { flex-direction: column; align-items: flex-start; }
             .tools-grid { grid-template-columns: 1fr; }
             .editor-pro-container { grid-template-columns: 1fr; }
             .editor-sidebar { border-right: none; border-bottom: 1px solid var(--border); }
@@ -120,13 +127,13 @@
     <div class="header-section" id="mainHeader">
         <div class="header-badge">FRAMEWORK DE MANIPULACIÓN BINARIA CÚSPIDE (RAM)</div>
         <h1 style="font-size: 42px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">AuditorIA PDF Studio Pro</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 900px; margin: 0 auto;">El ecosistema definitivo. 34 súper herramientas paramétricas para editar, extraer, auditar y blindar expedientes. El procesamiento ocurre al 100% en la memoria de tu equipo. Cero servidores, cero fugas de información.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 900px; margin: 0 auto;">El ecosistema definitivo. 34 súper herramientas paramétricas para editar, extraer, auditar y blindar expedientes. El procesamiento ocurre al 100% en la memoria de tu equipo. Cero servidores, cero fugas de información, confidencialidad extrema.</p>
     </div>
 
     <div class="workspace" id="workspace">
         <div class="workspace-header">
             <button class="btn-close" onclick="cerrarWorkspace()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Volver al Studio
             </button>
             <h2 class="workspace-title" id="wsTitle">Herramienta</h2>
@@ -151,7 +158,7 @@
                     <h4>Paginación</h4>
                     <div class="page-controls">
                         <button class="page-btn" onclick="cambiarPaginaEditor(-1)">◀ Ant</button>
-                        <span id="editorPageIndicator" style="font-size:14px; font-weight:bold;">Pág 1</span>
+                        <span id="editorPageIndicator" style="font-size:14px; font-weight:bold; color:white;">Pág 1</span>
                         <button class="page-btn" onclick="cambiarPaginaEditor(1)">Sig ▶</button>
                     </div>
                 </div>
@@ -199,6 +206,12 @@
                 <div id="annotationLayer"></div> </div>
             
         </div>
+        <div class="preview-container" id="previewContainer">
+            <div class="coords-badge" id="coordBadge">X: -- | Y: -- (Centro por defecto)</div>
+            <div class="preview-title" id="previewTitle">Modo Interactivo: Haz clic en el documento para marcar la coordenada exacta</div>
+            <canvas id="pdfCanvas"></canvas>
+        </div>
+
         <button id="btnEjecutar" class="btn-action" onclick="ejecutarMotorCentral()">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span id="txtBtnEjecutar">EJECUTAR ALGORITMO FORENSE</span>
@@ -264,12 +277,12 @@
             <div class="tool-card" onclick="abrirHerramienta('sign')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div>
                 <h3 class="tool-title">10. Estampador de Firmas Táctico</h3>
-                <p class="tool-desc">Firma interactiva. Elige qué páginas firmar ("1,4, ultima") y estampa tu firma en coordenadas automáticas inferiores.</p>
+                <p class="tool-desc">Firma interactiva. Elige qué páginas firmar ("1,4, ultima") y haz clic en el documento para fijar las coordenadas exactas de la rúbrica.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('watermark')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
                 <h3 class="tool-title">11. Sello de Agua Paramétrico</h3>
-                <p class="tool-desc">Inyecta textos irreplicables en diagonal. Ajusta colores de alerta y define en qué páginas debe aparecer.</p>
+                <p class="tool-desc">Inyecta textos irreplicables en diagonal. Ajusta opacidad, colores de alerta y selecciona el modo de patrón (diagonal o mosaico).</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div>
@@ -285,12 +298,12 @@
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
                 <h3 class="tool-title">14. Censura Inteligente (Redaction)</h3>
-                <p class="tool-desc">Usa expresiones regulares (RegEx) para censurar y tachar automáticamente todas las CLABEs interbancarias del documento.</p>
+                <p class="tool-desc">Dibuja cajas negras, o usa expresiones regulares (RegEx) para tachar automáticamente todas las CLABEs interbancarias.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg></div>
-                <h3 class="tool-title">15. Destructor de Enlaces</h3>
-                <p class="tool-desc">Escanea el PDF y desactiva todos los hipervínculos clickeables ocultos para evitar ataques de Phishing en la empresa.</p>
+                <h3 class="tool-title">15. Destructor de Enlaces (Anti-Phishing)</h3>
+                <p class="tool-desc">Escanea el PDF y desactiva todos los hipervínculos clickeables ocultos para evitar ciberataques en la empresa.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
@@ -330,7 +343,7 @@
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg></div>
                 <h3 class="tool-title">22. Radar de Códigos QR</h3>
-                <p class="tool-desc">Escanea internamente los QR del documento y valida si los enlaces dirigen al SAT o a sitios de Phishing.</p>
+                <p class="tool-desc">Escanea internamente los QR del documento y valida si los enlaces dirigen al SAT o a sitios maliciosos.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div>
@@ -340,12 +353,12 @@
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg></div>
                 <h3 class="tool-title">24. Validador de Fuentes</h3>
-                <p class="tool-desc">Caza falsificaciones revisando si el documento tiene inyectadas fuentes irregulares o parches pegados con Photoshop.</p>
+                <p class="tool-desc">Caza falsificaciones revisando si el documento tiene inyectadas fuentes irregulares o parches de Photoshop.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path></svg></div>
                 <h3 class="tool-title">25. Extractor de Texto Puro</h3>
-                <p class="tool-desc">Destruye todo el diseño y te entrega un archivo .TXT plano. Ideal para entrenar tus propios modelos de Inteligencia Artificial.</p>
+                <p class="tool-desc">Destruye todo el diseño y te entrega un archivo .TXT plano. Ideal para entrenar modelos de IA propios.</p>
             </div>
         </div>
 
@@ -354,32 +367,32 @@
             <div class="tool-card" onclick="abrirHerramienta('img2pdf')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">26. Conversor de Materialidad</h3>
-                <p class="tool-desc">Pasa fotos (JPG/PNG) a PDF. Modos: "Hoja Blanca Centrada" o "Adaptación Nativa". Soporta imágenes gigantes y las auto-escala.</p>
+                <p class="tool-desc">Pasa fotos (JPG/PNG) a PDF. Modos: "Hoja Blanca Centrada" o "Adaptación Nativa". Soporta imágenes gigantes.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('flatten')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
                 <h3 class="tool-title">27. Aplanadora Total (Flatten)</h3>
-                <p class="tool-desc">Funde campos editables y anotaciones en una sola imagen incrustada. Imposibilita la alteración oculta de números del SAT.</p>
+                <p class="tool-desc">Funde campos editables y anotaciones en una sola imagen incrustada. Imposibilita la alteración oculta de números.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
                 <h3 class="tool-title">28. Compresión Tributaria (< 3MB)</h3>
-                <p class="tool-desc">Aplica perfiles de compresión extrema para que tus expedientes pesados puedan cargarse al Buzón Tributario sin ser rechazados.</p>
+                <p class="tool-desc">Aplica perfiles de compresión extrema para que tus expedientes puedan cargarse al Buzón Tributario.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('ghost')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
                 <h3 class="tool-title">29. Purga de Metadatos (Ghost)</h3>
-                <p class="tool-desc">Borra tu huella digital. Elimina al creador original y sobreescribe las fechas en el código fuente para máxima privacidad.</p>
+                <p class="tool-desc">Borra la huella digital. Elimina al creador original y sobreescribe las fechas en el código fuente para máxima privacidad.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
                 <h3 class="tool-title">30. Sanador de PDFs Corruptos</h3>
-                <p class="tool-desc">Fuerza la reconstrucción de tablas XREF. Revive archivos que envían error o se ven en blanco en Acrobat Reader.</p>
+                <p class="tool-desc">Fuerza la reconstrucción de tablas XREF dañadas. Revive archivos que envían error o se ven en blanco en Acrobat Reader.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
                 <h3 class="tool-title">31. Optimizador OCR</h3>
-                <p class="tool-desc">Inyecta contraste algorítmico y convierte documentos borrosos a Blanco y Negro puro para facilitar auditorías de lectura.</p>
+                <p class="tool-desc">Inyecta contraste algorítmico y convierte documentos borrosos a Blanco y Negro puro para facilitar auditorías.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg></div>
@@ -389,7 +402,7 @@
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
                 <h3 class="tool-title">33. Purgador de Capas Ocultas</h3>
-                <p class="tool-desc">Quita fondos basura o elementos que los defraudadores ponen en capas invisibles para engañar a los sistemas de escaneo.</p>
+                <p class="tool-desc">Quita fondos basura o elementos que los defraudadores ponen en capas invisibles para engañar a los sistemas.</p>
             </div>
             <div class="tool-card" onclick="toastConstruccion()">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
@@ -404,12 +417,13 @@
 <script src="footer.js"></script>
 
 <script>
-    // Inicializar Worker de PDF.js para renderizado de Previsualización y Editor Pro
+    // Inicializar Worker de PDF.js para renderizado de Previsualización Táctica
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
     let activeTool = '';
     let currentFiles = [];
     let lastScrollPos = 0; // Memoria de Scroll
+    let clickCoords = { x: -1, y: -1 }; 
     
     // Variables Globales Editor Pro
     let editorConfig = { tool: 'text', color: '#000000', size: 14 };
@@ -448,7 +462,8 @@
         drop.classList.add('filled');
         document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM listos para procesar.`;
 
-        // Disparar previsualización en herramientas visuales
+        // Disparar previsualización táctica (Cúspide / Sign)
+        if(activeTool === 'sign') renderPreviewPDF();
         if(activeTool === 'editor') {
             currentEditorPage = 1;
             editorAnnotations = [];
@@ -461,6 +476,7 @@
 
         activeTool = tool;
         currentFiles = [];
+        clickCoords = { x: -1, y: -1 }; 
         drop.classList.remove('filled');
         document.getElementById('statusFile').innerText = "";
         document.getElementById('resultPanel').style.display = 'none';
@@ -474,7 +490,7 @@
         const inputF = document.getElementById('inputFile');
         const dropDesc = document.getElementById('dropDesc');
         
-        // Hide/Show containers based on tool
+        // Contenedores a ocultar/mostrar
         const preview = document.getElementById('previewContainer');
         const editorPro = document.getElementById('editorProContainer');
         const btnEjecutar = document.getElementById('btnEjecutar');
@@ -497,7 +513,7 @@
         switch(tool) {
             case 'editor':
                 wsTitle.innerText = "1. Editor Libre (Canvas Pro)";
-                wsDesc.innerText = "Sube un PDF. Selecciona la herramienta, elige color y tamaño, y haz clic directo en el lienzo para inyectar textos, palomitas de revisión o cajas de censura.";
+                wsDesc.innerText = "Sube un PDF. Selecciona la herramienta de la barra izquierda, elige color y tamaño, y haz clic directo en el documento para inyectar textos, palomitas de revisión o cajas de censura.";
                 inputF.multiple = false;
                 editorPro.style.display = 'grid'; // Mostrar UI Pro
                 document.getElementById('txtBtnEjecutar').innerText = "GUARDAR CAMBIOS E IMPRIMIR PDF";
@@ -563,18 +579,18 @@
                 break;
             case 'sign':
                 wsTitle.innerText = "10. Estampador de Firmas Táctico";
-                wsDesc.innerText = "Elige qué rango de páginas quieres firmar de forma masiva en todos los contratos. (Ej. 'ultima', 'todas', '1-5').";
+                wsDesc.innerText = "Sube contratos, elige qué página o rango quieres firmar, y usa tu mouse para decirle al algoritmo en qué coordenadas exactas debe incrustar tu firma transparente.";
                 inputF.multiple = true;
                 dInputs.innerHTML = `
                     <div class="control-group">
                         <label class="control-label">Rango de Páginas a Firmar</label>
-                        <input type="text" id="signPageNum" class="control-input" value="ultima" placeholder="Ej. 'ultima', 'todas', '1, 3-5'">
+                        <input type="text" id="signPageNum" class="control-input" value="ultima" onchange="renderPreviewPDF()" placeholder="Ej. 'ultima', 'todas', '1, 3-5'">
                     </div>
                     <div class="control-group">
                         <label class="control-label">Archivo de Firma (.PNG transparente)</label>
                         <input type="file" id="sigInput" accept="image/png" class="control-input" style="padding: 10px;">
                     </div>
-                    <p style="color:var(--text-muted); font-size:12px; grid-column: span 2; margin-top:0;">*El motor firmará automáticamente todos los documentos en la esquina inferior derecha de las páginas indicadas.</p>
+                    <p style="color:var(--text-muted); font-size:12px; grid-column: span 2; margin-top:0;">*Sube el PDF para abrir la vista interactiva. El motor firmará automáticamente todos los documentos en la página y coordenada que indiques.</p>
                 `;
                 break;
             case 'watermark':
@@ -648,8 +664,13 @@
         window.scrollTo(0, lastScrollPos); // Regresa a donde estaba
     }
 
+    function toastConstruccion() {
+        if(typeof window.showToast === 'function') window.showToast("Módulo avanzado programado para la V2.", "warning");
+        else alert("Módulo avanzado programado para la V2.");
+    }
+
     // =========================================================================
-    // LÓGICA DEL EDITOR LIBRE PRO (CANVAS INTERACTIVO)
+    // LÓGICA DEL EDITOR LIBRE PRO (CANVAS INTERACTIVO WYSIWYG)
     // =========================================================================
     
     function setEditorTool(tool) {
@@ -694,7 +715,8 @@
             const containerHeight = window.innerHeight * 0.70;
             const unscaledViewport = page.getViewport({scale: 1.0});
             let scale = containerHeight / unscaledViewport.height;
-            if(scale > 1.5) scale = 1.5; // Limitar zoom masivo
+            if(scale > 1.5) scale = 1.5; // Limitar zoom masivo para que no se deforme
+            if(window.innerWidth < 768) scale = window.innerWidth / unscaledViewport.width; // Responsivo celular
             
             const viewport = page.getViewport({scale: scale}); 
             
@@ -710,7 +732,7 @@
             layer.style.top = canvas.offsetTop + 'px';
             layer.style.left = canvas.offsetLeft + 'px';
             
-            // Guardar escalas reales de conversión a PDF
+            // Guardar escalas reales de conversión a PDF para cuando se imprima
             renderScaleX = unscaledViewport.width / canvas.clientWidth;
             renderScaleY = unscaledViewport.height / canvas.clientHeight;
 
@@ -752,7 +774,7 @@
         const layer = document.getElementById('annotationLayer');
         layer.innerHTML = '';
         
-        editorAnnotations.forEach((ann, idx) => {
+        editorAnnotations.forEach((ann) => {
             if(ann.page !== currentEditorPage) return;
 
             const el = document.createElement('div');
@@ -770,7 +792,7 @@
                 el.style.width = (ann.size * 4) + 'px';
                 el.style.height = (ann.size * 1.2) + 'px';
                 el.style.backgroundColor = ann.color;
-                el.style.opacity = '0.5';
+                el.style.opacity = '1';
             }
             layer.appendChild(el);
         });
@@ -791,17 +813,83 @@
     }
 
     // =========================================================================
+    // LÓGICA DEL RENDERIZADOR BÁSICO (SOLO PARA FIRMAS)
+    // =========================================================================
 
+    async function renderPreviewPDF() {
+        if(currentFiles.length === 0 || activeTool !== 'sign') return;
+
+        try {
+            // Soporta números o palabras
+            let reqPageRaw = document.getElementById('signPageNum').value.trim().toLowerCase();
+            let pageNum = 1;
+            
+            const file = currentFiles[0]; 
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
+            const pdf = await loadingTask.promise;
+            
+            // Evaluar lógica de "ultima"
+            if(reqPageRaw === 'ultima' || reqPageRaw === 'todas') {
+                pageNum = pdf.numPages;
+            } else {
+                let firstNum = parseInt(reqPageRaw.split(',')[0].split('-')[0]);
+                pageNum = isNaN(firstNum) ? 1 : firstNum;
+            }
+
+            if(pageNum > pdf.numPages) pageNum = pdf.numPages;
+            if(pageNum < 1) pageNum = 1;
+            
+            const page = await pdf.getPage(pageNum);
+            const canvas = document.getElementById('pdfCanvas');
+            const context = canvas.getContext('2d');
+            
+            const isMobile = window.innerWidth < 768;
+            const viewport = page.getViewport({scale: isMobile ? 0.6 : 1.2}); 
+            
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({canvasContext: context, viewport: viewport}).promise;
+            
+            document.getElementById('previewContainer').style.display = 'block';
+
+            // Lógica Táctica: Traducción de Coordenadas Pantalla -> Coordenadas PDF Puras
+            canvas.onclick = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                const canvasX = (e.clientX - rect.left) * scaleX;
+                const canvasY = (e.clientY - rect.top) * scaleY;
+
+                // PDF-Lib usa bottom-left como origen (0,0). Viewport de JS usa top-left.
+                clickCoords.x = canvasX / (isMobile ? 0.6 : 1.2);
+                clickCoords.y = (canvas.height - canvasY) / (isMobile ? 0.6 : 1.2);
+
+                document.getElementById('coordBadge').innerText = `BLANCO FIJADO -> X: ${Math.round(clickCoords.x)} | Y: ${Math.round(clickCoords.y)}`;
+                document.getElementById('coordBadge').style.background = "var(--success)";
+            };
+
+        } catch(e) {
+            console.error("Fallo visual: ", e);
+        }
+    }
+
+    // Parseador Inteligente de Rangos Extendidos (Soporta "todas", "ultima", "1-5", "pares")
     function parseRange(str, maxPages) {
         if(str === 'todas' || str === '') return Array.from({length: maxPages}, (_, i) => i);
         if(str === 'ultima') return [maxPages - 1];
+        
         let set = new Set();
         str.split(',').forEach(part => {
             if(part.includes('-')) {
                 let [s, e] = part.split('-').map(n => parseInt(n.trim()));
                 let realStart = Math.min(s,e);
                 let realEnd = Math.max(s,e);
-                for(let i=realStart; i<=realEnd; i++) if(i>0 && i<=maxPages) set.add(i-1);
+                for(let i=realStart; i<=realEnd; i++) {
+                    if(i>0 && i<=maxPages) set.add(i-1);
+                }
             } else {
                 let n = parseInt(part.trim());
                 if(!isNaN(n) && n>0 && n<=maxPages) set.add(n-1);
@@ -818,10 +906,14 @@
         return { r: r / 255, g: g / 255, b: b / 255 };
     }
 
-    // MOTOR CENTRAL EJECUTOR
+    // =========================================================================
+    // MOTOR CENTRAL DE BYTES BLINDADO (AQUÍ VIVEN LAS SÚPER FUNCIONES)
+    // =========================================================================
     async function ejecutarMotorCentral() {
         if(currentFiles.length === 0) {
-            alert("La bóveda está vacía. Sube archivos primero."); return;
+            if(typeof window.showToast === 'function') window.showToast("Sube archivos a la bóveda primero.", "error");
+            else alert("La bóveda está vacía. Sube archivos primero.");
+            return;
         }
 
         const btn = document.getElementById('btnEjecutar');
@@ -832,13 +924,12 @@
         try {
             
             // ==========================================
-            // 1. EDITOR LIBRE PRO (CANVAS)
+            // 1. EDITOR LIBRE PRO (CANVAS WYSIWYG)
             // ==========================================
             if(activeTool === 'editor') {
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
                 const pages = pdfDoc.getPages();
-                
                 const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
                 
                 // Inyectar todas las anotaciones guardadas
@@ -849,13 +940,13 @@
                     // Traducción matemática de coordenadas Screen -> PDF
                     const pdfX = ann.x * renderScaleX;
                     const pdfY = height - (ann.y * renderScaleY); // Invertir Y para PDF-Lib
-                    
                     const cRgb = hexToRgb(ann.color);
 
                     if(ann.type === 'text') {
+                        // Offset visual para que quede exactamente donde se hizo el click
                         page.drawText(ann.text, { x: pdfX, y: pdfY - (ann.size*0.8), size: ann.size, font: helveticaFont, color: PDFLib.rgb(cRgb.r, cRgb.g, cRgb.b) });
                     } else if (ann.type === 'box') {
-                        page.drawRectangle({ x: pdfX, y: pdfY - (ann.size), width: ann.size * 4, height: ann.size * 1.2, color: PDFLib.rgb(cRgb.r, cRgb.g, cRgb.b), opacity: 0.5 });
+                        page.drawRectangle({ x: pdfX, y: pdfY - (ann.size), width: ann.size * 4, height: ann.size * 1.2, color: PDFLib.rgb(cRgb.r, cRgb.g, cRgb.b), opacity: 1 });
                     }
                 });
                 
@@ -983,7 +1074,7 @@
             }
 
             // ==========================================
-            // 10. ESTAMPADOR DE FIRMAS MASIVO
+            // 10. ESTAMPADOR DE FIRMAS MASIVO (TÁCTICO)
             // ==========================================
             else if (activeTool === 'sign') {
                 const sigInput = document.getElementById('sigInput');
@@ -1003,8 +1094,9 @@
                     targetPages.forEach(idx => {
                         const page = pages[idx];
                         const { width, height } = page.getSize();
-                        // Coordenadas automáticas si no hizo clic
-                        let posX = width - 180; let posY = 50; 
+                        // Coordenadas automáticas o tácticas
+                        let posX = clickCoords.x !== -1 ? clickCoords.x : width - 180;
+                        let posY = clickCoords.y !== -1 ? clickCoords.y : 50; 
                         const dims = sigImg.scaleToFit(150, 150);
                         page.drawImage(sigImg, { x: posX - (dims.width/2), y: posY - (dims.height/2), width: dims.width, height: dims.height });
                     });
@@ -1019,13 +1111,15 @@
                         const pages = pdfDoc.getPages();
                         
                         let targetPages = parseRange(reqPageRaw, pages.length);
-                        if(targetPages.length === 0) targetPages = [pages.length-1];
+                        if(targetPages.length === 0) targetPages = [pages.length-1]; // Blindaje
 
                         targetPages.forEach(idx => {
                             const page = pages[idx];
                             const { width, height } = page.getSize();
+                            let posX = clickCoords.x !== -1 ? clickCoords.x : width - 180;
+                            let posY = clickCoords.y !== -1 ? clickCoords.y : 50;
                             const dims = sigImg.scaleToFit(150, 150);
-                            page.drawImage(sigImg, { x: width - 180 - (dims.width/2), y: 50 - (dims.height/2), width: dims.width, height: dims.height });
+                            page.drawImage(sigImg, { x: posX - (dims.width/2), y: posY - (dims.height/2), width: dims.width, height: dims.height });
                         });
                         zip.file(`Firmado_${currentFiles[i].name}`, await pdfDoc.save());
                     }
@@ -1043,7 +1137,7 @@
                 try {
                     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { password: pwd });
                     descargarBlob(await pdfDoc.save(), `Desbloqueado_${Date.now()}.pdf`);
-                } catch(err) { throw new Error("Contraseña incorrecta."); }
+                } catch(err) { throw new Error("Contraseña incorrecta o el documento no es estándar."); }
             }
 
             // ==========================================
@@ -1061,7 +1155,8 @@
                     <div class="meta-row"><span class="meta-key">Autor Registrado:</span> <span class="meta-val">${pdfDoc.getAuthor() || "NO DETECTADO"}</span></div>
                     <div class="meta-row"><span class="meta-key">Software Creador:</span> <span class="meta-val" style="color:var(--warning)">${pdfDoc.getCreator() || "NO DETECTADO"}</span></div>
                     <div class="meta-row"><span class="meta-key">Fecha de Creación:</span> <span class="meta-val">${pdfDoc.getCreationDate() ? pdfDoc.getCreationDate().toLocaleString() : "NO DETECTADA"}</span></div>
-                    <div class="meta-row"><span class="meta-key">Páginas:</span> <span class="meta-val" style="color:var(--text-main)">${pdfDoc.getPageCount()}</span></div>
+                    <div class="meta-row"><span class="meta-key">Última Modificación:</span> <span class="meta-val">${pdfDoc.getModificationDate() ? pdfDoc.getModificationDate().toLocaleString() : "NO DETECTADA"}</span></div>
+                    <div class="meta-row"><span class="meta-key">Total de Páginas:</span> <span class="meta-val" style="color:var(--text-main)">${pdfDoc.getPageCount()}</span></div>
                 `;
             }
 
@@ -1081,7 +1176,7 @@
                     
                     if(mode === 'white') {
                         const page = pdfDoc.addPage([612, 792]);
-                        const dims = img.scaleToFit(500, 700);
+                        const dims = img.scaleToFit(500, 700); // Deja margen
                         page.drawImage(img, { x: (612 - dims.width)/2, y: (792 - dims.height)/2, width: dims.width, height: dims.height });
                     } else {
                         const page = pdfDoc.addPage([img.width, img.height]);
