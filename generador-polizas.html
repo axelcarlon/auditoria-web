@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Pólizas IA | AuditorIA</title>
-    <meta name="description" content="Convierte masivamente tus XML a pólizas contables (Layout Excel). Auto-clasifica los gastos usando reglas heurísticas.">
+    <meta name="description" content="Convierte masivamente tus XML a pólizas contables (Layout Excel y PDF). Auto-clasifica los gastos usando reglas heurísticas.">
     <link rel="canonical" href="https://auditoriaxml.mx/generador-polizas.html" />
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -81,19 +83,19 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">CONTABILIZACIÓN AUTOMATIZADA</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Generador de Pólizas IA</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga tus XML. El motor de heurística leerá las descripciones, auto-clasificará el gasto a la cuenta contable correcta y generará un layout de Excel balanceado listo para importar a tu ERP.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga tus XML. El motor de heurística leerá las descripciones, auto-clasificará el gasto y generará el Layout de importación masiva (Excel) y un Reporte Físico para impresión (PDF).</p>
     </div>
 
     <div id="mainForm">
         <div class="upload-section" id="dropZone">
             <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
             <h3 style="margin: 0 0 10px; font-size: 20px;">Lote de Facturas (Gastos)</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus XML recibidos (PUE/PPD) para detonar la clasificación.</p>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus XML recibidos para detonar la clasificación.</p>
             <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="compilarPolizas()" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="if(typeof consumirCredito === 'function'){consumirCredito(compilarPolizas)}else{compilarPolizas()}" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
             CLASIFICAR Y BALANCEAR PÓLIZAS
         </button>
@@ -139,7 +141,11 @@
             <button onclick="window.location.reload()" class="btn-secondary">Procesar Nuevo Lote</button>
             <button onclick="descargarExcelPolizas()" class="btn-action" style="flex: 2;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR LAYOUT ERP (EXCEL)
+                LAYOUT ERP (EXCEL)
+            </button>
+            <button onclick="descargarPDFPolizas()" class="btn-secondary" style="border-color: var(--danger); color: #FCA5A5; flex: 2;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                REPORTE IMPRESIÓN (PDF)
             </button>
         </div>
     </div>
@@ -179,6 +185,13 @@
 <script src="footer.js"></script>
 
 <script>
+    // Inicialización de pdfMake
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
+
     let currentFiles = [];
     let dbPolizas = []; // Estructura de partida doble por XML
     let totalCargosGenerales = 0;
@@ -211,7 +224,7 @@
                Array.from(node.getElementsByTagName(`pago20:${tagName}`)));
     }
 
-    // DICCIONARIO HEURÍSTICO DE AUTO-CLASIFICACIÓN (IA Basada en Reglas)
+    // DICCIONARIO HEURÍSTICO DE AUTO-CLASIFICACIÓN
     function clasificarGasto(conceptosRaw, emisorNombre) {
         const txt = (conceptosRaw + " " + emisorNombre).toLowerCase();
         
@@ -225,7 +238,6 @@
         if (txt.match(/hospedaje|hotel|viaticos|avion|vuelo|volaris|aeromexico/)) return { cta: '6000-008', nombre: 'Viáticos y Gastos de Viaje' };
         if (txt.match(/restaurante|comida|alimentos|consumo|starbucks|vips/)) return { cta: '6000-009', nombre: 'Atenciones y Consumos' };
         
-        // Fallback genérico
         return { cta: '6000-999', nombre: 'Gastos Generales por Clasificar' };
     }
 
@@ -254,7 +266,6 @@
                 
                 if(!cfdi || !emisor) continue;
                 
-                // Solo procesamos Ingresos (que para el receptor son Gastos) o Egresos puros.
                 const tipoXml = cfdi.getAttribute('TipoDeComprobante');
                 if(tipoXml !== 'I' && tipoXml !== 'E') continue;
 
@@ -264,11 +275,9 @@
                 const subtotal = parseFloat(cfdi.getAttribute('SubTotal') || 0);
                 const emisorNombre = emisor.getAttribute('Nombre') || "PROVEEDOR";
                 
-                // Extraer todo el texto de los conceptos para la IA
                 let textoConceptos = "";
                 getNodes(xml, 'Concepto').forEach(c => { textoConceptos += c.getAttribute('Descripcion') + " "; });
 
-                // Extracción precisa de impuestos (Priorizando Nodos Globales y validando sumas)
                 let iva = 0; let retencionesIVA = 0; let retencionesISR = 0;
                 
                 const traslados = getNodes(xml, 'Traslado');
@@ -284,10 +293,8 @@
                     if(imp === '001' || imp === 'ISR') retencionesISR += impVal;
                 });
 
-                // Auto-Clasificación IA
                 const clasificacion = clasificarGasto(textoConceptos, emisorNombre);
 
-                // Armado de la Póliza de Diario (Partida Doble Perfecta)
                 let asientos = [];
                 let polizaCargos = 0;
                 let polizaAbonos = 0;
@@ -302,18 +309,10 @@
 
                 const descGeneral = `F-${folio} ${emisorNombre.substring(0,30)}`;
 
-                // 1. Cargo al Gasto (Subtotal)
                 if(subtotal > 0) agregarAsiento(`${clasificacion.cta} - ${clasificacion.nombre}`, descGeneral, subtotal, 0);
-                
-                // 2. Cargo al IVA Pendiente de Pago
                 if(iva > 0) agregarAsiento("1190-000 - IVA Pendiente de Pago", descGeneral, iva, 0);
-
-                // 3. Abono a Retenciones (Pasivo)
                 if(retencionesIVA > 0) agregarAsiento("2130-001 - Retención de IVA", descGeneral, 0, retencionesIVA);
                 if(retencionesISR > 0) agregarAsiento("2130-002 - Retención de ISR", descGeneral, 0, retencionesISR);
-
-                // 4. Abono a Proveedores (Total) - Cuadre matemático
-                // En un ERP real la cuenta del proveedor se auto-crea (2010-001, 2010-002). Usamos una genérica.
                 agregarAsiento("2010-000 - Proveedores Nacionales", descGeneral, 0, total);
 
                 dbPolizas.push({
@@ -323,7 +322,7 @@
                     folio: folio,
                     asientos: asientos,
                     clasificacionIA: clasificacion.nombre,
-                    cuadre: Math.abs(polizaCargos - polizaAbonos) < 0.05 // Tolerancia de centavos
+                    cuadre: Math.abs(polizaCargos - polizaAbonos) < 0.05 
                 });
 
             } catch(e) {}
@@ -337,10 +336,8 @@
         document.getElementById('results').style.display = 'block';
 
         const tbody = document.getElementById('tablaPolizas');
-        
         let htmlRows = "";
         
-        // Renderizamos una vista resumida por facilidad visual
         dbPolizas.forEach(p => {
             let totalCargoP = p.asientos.reduce((acc, curr) => acc + curr.cargo, 0);
             let totalAbonoP = p.asientos.reduce((acc, curr) => acc + curr.abono, 0);
@@ -358,7 +355,6 @@
             </tr>
             `;
 
-            // Opcional: Desplegar sub-filas de la partida doble para mayor transparencia
             p.asientos.forEach(asiento => {
                 htmlRows += `
                 <tr>
@@ -373,7 +369,6 @@
         });
 
         tbody.innerHTML = htmlRows;
-
         document.getElementById('kpiPolizas').innerText = dbPolizas.length;
         document.getElementById('kpiCargos').innerText = formatMoney(totalCargosGenerales);
         document.getElementById('kpiAbonos').innerText = formatMoney(totalAbonosGenerales);
@@ -382,24 +377,14 @@
     }
 
     function descargarExcelPolizas() {
-        // Formato estándar universal (Tipo CONTPAQi/COI/Aspel)
         const results = [["TIPO_POLIZA", "NUM_POLIZA", "FECHA", "CUENTA_CONTABLE", "REFERENCIA", "CONCEPTO", "CARGO", "ABONO"]];
-        
         dbPolizas.forEach(p => {
             p.asientos.forEach(asiento => {
-                // Separar número de cuenta del nombre para mayor limpieza en el ERP
                 const ctaSplit = asiento.cuenta.split(" - ");
                 const ctaCode = ctaSplit[0];
-                
                 results.push([
-                    "Diario", // Dr
-                    p.polizaID,
-                    p.fecha,
-                    ctaCode,
-                    `F-${p.folio}`,
-                    asiento.desc.substring(0, 50),
-                    asiento.cargo || 0,
-                    asiento.abono || 0
+                    "Diario", p.polizaID, p.fecha, ctaCode, `F-${p.folio}`,
+                    asiento.desc.substring(0, 50), asiento.cargo || 0, asiento.abono || 0
                 ]);
             });
         });
@@ -409,6 +394,59 @@
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Polizas_Layout_ERP");
         XLSX.writeFile(wb, `Layout_Carga_Polizas_${Date.now()}.xlsx`);
+    }
+
+    function descargarPDFPolizas() {
+        try {
+            let tableBody = [
+                [{text: 'Póliza', style: 'th'}, {text: 'Cuenta Contable', style: 'th'}, {text: 'Concepto', style: 'th'}, {text: 'Cargos', style: 'th', alignment: 'right'}, {text: 'Abonos', style: 'th', alignment: 'right'}]
+            ];
+
+            dbPolizas.forEach(p => {
+                // Fila Principal de la Póliza
+                let totalCargo = p.asientos.reduce((sum, a) => sum + a.cargo, 0);
+                let totalAbono = p.asientos.reduce((sum, a) => sum + a.abono, 0);
+                
+                tableBody.push([
+                    {text: `${p.polizaID} | F-${p.folio}`, bold: true, fontSize: 10, color: '#0F172A', marginTop: 10},
+                    {text: p.emisor, bold: true, fontSize: 9, colSpan: 2, marginTop: 10},
+                    {},
+                    {text: formatMoney(totalCargo), bold: true, fontSize: 9, alignment: 'right', marginTop: 10},
+                    {text: formatMoney(totalAbono), bold: true, fontSize: 9, alignment: 'right', marginTop: 10}
+                ]);
+
+                // Asientos Hijos
+                p.asientos.forEach(a => {
+                    tableBody.push([
+                        {text: ''},
+                        {text: a.cuenta, fontSize: 8, color: '#4B5563'},
+                        {text: a.desc, fontSize: 8, color: '#4B5563'},
+                        {text: a.cargo > 0 ? formatMoney(a.cargo) : '', fontSize: 8, alignment: 'right'},
+                        {text: a.abono > 0 ? formatMoney(a.abono) : '', fontSize: 8, alignment: 'right'}
+                    ]);
+                });
+            });
+
+            const docDefinition = {
+                pageSize: 'LETTER', pageMargins: [30, 40, 30, 40],
+                content: [
+                    { text: 'REPORTE DE PÓLIZAS CONTABLES (DIARIO)', fontSize: 16, bold: true, color: '#0F172A', alignment: 'center', marginBottom: 5 },
+                    { text: `Total de Pólizas: ${dbPolizas.length} | Cargos: ${formatMoney(totalCargosGenerales)} | Abonos: ${formatMoney(totalAbonosGenerales)}`, fontSize: 10, color: '#4B5563', alignment: 'center', marginBottom: 20 },
+                    {
+                        table: { headerRows: 1, widths: ['auto', 'auto', '*', 'auto', 'auto'], body: tableBody },
+                        layout: 'lightHorizontalLines'
+                    }
+                ],
+                styles: { th: { bold: true, fontSize: 10, color: '#FFFFFF', fillColor: '#0F172A', margin: [0, 4, 0, 4] } },
+                defaultStyle: { font: 'Roboto' }
+            };
+
+            pdfMake.createPdf(docDefinition).download(`Reporte_Polizas_${Date.now()}.pdf`);
+            if (typeof window.showToast === 'function') window.showToast("PDF de impresión generado.", "success");
+        } catch (error) {
+            console.error(error);
+            alert("Error generando el PDF. Revisa la consola.");
+        }
     }
 </script>
 </body>
