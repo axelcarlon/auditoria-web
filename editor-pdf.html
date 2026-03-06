@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -49,6 +50,12 @@
         
         .file-upload-btn { background: var(--bg-primary); border: 1px dashed var(--brand); color: white; padding: 12px; border-radius: 8px; cursor: pointer; text-align: center; font-family: monospace; transition: 0.3s; width: 100%;}
         .file-upload-btn:hover { background: rgba(220, 38, 38, 0.1); }
+
+        /* Contenedor Interactivo (Canvas) */
+        .preview-container { display: none; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 30px; text-align: center; position: relative; overflow: hidden;}
+        .preview-title { font-size: 12px; color: var(--warning); text-transform: uppercase; font-weight: bold; margin-bottom: 15px; letter-spacing: 1px;}
+        #pdfCanvas { max-width: 100%; height: auto; border: 2px solid var(--text-muted); border-radius: 4px; cursor: crosshair; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .coords-badge { position: absolute; top: 20px; left: 20px; background: var(--brand); color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; font-family: monospace; box-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none;}
 
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
@@ -110,6 +117,12 @@
 
         <div class="param-grid" id="dynamicInputs"></div>
 
+        <div class="preview-container" id="previewContainer">
+            <div class="preview-title">Visualizador Interactivo (Haz clic para marcar coordenadas)</div>
+            <div class="coords-badge" id="coordBadge">X: -- | Y: -- (Centro)</div>
+            <canvas id="pdfCanvas"></canvas>
+        </div>
+
         <button id="btnEjecutar" class="btn-action" onclick="procesarPDF()">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             EJECUTAR ALGORITMO BINARIO
@@ -139,7 +152,7 @@
             <div class="tool-card" onclick="abrirHerramienta('rotate')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></div>
                 <h3 class="tool-title">4. Rotación Matemática</h3>
-                <p class="tool-desc">Gira 90°, 180° o 270° documentos escaneados de cabeza. Conserva intacta la calidad vectorial original.</p>
+                <p class="tool-desc">Gira 90°, 180° o 270° documentos enteros o sólo las páginas específicas que indiques en el filtro.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('pagination')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg></div>
@@ -168,8 +181,8 @@
             </div>
             <div class="tool-card" onclick="abrirHerramienta('sign')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div>
-                <h3 class="tool-title">9. Estampador de Firmas Masivo</h3>
-                <p class="tool-desc">Sube tu firma (PNG) y el motor la estampará automáticamente en la esquina de múltiples contratos a la vez.</p>
+                <h3 class="tool-title">9. Estampador de Firmas Táctico</h3>
+                <p class="tool-desc">Usa el cursor para ubicar la firma. Firma un contrato o estampa coordenadas exactas en 500 contratos a la vez.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('unlock')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg></div>
@@ -218,7 +231,7 @@
             <div class="tool-card" onclick="abrirHerramienta('img2pdf')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">17. Conversor de Materialidad</h3>
-                <p class="tool-desc">Sube decenas de fotos de evidencia (JPG/PNG) y el motor las empaquetará impecablemente en un solo archivo PDF.</p>
+                <p class="tool-desc">Opción Nativa o Modo Hoja Blanca (Carta). Escala y centra fotos perfectamente para expedientes formales.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('flatten')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
@@ -243,8 +256,14 @@
 <script src="footer.js"></script>
 
 <script>
+    // Inicializar Worker de PDF.js para renderizado de Previsualización (Exclusivo para la herramienta de firma)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
     let activeTool = '';
     let currentFiles = [];
+    
+    // Variables para Estampador Táctico
+    let clickCoords = { x: -1, y: -1 }; 
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
@@ -253,9 +272,12 @@
     ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
     ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
     drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
-    input.addEventListener('change', e => processFiles(e.target.files));
+    
+    input.addEventListener('change', e => {
+        processFiles(e.target.files);
+    });
 
-    // Motor de ingesta de archivos (Soporta PDFs y JPGs dependiendo de la herramienta)
+    // Motor de ingesta selectiva
     function processFiles(files) {
         let validFiles = [];
         if (activeTool === 'img2pdf') {
@@ -272,14 +294,21 @@
         currentFiles = validFiles;
         drop.classList.add('filled');
         document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM listos para procesar.`;
+
+        // Disparar previsualización si estamos en la herramienta de Firma
+        if(activeTool === 'sign' && currentFiles.length > 0) {
+            renderPreviewPDF();
+        }
     }
 
     function abrirHerramienta(tool) {
         activeTool = tool;
         currentFiles = [];
+        clickCoords = { x: -1, y: -1 }; // Reset coords
         drop.classList.remove('filled');
         document.getElementById('statusFile').innerText = "";
         document.getElementById('resultPanel').style.display = 'none';
+        document.getElementById('previewContainer').style.display = 'none';
         
         const ws = document.getElementById('workspace');
         const grid = document.getElementById('toolsGrid');
@@ -319,15 +348,19 @@
             `;
         }
         else if (tool === 'rotate') {
-            wsTitle.innerText = "4. Rotación Matemática";
+            wsTitle.innerText = "4. Rotación Matemática Selectiva";
             inputF.multiple = false;
             dInputs.innerHTML = `
                 <div class="control-group">
+                    <label class="control-label">Hojas a rotar (Ej. 1, 3-5)</label>
+                    <input type="text" id="rotPages" class="control-input" placeholder="Deja vacío para rotar TODAS">
+                </div>
+                <div class="control-group">
                     <label class="control-label">Ángulo de Rotación</label>
                     <select id="rotAngle" class="control-select">
-                        <option value="90">90 Grados (Derecha)</option>
-                        <option value="180">180 Grados (Invertir)</option>
-                        <option value="270">270 Grados (Izquierda)</option>
+                        <option value="90">90° (Derecha)</option>
+                        <option value="180">180° (Invertir)</option>
+                        <option value="270">270° (Izquierda)</option>
                     </select>
                 </div>
             `;
@@ -365,14 +398,18 @@
             `;
         }
         else if (tool === 'sign') {
-            wsTitle.innerText = "9. Estampador de Firmas";
-            inputF.multiple = true;
+            wsTitle.innerText = "9. Estampador de Firmas Táctico";
+            inputF.multiple = true; // Permite subir varios contratos
             dInputs.innerHTML = `
-                <div class="control-group" style="grid-column: span 2;">
-                    <label class="control-label">Sube tu Firma (Formato PNG sin fondo recomendado)</label>
-                    <input type="file" id="sigInput" accept="image/png" class="control-input" style="padding: 10px;">
-                    <p style="color:var(--text-muted); font-size:12px; margin-top:8px;">*La firma se estampará automáticamente en la esquina inferior derecha de la última hoja de cada contrato.</p>
+                <div class="control-group">
+                    <label class="control-label">Número de Página a Firmar</label>
+                    <input type="number" id="signPageNum" class="control-input" value="1" min="1" onchange="renderPreviewPDF()">
                 </div>
+                <div class="control-group">
+                    <label class="control-label">Sube tu Firma (.PNG sin fondo)</label>
+                    <input type="file" id="sigInput" accept="image/png" class="control-input" style="padding: 10px;">
+                </div>
+                <p style="color:var(--warning); font-size:12px; grid-column: span 2; margin-top:0;">*Sube tu PDF primero para que aparezca la previsualización. Haz clic en la imagen para marcar las coordenadas donde caerá la firma.</p>
             `;
         }
         else if (tool === 'unlock') {
@@ -395,7 +432,15 @@
             inputF.multiple = true;
             inputF.accept = ".jpg,.jpeg,.png";
             dropDesc.innerText = "Arrastra tus FOTOS de evidencia aquí (JPG o PNG).";
-            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">El motor agrupará todas las imágenes subidas y construirá un solo PDF maestro manteniendo sus proporciones.</p>`;
+            dInputs.innerHTML = `
+                <div class="control-group" style="grid-column: span 2;">
+                    <label class="control-label">Formato de Documento</label>
+                    <select id="imgMode" class="control-select">
+                        <option value="white">Modo Profesional: Centrar en Hoja Blanca (Tamaño Carta)</option>
+                        <option value="native">Modo Básico: Hacer la hoja del tamaño exacto de la foto</option>
+                    </select>
+                </div>
+            `;
         }
         else if (tool === 'flatten') {
             wsTitle.innerText = "18. Aplanadora Total (Flatten)";
@@ -411,13 +456,84 @@
 
     function cerrarWorkspace() {
         document.getElementById('workspace').style.display = 'none';
-        document.getElementById('toolsGrid').style.display = 'block';
+        document.getElementById('toolsGrid').style.display = 'grid';
         document.getElementById('resultPanel').style.display = 'none';
+        document.getElementById('previewContainer').style.display = 'none';
     }
 
-    function toastConstruccion() {
-        if(typeof window.showToast === 'function') window.showToast("Módulo avanzado en construcción. Pronto disponible.", "warning");
-        else alert("Módulo avanzado en construcción. Pronto disponible.");
+    // Renderizador Visual Táctico (Solo para el Estampador)
+    async function renderPreviewPDF() {
+        if(currentFiles.length === 0 || activeTool !== 'sign') return;
+
+        try {
+            const pageNum = parseInt(document.getElementById('signPageNum').value) || 1;
+            const file = currentFiles[0]; // Usamos el primero de muestra si subió varios
+            const arrayBuffer = await file.arrayBuffer();
+            
+            const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
+            const pdf = await loadingTask.promise;
+            
+            // Blindaje de página máxima
+            let targetPage = pageNum;
+            if(targetPage > pdf.numPages) {
+                targetPage = pdf.numPages; // Mostrar la última disponible
+                document.getElementById('signPageNum').value = targetPage;
+            }
+            
+            const page = await pdf.getPage(targetPage);
+            const canvas = document.getElementById('pdfCanvas');
+            const context = canvas.getContext('2d');
+            
+            const viewport = page.getViewport({scale: 1.2}); // Scale para mejor visualización
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({canvasContext: context, viewport: viewport}).promise;
+            
+            document.getElementById('previewContainer').style.display = 'block';
+
+            // Evento Clic para capturar Coordenadas exactas y traducirlas a PDF-Lib
+            canvas.onclick = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                // Escalamos el clic en caso de que el CSS haya encogido el canvas en pantallas chicas
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                const canvasX = (e.clientX - rect.left) * scaleX;
+                const canvasY = (e.clientY - rect.top) * scaleY;
+
+                // PDF-Lib usa el sistema de coordenadas donde Y=0 es la base (Abajo), y Canvas usa Y=0 arriba (Top).
+                // Invertimos la Y y dividimos entre el scale(1.2) que usamos arriba para coincidir con la medida real del PDF.
+                clickCoords.x = canvasX / 1.2;
+                clickCoords.y = (canvas.height - canvasY) / 1.2;
+
+                document.getElementById('coordBadge').innerText = `BLANCO FIJADO -> X: ${Math.round(clickCoords.x)} | Y: ${Math.round(clickCoords.y)}`;
+                document.getElementById('coordBadge').style.background = "var(--success)";
+            };
+
+        } catch(e) {
+            console.error("Error al renderizar preview: ", e);
+        }
+    }
+
+    // Parseador Inteligente de Rangos (Ej. "1, 3-5")
+    function parseRange(str, maxPages) {
+        let set = new Set();
+        str.split(',').forEach(part => {
+            if(part.includes('-')) {
+                let [s, e] = part.split('-').map(n => parseInt(n.trim()));
+                // Blindaje contra humanos que ponen el rango al revés "5-2"
+                let realStart = Math.min(s,e);
+                let realEnd = Math.max(s,e);
+                for(let i=realStart; i<=realEnd; i++) {
+                    if(i>0 && i<=maxPages) set.add(i-1);
+                }
+            } else {
+                let n = parseInt(part.trim());
+                if(n>0 && n<=maxPages) set.add(n-1);
+            }
+        });
+        return Array.from(set);
     }
 
     // EL MOTOR DE BYTES BLINDADO
@@ -494,24 +610,11 @@
                     if(rangeStr === 'pares') { for(let i=1; i<totalPages; i+=2) pagesToExtract.add(i); } 
                     else if (rangeStr === 'impares') { for(let i=0; i<totalPages; i+=2) pagesToExtract.add(i); } 
                     else {
-                        let groups = rangeStr.split(',');
-                        for(let g of groups) {
-                            if(g.includes('-')) {
-                                let [start, end] = g.split('-');
-                                start = parseInt(start); end = parseInt(end);
-                                if(!isNaN(start) && !isNaN(end)) {
-                                    let realStart = Math.max(1, Math.min(start, end));
-                                    let realEnd = Math.min(totalPages, Math.max(start, end));
-                                    for(let i=realStart; i<=realEnd; i++) pagesToExtract.add(i-1);
-                                }
-                            } else {
-                                let p = parseInt(g);
-                                if(!isNaN(p) && p > 0 && p <= totalPages) pagesToExtract.add(p-1);
-                            }
-                        }
+                        pagesToExtract = new Set(parseRange(rangeStr, totalPages));
                     }
+                    
                     let extractArr = Array.from(pagesToExtract).sort((a,b)=>a-b);
-                    if(extractArr.length === 0) throw new Error("Filtro no válido.");
+                    if(extractArr.length === 0) throw new Error("Filtro no válido o fuera de rango.");
 
                     const newPdf = await PDFLib.PDFDocument.create();
                     const copiedPages = await newPdf.copyPages(sourcePdf, extractArr);
@@ -522,16 +625,25 @@
             }
 
             // ==========================================
-            // 4. ROTACIÓN MATEMÁTICA (NUEVA)
+            // 4. ROTACIÓN MATEMÁTICA SELECTIVA
             // ==========================================
             else if (activeTool === 'rotate') {
                 const angle = parseInt(document.getElementById('rotAngle').value);
+                const rangeStr = document.getElementById('rotPages').value.trim();
+                
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
                 const pages = pdfDoc.getPages();
                 
-                // Rotar vectores
-                pages.forEach(p => p.setRotation(PDFLib.degrees(angle)));
+                if (rangeStr === "") {
+                    // Rotar todas
+                    pages.forEach(p => p.setRotation(PDFLib.degrees(angle)));
+                } else {
+                    // Rotar selectivamente basado en el parseo
+                    let toRotate = parseRange(rangeStr, pages.length);
+                    if(toRotate.length === 0) throw new Error("El rango de páginas ingresado no es válido.");
+                    toRotate.forEach(idx => pages[idx].setRotation(PDFLib.degrees(angle)));
+                }
                 
                 const pdfBytes = await pdfDoc.save();
                 descargarBlob(pdfBytes, `Rotado_${Date.now()}.pdf`);
@@ -587,41 +699,75 @@
             }
 
             // ==========================================
-            // 9. ESTAMPADOR DE FIRMAS (NUEVA)
+            // 9. ESTAMPADOR DE FIRMAS TÁCTICO
             // ==========================================
             else if (activeTool === 'sign') {
                 const sigInput = document.getElementById('sigInput');
                 if(!sigInput.files || sigInput.files.length === 0) throw new Error("Por favor, sube el archivo .PNG de tu firma.");
                 
                 const sigFile = sigInput.files[0];
-                if(sigFile.type !== 'image/png') throw new Error("La firma debe ser obligatoriamente en formato PNG.");
+                if(sigFile.type !== 'image/png') throw new Error("La firma debe ser obligatoriamente en formato PNG transparente.");
                 
                 const sigBytes = await sigFile.arrayBuffer();
+                const reqPageNum = parseInt(document.getElementById('signPageNum').value) || 1;
 
                 if (currentFiles.length === 1) {
                     const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
                     const sigImg = await pdfDoc.embedPng(sigBytes);
                     const pages = pdfDoc.getPages();
-                    const lastPage = pages[pages.length - 1]; // Estampa en la última hoja
-                    const { width, height } = lastPage.getSize();
+                    
+                    // Blindaje: Si pide hoja 10 y solo hay 3, firma la 3.
+                    let targetIdx = Math.min(reqPageNum - 1, pages.length - 1);
+                    if(targetIdx < 0) targetIdx = 0;
+                    
+                    const pageToSign = pages[targetIdx];
+                    const { width, height } = pageToSign.getSize();
+                    
+                    // Si el usuario NO hizo clic en el canvas, la ponemos por defecto abajo a la derecha
+                    let posX = width - 180;
+                    let posY = 50;
+
+                    // Si el usuario sí hizo clic, usamos las coordenadas tácticas
+                    if(clickCoords.x !== -1) {
+                        posX = clickCoords.x;
+                        posY = clickCoords.y;
+                    }
                     
                     const dims = sigImg.scaleToFit(150, 150);
-                    lastPage.drawImage(sigImg, { x: width - dims.width - 50, y: 50, width: dims.width, height: dims.height });
+                    // Centramos la imagen sobre el punto del clic
+                    pageToSign.drawImage(sigImg, { 
+                        x: posX - (dims.width / 2), 
+                        y: posY - (dims.height / 2), 
+                        width: dims.width, 
+                        height: dims.height 
+                    });
                     
                     const pdfBytes = await pdfDoc.save();
                     descargarBlob(pdfBytes, `Contrato_Firmado_${Date.now()}.pdf`);
-                } else {
-                    // Firma Masiva con descarga en ZIP
+                } 
+                else {
+                    // Firma Masiva (Lote)
                     const zip = new JSZip();
                     for(let i=0; i<currentFiles.length; i++) {
                         const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[i].arrayBuffer());
                         const sigImg = await pdfDoc.embedPng(sigBytes);
                         const pages = pdfDoc.getPages();
-                        const lastPage = pages[pages.length - 1];
-                        const { width, height } = lastPage.getSize();
+                        
+                        let targetIdx = Math.min(reqPageNum - 1, pages.length - 1);
+                        if(targetIdx < 0) targetIdx = 0;
+                        const pageToSign = pages[targetIdx];
+                        const { width, height } = pageToSign.getSize();
+                        
+                        let posX = clickCoords.x !== -1 ? clickCoords.x : width - 180;
+                        let posY = clickCoords.y !== -1 ? clickCoords.y : 50;
                         
                         const dims = sigImg.scaleToFit(150, 150);
-                        lastPage.drawImage(sigImg, { x: width - dims.width - 50, y: 50, width: dims.width, height: dims.height });
+                        pageToSign.drawImage(sigImg, { 
+                            x: posX - (dims.width / 2), 
+                            y: posY - (dims.height / 2), 
+                            width: dims.width, 
+                            height: dims.height 
+                        });
                         
                         const bytes = await pdfDoc.save();
                         zip.file(`Firmado_${currentFiles[i].name}`, bytes);
@@ -674,29 +820,40 @@
             }
 
             // ==========================================
-            // 17. CONVERSOR DE MATERIALIDAD (NUEVA)
+            // 17. CONVERSOR DE MATERIALIDAD 
             // ==========================================
             else if (activeTool === 'img2pdf') {
-                const newPdf = await PDFLib.PDFDocument.create();
+                const pdfDoc = await PDFLib.PDFDocument.create();
+                const mode = document.getElementById('imgMode').value;
                 
                 for (let file of currentFiles) {
                     const arrayBuffer = await file.arrayBuffer();
                     let img;
-                    // Blindaje: Solo acepta JPG o PNG nativos
                     if (file.type === 'image/jpeg') {
-                        img = await newPdf.embedJpg(arrayBuffer);
+                        img = await pdfDoc.embedJpg(arrayBuffer);
                     } else if (file.type === 'image/png') {
-                        img = await newPdf.embedPng(arrayBuffer);
+                        img = await pdfDoc.embedPng(arrayBuffer);
                     } else {
                         continue; 
                     }
                     
-                    // Ajustar el tamaño de la hoja al de la imagen para no deformarla
-                    const page = newPdf.addPage([img.width, img.height]);
-                    page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                    if(mode === 'white') {
+                        // Carta Standar (612 x 792 puntos)
+                        const page = pdfDoc.addPage([612, 792]);
+                        // Escalar dejando margen (500x700 max)
+                        const dims = img.scaleToFit(500, 700);
+                        // Calcular centro perfecto
+                        const xPos = (612 - dims.width) / 2;
+                        const yPos = (792 - dims.height) / 2;
+                        page.drawImage(img, { x: xPos, y: yPos, width: dims.width, height: dims.height });
+                    } else {
+                        // Nativo (se ajusta a la foto)
+                        const page = pdfDoc.addPage([img.width, img.height]);
+                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                    }
                 }
                 
-                const pdfBytes = await newPdf.save();
+                const pdfBytes = await pdfDoc.save();
                 descargarBlob(pdfBytes, `Materialidad_Fotos_${Date.now()}.pdf`);
             }
 
@@ -713,7 +870,7 @@
             }
 
             // ==========================================
-            // 20. PURGA DE METADATOS - GHOST (NUEVA)
+            // 20. PURGA DE METADATOS - GHOST
             // ==========================================
             else if (activeTool === 'ghost') {
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
