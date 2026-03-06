@@ -58,7 +58,7 @@
 
             <div id="errorMsg"></div>
 
-            <form id="formRegistro" onsubmit="procesarRegistro(event)">
+            <form id="formRegistro">
                 <div class="input-group">
                     <label class="input-label">Nombre Completo</label>
                     <input type="text" id="nombre" class="input-control" placeholder="Ej. Carlos Mendoza" required>
@@ -88,70 +88,87 @@
     <script src="footer.js"></script>
 
     <script>
-        // 1. INICIALIZACIÓN DE SUPABASE (Con las claves correctas)
-        const supabaseUrl = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE'; 
-        
-        let supabase;
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-            console.log("Motor de Base de Datos conectado correctamente.");
-        } catch(e) {
-            console.error("Error al inicializar Supabase:", e);
-        }
-
-        // 2. FUNCIÓN DE REGISTRO
-        async function procesarRegistro(e) {
-            e.preventDefault(); // Evita la recarga de la página
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const nombre = document.getElementById('nombre').value;
-            
-            const btn = document.getElementById('btnSubmit');
+        // Asegurarnos de que el código solo corra cuando la página y librerías hayan cargado
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('formRegistro');
             const errorMsg = document.getElementById('errorMsg');
-            
-            btn.innerHTML = `<svg style="animation: spin 1s linear infinite;" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> CREANDO CUENTA...`;
-            btn.disabled = true;
-            errorMsg.style.display = 'none';
+            let supabase;
 
+            // 1. INICIALIZAR SUPABASE DENTRO DE UN BLOQUE PROTEGIDO
             try {
-                // Ejecuta la orden hacia Supabase
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: { full_name: nombre }
-                    }
-                });
-
-                if (error) throw error; // Si hay error, lo manda al Catch abajo
-
-                // ÉXITO: Inyectar créditos y redirigir
-                localStorage.setItem('auditoria_creditos', '3');
+                const supabaseUrl = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
+                // Usando tu clave API JWT correcta
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE'; 
                 
-                if(typeof window.showToast === 'function') {
-                    window.showToast("Cuenta creada con éxito. Redirigiendo...", "success");
-                }
-                
-                setTimeout(() => {
-                    window.location.href = "index.html"; // Manda al usuario al Home
-                }, 1500);
-
-            } catch (error) {
-                // ERROR: Restaurar el botón y mostrar el mensaje
-                console.error("Fallo en registro:", error);
-                
-                let msj = error.message;
-                if (msj.includes("User already registered")) msj = "Este correo electrónico ya está registrado.";
-                if (msj.includes("Password should be")) msj = "La contraseña debe tener al menos 6 caracteres.";
-                
-                errorMsg.innerText = msj;
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log("Motor de Base de Datos conectado.");
+            } catch (err) {
+                console.error("Fallo al conectar la base de datos:", err);
+                errorMsg.innerText = "Error cargando los servicios. Verifica tu conexión a internet o desactiva tu adblocker temporalmente.";
                 errorMsg.style.display = 'block';
-                btn.innerHTML = "REGISTRAR Y ACCEDER";
-                btn.disabled = false;
             }
-        }
+
+            // 2. LISTENER DEL FORMULARIO BLINDADO
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault(); // ESTA LÍNEA EVITA QUE LA PÁGINA SE REINICIE (A PRUEBA DE BALAS)
+
+                if (!supabase) {
+                    errorMsg.innerText = "Conexión a la nube inactiva. Recarga la página.";
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const nombre = document.getElementById('nombre').value;
+                const btn = document.getElementById('btnSubmit');
+
+                // UI de Carga
+                btn.innerHTML = `<svg style="animation: spin 1s linear infinite;" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> CREANDO CUENTA...`;
+                btn.disabled = true;
+                errorMsg.style.display = 'none';
+
+                try {
+                    // Ejecuta el registro en la nube de Supabase
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: { full_name: nombre } // Guarda el nombre de la persona
+                        }
+                    });
+
+                    // Si Supabase devuelve un error en la validación (ej. email ya existe)
+                    if (error) throw error; 
+
+                    // ÉXITO
+                    localStorage.setItem('auditoria_creditos', '3'); // Sus 3 créditos locales
+                    
+                    if(typeof window.showToast === 'function') {
+                        window.showToast("Cuenta creada con éxito. Redirigiendo...", "success");
+                    }
+                    
+                    // Mandar a inicio
+                    setTimeout(() => {
+                        window.location.href = "index.html"; 
+                    }, 1500);
+
+                } catch (error) {
+                    // MANEJO DE ERRORES: Los mostramos en pantalla sin reiniciar la web
+                    console.error("Fallo en registro:", error);
+                    
+                    let msj = error.message;
+                    if (msj.includes("User already registered")) msj = "Este correo electrónico ya está registrado.";
+                    if (msj.includes("Password should be")) msj = "La contraseña debe tener al menos 6 caracteres.";
+                    
+                    errorMsg.innerText = msj;
+                    errorMsg.style.display = 'block';
+                    
+                    btn.innerHTML = "REGISTRAR Y ACCEDER";
+                    btn.disabled = false;
+                }
+            });
+        });
     </script>
 </body>
 </html>
