@@ -46,6 +46,9 @@
         .control-label { font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
         .control-input, .control-select { width: 100%; background: var(--bg-primary); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px 15px; border-radius: 8px; font-size: 14px; font-family: monospace; outline: none; transition: 0.3s;}
         .control-input:focus, .control-select:focus { border-color: var(--brand); box-shadow: 0 0 10px var(--brand-glow);}
+        
+        .file-upload-btn { background: var(--bg-primary); border: 1px dashed var(--brand); color: white; padding: 12px; border-radius: 8px; cursor: pointer; text-align: center; font-family: monospace; transition: 0.3s; width: 100%;}
+        .file-upload-btn:hover { background: rgba(220, 38, 38, 0.1); }
 
         .btn-action { background: var(--brand); color: white; border: none; padding: 18px 36px; border-radius: 8px; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px var(--brand-glow); display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; text-transform: uppercase; letter-spacing: 1px;}
         .btn-action:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow); background: #B91C1C;}
@@ -99,9 +102,9 @@
 
         <div class="upload-section" id="dropZone">
             <svg width="48" height="48" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            <h3 style="margin: 0 0 5px; font-size: 18px;">Bóveda de Archivos</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Arrastra tus PDFs aquí.</p>
-            <input type="file" id="inputFile" accept=".pdf" multiple style="display: none;">
+            <h3 style="margin: 0 0 5px; font-size: 18px;" id="dropTitle">Bóveda de Archivos</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0;" id="dropDesc">Arrastra tus PDFs aquí.</p>
+            <input type="file" id="inputFile" multiple style="display: none;">
             <div id="statusFile" style="font-weight: 900; color: var(--brand); margin-top: 10px;"></div>
         </div>
 
@@ -133,10 +136,10 @@
                 <h3 class="tool-title">3. Reordenador de Matriz</h3>
                 <p class="tool-desc">Visualiza miniaturas, invierte el orden del documento completo o arrastra hojas para personalizar la estructura.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
-                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></div>
-                <h3 class="tool-title">4. Purga y Rotación IA</h3>
-                <p class="tool-desc">Gira documentos escaneados al revés. El algoritmo detecta y borra automáticamente las "hojas en blanco".</p>
+            <div class="tool-card" onclick="abrirHerramienta('rotate')">
+                <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></div>
+                <h3 class="tool-title">4. Rotación Matemática</h3>
+                <p class="tool-desc">Gira 90°, 180° o 270° documentos escaneados de cabeza. Conserva intacta la calidad vectorial original.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('pagination')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg></div>
@@ -163,10 +166,10 @@
                 <h3 class="tool-title">8. Censura (Redaction)</h3>
                 <p class="tool-desc">Dibuja cajas negras, o usa RegEx para censurar automáticamente todos los RFCs y tarjetas del documento.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('sign')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div>
                 <h3 class="tool-title">9. Estampador de Firmas Masivo</h3>
-                <p class="tool-desc">Sube tu firma (PNG). Define escala y coordenadas para estamparla en 500 contratos a la vez, en la última hoja.</p>
+                <p class="tool-desc">Sube tu firma (PNG) y el motor la estampará automáticamente en la esquina de múltiples contratos a la vez.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('unlock')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg></div>
@@ -212,10 +215,10 @@
                 <h3 class="tool-title">16. Compresión Tributaria (< 3MB)</h3>
                 <p class="tool-desc">Algoritmos de reducción agresiva. Remueve fuentes incrustadas o convierte a Blanco y Negro para que el SAT lo acepte.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('img2pdf')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                 <h3 class="tool-title">17. Conversor de Materialidad</h3>
-                <p class="tool-desc">Arma layouts perfectos: 1 imagen por hoja, o cuadrículas 2x2 con el nombre del archivo como pie de foto automático.</p>
+                <p class="tool-desc">Sube decenas de fotos de evidencia (JPG/PNG) y el motor las empaquetará impecablemente en un solo archivo PDF.</p>
             </div>
             <div class="tool-card" onclick="abrirHerramienta('flatten')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
@@ -227,10 +230,10 @@
                 <h3 class="tool-title">19. Sanador de PDFs Corruptos</h3>
                 <p class="tool-desc">Fuerza la reconstrucción de tablas XREF dañadas. Revive archivos que muestran error al abrirlos en Adobe.</p>
             </div>
-            <div class="tool-card" onclick="toastConstruccion()">
+            <div class="tool-card" onclick="abrirHerramienta('ghost')">
                 <div class="tool-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
-                <h3 class="tool-title">20. Purga de Metadatos</h3>
-                <p class="tool-desc">Modo Fantasma: Borra tu huella digital, randomizea la fecha de creación y cambia el Autor para máxima anonimidad.</p>
+                <h3 class="tool-title">20. Purga de Metadatos (Ghost)</h3>
+                <p class="tool-desc">Modo Fantasma: Borra tu huella digital, elimina al autor del archivo y resetea las fechas para máxima anonimidad ante el SAT.</p>
             </div>
         </div>
     </div>
@@ -252,9 +255,20 @@
     drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
     input.addEventListener('change', e => processFiles(e.target.files));
 
+    // Motor de ingesta de archivos (Soporta PDFs y JPGs dependiendo de la herramienta)
     function processFiles(files) {
-        const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
-        if(validFiles.length === 0) return;
+        let validFiles = [];
+        if (activeTool === 'img2pdf') {
+            validFiles = Array.from(files).filter(f => f.type === 'image/jpeg' || f.type === 'image/png');
+        } else {
+            validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+        }
+        
+        if(validFiles.length === 0) {
+            if(typeof window.showToast === 'function') window.showToast("Formato de archivo no válido para esta herramienta.", "warning");
+            return;
+        }
+
         currentFiles = validFiles;
         drop.classList.add('filled');
         document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM listos para procesar.`;
@@ -272,10 +286,13 @@
         const dInputs = document.getElementById('dynamicInputs');
         const wsTitle = document.getElementById('wsName');
         const inputF = document.getElementById('inputFile');
+        const dropDesc = document.getElementById('dropDesc');
 
         grid.style.display = 'none';
         ws.style.display = 'block';
         dInputs.innerHTML = '';
+        dropDesc.innerText = "Arrastra tus PDFs aquí.";
+        inputF.accept = ".pdf";
         window.scrollTo(0, 0);
 
         if(tool === 'fusion') {
@@ -297,7 +314,21 @@
             dInputs.innerHTML = `
                 <div class="control-group" style="grid-column: span 2;">
                     <label class="control-label">Filtro de Extracción Inteligente</label>
-                    <input type="text" id="pagesInput" class="control-input" placeholder='Ej. "1-5", "1,8,10", "pares", "impares" o vacío para todo.'>
+                    <input type="text" id="pagesInput" class="control-input" placeholder='Ej. "1-5", "1,8,10", "pares", "impares" o vacío para explotar todo.'>
+                </div>
+            `;
+        }
+        else if (tool === 'rotate') {
+            wsTitle.innerText = "4. Rotación Matemática";
+            inputF.multiple = false;
+            dInputs.innerHTML = `
+                <div class="control-group">
+                    <label class="control-label">Ángulo de Rotación</label>
+                    <select id="rotAngle" class="control-select">
+                        <option value="90">90 Grados (Derecha)</option>
+                        <option value="180">180 Grados (Invertir)</option>
+                        <option value="270">270 Grados (Izquierda)</option>
+                    </select>
                 </div>
             `;
         }
@@ -333,6 +364,17 @@
                 </div>
             `;
         }
+        else if (tool === 'sign') {
+            wsTitle.innerText = "9. Estampador de Firmas";
+            inputF.multiple = true;
+            dInputs.innerHTML = `
+                <div class="control-group" style="grid-column: span 2;">
+                    <label class="control-label">Sube tu Firma (Formato PNG sin fondo recomendado)</label>
+                    <input type="file" id="sigInput" accept="image/png" class="control-input" style="padding: 10px;">
+                    <p style="color:var(--text-muted); font-size:12px; margin-top:8px;">*La firma se estampará automáticamente en la esquina inferior derecha de la última hoja de cada contrato.</p>
+                </div>
+            `;
+        }
         else if (tool === 'unlock') {
             wsTitle.innerText = "10. Desbloqueador Bancario";
             inputF.multiple = false;
@@ -346,12 +388,24 @@
         else if (tool === 'metadata') {
             wsTitle.innerText = "15. Autopsia de Metadatos";
             inputF.multiple = false;
-            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">El motor leerá el ADN del documento. No se descargará nada, la información aparecerá en pantalla.</p>`;
+            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">El motor leerá el ADN oculto del documento. No se descargará nada, la información revelada aparecerá en pantalla.</p>`;
+        }
+        else if (tool === 'img2pdf') {
+            wsTitle.innerText = "17. Conversor de Materialidad";
+            inputF.multiple = true;
+            inputF.accept = ".jpg,.jpeg,.png";
+            dropDesc.innerText = "Arrastra tus FOTOS de evidencia aquí (JPG o PNG).";
+            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">El motor agrupará todas las imágenes subidas y construirá un solo PDF maestro manteniendo sus proporciones.</p>`;
         }
         else if (tool === 'flatten') {
             wsTitle.innerText = "18. Aplanadora Total (Flatten)";
             inputF.multiple = false;
             dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">Bloquea edición. Convierte formatos del SAT o Acuses con campos rellenables en imágenes planas inalterables.</p>`;
+        }
+        else if (tool === 'ghost') {
+            wsTitle.innerText = "20. Purga de Metadatos (Modo Fantasma)";
+            inputF.multiple = false;
+            dInputs.innerHTML = `<p style="color:var(--text-muted); font-size:13px; grid-column: span 2;">Inyectaremos cadenas vacías en el código base del PDF. Tu huella digital, fechas y software de creación serán eliminados para siempre.</p>`;
         }
     }
 
@@ -369,8 +423,8 @@
     // EL MOTOR DE BYTES BLINDADO
     async function procesarPDF() {
         if(currentFiles.length === 0) {
-            if(typeof window.showToast === 'function') window.showToast("Sube al menos un PDF a la bóveda.", "error");
-            else alert("Sube al menos un PDF.");
+            if(typeof window.showToast === 'function') window.showToast("Sube archivos a la bóveda primero.", "error");
+            else alert("Sube archivos a la bóveda primero.");
             return;
         }
 
@@ -468,7 +522,23 @@
             }
 
             // ==========================================
-            // 5. PAGINACIÓN Y FOLIADO LEGAL (NUEVA)
+            // 4. ROTACIÓN MATEMÁTICA (NUEVA)
+            // ==========================================
+            else if (activeTool === 'rotate') {
+                const angle = parseInt(document.getElementById('rotAngle').value);
+                const arrayBuffer = await currentFiles[0].arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                const pages = pdfDoc.getPages();
+                
+                // Rotar vectores
+                pages.forEach(p => p.setRotation(PDFLib.degrees(angle)));
+                
+                const pdfBytes = await pdfDoc.save();
+                descargarBlob(pdfBytes, `Rotado_${Date.now()}.pdf`);
+            }
+
+            // ==========================================
+            // 5. PAGINACIÓN Y FOLIADO LEGAL
             // ==========================================
             else if (activeTool === 'pagination') {
                 const prefix = document.getElementById('pagPrefix').value.trim() || "Folio";
@@ -477,20 +547,13 @@
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
                 const pages = pdfDoc.getPages();
-                
-                // Blindaje: Fuente estándar para evitar errores de renderizado
                 const helveticaFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
 
                 pages.forEach((page, idx) => {
                     const { width, height } = page.getSize();
                     const text = `${prefix} ${startNum + idx} de ${startNum + pages.length - 1}`;
-                    // Coordenada inferior derecha (Blindada matemáticamente)
                     page.drawText(text, {
-                        x: width - 120, // Margen derecho
-                        y: 30, // Margen inferior
-                        size: 11,
-                        font: helveticaFont,
-                        color: PDFLib.rgb(0.2, 0.2, 0.2) // Gris oscuro profesional
+                        x: width - 120, y: 30, size: 11, font: helveticaFont, color: PDFLib.rgb(0.2, 0.2, 0.2)
                     });
                 });
                 
@@ -516,12 +579,7 @@
                 pages.forEach(page => {
                     const { width, height } = page.getSize();
                     page.drawText(textWM, {
-                        x: width / 6,
-                        y: height / 4,
-                        size: 45,
-                        color: selectedRGB,
-                        opacity: 0.25,
-                        rotate: degrees(45)
+                        x: width / 6, y: height / 4, size: 45, color: selectedRGB, opacity: 0.25, rotate: degrees(45)
                     });
                 });
                 const pdfBytes = await pdfDoc.save();
@@ -529,16 +587,59 @@
             }
 
             // ==========================================
-            // 10. DESBLOQUEADOR BANCARIO (NUEVA)
+            // 9. ESTAMPADOR DE FIRMAS (NUEVA)
+            // ==========================================
+            else if (activeTool === 'sign') {
+                const sigInput = document.getElementById('sigInput');
+                if(!sigInput.files || sigInput.files.length === 0) throw new Error("Por favor, sube el archivo .PNG de tu firma.");
+                
+                const sigFile = sigInput.files[0];
+                if(sigFile.type !== 'image/png') throw new Error("La firma debe ser obligatoriamente en formato PNG.");
+                
+                const sigBytes = await sigFile.arrayBuffer();
+
+                if (currentFiles.length === 1) {
+                    const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[0].arrayBuffer());
+                    const sigImg = await pdfDoc.embedPng(sigBytes);
+                    const pages = pdfDoc.getPages();
+                    const lastPage = pages[pages.length - 1]; // Estampa en la última hoja
+                    const { width, height } = lastPage.getSize();
+                    
+                    const dims = sigImg.scaleToFit(150, 150);
+                    lastPage.drawImage(sigImg, { x: width - dims.width - 50, y: 50, width: dims.width, height: dims.height });
+                    
+                    const pdfBytes = await pdfDoc.save();
+                    descargarBlob(pdfBytes, `Contrato_Firmado_${Date.now()}.pdf`);
+                } else {
+                    // Firma Masiva con descarga en ZIP
+                    const zip = new JSZip();
+                    for(let i=0; i<currentFiles.length; i++) {
+                        const pdfDoc = await PDFLib.PDFDocument.load(await currentFiles[i].arrayBuffer());
+                        const sigImg = await pdfDoc.embedPng(sigBytes);
+                        const pages = pdfDoc.getPages();
+                        const lastPage = pages[pages.length - 1];
+                        const { width, height } = lastPage.getSize();
+                        
+                        const dims = sigImg.scaleToFit(150, 150);
+                        lastPage.drawImage(sigImg, { x: width - dims.width - 50, y: 50, width: dims.width, height: dims.height });
+                        
+                        const bytes = await pdfDoc.save();
+                        zip.file(`Firmado_${currentFiles[i].name}`, bytes);
+                    }
+                    const content = await zip.generateAsync({type:"blob"});
+                    saveAs(content, `Lote_Firmado_${Date.now()}.zip`);
+                }
+            }
+
+            // ==========================================
+            // 10. DESBLOQUEADOR BANCARIO
             // ==========================================
             else if (activeTool === 'unlock') {
                 const pwd = document.getElementById('pdfPwd').value.trim();
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
-                
                 try {
-                    // Blindaje: Intentamos abrirlo con la contraseña proporcionada
                     const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { password: pwd });
-                    const pdfBytes = await pdfDoc.save(); // Al guardar, pdf-lib elimina la encriptación
+                    const pdfBytes = await pdfDoc.save(); 
                     descargarBlob(pdfBytes, `Desbloqueado_${Date.now()}.pdf`);
                 } catch(err) {
                     throw new Error("Contraseña incorrecta o documento no encriptado. Revisa tus datos.");
@@ -546,13 +647,12 @@
             }
 
             // ==========================================
-            // 15. AUTOPSIA DE METADATOS (NUEVA)
+            // 15. AUTOPSIA DE METADATOS
             // ==========================================
             else if (activeTool === 'metadata') {
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
                 
-                // Extracción de ADN del Documento con Fallbacks (Blindaje)
                 const title = pdfDoc.getTitle() || "NO DETECTADO";
                 const author = pdfDoc.getAuthor() || "NO DETECTADO";
                 const creator = pdfDoc.getCreator() || "NO DETECTADO (Software base oculto)";
@@ -560,7 +660,6 @@
                 const mDate = pdfDoc.getModificationDate() ? pdfDoc.getModificationDate().toLocaleString() : "NO DETECTADA";
                 const pages = pdfDoc.getPageCount();
 
-                // Renderizar Panel
                 const panel = document.getElementById('resultPanel');
                 panel.style.display = 'block';
                 panel.innerHTML = `
@@ -575,20 +674,60 @@
             }
 
             // ==========================================
-            // 18. APLANADORA TOTAL - FLATTEN (NUEVA)
+            // 17. CONVERSOR DE MATERIALIDAD (NUEVA)
+            // ==========================================
+            else if (activeTool === 'img2pdf') {
+                const newPdf = await PDFLib.PDFDocument.create();
+                
+                for (let file of currentFiles) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    let img;
+                    // Blindaje: Solo acepta JPG o PNG nativos
+                    if (file.type === 'image/jpeg') {
+                        img = await newPdf.embedJpg(arrayBuffer);
+                    } else if (file.type === 'image/png') {
+                        img = await newPdf.embedPng(arrayBuffer);
+                    } else {
+                        continue; 
+                    }
+                    
+                    // Ajustar el tamaño de la hoja al de la imagen para no deformarla
+                    const page = newPdf.addPage([img.width, img.height]);
+                    page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                }
+                
+                const pdfBytes = await newPdf.save();
+                descargarBlob(pdfBytes, `Materialidad_Fotos_${Date.now()}.pdf`);
+            }
+
+            // ==========================================
+            // 18. APLANADORA TOTAL (FLATTEN)
             // ==========================================
             else if (activeTool === 'flatten') {
                 const arrayBuffer = await currentFiles[0].arrayBuffer();
                 const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-                
                 const form = pdfDoc.getForm();
-                // Blindaje: Si no hay formulario, no hace nada pero no rompe
-                if(form) {
-                    form.flatten(); 
-                }
-                
+                if(form) form.flatten(); 
                 const pdfBytes = await pdfDoc.save();
                 descargarBlob(pdfBytes, `Contrato_Aplanado_${Date.now()}.pdf`);
+            }
+
+            // ==========================================
+            // 20. PURGA DE METADATOS - GHOST (NUEVA)
+            // ==========================================
+            else if (activeTool === 'ghost') {
+                const arrayBuffer = await currentFiles[0].arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                
+                // Inyección de vacíos para sobreescribir la huella digital
+                pdfDoc.setTitle(' ');
+                pdfDoc.setAuthor(' ');
+                pdfDoc.setSubject(' ');
+                pdfDoc.setCreator(' ');
+                pdfDoc.setProducer(' ');
+                
+                const pdfBytes = await pdfDoc.save();
+                descargarBlob(pdfBytes, `PDF_Purgado_${Date.now()}.pdf`);
             }
 
             if(activeTool !== 'metadata') {
