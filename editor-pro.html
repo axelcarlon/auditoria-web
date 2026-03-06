@@ -3,119 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor Libre PRO | AuditorIA</title>
-    <meta name="description" content="El motor de edición PDF más avanzado en el navegador. Inyecta, arrastra, sella y censura documentos en tiempo real usando Edge Computing.">
+    <title>AuditorIA PDF Editor PRO</title>
+    <meta name="description" content="Editor PDF Forense de Alta Precisión.">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
-    <script src="despertador.js"></script>
 
     <style>
-        :root { 
-            --bg-app: #020617; 
-            --bg-panel: #0F172A; 
-            --bg-tool: #1E293B; 
-            --border: rgba(255,255,255,0.1); 
-            --brand: #DC2626; 
-            --brand-glow: rgba(220, 38, 38, 0.4); 
-            --text-main: #F8FAFC; 
-            --text-muted: #94A3B8; 
-            --accent: #3B82F6;
+        /* =========================================================
+           1. VARIABLES Y RESET (DARK STUDIO THEME)
+           ========================================================= */
+        :root {
+            --bg-base: #09090B;      /* Fondo más profundo */
+            --bg-panel: #18181B;     /* Fondo de paneles */
+            --bg-hover: #27272A;     /* Hover states */
+            --border: #3F3F46;       /* Bordes sutiles */
+            --brand: #E11D48;        /* Rojo AuditorIA */
+            --brand-hover: #BE123C;
+            --accent: #3B82F6;       /* Azul selecciones */
+            --text-main: #F8FAFC;
+            --text-muted: #A1A1AA;
             --success: #10B981;
-            --warning: #F59E0B;
-            --canvas-bg: #09090b;
+            --canvas-bg: #111113;    /* Fondo detrás del papel */
+            --shadow-doc: 0 0 30px rgba(0,0,0,0.8);
         }
-        
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: var(--bg-app); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
-        /* ==========================================
-           1. TOPBAR (BARRA SUPERIOR)
-           ========================================== */
-        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); padding: 0 20px; height: 60px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.5);}
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+
+        /* =========================================================
+           2. BARRA DE MENÚ SUPERIOR (TOPBAR)
+           ========================================================= */
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 50px; padding: 0 15px; flex-shrink: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        
         .topbar-left { display: flex; align-items: center; gap: 20px; }
-        .btn-back { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main); padding: 8px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 800; transition: 0.2s; text-decoration: none; font-size: 12px; text-transform: uppercase;}
-        .btn-back:hover { background: rgba(220, 38, 38, 0.1); border-color: var(--brand); color: white;}
-        .app-title { font-size: 18px; font-weight: 900; color: white; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
-        .app-badge { background: var(--brand); color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 0 10px var(--brand-glow);}
-
-        .topbar-center { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.3); padding: 5px 20px; border-radius: 12px; border: 1px solid var(--border); }
-        .control-icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
-        .control-icon-btn:hover { color: white; background: rgba(255,255,255,0.1); }
-        .info-display { font-size: 13px; font-weight: 800; font-family: monospace; min-width: 70px; text-align: center; color: var(--accent);}
-        .divider { width: 1px; height: 20px; background: var(--border); margin: 0 5px; }
-
-        .topbar-right { display: flex; align-items: center; gap: 15px; }
-        .btn-export { background: var(--success); color: #022c22; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 13px; transition: 0.3s; text-transform: uppercase;}
-        .btn-export:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); color: white; background: #059669;}
-
-        /* ==========================================
-           2. WORKSPACE CENTRAL Y PANELES
-           ========================================== */
-        .workspace { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 60px); position: relative; }
-
-        /* LEFT SIDEBAR (TOOLS) */
-        .sidebar-left { width: 70px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 50; overflow-y: auto;}
-        .tool-btn { width: 44px; height: 44px; border-radius: 10px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
-        .tool-btn:hover { color: white; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);}
-        .tool-btn.active { color: white; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.2);}
+        .logo-area { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 900; letter-spacing: -0.5px;}
+        .pro-badge { background: var(--brand); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; letter-spacing: 1px;}
         
-        /* Tooltip CSS */
-        .tool-btn::after { content: attr(data-tooltip); position: absolute; left: 60px; background: var(--text-main); color: var(--bg-app); padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 900; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.2s; transform: translateX(-10px); z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
+        .btn-exit { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; text-decoration: none; transition: 0.2s;}
+        .btn-exit:hover { background: var(--bg-hover); color: white;}
+
+        .topbar-center { display: flex; align-items: center; gap: 10px; background: var(--bg-base); border: 1px solid var(--border); padding: 4px 15px; border-radius: 8px;}
+        .tool-icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 4px; display: flex; align-items: center; transition: 0.2s;}
+        .tool-icon-btn:hover { color: white; background: var(--bg-hover); }
+        .page-indicator { font-family: monospace; font-size: 13px; font-weight: bold; color: var(--text-main); min-width: 80px; text-align: center; }
+        .zoom-indicator { font-family: monospace; font-size: 12px; color: var(--accent); min-width: 50px; text-align: center; }
+        .divider-v { width: 1px; height: 16px; background: var(--border); margin: 0 5px; }
+
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+        .btn-undo { display: flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: 0.2s;}
+        .btn-undo:hover:not(:disabled) { color: white; background: var(--bg-hover); }
+        .btn-undo:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .btn-export { display: flex; align-items: center; gap: 8px; background: var(--brand); color: white; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 900; letter-spacing: 0.5px; transition: 0.2s;}
+        .btn-export:hover { background: var(--brand-hover); box-shadow: 0 0 10px rgba(225, 29, 72, 0.4); }
+
+        /* =========================================================
+           3. ÁREA DE TRABAJO (WORKSPACE)
+           ========================================================= */
+        .workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+        /* TOOLBAR IZQUIERDA (HERRAMIENTAS ADOBE STYLE) */
+        .toolbar-left { width: 60px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 15px 0; gap: 12px; z-index: 50; }
+        
+        .tool-group { display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center;}
+        .divider-h { width: 30px; height: 1px; background: var(--border); margin: 5px 0; }
+
+        .tool-btn { width: 40px; height: 40px; border-radius: 8px; background: transparent; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; position: relative;}
+        .tool-btn:hover { color: white; background: var(--bg-hover); }
+        .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); }
+
+        /* Tooltips Profesionales Flotantes */
+        .tool-btn::after { content: attr(data-tooltip); position: absolute; left: 55px; background: #000; border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.1s; transform: translateX(-5px); z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         .tool-btn:hover::after { opacity: 1; transform: translateX(0); }
 
-        /* CENTER CANVAS AREA (SCROLL-FREE Y ARRASTRE) */
-        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 40px; position: relative; }
+        /* CANVAS CENTRAL (EL LIENZO INFINITO) */
+        .canvas-container { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 40px; position: relative; cursor: grab;}
+        .canvas-container:active { cursor: grabbing; } /* Efecto de paneo */
         
-        .document-wrapper { position: relative; background: white; box-shadow: 0 10px 50px rgba(0,0,0,0.8); transition: transform 0.1s ease-out; transform-origin: top center; margin-bottom: 40px;}
-        #pdfCanvas { display: block; width: 100%; height: auto;}
+        /* Contenedor exacto de la hoja PDF */
+        .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); margin: 0 auto; transition: transform 0.1s ease-out; transform-origin: top center;}
+        #pdfCanvas { display: block; }
         
-        /* LA MAGIA WYSIWYG: CAPA SOBREPUESTA */
-        #interactiveLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
-        
-        /* OBJETOS ARRASTRABLES */
-        .drag-element { position: absolute; pointer-events: auto; user-select: none; border: 1px dashed transparent; min-width: 20px; min-height: 20px; transform: translate(-50%, -50%); transform-origin: center center;}
-        .drag-element:hover { border-color: rgba(0,0,0,0.3); cursor: grab; }
-        .drag-element.active { border: 2px dashed var(--accent); cursor: grabbing; z-index: 100; box-shadow: 0 0 10px rgba(59,130,246,0.3);}
-        
-        /* Tipos de Objetos */
-        .type-text { font-family: 'Helvetica', sans-serif; white-space: pre-wrap; outline: none; cursor: text; }
-        .type-redact { background: #000000; }
-        .type-highlight { background: #FDE047; opacity: 0.4; mix-blend-mode: multiply; }
-        .type-stamp { font-weight: 900; font-family: monospace; border: 4px solid; padding: 5px 15px; border-radius: 8px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; transform: translate(-50%, -50%) rotate(-15deg) !important; }
-        .type-image { background-size: contain; background-repeat: no-repeat; background-position: center; }
+        /* Capa de Dibujo y Selección (DOM Overlay) */
+        #drawingLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 
-        /* Botón de eliminar sobre el elemento activo */
-        .delete-btn { display: none; position: absolute; top: -25px; right: -25px; background: var(--brand); color: white; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 22px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 101; border: none;}
-        .drag-element.active .delete-btn { display: block; }
-        .delete-btn:hover { background: #991b1b; transform: scale(1.1); }
+        /* =========================================================
+           4. ELEMENTOS INTERACTIVOS (TEXTO, CAJAS, FIRMAS)
+           ========================================================= */
+        .pdf-element { position: absolute; pointer-events: auto; transform: translate(-50%, -50%); transform-origin: center; cursor: move; }
+        
+        /* Contorno de selección estilo Adobe */
+        .pdf-element.selected::before { content: ''; position: absolute; top: -4px; left: -4px; right: -4px; bottom: -4px; border: 2px solid var(--accent); pointer-events: none; z-index: -1;}
+        .pdf-element.selected::after { content: ''; position: absolute; right: -8px; bottom: -8px; width: 10px; height: 10px; background: white; border: 2px solid var(--accent); border-radius: 50%; cursor: nwse-resize; pointer-events: auto; }
 
-        /* RIGHT SIDEBAR (PROPIEDADES) */
-        .sidebar-right { width: 280px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 30px; overflow-y: auto; z-index: 50;}
+        /* Estilos Específicos por Tipo */
+        .el-text { font-family: 'Helvetica', Arial, sans-serif; white-space: nowrap; outline: none; line-height: 1; min-width: 10px; cursor: text; }
+        .el-text:empty::before { content: 'Escribe aquí...'; color: rgba(0,0,0,0.3); pointer-events: none; }
+        
+        .el-box { background: black; /* Redact */ }
+        .el-highlight { background: yellow; opacity: 0.4; mix-blend-mode: multiply; }
+        .el-image { background-size: 100% 100%; background-repeat: no-repeat; }
+
+        /* Capa temporal para dibujar cajas (Arrastrar el mouse) */
+        #tempDrawBox { position: absolute; border: 1px dashed var(--accent); background: rgba(59, 130, 246, 0.2); pointer-events: none; display: none; z-index: 9999;}
+
+        /* =========================================================
+           5. PANEL DE PROPIEDADES DERECHO
+           ========================================================= */
+        .sidebar-right { width: 260px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; gap: 25px; overflow-y: auto; z-index: 50; }
+        
         .prop-section { display: flex; flex-direction: column; gap: 15px; }
-        .prop-title { font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
+        .prop-title { font-size: 10px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
         
-        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        /* Paleta de Colores Forenses */
+        .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .color-swatch { width: 100%; aspect-ratio: 1; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.1s;}
-        .color-swatch:hover { transform: scale(1.1); }
-        .color-swatch.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3);}
+        .color-swatch.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.2);}
         
-        .prop-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-main); font-weight: bold;}
-        .size-slider { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        .prop-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-main); font-weight: bold;}
+        .control-slider { width: 100%; cursor: pointer; accent-color: var(--accent); }
+        
+        .delete-obj-btn { background: rgba(225, 29, 72, 0.1); border: 1px solid var(--brand); color: #FCA5A5; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px; width: 100%; margin-top: 10px;}
+        .delete-obj-btn:hover:not(:disabled) { background: var(--brand); color: white; }
+        .delete-obj-btn:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border); color: var(--text-muted);}
 
-        .file-upload-btn { background: rgba(255,255,255,0.05); border: 1px dashed var(--text-muted); color: var(--text-main); padding: 12px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 12px; font-weight: bold; transition: 0.3s; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px;}
-        .file-upload-btn:hover { background: rgba(59, 130, 246, 0.1); border-color: var(--accent); color: var(--accent);}
-
-        /* PANTALLA DE CARGA INICIAL */
-        #uploadScreen { position: absolute; top: 60px; left: 0; width: 100%; height: calc(100vh - 60px); background: var(--bg-app); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
-        .upload-box { border: 2px dashed var(--accent); padding: 60px; border-radius: 20px; text-align: center; cursor: pointer; background: rgba(15, 23, 42, 0.8); transition: 0.3s; max-width: 500px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);}
-        .upload-box:hover { background: rgba(59, 130, 246, 0.05); border-color: #60A5FA; transform: translateY(-5px);}
-
-        /* Loader Overlay */
-        #loaderOverlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; color: var(--accent); font-family: monospace; font-size: 16px; font-weight: bold;}
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--accent); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;}
+        /* =========================================================
+           6. PANTALLAS DE CARGA
+           ========================================================= */
+        #initScreen { position: absolute; top: 50px; left: 0; width: 100%; height: calc(100vh - 50px); background: var(--bg-base); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 200; }
+        .upload-box { border: 2px dashed var(--accent); padding: 50px 80px; border-radius: 16px; text-align: center; cursor: pointer; background: var(--bg-panel); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.5);}
+        .upload-box:hover { background: var(--bg-hover); border-color: white; transform: translateY(-5px);}
+        
+        #globalLoader { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; color: white; font-family: monospace; font-size: 14px;}
+        .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
@@ -124,86 +146,98 @@
 
     <div class="topbar">
         <div class="topbar-left">
-            <a href="editor-pdf.html" class="btn-back">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Salir
+            <a href="editor-pdf.html" class="btn-exit">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Cerrar
             </a>
-            <div class="app-title">Editor Canvas <span class="app-badge">PRO</span></div>
+            <div class="logo-area">
+                Editor Libre <span class="pro-badge">PRO</span>
+            </div>
         </div>
 
-        <div class="topbar-center" id="navControls" style="display: none;">
-            <button class="control-icon-btn" onclick="adjustZoom(-0.25)" data-tooltip="Alejar"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
-            <span class="info-display" id="zoomLevel">100%</span>
-            <button class="control-icon-btn" onclick="adjustZoom(0.25)" data-tooltip="Acercar"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
+        <div class="topbar-center" id="viewControls" style="display: none;">
+            <button class="tool-icon-btn" onclick="ZoomEngine.out()" title="Alejar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg></button>
+            <span class="zoom-indicator" id="uiZoom">100%</span>
+            <button class="tool-icon-btn" onclick="ZoomEngine.in()" title="Acercar"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg></button>
             
-            <div class="divider"></div>
+            <div class="divider-v"></div>
 
-            <button class="control-icon-btn" onclick="changePage(-1)" data-tooltip="Página Anterior"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg></button>
-            <span class="info-display" id="pageIndicator" style="color: white;">1 / 1</span>
-            <button class="control-icon-btn" onclick="changePage(1)" data-tooltip="Página Siguiente"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg></button>
+            <button class="tool-icon-btn" onclick="RenderEngine.prevPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg></button>
+            <span class="page-indicator" id="uiPage">Pág 0 / 0</span>
+            <button class="tool-icon-btn" onclick="RenderEngine.nextPage()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg></button>
         </div>
 
         <div class="topbar-right">
-            <button class="btn-export" onclick="burnAndExportPDF()" id="btnExport" style="display: none;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                EXPORTAR PDF FINAL
+            <button class="btn-undo" id="btnUndo" onclick="HistoryEngine.undo()" disabled>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
+                Deshacer
+            </button>
+            <button class="btn-export" id="btnExport" style="display: none;" onclick="ExportEngine.execute()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXPORTAR PDF
             </button>
         </div>
     </div>
 
-    <div id="uploadScreen">
+    <div id="initScreen">
         <div class="upload-box" onclick="document.getElementById('pdfUploader').click()">
-            <svg width="72" height="72" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <h2 style="margin: 0 0 10px; font-size: 24px;">Inicializar Motor Gráfico</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin: 0; line-height: 1.6;">Arrastra un documento PDF a esta zona o haz clic para explorar. El archivo se procesará de forma segura en tu memoria RAM.</p>
+            <svg width="50" height="50" fill="none" stroke="var(--accent)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 15px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <h2 style="margin: 0 0 10px; font-size: 20px;">Cargar Documento</h2>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Sube el PDF para iniciar el motor de renderizado.</p>
             <input type="file" id="pdfUploader" accept=".pdf" style="display: none;">
         </div>
     </div>
 
-    <div class="workspace" id="mainWorkspace">
+    <div class="workspace" id="mainWorkspace" style="visibility: hidden;">
         
-        <div class="sidebar-left">
-            <button class="tool-btn active" data-tool="select" data-tooltip="Cursor (Seleccionar/Mover)" onclick="setTool('select')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
-            </button>
+        <div class="toolbar-left">
+            <div class="tool-group">
+                <button class="tool-btn active" data-tool="select" data-tooltip="Seleccionar / Mover (V)">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                </button>
+            </div>
             
-            <div style="width: 30px; height: 1px; background: var(--border); margin: 5px 0;"></div>
+            <div class="divider-h"></div>
             
-            <button class="tool-btn" data-tool="text" data-tooltip="Insertar Texto" onclick="setTool('text')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="check" data-tooltip="Palomita (Check)" onclick="setTool('check')">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="cross" data-tooltip="Equis (Tache)" onclick="setTool('cross')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="text" data-tooltip="Insertar Texto (T)">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="check" data-tooltip="Añadir Palomita">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="cross" data-tooltip="Añadir Tache">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
             
-            <div style="width: 30px; height: 1px; background: var(--border); margin: 5px 0;"></div>
+            <div class="divider-h"></div>
             
-            <button class="tool-btn" data-tool="redact" data-tooltip="Censurar (Caja)" onclick="setTool('redact')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
-            </button>
-            <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador" onclick="setTool('highlight')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-            </button>
-            
-            <div style="width: 30px; height: 1px; background: var(--border); margin: 5px 0;"></div>
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="redact" data-tooltip="Censurar Área (Caja Negra)">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4z"></path></svg>
+                </button>
+                <button class="tool-btn" data-tool="highlight" data-tooltip="Resaltador Amarillo">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </button>
+            </div>
 
-            <button class="tool-btn" data-tool="stamp" data-tooltip="Sello Predefinido" onclick="setTool('stamp')">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            </button>
+            <div class="divider-h"></div>
 
-            <button class="tool-btn" data-tool="image" data-tooltip="Inyectar Imagen / Firma" onclick="document.getElementById('imgUploader').click()">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            </button>
-            <input type="file" id="imgUploader" accept="image/png, image/jpeg" style="display: none;">
+            <div class="tool-group">
+                <button class="tool-btn" data-tool="image" data-tooltip="Insertar Firma (.PNG)" onclick="document.getElementById('sigUploader').click()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </button>
+                <input type="file" id="sigUploader" accept="image/png" style="display:none;">
+            </div>
         </div>
 
-        <div class="canvas-area" id="canvasArea">
-            <div class="document-wrapper" id="docWrapper">
+        <div class="canvas-container" id="scrollContainer">
+            <div class="page-wrapper" id="pageWrapper">
                 <canvas id="pdfCanvas"></canvas>
-                <div id="interactiveLayer"></div>
+                
+                <div id="drawingLayer"></div>
+                
+                <div id="tempDrawBox"></div>
             </div>
         </div>
 
@@ -212,704 +246,41 @@
             <div class="prop-section">
                 <h4 class="prop-title">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                    Apariencia Gráfica
+                    Estilos y Color
                 </h4>
                 
-                <div class="prop-row" style="margin-top: 5px;">
-                    <span>Color Principal</span>
-                </div>
-                <div class="color-grid" id="colorGrid">
+                <div class="color-grid" id="uiColors">
                     <div class="color-swatch active" style="background: #000000;" data-color="#000000"></div>
-                    <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div> <div class="color-swatch" style="background: #2563EB;" data-color="#2563EB"></div> <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div> <div class="color-swatch" style="background: #16A34A;" data-color="#16A34A"></div> <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #94A3B8;" data-color="#FFFFFF"></div> <div class="color-swatch" style="background: #FDE047;" data-color="#FDE047"></div> </div>
+                    <div class="color-swatch" style="background: #1E3A8A;" data-color="#1E3A8A"></div> <div class="color-swatch" style="background: #DC2626;" data-color="#DC2626"></div> <div class="color-swatch" style="background: #16A34A;" data-color="#16A34A"></div> <div class="color-swatch" style="background: #FBBF24;" data-color="#FBBF24"></div> <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #3F3F46;" data-color="#FFFFFF"></div> </div>
 
                 <div class="prop-row" style="margin-top: 15px;">
                     <span>Tamaño Base</span>
-                    <span id="valSize" style="color: var(--accent);">14pt</span>
+                    <span id="uiSizeVal" style="color: var(--accent);">14pt</span>
                 </div>
-                <input type="range" class="size-slider" id="inputSize" min="8" max="72" value="14">
+                <input type="range" class="control-slider" id="uiSize" min="8" max="72" value="14">
             </div>
 
-            <div class="prop-section" id="stampProps" style="display: none;">
-                <h4 class="prop-title">Configuración de Sello</h4>
-                <select id="stampSelect" class="control-select" style="margin-top: 5px;">
-                    <option value="AUDITADO">AUDITADO</option>
-                    <option value="PAGADO">PAGADO</option>
-                    <option value="CANCELADO">CANCELADO</option>
-                    <option value="RECHAZADO">RECHAZADO</option>
-                    <option value="CONFIDENCIAL">CONFIDENCIAL</option>
-                </select>
-            </div>
-
-            <div class="prop-section" style="margin-top: 10px;">
-                <h4 class="prop-title">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Gestión de Capas
-                </h4>
-                
-                <div class="prop-row" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-top: 5px;">
-                    <span>Objetos en esta Pág:</span>
-                    <span id="objCount" style="color: var(--success); font-family: monospace; font-size: 16px;">0</span>
-                </div>
-
-                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; text-align: justify; margin: 0;">
-                    Tip: Selecciona la herramienta <strong style="color:white;">Cursor</strong> en la barra izquierda para hacer clic sobre cualquier objeto que hayas creado y arrastrarlo, editar su texto, o borrarlo.
-                </p>
-                <p style="font-size: 11px; color: var(--warning); line-height: 1.5; text-align: justify; margin: 0;">
-                    Toda la edición vive en la memoria RAM. Para fusionarla permanentemente con el archivo binario, presiona el botón verde de "Exportar PDF".
-                </p>
+            <div class="prop-section" style="margin-top: 20px;">
+                <h4 class="prop-title">Gestión de Objeto</h4>
+                <p id="uiNoSelection" style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">No hay ningún elemento seleccionado. Usa la herramienta Cursor (V) y haz clic sobre un texto o marca para editarla.</p>
+                <button class="delete-obj-btn" id="btnDeleteObj" disabled>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Eliminar Elemento
+                </button>
             </div>
 
         </div>
 
     </div>
 
-    <div id="loaderOverlay">
+    <div id="globalLoader">
         <div class="spinner"></div>
-        <span id="loaderText">Procesando código binario...</span>
+        <span id="loaderText">Preparando Motor Forense...</span>
     </div>
 
-<script>
-    /* =========================================================================
-       CEREBRO JAVASCRIPT: AUDITORIA CANVAS PRO ENGINE (V1.0)
-       ========================================================================= */
-
-    // --- CONFIGURACIÓN E INICIALIZACIÓN ---
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
-    // Estado Global de la App
-    let pdfBytesOriginal = null;
-    let pdfDocProxy = null;
-    let totalPages = 0;
-    let currentPage = 1;
-    
-    // Motor de Zoom (Responsivo)
-    let currentZoom = 1.0;
-    const ZOOM_STEP = 0.25;
-    const MAX_ZOOM = 3.0;
-    const MIN_ZOOM = 0.5;
-
-    // Estado de Herramientas
-    let activeTool = 'select'; // select, text, check, cross, redact, highlight, stamp, image
-    let currentProps = { color: '#000000', size: 14 };
-
-    // Base de Datos de Anotaciones en RAM (Arreglo tridimensional por página)
-    // annotations[pageNum] = [ { id, type, text, x, y, width, height, color, size, imgData } ]
-    let annotations = {}; 
-
-    // Motor Drag & Drop
-    let isDragging = false;
-    let dragElement = null;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
-
-    // --- ELEMENTOS DEL DOM ---
-    const uploadScreen = document.getElementById('uploadScreen');
-    const mainWorkspace = document.getElementById('mainWorkspace');
-    const navControls = document.getElementById('navControls');
-    const btnExport = document.getElementById('btnExport');
-    const loader = document.getElementById('loaderOverlay');
-    const loaderText = document.getElementById('loaderText');
-    
-    const docWrapper = document.getElementById('docWrapper');
-    const canvas = document.getElementById('pdfCanvas');
-    const ctx = canvas.getContext('2d');
-    const interactiveLayer = document.getElementById('interactiveLayer');
-    const canvasArea = document.getElementById('canvasArea');
-
-    // --- INGESTA DE ARCHIVOS ---
-    document.getElementById('pdfUploader').addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if(!file || file.type !== 'application/pdf') {
-            alert("Formato denegado. Sube un archivo PDF válido."); return;
-        }
-
-        showLoader("Desensamblando vectores PDF...");
-        
-        try {
-            pdfBytesOriginal = await file.arrayBuffer();
-            
-            // Cargar en visualizador (PDF.js)
-            const loadingTask = pdfjsLib.getDocument({data: pdfBytesOriginal});
-            pdfDocProxy = await loadingTask.promise;
-            
-            totalPages = pdfDocProxy.numPages;
-            currentPage = 1;
-            
-            // Inicializar base de datos de anotaciones vacía para todas las hojas
-            for(let i=1; i<=totalPages; i++) annotations[i] = [];
-
-            // Transición de UI
-            uploadScreen.style.display = 'none';
-            mainWorkspace.style.visibility = 'visible';
-            navControls.style.display = 'flex';
-            btnExport.style.display = 'flex';
-
-            // Calcular zoom inicial ideal basado en la pantalla del cliente
-            await calculateAutoZoom();
-            await renderPage(currentPage);
-
-        } catch (error) {
-            console.error(error);
-            alert("Error crítico al leer el archivo. Puede estar corrupto o protegido con contraseña maestra.");
-        } finally {
-            hideLoader();
-        }
-    });
-
-    // --- MOTOR DE RENDERIZADO VISUAL (PDF.js) ---
-    async function calculateAutoZoom() {
-        // Obtenemos las dimensiones reales de la hoja 1
-        const page = await pdfDocProxy.getPage(1);
-        const unscaledViewport = page.getViewport({scale: 1.0});
-        
-        // Queremos que el PDF quepa a lo ancho del área de trabajo dejando un margen
-        const availableWidth = canvasArea.clientWidth - 80; // 40px padding por lado
-        let autoScale = availableWidth / unscaledViewport.width;
-        
-        // No hacerlo más grande de 1.5 por defecto
-        if(autoScale > 1.5) autoScale = 1.5;
-        
-        // Redondear al 0.25 más cercano para que los números sean bonitos (ej 100%, 125%)
-        currentZoom = Math.round(autoScale * 4) / 4;
-        if(currentZoom < MIN_ZOOM) currentZoom = MIN_ZOOM;
-        
-        document.getElementById('zoomLevel').innerText = `${Math.round(currentZoom * 100)}%`;
-    }
-
-    async function renderPage(pageNum) {
-        const page = await pdfDocProxy.getPage(pageNum);
-        
-        // Manejo de DPI para pantallas Retina (MacBooks, Celulares gama alta)
-        const outputScale = window.devicePixelRatio || 1;
-        const viewport = page.getViewport({scale: currentZoom});
-
-        // Configuración del Lienzo Visual (Resolución Interna vs Tamaño CSS)
-        canvas.width = Math.floor(viewport.width * outputScale);
-        canvas.height = Math.floor(viewport.height * outputScale);
-        canvas.style.width = Math.floor(viewport.width) + "px";
-        canvas.style.height = Math.floor(viewport.height) + "px";
-
-        // Escalar contexto para Retina
-        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-
-        // Renderizar el PDF
-        const renderContext = {
-            canvasContext: ctx,
-            transform: transform,
-            viewport: viewport
-        };
-        await page.render(renderContext).promise;
-
-        // Ajustar el contenedor general (Wrapper) al tamaño exacto del CSS
-        docWrapper.style.width = Math.floor(viewport.width) + "px";
-        docWrapper.style.height = Math.floor(viewport.height) + "px";
-
-        // Actualizar UI Topbar
-        document.getElementById('pageIndicator').innerText = `${pageNum} / ${totalPages}`;
-        
-        // Re-dibujar las anotaciones interactivas sobre la nueva hoja
-        renderAnnotationsDOM();
-    }
-
-    // --- CONTROLES DE NAVEGACIÓN ---
-    async function changePage(offset) {
-        let newPage = currentPage + offset;
-        if(newPage >= 1 && newPage <= totalPages) {
-            currentPage = newPage;
-            // Limpiar la selección activa al cambiar de hoja
-            deactivateAllElements();
-            await renderPage(currentPage);
-        }
-    }
-
-    async function adjustZoom(offset) {
-        let newZoom = currentZoom + offset;
-        if(newZoom >= MIN_ZOOM && newZoom <= MAX_ZOOM) {
-            currentZoom = newZoom;
-            document.getElementById('zoomLevel').innerText = `${Math.round(currentZoom * 100)}%`;
-            await renderPage(currentPage);
-        }
-    }
-
-    // --- BARRA DE HERRAMIENTAS Y PROPIEDADES ---
-    function setTool(toolName) {
-        activeTool = toolName;
-        // UI
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.tool-btn[data-tool="${toolName}"]`).classList.add('active');
-        
-        // Mostrar panel de Sello si es necesario
-        document.getElementById('stampProps').style.display = (toolName === 'stamp') ? 'flex' : 'none';
-
-        // Cursor UX
-        if(toolName === 'select') interactiveLayer.style.cursor = 'default';
-        else if (toolName === 'text') interactiveLayer.style.cursor = 'text';
-        else interactiveLayer.style.cursor = 'crosshair';
-
-        deactivateAllElements();
-    }
-
-    // Selector de Colores
-    document.querySelectorAll('.color-swatch').forEach(swatch => {
-        swatch.addEventListener('click', (e) => {
-            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-            e.target.classList.add('active');
-            currentProps.color = e.target.getAttribute('data-color');
-            
-            // Si hay un elemento seleccionado, actualizar su color en vivo
-            updateActiveElementProperty('color', currentProps.color);
-        });
-    });
-
-    // Slider de Tamaño
-    document.getElementById('inputSize').addEventListener('input', (e) => {
-        currentProps.size = parseInt(e.target.value);
-        document.getElementById('valSize').innerText = `${currentProps.size}pt`;
-        updateActiveElementProperty('size', currentProps.size);
-    });
-
-    // Subida de Imágenes (Firma)
-    document.getElementById('imgUploader').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const imgData = event.target.result;
-            // Al subir la imagen, la inyectamos automáticamente en el centro de la vista
-            createAnnotation('image', canvas.clientWidth/2, canvas.clientHeight/2, { imgData: imgData });
-            // Regresar herramienta a select para arrastrarla
-            setTool('select');
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // --- CAPA INTERACTIVA (DOM OVERLAY ENGINE) ---
-    // Escucha clics en el lienzo para crear objetos nuevos
-    interactiveLayer.addEventListener('mousedown', (e) => {
-        // Si la herramienta es Select, no creamos nada, la lógica de drag se encarga
-        if(activeTool === 'select' || activeTool === 'image') return;
-
-        // Si dimos clic en un elemento existente, no crear otro encima (Evitar duplicados)
-        if(e.target.closest('.drag-element')) return;
-
-        // Calcular Coordenadas Relativas al contenedor interactivo
-        const rect = interactiveLayer.getBoundingClientRect();
-        // x, y representan el centro del objeto para facilitar el clic
-        const x = e.clientX - rect.left; 
-        const y = e.clientY - rect.top;
-
-        createAnnotation(activeTool, x, y);
-    });
-
-    // FÁBRICA DE OBJETOS
-    function createAnnotation(type, x, y, extraData = {}) {
-        const id = 'ann_' + Date.now() + Math.floor(Math.random() * 1000);
-        
-        let newAnn = {
-            id: id,
-            type: type,
-            x: x, // Coordenadas en Píxeles de la pantalla (Escalados)
-            y: y,
-            color: currentProps.color,
-            size: currentProps.size,
-            text: '',
-            width: 0,
-            height: 0,
-            imgData: extraData.imgData || null
-        };
-
-        // Lógica específica por tipo
-        if(type === 'text') {
-            newAnn.text = "Haz doble clic para editar";
-        } else if (type === 'check') {
-            newAnn.text = "✓";
-            newAnn.size = currentProps.size * 1.5; // Las palomitas se ven mejor un poco más grandes
-        } else if (type === 'cross') {
-            newAnn.text = "✗";
-            newAnn.size = currentProps.size * 1.5;
-        } else if (type === 'stamp') {
-            newAnn.text = document.getElementById('stampSelect').value;
-            newAnn.size = currentProps.size * 2;
-        } else if (type === 'redact' || type === 'highlight') {
-            // Cajas por defecto 100x20 px
-            newAnn.width = 100;
-            newAnn.height = currentProps.size * 1.5;
-        }
-
-        // Guardar en RAM
-        annotations[currentPage].push(newAnn);
-        
-        // Renderizar en DOM
-        renderAnnotationsDOM();
-        
-        // Activar el elemento recién creado
-        setTimeout(() => activateElement(id), 50);
-
-        // Regresar la herramienta a Select para evitar clics accidentales
-        if(type !== 'redact' && type !== 'highlight') {
-            setTool('select');
-        }
-    }
-
-    // DIBUJADOR DEL DOM
-    function renderAnnotationsDOM() {
-        interactiveLayer.innerHTML = '';
-        const pageAnns = annotations[currentPage] || [];
-        
-        document.getElementById('objCount').innerText = pageAnns.length;
-
-        pageAnns.forEach(ann => {
-            const el = document.createElement('div');
-            el.className = `drag-element type-${ann.type}`;
-            el.id = ann.id;
-            
-            // Posicionamiento absoluto desde el centro del objeto (transform: translate(-50%, -50%))
-            el.style.left = ann.x + 'px';
-            el.style.top = ann.y + 'px';
-            
-            // Botón de eliminar incrustado
-            const delBtn = document.createElement('button');
-            delBtn.className = 'delete-btn';
-            delBtn.innerHTML = '×';
-            delBtn.onclick = (e) => { e.stopPropagation(); deleteAnnotation(ann.id); };
-            el.appendChild(delBtn);
-
-            // Renderizado por tipo
-            if(ann.type === 'text' || ann.type === 'check' || ann.type === 'cross' || ann.type === 'stamp') {
-                const textSpan = document.createElement('span');
-                textSpan.innerText = ann.text;
-                textSpan.style.color = ann.color;
-                textSpan.style.fontSize = ann.size + 'px';
-                
-                if(ann.type === 'text') {
-                    // Permitir edición de texto
-                    textSpan.contentEditable = true;
-                    textSpan.style.outline = 'none';
-                    // Sincronizar cambios en RAM
-                    textSpan.onblur = (e) => {
-                        ann.text = e.target.innerText;
-                        // Si lo dejó vacío, borrarlo
-                        if(ann.text.trim() === "") deleteAnnotation(ann.id);
-                    };
-                    // Evitar que el drag dispare mientras escribe
-                    textSpan.onmousedown = (e) => { if(el.classList.contains('active')) e.stopPropagation(); };
-                }
-                
-                if(ann.type === 'stamp') {
-                    el.style.color = ann.color;
-                    el.style.borderColor = ann.color;
-                }
-
-                el.appendChild(textSpan);
-            } 
-            else if (ann.type === 'redact' || ann.type === 'highlight') {
-                el.style.width = ann.width + 'px';
-                el.style.height = ann.height + 'px';
-                el.style.backgroundColor = ann.color;
-                // Pequeño resize handle (esquina) para cajas
-                const resizeHandle = document.createElement('div');
-                resizeHandle.style.cssText = "position:absolute; right:-5px; bottom:-5px; width:10px; height:10px; background:var(--accent); cursor:nwse-resize; border-radius:50%; display:none;";
-                resizeHandle.className = "resize-handle";
-                el.appendChild(resizeHandle);
-            }
-            else if (ann.type === 'image') {
-                const img = document.createElement('img');
-                img.src = ann.imgData;
-                img.style.height = (ann.size * 5) + 'px'; // Escala base arbitraria ligada al slider
-                img.style.pointerEvents = 'none'; // Para que el drag funcione sobre el div padre
-                el.appendChild(img);
-            }
-
-            // Eventos de Activación y Arrastre
-            el.addEventListener('mousedown', handleDragStart);
-
-            interactiveLayer.appendChild(el);
-        });
-    }
-
-    // --- LÓGICA DE INTERACCIÓN (ARRASTRE Y SELECCIÓN) ---
-    function activateElement(id) {
-        deactivateAllElements();
-        const el = document.getElementById(id);
-        if(el) {
-            el.classList.add('active');
-            // Cargar propiedades del objeto en el sidebar derecho
-            const ann = annotations[currentPage].find(a => a.id === id);
-            if(ann) {
-                document.getElementById('inputSize').value = ann.type === 'image' ? ann.size/5 : ann.size;
-                document.getElementById('valSize').innerText = document.getElementById('inputSize').value + 'pt';
-                
-                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-                const swatch = document.querySelector(`.color-swatch[data-color="${ann.color}"]`);
-                if(swatch) swatch.classList.add('active');
-                
-                // Forzar herramienta select
-                if(activeTool !== 'select') setTool('select');
-            }
-        }
-    }
-
-    function deactivateAllElements() {
-        document.querySelectorAll('.drag-element').forEach(el => el.classList.remove('active'));
-    }
-
-    // Desactivar al hacer clic fuera
-    docWrapper.addEventListener('mousedown', (e) => {
-        if(activeTool === 'select' && e.target === interactiveLayer) {
-            deactivateAllElements();
-        }
-    });
-
-    function handleDragStart(e) {
-        if(activeTool !== 'select') return;
-        
-        // Si el clic fue en un resize-handle, no arrastrar
-        if(e.target.classList.contains('resize-handle')) {
-            // Lógica de resize omitida por simplicidad, se controla con el slider Size
-            return; 
-        }
-
-        const el = e.currentTarget;
-        activateElement(el.id);
-
-        isDragging = true;
-        dragElement = el;
-
-        // Calcular offset del mouse respecto al centro del elemento
-        const rect = el.getBoundingClientRect();
-        const parentRect = interactiveLayer.getBoundingClientRect();
-        
-        // Posición actual del centro
-        const currentCenterX = rect.left - parentRect.left + (rect.width/2);
-        const currentCenterY = rect.top - parentRect.top + (rect.height/2);
-        
-        const mouseX = e.clientX - parentRect.left;
-        const mouseY = e.clientY - parentRect.top;
-
-        dragOffsetX = mouseX - currentCenterX;
-        dragOffsetY = mouseY - currentCenterY;
-
-        document.addEventListener('mousemove', handleDragMove);
-        document.addEventListener('mouseup', handleDragEnd);
-    }
-
-    function handleDragMove(e) {
-        if(!isDragging || !dragElement) return;
-
-        const parentRect = interactiveLayer.getBoundingClientRect();
-        let newX = (e.clientX - parentRect.left) - dragOffsetX;
-        let newY = (e.clientY - parentRect.top) - dragOffsetY;
-
-        // Limitar dentro del lienzo (Opcional, pero recomendado)
-        if(newX < 0) newX = 0;
-        if(newY < 0) newY = 0;
-        if(newX > parentRect.width) newX = parentRect.width;
-        if(newY > parentRect.height) newY = parentRect.height;
-
-        dragElement.style.left = newX + 'px';
-        dragElement.style.top = newY + 'px';
-    }
-
-    function handleDragEnd() {
-        if(isDragging && dragElement) {
-            // Guardar nuevas coordenadas en RAM
-            const ann = annotations[currentPage].find(a => a.id === dragElement.id);
-            if(ann) {
-                ann.x = parseFloat(dragElement.style.left);
-                ann.y = parseFloat(dragElement.style.top);
-            }
-        }
-        isDragging = false;
-        dragElement = null;
-        document.removeEventListener('mousemove', handleDragMove);
-        document.removeEventListener('mouseup', handleDragEnd);
-    }
-
-    // Actualiza color o tamaño de un elemento si está activo
-    function updateActiveElementProperty(prop, value) {
-        const activeEl = document.querySelector('.drag-element.active');
-        if(!activeEl) return;
-        
-        const ann = annotations[currentPage].find(a => a.id === activeEl.id);
-        if(!ann) return;
-
-        if(prop === 'color') {
-            ann.color = value;
-        } else if (prop === 'size') {
-            // Comportamiento de Size depende del tipo
-            if(ann.type === 'check' || ann.type === 'cross') ann.size = value * 1.5;
-            else if(ann.type === 'stamp') ann.size = value * 2;
-            else ann.size = value;
-            
-            // Si es caja (redact), el size controla el alto
-            if(ann.type === 'redact' || ann.type === 'highlight') {
-                ann.height = value * 1.5;
-            }
-        }
-        renderAnnotationsDOM();
-        activateElement(ann.id); // Mantenerlo activo
-    }
-
-    function deleteAnnotation(id) {
-        annotations[currentPage] = annotations[currentPage].filter(a => a.id !== id);
-        renderAnnotationsDOM();
-    }
-
-
-    // =========================================================================
-    // EXPORTACIÓN A PDF-LIB (TRADUCCIÓN MATEMÁTICA Y BLINDAJE FINAL)
-    // =========================================================================
-    
-    // Función utilitaria HEX a RGB para PDF-Lib
-    function hexToRgbPdf(hex) {
-        let r = 0, g = 0, b = 0;
-        if (hex.length == 4) { r = "0x" + hex[1] + hex[1]; g = "0x" + hex[2] + hex[2]; b = "0x" + hex[3] + hex[3]; } 
-        else if (hex.length == 7) { r = "0x" + hex[1] + hex[2]; g = "0x" + hex[3] + hex[4]; b = "0x" + hex[5] + hex[6]; }
-        return { r: r / 255, g: g / 255, b: b / 255 };
-    }
-
-    async function burnAndExportPDF() {
-        showLoader("Escribiendo código binario y empaquetando...");
-        try {
-            // Cargar el documento original virgen en PDF-Lib
-            const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal);
-            const pages = pdfDoc.getPages();
-            
-            // Incrustar fuentes necesarias
-            const fontHelvetica = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-            const fontHelveticaBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-            const fontCourierBold = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold); // Para sellos
-
-            // Iterar sobre las 1 a N páginas
-            for(let i = 1; i <= totalPages; i++) {
-                const pageAnns = annotations[i];
-                if(!pageAnns || pageAnns.length === 0) continue; // Si la hoja no tiene edición, la saltamos para ahorrar RAM
-
-                const pagePdf = pages[i - 1]; // Índices en PDF-Lib empiezan en 0
-                const { width: pdfWidth, height: pdfHeight } = pagePdf.getSize();
-                
-                // Necesitamos saber qué tamaño tenía el Canvas HTML para calcular la proporción real (Scale)
-                // Usamos la regla de 3 base: (Posición HTML / Ancho HTML) * Ancho PDF Real
-                // Obtenemos el viewport no escalado de esta página para cruzar la data
-                const originalPageData = await pdfDocProxy.getPage(i);
-                const viewport = originalPageData.getViewport({scale: currentZoom});
-                
-                const canvasW = viewport.width;
-                const canvasH = viewport.height;
-
-                for(let ann of pageAnns) {
-                    // Matemáticas de Traducción de Coordenadas:
-                    // 1. Convertir la posición X del centro (DOM) a proporción (0.0 a 1.0)
-                    const propX = ann.x / canvasW;
-                    // 2. Convertir la posición Y del centro (DOM) a proporción
-                    const propY = ann.y / canvasH;
-
-                    // 3. Traducir a coordenadas nativas PDF (Recordar que el eje Y en PDF empieza ABAJO)
-                    const pdfX = propX * pdfWidth;
-                    let pdfY = pdfHeight - (propY * pdfHeight);
-
-                    const rgbColor = hexToRgbPdf(ann.color);
-                    const drawColor = PDFLib.rgb(rgbColor.r, rgbColor.g, rgbColor.b);
-
-                    // Escalar el tamaño de fuente (El Zoom visual no debe afectar el tamaño del punto tipográfico impreso)
-                    const pdfFontSize = ann.size / currentZoom; 
-
-                    // DIBUJAR POR TIPO
-                    if(ann.type === 'text' || ann.type === 'check' || ann.type === 'cross') {
-                        // Offset: Ajustar porque DOM centra el div, y PDF-Lib escribe desde la base izquierda (Baseline)
-                        const textWidth = fontHelvetica.widthOfTextAtSize(ann.text, pdfFontSize);
-                        pagePdf.drawText(ann.text, {
-                            x: pdfX - (textWidth / 2), // Centrar en X
-                            y: pdfY - (pdfFontSize / 3), // Ajuste de baseline tipográfico
-                            size: pdfFontSize,
-                            font: fontHelvetica,
-                            color: drawColor
-                        });
-                    } 
-                    else if (ann.type === 'stamp') {
-                        const textWidth = fontCourierBold.widthOfTextAtSize(ann.text, pdfFontSize);
-                        // Dibujar caja del sello
-                        pagePdf.drawRectangle({
-                            x: pdfX - (textWidth/2) - 10,
-                            y: pdfY - (pdfFontSize/2) - 5,
-                            width: textWidth + 20,
-                            height: pdfFontSize + 10,
-                            borderColor: drawColor,
-                            borderWidth: 2,
-                            opacity: 0.8
-                        });
-                        // Dibujar texto del sello
-                        pagePdf.drawText(ann.text, {
-                            x: pdfX - (textWidth / 2),
-                            y: pdfY - (pdfFontSize / 3),
-                            size: pdfFontSize,
-                            font: fontCourierBold,
-                            color: drawColor,
-                            opacity: 0.8
-                        });
-                        // Nota: PDF-Lib rotación avanzada requiere transform matrix, por simplicidad en esta v1 el sello se inyecta derecho en la exportación, aunque se vea ladeado en UI.
-                    }
-                    else if (ann.type === 'redact' || ann.type === 'highlight') {
-                        const pdfRectW = (ann.width / canvasW) * pdfWidth;
-                        const pdfRectH = (ann.height / canvasH) * pdfHeight;
-                        
-                        pagePdf.drawRectangle({
-                            x: pdfX - (pdfRectW/2),
-                            y: pdfY - (pdfRectH/2),
-                            width: pdfRectW,
-                            height: pdfRectH,
-                            color: drawColor,
-                            opacity: ann.type === 'highlight' ? 0.4 : 1.0,
-                            blendMode: ann.type === 'highlight' ? PDFLib.BlendMode.Multiply : PDFLib.BlendMode.Normal
-                        });
-                    }
-                    else if (ann.type === 'image') {
-                        let embedImg;
-                        if (ann.imgData.includes('image/png')) embedImg = await pdfDoc.embedPng(ann.imgData);
-                        else embedImg = await pdfDoc.embedJpg(ann.imgData);
-                        
-                        // Escalar imagen
-                        const htmlImgHeight = ann.size * 5; // Altura que le dimos en UI
-                        const pdfImgHeight = (htmlImgHeight / canvasH) * pdfHeight;
-                        const dims = embedImg.scaleToFit(9999, pdfImgHeight);
-
-                        pagePdf.drawImage(embedImg, {
-                            x: pdfX - (dims.width/2),
-                            y: pdfY - (dims.height/2),
-                            width: dims.width,
-                            height: dims.height
-                        });
-                    }
-                }
-            }
-
-            // Aplanar el documento si es necesario para evitar modificaciones posteriores
-            const form = pdfDoc.getForm();
-            if(form) form.flatten();
-
-            // Descargar el producto final
-            const pdfBytesOut = await pdfDoc.save();
-            const blob = new Blob([pdfBytesOut], { type: 'application/pdf' });
-            saveAs(blob, `Documento_Auditado_${Date.now()}.pdf`);
-
-        } catch (error) {
-            console.error("Error de compilación PDF-Lib:", error);
-            alert("Hubo un error al fusionar las capas. Intenta recargar la página.");
-        } finally {
-            hideLoader();
-        }
-    }
-
-
-    // Funciones de UI Global
-    function showLoader(text) {
-        loaderText.innerText = text;
-        loader.style.display = 'flex';
-    }
-    function hideLoader() {
-        loader.style.display = 'none';
-    }
-
-</script>
+    <script>
+        // Declaración de módulos para la Parte 2 y 3.
+        console.log("Parte 1 Cargada: UI y Estructura Adobe-Style lista.");
+    </script>
 </body>
 </html>
