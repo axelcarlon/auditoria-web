@@ -282,5 +282,601 @@
         // Declaración de módulos para la Parte 2 y 3.
         console.log("Parte 1 Cargada: UI y Estructura Adobe-Style lista.");
     </script>
+    <script>
+        // 1. INICIALIZACIÓN DE WORKERS Y ESTADO GLOBAL
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        let pdfBytesOriginal = null;
+        let pdfDocProxy = null;
+        let totalPages = 0;
+        let currentPage = 1;
+        
+        let currentZoom = 1.0;
+        const ZOOM_STEP = 0.25;
+        const MAX_ZOOM = 3.0;
+        const MIN_ZOOM = 0.5;
+
+        let activeTool = 'select'; 
+        let currentProps = { color: '#000000', size: 14 };
+        
+        // Memoria RAM de la edición: annotations[numeroPagina] = [ array de objetos ]
+        let annotations = {}; 
+        let actionHistory = []; // Para el botón Deshacer
+
+        // Variables de Dibujo / Arrastre
+        let isDrawing = false;
+        let startX = 0, startY = 0;
+        let dragElement = null;
+        let dragOffsetX = 0, dragOffsetY = 0;
+
+        // Elementos DOM
+        const canvas = document.getElementById('pdfCanvas');
+        const ctx = canvas.getContext('2d');
+        const docWrapper = document.getElementById('docWrapper');
+        const drawingLayer = document.getElementById('drawingLayer');
+        const tempDrawBox = document.getElementById('tempDrawBox');
+
+        // ==========================================
+        // 2. INGESTA Y RENDERIZADO DEL PDF
+        // ==========================================
+        document.getElementById('pdfUploader').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(!file || file.type !== 'application/pdf') {
+                alert("Por favor, sube un archivo PDF válido."); return;
+            }
+
+            document.getElementById('globalLoader').style.display = 'flex';
+            
+            try {
+                pdfBytesOriginal = await file.arrayBuffer();
+                const loadingTask = pdfjsLib.getDocument({data: pdfBytesOriginal});
+                pdfDocProxy = await loadingTask.promise;
+                
+                totalPages = pdfDocProxy.numPages;
+                currentPage = 1;
+                
+                // Inicializar BD en blanco para cada página
+                for(let i=1; i<=totalPages; i++) annotations[i] = [];
+                actionHistory = [];
+
+                // Cambiar UI
+                document.getElementById('initScreen').style.display = 'none';
+                document.getElementById('mainWorkspace').style.visibility = 'visible';
+                document.getElementById('viewControls').style.display = 'flex';
+                document.getElementById('btnExport').style.display = 'flex';
+
+                await autoFitZoom();
+                await renderPage(currentPage);
+
+            } catch (error) {
+                console.error(error);
+                alert("Error crítico. El archivo puede estar encriptado con contraseña maestra.");
+            } finally {
+                document.getElementById('globalLoader').style.display = 'none';
+            }
+        });
+
+        // Motor de Zoom Inteligente
+        const RenderEngine = {
+            async prevPage() {
+                if(currentPage > 1) { currentPage--; await renderPage(currentPage); deactivateAll(); }
+            },
+            async nextPage() {
+                if(currentPage < totalPages) { currentPage++; await renderPage(currentPage); deactivateAll(); }
+            }
+        };
+
+        async function autoFitZoom() {
+            const page = await pdfDocProxy.getPage(1);
+            const viewport = page.getViewport({scale: 1.0});
+            const container = document.getElementById('scrollContainer');
+            // Dejamos 80px de margen (40px de cada lado)
+            let autoScale = (container.clientWidth - 80) / viewport.width;
+            if(autoScale > 1.5) autoScale = 1.5;
+            
+            currentZoom = Math.round(autoScale * 4) / 4; // Redondear a cuartos (Ej. 1.25)
+            if(currentZoom < MIN_ZOOM) currentZoom = MIN_ZOOM;
+            updateZoomUI();
+        }
+
+        const ZoomEngine = {
+            async in() { if(currentZoom < MAX_ZOOM) { currentZoom += ZOOM_STEP; updateZoomUI(); await renderPage(currentPage); } },
+            async out() { if(currentZoom > MIN_ZOOM) { currentZoom -= ZOOM_STEP; updateZoomUI(); await renderPage(currentPage); } }
+        };
+
+        function updateZoomUI() {
+            document.getElementById('uiZoom').innerText = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        async function renderPage(num) {
+            const page = await pdfDocProxy.getPage(num);
+            const outputScale = window.devicePixelRatio || 1; // Alta Definición (Retina Display)
+            const viewport = page.getViewport({scale: currentZoom});
+
+            // Tamaño real del Canvas interno (Multiplicado por DPI)
+            canvas.width = Math.floor(viewport.width * outputScale);
+            canvas.height = Math.floor(viewport.height * outputScale);
+            
+            // Tamaño visual en pantalla (CSS)
+            const cssWidth = Math.floor(viewport.width) + "px";
+            const cssHeight = Math.floor(viewport.height) + "px";
+            canvas.style.width = cssWidth;
+            canvas.style.height = cssHeight;
+            
+            docWrapper.style.width = cssWidth;
+            docWrapper.style.height = cssHeight;
+
+            const renderContext = {
+                canvasContext: ctx,
+                transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null,
+                viewport: viewport
+            };
+            await page.render(renderContext).promise;
+
+            document.getElementById('uiPage').innerText = `${num} / ${totalPages}`;
+            renderAnnotationsDOM(); // Re-dibujar los elementos de esta página
+        }
+
+        // ==========================================
+        // 3. GESTIÓN DE HERRAMIENTAS Y UI
+        // ==========================================
+        function setTool(tool) {
+            activeTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tool-btn[data-tool="${tool}"]`).classList.add('active');
+            
+            document.getElementById('stampProps').style.display = (tool === 'stamp') ? 'flex' : 'none';
+            
+            // Cursores
+            if(tool === 'select' || tool === 'image') drawingLayer.style.cursor = 'default';
+            else if(tool === 'text') drawingLayer.style.cursor = 'text';
+            else drawingLayer.style.cursor = 'crosshair';
+
+            deactivateAll();
+        }
+
+        // Eventos Panel Derecho (Colores y Tamaños)
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', (e) => {
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                e.target.classList.add('active');
+                currentProps.color = e.target.getAttribute('data-color');
+                updateActiveElement('color', currentProps.color);
+            });
+        });
+
+        document.getElementById('uiSize').addEventListener('input', (e) => {
+            currentProps.size = parseInt(e.target.value);
+            document.getElementById('uiSizeVal').innerText = `${currentProps.size}pt`;
+            updateActiveElement('size', currentProps.size);
+        });
+
+        // Inyección de Imágenes
+        document.getElementById('imgUploader').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // Crear objeto en el centro de la pantalla
+                createObject('image', canvas.clientWidth/2, canvas.clientHeight/2, 0, 0, { imgData: event.target.result });
+                setTool('select');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ==========================================
+        // 4. MOTOR INTERACTIVO (DIBUJO Y ARRASTRE)
+        // ==========================================
+        drawingLayer.addEventListener('mousedown', (e) => {
+            if(activeTool === 'select' || activeTool === 'image') return;
+            if(e.target.closest('.pdf-element')) return; // No dibujar encima de otro objeto
+
+            const rect = drawingLayer.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+
+            if(activeTool === 'redact' || activeTool === 'highlight') {
+                isDrawing = true;
+                tempDrawBox.style.left = startX + 'px';
+                tempDrawBox.style.top = startY + 'px';
+                tempDrawBox.style.width = '0px';
+                tempDrawBox.style.height = '0px';
+                tempDrawBox.style.backgroundColor = activeTool === 'redact' ? '#000' : 'rgba(253, 224, 71, 0.4)';
+                tempDrawBox.style.display = 'block';
+            } else {
+                // Click simple para Texto, Checks, Stamps
+                createObject(activeTool, startX, startY);
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if(isDrawing) {
+                const rect = drawingLayer.getBoundingClientRect();
+                const currentX = e.clientX - rect.left;
+                const currentY = e.clientY - rect.top;
+                
+                const width = Math.abs(currentX - startX);
+                const height = Math.abs(currentY - startY);
+                const left = Math.min(currentX, startX);
+                const top = Math.min(currentY, startY);
+
+                tempDrawBox.style.left = left + 'px';
+                tempDrawBox.style.top = top + 'px';
+                tempDrawBox.style.width = width + 'px';
+                tempDrawBox.style.height = height + 'px';
+            } 
+            else if (dragElement) {
+                const rect = drawingLayer.getBoundingClientRect();
+                let newX = (e.clientX - rect.left) - dragOffsetX;
+                let newY = (e.clientY - rect.top) - dragOffsetY;
+                
+                // Límites
+                if(newX < 0) newX = 0;
+                if(newY < 0) newY = 0;
+                if(newX > rect.width) newX = rect.width;
+                if(newY > rect.height) newY = rect.height;
+
+                dragElement.style.left = newX + 'px';
+                dragElement.style.top = newY + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if(isDrawing) {
+                isDrawing = false;
+                tempDrawBox.style.display = 'none';
+                const width = parseFloat(tempDrawBox.style.width);
+                const height = parseFloat(tempDrawBox.style.height);
+                
+                if(width > 10 && height > 10) {
+                    const left = parseFloat(tempDrawBox.style.left);
+                    const top = parseFloat(tempDrawBox.style.top);
+                    // Guardamos desde el centro para consistencia de transformación
+                    const centerX = left + (width/2);
+                    const centerY = top + (height/2);
+                    createObject(activeTool, centerX, centerY, width, height);
+                }
+                setTool('select');
+            }
+            
+            if(dragElement) {
+                // Guardar nueva posición
+                const id = dragElement.id;
+                const ann = annotations[currentPage].find(a => a.id === id);
+                if(ann) {
+                    ann.x = parseFloat(dragElement.style.left);
+                    ann.y = parseFloat(dragElement.style.top);
+                }
+                dragElement = null;
+            }
+        });
+
+        // ==========================================
+        // 5. BASE DE DATOS LOCAL Y DOM
+        // ==========================================
+        function createObject(type, x, y, width = 0, height = 0, extra = {}) {
+            const id = 'obj_' + Date.now() + Math.floor(Math.random()*1000);
+            
+            let obj = {
+                id: id, page: currentPage, type: type, x: x, y: y,
+                width: width, height: height,
+                color: currentProps.color, size: currentProps.size,
+                text: '', imgData: extra.imgData || null
+            };
+
+            if(type === 'text') { obj.text = "Texto..."; }
+            else if(type === 'check') { obj.text = "✓"; obj.size = currentProps.size * 1.5; }
+            else if(type === 'cross') { obj.text = "✗"; obj.size = currentProps.size * 1.5; }
+            else if(type === 'stamp') { obj.text = document.getElementById('stampSelect').value; obj.size = currentProps.size * 2; }
+
+            annotations[currentPage].push(obj);
+            
+            // Guardar en historial
+            actionHistory.push({ action: 'add', page: currentPage, data: obj });
+            updateUndoBtn();
+
+            renderAnnotationsDOM();
+            if(type !== 'redact' && type !== 'highlight') setTool('select');
+            setTimeout(() => activateElement(id), 10);
+        }
+
+        function renderAnnotationsDOM() {
+            drawingLayer.innerHTML = '';
+            const pageObjs = annotations[currentPage] || [];
+            
+            document.getElementById('objCount').innerText = `${pageObjs.length} Elementos`;
+
+            pageObjs.forEach(obj => {
+                const el = document.createElement('div');
+                el.className = `pdf-element el-${obj.type}`;
+                el.id = obj.id;
+                el.style.left = obj.x + 'px';
+                el.style.top = obj.y + 'px';
+
+                if(obj.type === 'text' || obj.type === 'check' || obj.type === 'cross' || obj.type === 'stamp') {
+                    el.innerText = obj.text;
+                    el.style.color = obj.color;
+                    el.style.fontSize = (obj.size * currentZoom) + 'px'; // Escalar a la vista
+                    
+                    if(obj.type === 'text') {
+                        el.contentEditable = true;
+                        el.onblur = (e) => {
+                            obj.text = e.target.innerText;
+                            if(obj.text.trim() === "") deleteObject(obj.id);
+                        };
+                        el.onmousedown = (e) => { if(el.classList.contains('active')) e.stopPropagation(); };
+                    }
+                    if(obj.type === 'stamp') {
+                        el.style.borderColor = obj.color;
+                    }
+                } 
+                else if (obj.type === 'redact' || obj.type === 'highlight') {
+                    el.style.width = obj.width + 'px';
+                    el.style.height = obj.height + 'px';
+                    el.style.backgroundColor = obj.color;
+                }
+                else if (obj.type === 'image') {
+                    el.style.backgroundImage = `url(${obj.imgData})`;
+                    // Tamaño base visual 150px
+                    el.style.width = (150 * (obj.size/14)) + 'px'; 
+                    el.style.height = (150 * (obj.size/14)) + 'px';
+                }
+
+                el.addEventListener('mousedown', (e) => {
+                    if(activeTool !== 'select') return;
+                    activateElement(obj.id);
+                    dragElement = el;
+                    const rect = el.getBoundingClientRect();
+                    const parentRect = drawingLayer.getBoundingClientRect();
+                    
+                    // Cálculo de offset desde el centro
+                    const currentCenterX = rect.left - parentRect.left + (rect.width/2);
+                    const currentCenterY = rect.top - parentRect.top + (rect.height/2);
+                    
+                    dragOffsetX = (e.clientX - parentRect.left) - currentCenterX;
+                    dragOffsetY = (e.clientY - parentRect.top) - currentCenterY;
+                });
+
+                drawingLayer.appendChild(el);
+            });
+        }
+
+        function activateElement(id) {
+            deactivateAll();
+            const el = document.getElementById(id);
+            if(el) {
+                el.classList.add('active');
+                document.getElementById('btnDeleteObj').disabled = false;
+                document.getElementById('uiNoSelection').style.display = 'none';
+
+                const obj = annotations[currentPage].find(a => a.id === id);
+                if(obj) {
+                    // Cargar propiedades al panel derecho
+                    document.getElementById('inputSize').value = (obj.type==='image') ? obj.size : (obj.type==='stamp' ? obj.size/2 : obj.size);
+                    document.getElementById('uiSizeVal').innerText = document.getElementById('inputSize').value + 'pt';
+                    
+                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                    const swatch = document.querySelector(`.color-swatch[data-color="${obj.color}"]`);
+                    if(swatch) swatch.classList.add('active');
+                }
+            }
+        }
+
+        function deactivateAll() {
+            document.querySelectorAll('.pdf-element').forEach(e => e.classList.remove('active'));
+            document.getElementById('btnDeleteObj').disabled = true;
+            document.getElementById('uiNoSelection').style.display = 'block';
+        }
+
+        docWrapper.addEventListener('mousedown', (e) => {
+            if(activeTool === 'select' && e.target === drawingLayer) deactivateAll();
+        });
+
+        function updateActiveElement(prop, value) {
+            const activeEl = document.querySelector('.pdf-element.active');
+            if(!activeEl) return;
+            const obj = annotations[currentPage].find(a => a.id === activeEl.id);
+            if(!obj) return;
+
+            if(prop === 'color') obj.color = value;
+            else if (prop === 'size') {
+                if(obj.type === 'check' || obj.type === 'cross') obj.size = value * 1.5;
+                else if(obj.type === 'stamp') obj.size = value * 2;
+                else obj.size = value;
+            }
+            renderAnnotationsDOM();
+            activateElement(obj.id);
+        }
+
+        document.getElementById('btnDeleteObj').addEventListener('click', () => {
+            const activeEl = document.querySelector('.pdf-element.active');
+            if(activeEl) deleteObject(activeEl.id);
+        });
+
+        function deleteObject(id) {
+            // Guardar para deshacer
+            const obj = annotations[currentPage].find(a => a.id === id);
+            if(obj) {
+                actionHistory.push({ action: 'delete', page: currentPage, data: obj });
+                updateUndoBtn();
+            }
+            annotations[currentPage] = annotations[currentPage].filter(a => a.id !== id);
+            renderAnnotationsDOM();
+            deactivateAll();
+        }
+
+        const HistoryEngine = {
+            undo() {
+                const last = actionHistory.pop();
+                if(!last) return;
+                
+                if(last.action === 'add') {
+                    annotations[last.page] = annotations[last.page].filter(a => a.id !== last.data.id);
+                } else if (last.action === 'delete') {
+                    annotations[last.page].push(last.data);
+                }
+                
+                if(currentPage !== last.page) {
+                    currentPage = last.page;
+                    renderPage(currentPage);
+                } else {
+                    renderAnnotationsDOM();
+                }
+                updateUndoBtn();
+            }
+        };
+
+        function updateUndoBtn() {
+            document.getElementById('btnUndo').disabled = actionHistory.length === 0;
+        }
+
+        // ==========================================
+        // 6. MOTOR DE EXPORTACIÓN Y QUEMADO PDF-LIB
+        // ==========================================
+        // Convierte un Hex (#FF0000) a objeto RGB para la librería
+        function hex2RgbPdf(hex) {
+            hex = hex.replace('#', '');
+            if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+            const r = parseInt(hex.substring(0,2), 16) / 255;
+            const g = parseInt(hex.substring(2,4), 16) / 255;
+            const b = parseInt(hex.substring(4,6), 16) / 255;
+            return { r, g, b };
+        }
+
+        const ExportEngine = {
+            async execute() {
+                document.getElementById('globalLoader').style.display = 'flex';
+                document.getElementById('loaderText').innerText = "Quemando vectores e imprimiendo documento...";
+                
+                try {
+                    // Cargar el documento PDF original en PDF-Lib (Virgen)
+                    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal);
+                    const pages = pdfDoc.getPages();
+                    
+                    // Incrustar Tipografías Nativas
+                    const fontHelvetica = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                    const fontCourierB = await pdfDoc.embedFont(PDFLib.StandardFonts.CourierBold);
+
+                    // Recorrer las páginas editadas
+                    for(let i = 1; i <= totalPages; i++) {
+                        const pageObjs = annotations[i];
+                        if(!pageObjs || pageObjs.length === 0) continue;
+
+                        const pagePdf = pages[i - 1]; // Índice base 0
+                        const { width: pdfW, height: pdfH } = pagePdf.getSize();
+                        
+                        // Necesitamos el tamaño del canvas HTML "sin escalar" para tener la proporción real
+                        const originalPageInfo = await pdfDocProxy.getPage(i);
+                        const baseViewport = originalPageInfo.getViewport({scale: 1.0});
+                        
+                        // El factor de conversión: Cuántos puntos PDF mide el HTML
+                        const ratioX = pdfW / (baseViewport.width * currentZoom);
+                        const ratioY = pdfH / (baseViewport.height * currentZoom);
+
+                        for(let obj of pageObjs) {
+                            // Convertir Coordenadas HTML (Top-Left) a PDF (Bottom-Left)
+                            // En el DOM, X y Y son el centro del div.
+                            const pdfX = obj.x * ratioX;
+                            const pdfY = pdfH - (obj.y * ratioY); // Se invierte el eje Y
+                            
+                            const colorRgb = hex2RgbPdf(obj.color);
+                            const drawColor = PDFLib.rgb(colorRgb.r, colorRgb.g, colorRgb.b);
+                            
+                            // El tamaño de fuente en el DOM estuvo escalado por el zoom. 
+                            // En el PDF debemos inyectar el tamaño puro de los puntos.
+                            const pdfFontSize = obj.size; 
+
+                            // --- ESCRITURA SOBRE EL DOCUMENTO BINARIO ---
+
+                            if(obj.type === 'text' || obj.type === 'check' || obj.type === 'cross') {
+                                // PDF-Lib dibuja el texto desde la esquina inferior izquierda.
+                                // Como nuestro X,Y es el centro, restamos la mitad del ancho.
+                                const textW = fontHelvetica.widthOfTextAtSize(obj.text, pdfFontSize);
+                                pagePdf.drawText(obj.text, {
+                                    x: pdfX - (textW / 2),
+                                    y: pdfY - (pdfFontSize / 3), // Ajuste a la línea base
+                                    size: pdfFontSize,
+                                    font: fontHelvetica,
+                                    color: drawColor
+                                });
+                            }
+                            else if(obj.type === 'stamp') {
+                                const textW = fontCourierB.widthOfTextAtSize(obj.text, pdfFontSize);
+                                // Dibujar la caja del sello
+                                pagePdf.drawRectangle({
+                                    x: pdfX - (textW/2) - 8,
+                                    y: pdfY - (pdfFontSize/2) - 4,
+                                    width: textW + 16,
+                                    height: pdfFontSize + 8,
+                                    borderColor: drawColor,
+                                    borderWidth: 2,
+                                    opacity: 0.8
+                                });
+                                // Texto del sello
+                                pagePdf.drawText(obj.text, {
+                                    x: pdfX - (textW / 2),
+                                    y: pdfY - (pdfFontSize / 3),
+                                    size: pdfFontSize,
+                                    font: fontCourierB,
+                                    color: drawColor,
+                                    opacity: 0.8
+                                });
+                            }
+                            else if (obj.type === 'redact' || obj.type === 'highlight') {
+                                const rectW = obj.width * ratioX;
+                                const rectH = obj.height * ratioY;
+                                
+                                pagePdf.drawRectangle({
+                                    x: pdfX - (rectW/2),
+                                    y: pdfY - (rectH/2),
+                                    width: rectW,
+                                    height: rectH,
+                                    color: drawColor,
+                                    opacity: obj.type === 'highlight' ? 0.4 : 1.0,
+                                    blendMode: obj.type === 'highlight' ? PDFLib.BlendMode.Multiply : PDFLib.BlendMode.Normal
+                                });
+                            }
+                            else if (obj.type === 'image') {
+                                let imgToEmbed;
+                                if(obj.imgData.includes('image/png')) imgToEmbed = await pdfDoc.embedPng(obj.imgData);
+                                else imgToEmbed = await pdfDoc.embedJpg(obj.imgData);
+                                
+                                // Calcular el ancho/alto inyectado
+                                const htmlH = 150 * (obj.size/14); 
+                                const pdfImgH = htmlH * ratioY;
+                                const dims = imgToEmbed.scaleToFit(9999, pdfImgH);
+
+                                pagePdf.drawImage(imgToEmbed, {
+                                    x: pdfX - (dims.width/2),
+                                    y: pdfY - (dims.height/2),
+                                    width: dims.width,
+                                    height: dims.height
+                                });
+                            }
+                        }
+                    }
+
+                    // Aplanar formulario si lo tuviera (Blindaje forense)
+                    const form = pdfDoc.getForm();
+                    if(form) form.flatten();
+
+                    // Descargar el producto final blindado
+                    const pdfBytesOut = await pdfDoc.save();
+                    const blob = new Blob([pdfBytesOut], { type: 'application/pdf' });
+                    saveAs(blob, `Documento_PRO_${Date.now()}.pdf`);
+
+                } catch(e) {
+                    console.error(e);
+                    alert("Error crítico de compilación. Refresca la página.");
+                } finally {
+                    document.getElementById('globalLoader').style.display = 'none';
+                }
+            }
+        };
+
+    </script>
 </body>
 </html>
+</body>
+</html>
+
