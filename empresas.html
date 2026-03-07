@@ -22,7 +22,8 @@
             --text-main: #F8FAFC; 
             --text-muted: #94A3B8; 
             --border: rgba(255,255,255,0.1); 
-            --brand: #3B82F6; 
+            /* RESTAURADO EL COLOR VERDE ESMERALDA PARA LA SECCIÓN EMPRESAS */
+            --brand: #10B981; 
             --success: #10B981; 
             --warning: #FCD34D;
             --accent: #E11D48;
@@ -32,17 +33,17 @@
 
         /* Hero Comercial Corporativo */
         .hero { padding: 100px 20px 80px; text-align: center; position: relative; overflow: hidden; border-bottom: 1px solid var(--border);}
-        .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%); opacity: 0.8; z-index: 0; pointer-events: none; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 60%); opacity: 0.8; z-index: 0; pointer-events: none; }
         
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid var(--brand); color: #93C5FD; padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; position: relative; z-index: 1; text-transform: uppercase;}
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--brand); color: #6EE7B7; padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 25px; position: relative; z-index: 1; text-transform: uppercase;}
         
         .hero h1 { font-size: 52px; font-weight: 900; margin: 0 0 25px 0; letter-spacing: -1.5px; position: relative; z-index: 1; line-height: 1.1;}
         .hero h1 span { color: var(--brand); }
         .hero p { font-size: 19px; color: var(--text-muted); max-width: 800px; margin: 0 auto 40px auto; position: relative; z-index: 1; }
 
         .hero-actions { display: flex; justify-content: center; gap: 20px; position: relative; z-index: 1;}
-        .btn-primary { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);}
-        .btn-primary:hover { background: #2563EB; transform: translateY(-3px); box-shadow: 0 15px 35px rgba(59, 130, 246, 0.6);}
+        .btn-primary { background: var(--brand); color: white; border: none; padding: 16px 32px; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);}
+        .btn-primary:hover { background: #059669; transform: translateY(-3px); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.6);}
         .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 16px 32px; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; transition: 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 10px;}
         .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted);}
 
@@ -90,7 +91,7 @@
             box-shadow: 0 20px 60px rgba(220, 38, 38, 0.3);
             animation: none;
         }
-        
+
         /* Animación rotatoria para la tarjeta Super al hacer hover */
         .card-super-hero:hover .super-icon { transform: scale(1.15) rotate(-5deg); background: white; color: #EF4444; box-shadow: 0 15px 35px rgba(220, 38, 38, 0.6);}
 
@@ -169,11 +170,11 @@
         /* Regla especial para la tarjeta de Editor PDF que tiene color rojo */
         .bento-card:hover .bento-icon.icon-red { background: #EF4444; color: white; }
 
-        .bento-icon { width: 56px; height: 56px; background: rgba(59, 130, 246, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; transition: all 0.3s ease;}
+        .bento-icon { width: 56px; height: 56px; background: rgba(16, 185, 129, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; transition: all 0.3s ease;}
         .bento-title { font-size: 20px; font-weight: 900; margin: 0 0 15px 0; color: white;}
         .bento-desc { font-size: 14px; color: var(--text-muted); margin: 0 0 25px 0;}
         .bento-link { font-size: 13px; font-weight: 800; color: var(--brand); text-transform: uppercase; letter-spacing: 0.5px; margin-top: auto; display: flex; align-items: center; gap: 5px; transition: gap 0.2s;}
-        .bento-card:hover .bento-link { gap: 10px; color: #93C5FD; }
+        .bento-card:hover .bento-link { gap: 10px; color: #6EE7B7; }
         .bento-card:hover .bento-link.link-red { color: #FCA5A5; }
 
         /* Trust & Security */
@@ -240,7 +241,7 @@
                     <div style="width: 45%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div>
                     <div style="width: 20%; height: 8px; background: var(--accent); border-radius: 4px; box-shadow: 0 0 10px var(--accent);"></div>
                 </div>
-                <div style="width: 100%; height: 120px; background: rgba(59, 130, 246, 0.1); border: 1px dashed var(--brand); border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: var(--brand); font-weight: bold;">
+                <div style="width: 100%; height: 120px; background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--brand); border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: var(--brand); font-weight: bold;">
                     ANÁLISIS DE MATRIZ ACTIVO
                 </div>
                 <div style="display: flex; gap: 15px;">
