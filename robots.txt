@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
+Allow: /articulos/
+Allow: /articulos/*.html
 
+# No indexar archivos de sistema o scripts directamente
+Disallow: /navbar.js
+Disallow: /footer.js
+Disallow: /despertador.js
+Disallow: /efos.json
+
+# Apuntar al Sitemap
 Sitemap: https://auditoriaxml.mx/sitemap.xml
