@@ -71,71 +71,82 @@ const footerHTML = `
 </div>
 
 <footer class="site-footer">
-    <div style="max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px;">
+    <div style="max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px;">
         
         <div style="padding-right: 20px;">
             <span class="footer-col-title" style="display: flex; align-items: center; gap: 10px; color: #F8FAFC;">
-                <img src="logo-oficial.png" alt="Logo AuditorIA" style="width: 24px; height: 24px;"> AuditorIA Core
+                <img src="/logo-oficial.png" alt="Logo AuditorIA" style="width: 24px; height: 24px;"> AuditorIA Core
             </span>
             <p class="footer-desc">Plataforma de Ingeniería Forense Tributaria. Procesamiento algorítmico 100% local. Análisis preventivo masivo sin bases de datos retentivas. Cero fugas de información.</p>
             
-            <a href="mailto:contacto@auditoriaxml.mx?subject=Consulta%20Corporativa%20-%20AuditorIA" class="contact-badge">
+            <a href="mailto:contacto@auditoriaxml.mx?subject=Consulta%20Corporativa" id="footerEmailBtn" class="contact-badge">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 contacto@auditoriaxml.mx
             </a>
         </div>
 
         <div>
-            <span class="footer-col-title">Riesgo SAT y CFDI</span>
-            <a href="auditoria-masiva.html">Auditoría Masiva de Datos</a>
-            <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-            <a href="tasa-efectiva.html">Auditoría de Tasa Efectiva (ISR)</a>
-            <a href="risk-score.html">Risk Score (Semáforo SAT)</a>
-            <a href="calculadora-recargos.html">Calculadora de Recargos INPC</a>
-            <a href="defensa-legal.html">Generador de Defensa Legal</a>
+            <span class="footer-col-title">Plataforma</span>
+            <a href="/como-funciona.html">Cómo Funciona</a>
+            <a href="/licencias.html">Licencias y Precios</a>
+            <a href="/empresas.html">AuditorIA Corporativo</a>
+            <a href="/despachos-contables.html">Para Despachos Contables</a>
         </div>
 
         <div>
-            <span class="footer-col-title">Cumplimiento Legal</span>
-            <a href="auditor-materialidad.html">Razón de Negocios (Art. 5-A)</a>
-            <a href="auditoria-activos.html">Auditoría de Activos Fijos</a>
-            <a href="prueba-servicio.html">Expediente de Materialidad</a>
-            <a href="validador-csf-32d.html">Análisis de Idoneidad (32-D)</a>
-            <a href="auditoria-viaticos.html">Escáner de Viáticos (Art. 28)</a>
-            <a href="precios-aduana.html">Simulador Costos Aduanales</a>
+            <span class="footer-col-title">Riesgo y Cumplimiento</span>
+            <a href="/risk-score.html">Risk Score (Semáforo SAT)</a>
+            <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+            <a href="/validador-csf-32d.html">Análisis de Idoneidad (32-D)</a>
+            <a href="/tasa-efectiva.html">Auditoría Tasa Efectiva (ISR)</a>
+            <a href="/prueba-servicio.html">Expediente de Materialidad</a>
+            <a href="/defensa-legal.html">Generador de Defensa Legal</a>
+            <a href="/verificador-estatus.html">Verificador Estatus SAT</a>
         </div>
 
         <div>
-            <span class="footer-col-title">Ecosistema Financiero</span>
-            <a href="dashboard-xml.html">Dashboard Financiero XML</a>
-            <a href="proyector-iva.html">Proyector Forense de IVA</a>
-            <a href="analisis-proveedores.html">Estrategia de Proveedores</a>
-            <a href="auditor-nomina.html">Auditoría CFDI de Nómina</a>
-            <a href="buscador-conceptos.html">Auditoría de Compras y Conceptos</a>
-            <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-            <a href="generador-diot.html">Generador Batch DIOT SAT</a>
+            <span class="footer-col-title">Análisis Financiero</span>
+            <a href="/dashboard-xml.html">Dashboard Financiero XML</a>
+            <a href="/analisis-proveedores.html">Estrategia de Proveedores</a>
+            <a href="/auditor-nomina.html">Auditoría CFDI de Nómina</a>
+            <a href="/proyector-iva.html">Proyector Forense de IVA</a>
+            <a href="/buscador-conceptos.html">Buscador Forense XML</a>
+            <a href="/comparativo-sat.html">Comparativo CFDI vs SAT</a>
+            <a href="/visor-rep.html">Visor Complemento Pagos</a>
         </div>
 
         <div>
-            <span class="footer-col-title">Ecosistema PDF</span>
-            <a href="editor-pdf.html" style="color: #FCA5A5; font-weight: bold;">AuditorIA PDF Studio (PRO)</a>
-            <a href="editor-pro.html">Editor Canvas Interactivo</a>
-            <a href="conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
-            <a href="escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
-            <a href="conversor-bancario.html">Bancos PDF a Excel (CSV)</a>
-            <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
+            <span class="footer-col-title">Operación e Impuestos</span>
+            <a href="/generador-diot.html">Generador Batch DIOT SAT</a>
+            <a href="/generador-polizas.html">Generador Pólizas (Layout)</a>
+            <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
+            <a href="/precios-aduana.html">Simulador Costos Aduanales</a>
+            <a href="/calculadora-recargos.html">Calculadora Recargos INPC</a>
+            <a href="/descarga-masiva.html">Descarga Masiva XML SAT</a>
+            <a href="/validador-rfc.html">Validador Masivo RFCs</a>
+        </div>
+
+        <div>
+            <span class="footer-col-title">PDF y Utilidades</span>
+            <a href="/editor-pdf.html" style="color: #FCA5A5; font-weight: bold;">AuditorIA PDF Studio (PRO)</a>
+            <a href="/editor-pro.html">Editor Canvas Interactivo</a>
+            <a href="/escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
+            <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+            <a href="/visor-xml.html">Visor y Decodificador XML</a>
+            <a href="/extraer-metadatos.html">Extractor de Metadatos PDF</a>
+            <a href="/limpiar-cfdi.html">Limpiador de CFDI</a>
         </div>
 
     </div>
 
-    <div style="max-width: 1300px; margin: 50px auto 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; color: #64748B; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+    <div style="max-width: 1400px; margin: 50px auto 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; color: #64748B; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div>&copy; ${new Date().getFullYear()} AuditorIA.mx. Todos los derechos reservados.</div>
         <div style="display: flex; gap: 20px;">
-            <a href="terminos.html" style="margin: 0; color: #94A3B8;">Términos de Servicio</a>
-            <a href="privacidad.html" style="margin: 0; color: #94A3B8;">Aviso de Privacidad</a>
-            <a href="planes.html" style="margin: 0; color: #94A3B8;">Licencias</a>
-            <a href="empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
-            <a href="despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
+            <a href="/terminos.html" style="margin: 0; color: #94A3B8;">Términos de Servicio</a>
+            <a href="/privacidad.html" style="margin: 0; color: #94A3B8;">Aviso de Privacidad</a>
+            <a href="/licencias.html" style="margin: 0; color: #94A3B8;">Licencias</a>
+            <a href="/empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
+            <a href="/despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
         </div>
     </div>
 </footer>
@@ -144,6 +155,16 @@ const footerHTML = `
 document.write(footerHTML);
 
 setTimeout(() => {
+    // MAGIA DE CORREO: Detecta si es PC para abrir Gmail Web, si es celular usa la App de correo nativa
+    const esCelular = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!esCelular) {
+        const btnCorreo = document.getElementById('footerEmailBtn');
+        if(btnCorreo) {
+            btnCorreo.href = "https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx&su=Consulta%20Corporativa%20-%20AuditorIA";
+            btnCorreo.target = "_blank";
+        }
+    }
+
     const openBtn = document.getElementById('openAdvisor');
     const closeBtn = document.getElementById('closeAdvisor');
     const chatWin = document.getElementById('advisorChat');
