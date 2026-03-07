@@ -7,7 +7,9 @@ const footerHTML = `
     .footer-col-title { color: white; font-size: 15px; font-weight: 900; display: block; margin-bottom: 20px; letter-spacing: 0.5px; text-transform: uppercase;}
     .footer-desc { margin: 0 0 20px 0; line-height: 1.6; font-size: 13px; color: #94A3B8;}
     
-    .contact-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 8px 15px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important;}
+    /* Corrección de alineación del botón de contacto */
+    .contact-badge { display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 15px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; text-decoration: none; max-width: fit-content; word-break: break-all;}
+    .contact-badge svg { flex-shrink: 0; } /* Evita que el ícono se apachurre */
     .contact-badge:hover { background: #3B82F6 !important; color: white !important; transform: translateY(-2px) !important;}
 
     /* WIDGET CHAT IA FORENSE */
@@ -86,14 +88,6 @@ const footerHTML = `
         </div>
 
         <div>
-            <span class="footer-col-title">Plataforma</span>
-            <a href="/como-funciona.html">Cómo Funciona</a>
-            <a href="/licencias.html">Licencias y Precios</a>
-            <a href="/empresas.html">AuditorIA Corporativo</a>
-            <a href="/despachos-contables.html">Para Despachos Contables</a>
-        </div>
-
-        <div>
             <span class="footer-col-title">Riesgo y Cumplimiento</span>
             <a href="/risk-score.html">Risk Score (Semáforo SAT)</a>
             <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
@@ -141,12 +135,14 @@ const footerHTML = `
 
     <div style="max-width: 1400px; margin: 50px auto 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; color: #64748B; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
         <div>&copy; ${new Date().getFullYear()} AuditorIA.mx. Todos los derechos reservados.</div>
-        <div style="display: flex; gap: 20px;">
-            <a href="/terminos.html" style="margin: 0; color: #94A3B8;">Términos de Servicio</a>
-            <a href="/privacidad.html" style="margin: 0; color: #94A3B8;">Aviso de Privacidad</a>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <a href="/articulos/" style="margin: 0; color: #94A3B8;">Artículos</a>
+            <a href="/como-funciona.html" style="margin: 0; color: #94A3B8;">Cómo Funciona</a>
             <a href="/licencias.html" style="margin: 0; color: #94A3B8;">Licencias</a>
             <a href="/empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
             <a href="/despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
+            <a href="/terminos.html" style="margin: 0; color: #94A3B8;">Términos</a>
+            <a href="/privacidad.html" style="margin: 0; color: #94A3B8;">Privacidad</a>
         </div>
     </div>
 </footer>
