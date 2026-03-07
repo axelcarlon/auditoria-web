@@ -8,8 +8,8 @@ const footerHTML = `
     .footer-desc { margin: 0 0 20px 0; line-height: 1.6; font-size: 13px; color: #94A3B8;}
     
     /* Corrección de alineación del botón de contacto */
-    .contact-badge { display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 8px 15px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; max-width: fit-content; line-height: 1;}
-    .contact-badge svg { flex-shrink: 0; display: block; } 
+    .contact-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 16px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; word-break: break-all; }
+    .contact-badge svg { flex-shrink: 0; width: 16px; height: 16px; } 
     .contact-badge:hover { background: #3B82F6 !important; color: white !important; transform: translateY(-2px) !important;}
 
     /* WIDGET CHAT IA FORENSE */
@@ -31,7 +31,7 @@ const footerHTML = `
     .advisor-body::-webkit-scrollbar-thumb { background-color: #4B5563; border-radius: 10px; }
     
     .msg-bot { background: #1E293B; color: #E2E8F0; padding: 12px 16px; border-radius: 12px 12px 12px 0; max-width: 85%; font-size: 13px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.05); align-self: flex-start; }
-    .msg-user { background: #2563EB; color: white; padding: 12px 16px; border-radius: 12px 12px 0 12px; max-width: 85%; font-size: 13px; line-height: 1.5; align-self: flex-end; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    .msg-user { background: #2563EB; color: white; padding: 12px 16px; border-radius: 12px 12px 12px 0; max-width: 85%; font-size: 13px; line-height: 1.5; align-self: flex-end; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
     
     .advisor-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; background: #0F172A; }
     .advisor-input { flex: 1; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 13px; background: #1E293B; color: white; outline: none; transition: 0.2s; }
@@ -138,7 +138,7 @@ const footerHTML = `
         <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
             <a href="/articulos/" style="margin: 0; color: #94A3B8;">Artículos</a>
             <a href="/como-funciona.html" style="margin: 0; color: #94A3B8;">Cómo Funciona</a>
-            <a href="/licencias.html" style="margin: 0; color: #FCA5A5; font-weight: bold;">Plan PRO</a>
+            <a href="/planes.html" style="margin: 0; color: #FCA5A5; font-weight: bold;">Plan PRO</a>
             <a href="/empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
             <a href="/despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
             <a href="/terminos.html" style="margin: 0; color: #94A3B8;">Términos</a>
