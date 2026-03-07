@@ -91,21 +91,26 @@ const navbarHTML = `
 <div id="toast-container"></div>
 
 <header class="header-core">
-    <a href="index.html" class="logo-container">
-        <img src="logo-oficial.png" alt="AuditorIA Logo">
+    <a href="/index.html" class="logo-container">
+        <img src="/logo-oficial.png" alt="AuditorIA Logo">
         <span class="logo-text">AuditorIA</span>
     </a>
     
     <div class="nav-right">
         
-        <a href="index.html" class="nav-link">
+        <a href="/index.html" class="nav-link">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             Inicio
         </a>
 
-        <a href="como-funciona.html" class="nav-link">
+        <a href="/como-funciona.html" class="nav-link">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             Cómo Funciona
+        </a>
+
+        <a href="/articulos/" class="nav-link">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v10a2 2 0 01-2 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v6h6M8 11h8M8 15h6"></path></svg>
+            Artículos
         </a>
 
         <div class="dropdown">
@@ -116,49 +121,50 @@ const navbarHTML = `
             <div class="mega-menu">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría SAT y Riesgo</div>
-                    <a href="auditoria-masiva.html">Auditoría Masiva de Datos</a>
-                    <a href="validador-efos.html">Validador EFOS (Art. 69-B)</a>
-                    <a href="tasa-efectiva.html">Auditoría de Tasa Efectiva (ISR)</a>
-                    <a href="risk-score.html">Auditoría de Riesgo SAT (Risk Score)</a>
-                    <a href="calculadora-recargos.html">Calculadora de Recargos SAT</a>
-                    <a href="defensa-legal.html">Generador de Defensa Legal</a>
+                    <a href="/auditoria-masiva.html">Auditoría Masiva de Datos</a>
+                    <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
+                    <a href="/risk-score.html">Risk Score (Semáforo SAT)</a>
+                    <a href="/tasa-efectiva.html">Auditoría Tasa Efectiva (ISR)</a>
+                    <a href="/validador-csf-32d.html">Análisis de Idoneidad (32-D)</a>
+                    <a href="/defensa-legal.html">Generador de Defensa Legal</a>
+                    <a href="/calculadora-recargos.html">Calculadora de Recargos</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Materialidad y Cumplimiento</div>
-                    <a href="auditor-materialidad.html">Auditor de Razón de Negocios</a>
-                    <a href="auditoria-activos.html">Auditoría de Activos Fijos</a>
-                    <a href="prueba-servicio.html">Expediente de Materialidad</a>
-                    <a href="validador-csf-32d.html">Auditor de Constancias (CSF / 32-D)</a>
-                    <a href="auditoria-viaticos.html">Escáner de Viáticos y Viajes</a>
-                    <a href="precios-aduana.html">Simulador de Costos Aduanales</a>
+                    <a href="/auditor-materialidad.html">Auditor de Razón de Negocios</a>
+                    <a href="/prueba-servicio.html">Expediente de Materialidad</a>
+                    <a href="/auditoria-activos.html">Auditoría de Activos Fijos</a>
+                    <a href="/auditoria-viaticos.html">Escáner de Viáticos y Viajes</a>
+                    <a href="/precios-aduana.html">Simulador Costos Aduanales</a>
+                    <a href="/analisis-proveedores.html">Estrategia de Proveedores</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Operación e Inteligencia XML</div>
-                    <a href="generador-diot.html">Generador DIOT SAT (Carga Batch)</a>
-                    <a href="visor-xml.html">Visor y Decodificador XML</a>
-                    <a href="dashboard-xml.html">Dashboard Financiero XML</a>
-                    <a href="proyector-iva.html">Proyector Forense de IVA</a>
-                    <a href="analisis-proveedores.html">Estrategia de Proveedores</a>
-                    <a href="auditor-nomina.html">Auditoría de Nómina y Riesgos</a>
-                    <a href="buscador-conceptos.html">Auditoría de Compras y Conceptos</a>
+                    <a href="/dashboard-xml.html">Dashboard Financiero XML</a>
+                    <a href="/visor-xml.html">Visor y Decodificador XML</a>
+                    <a href="/auditor-nomina.html">Auditoría CFDI de Nómina</a>
+                    <a href="/proyector-iva.html">Proyector Forense de IVA</a>
+                    <a href="/buscador-conceptos.html">Buscador Forense XML</a>
+                    <a href="/generador-diot.html">Generador Batch DIOT SAT</a>
+                    <a href="/generador-polizas.html">Generador Pólizas (Layout)</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Automatización y PDF</div>
-                    <a href="editor-pdf.html" class="link-pdf-pro">AuditorIA PDF Studio PRO</a>
-                    <a href="conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
-                    <a href="escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
-                    <a href="conversor-bancario.html">Bancos PDF a Excel</a>
-                    <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
-                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="generador-polizas.html">Generador Layout Pólizas</a>
+                    <a href="/editor-pdf.html" class="link-pdf-pro">AuditorIA PDF Studio PRO</a>
+                    <a href="/editor-pro.html">Editor Canvas Interactivo</a>
+                    <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+                    <a href="/escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
+                    <a href="/conversor-bancario.html">Bancos PDF a Excel (CSV)</a>
+                    <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
+                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
                 </div>
             </div>
         </div>
 
         <div id="nav-auth-section">
             <div class="nav-auth-group" id="auth-logged-out">
-                <a href="login.html" class="nav-link">Acceso Cliente</a>
-                <a href="planes.html" class="btn-pro-nav">Licencia Corporativa</a>
+                <a href="/login.html" class="nav-link">Acceso Cliente</a>
+                <a href="/planes.html" class="btn-pro-nav">Licencia Corporativa</a>
             </div>
 
             <div class="user-dropdown" id="auth-logged-in" style="display: none;">
@@ -167,15 +173,15 @@ const navbarHTML = `
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
                 <div class="user-menu">
-                    <a href="dashboard-xml.html">
+                    <a href="/dashboard-xml.html">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> 
                         Mi Dashboard
                     </a>
-                    <a href="planes.html" style="color: #93C5FD;">
+                    <a href="/planes.html" style="color: #93C5FD;">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> 
                         Mejorar a PRO
                     </a>
-                    <a href="privacidad.html">
+                    <a href="/privacidad.html">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 
                         Privacidad
                     </a>
@@ -230,6 +236,6 @@ window.cerrarSesionGlobal = function(e) {
     window.showToast("Sesión cerrada de forma segura.", "success");
     
     setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = '/index.html';
     }, 1000);
 };
