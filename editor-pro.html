@@ -500,7 +500,8 @@
             const file = e.target.files[0];
             if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF válido.", "error");
 
-            Loader.show("Desensamblando Vectores y Fuentes...");
+            const abrirEditor = async () => {
+                Loader.show("Desensamblando Vectores y Fuentes...");
             try {
                 const reader = new FileReader();
                 reader.onload = async function() {
@@ -534,7 +535,14 @@
                 Loader.hide();
                 Toast.show("Error de lectura. El documento puede estar protegido.", "error");
             }
-        });
+        };
+
+        if(typeof consumirCredito === 'function') {
+            consumirCredito(abrirEditor);
+        } else {
+            abrirEditor();
+        }
+    });
 
         const Workspace = {
             async autoFit() {
@@ -1114,3 +1122,4 @@
     </script>
 </body>
 </html>
+
