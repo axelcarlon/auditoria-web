@@ -111,6 +111,7 @@ const footerHTML = `
             <a href="proyector-iva.html">Proyector Forense de IVA</a>
             <a href="analisis-proveedores.html">Estrategia de Proveedores</a>
             <a href="auditor-nomina.html">Auditoría CFDI de Nómina</a>
+            <a href="buscador-conceptos.html">Auditoría de Compras y Conceptos</a>
             <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
             <a href="generador-diot.html">Generador Batch DIOT SAT</a>
         </div>
