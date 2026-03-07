@@ -433,7 +433,7 @@
                         pageMargins: [50, 60, 50, 60],
                         defaultStyle: { lineHeight: 1.5, font: 'Roboto' },
                         content: [
-                            { text: 'DICTAMEN TÉCNICO - PROYECCIÓN DE IVA', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
+                            { text: 'DICTAMEN TÉCNICO - PROYECCIÓN', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
                             { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
                             
                             {
@@ -480,7 +480,7 @@
                         docDefinition.content.push({ text: 'Se ha detectado la facturación de actos exentos o a Tasa 0%. La acreditación del 100% de los gastos es improcedente. El contribuyente está obligado a aplicar el factor de proporción matemática para determinar el IVA acreditable final, so pena de crédito fiscal.', fontSize: 11, alignment: 'justify', color: '#7F1D1D', margin: [0, 0, 0, 20] });
                     }
 
-                    docDefinition.content.push({ text: '\n2. DICTAMEN ESTRATÉGICO IA', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
+                    docDefinition.content.push({ text: '\n2. DICTAMEN ESTRATÉGICO', fontSize: 12, bold: true, color: '#3B82F6', margin: [0, 10, 0, 10] });
                     docDefinition.content.push({ text: String(dataDictamen) || "Resolución matemática validada.", fontSize: 11, alignment: 'justify', margin: [0, 0, 0, 20] });
 
                     if (!isPro) {
@@ -505,3 +505,4 @@
 </script>
 </body>
 </html>
+
