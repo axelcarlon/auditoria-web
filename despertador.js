@@ -12,6 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. INYECCIÓN DEL MURO DE PAGO (PAYWALL)
     // ==========================================
     inyectarPaywallGlobal();
+    
+    // Inicialización segura de variables
+    if (localStorage.getItem('auditoria_creditos') === null) {
+        localStorage.setItem('auditoria_creditos', '3');
+    }
+    if (localStorage.getItem('auditoria_pro') === null) {
+        localStorage.setItem('auditoria_pro', 'false');
+    }
 });
 
 function inyectarPaywallGlobal() {
@@ -147,16 +155,16 @@ function inyectarPaywallGlobal() {
                 </div>
                 <div class="paywall-feature-item">
                     <svg width="16" height="16" fill="none" stroke="#10B981" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                    Acceso Total a PDF Studio PRO
+                    Acceso Total a Ecosistema PDF
                 </div>
                 <div class="paywall-feature-item">
                     <svg width="16" height="16" fill="none" stroke="#10B981" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                    Prioridad de Hardware en IA
+                    Prioridad de Hardware (Zero-Latency)
                 </div>
             </div>
 
             <a href="planes.html" class="btn-paywall-pro">
-                OBTENER AUDITORIA PRO 
+                OBTENER LICENCIA PRO 
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             </a>
             
@@ -172,7 +180,6 @@ function inyectarPaywallGlobal() {
 // 3. FUNCIONES GLOBALES PARA CONTROLARLO
 // ==========================================
 
-// Llama a esta función desde cualquier botón para mostrar el letrero
 window.mostrarPaywall = function() {
     const modal = document.getElementById('paywallModal');
     if(modal) modal.classList.add('active');
@@ -183,29 +190,36 @@ window.cerrarPaywall = function() {
     if(modal) modal.classList.remove('active');
 }
 
-// FUNCIÓN INTELIGENTE: Gestor de Créditos Locales
-// Envuelve tus funciones con esto: onClick="consumirCredito(miFuncionOriginal)"
+// FUNCIÓN INTELIGENTE: Gestor de Créditos Locales y Estatus PRO
 window.consumirCredito = function(callbackFunction) {
-    let creditos = localStorage.getItem('auditoria_creditos');
+    // 1. Verificación de Llave Maestra (Estatus PRO)
+    const isPro = localStorage.getItem('auditoria_pro') === 'true';
     
-    // Si es usuario nuevo, le damos 3 usos gratuitos
-    if (creditos === null) {
-        creditos = 3; 
-    } else {
-        creditos = parseInt(creditos);
+    if (isPro) {
+        // Usuario de pago: Pase libre absoluto.
+        if (typeof callbackFunction === 'function') {
+            callbackFunction();
+        }
+        return; 
     }
 
+    // 2. Control de Usuarios Gratuitos
+    let creditos = parseInt(localStorage.getItem('auditoria_creditos')) || 0;
+
     if (creditos > 0) {
-        // Aún tiene crédito: Restamos uno y ejecutamos la herramienta
+        // Aún tiene crédito: Restamos uno y ejecutamos
         creditos--;
-        localStorage.setItem('auditoria_creditos', creditos);
-        console.log(`Créditos restantes: ${creditos}`);
+        localStorage.setItem('auditoria_creditos', creditos.toString());
+        
+        if(typeof window.showToast === 'function') {
+            window.showToast(`Modo Prueba: Te quedan ${creditos} análisis gratuitos.`, 'info');
+        }
         
         if (typeof callbackFunction === 'function') {
             callbackFunction();
         }
     } else {
-        // Ya no tiene créditos: Bloqueamos y mostramos el Paywall Carmesí
+        // Sin créditos: Bloqueo y Paywall Carmesí
         window.mostrarPaywall();
     }
 }
