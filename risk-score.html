@@ -99,7 +99,7 @@
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="iniciarRadarRiesgo()" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="if(typeof window.consumirCredito === 'function'){window.consumirCredito(iniciarRadarRiesgo)}else{iniciarRadarRiesgo()}" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             CALCULAR PROBABILIDAD DE AUDITORÍA (SCORE)
         </button>
@@ -557,4 +557,5 @@
 </script>
 </body>
 </html>
+
 
