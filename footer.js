@@ -8,8 +8,8 @@ const footerHTML = `
     .footer-desc { margin: 0 0 20px 0; line-height: 1.6; font-size: 13px; color: #94A3B8;}
     
     /* Corrección de alineación del botón de contacto */
-    .contact-badge { display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 15px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; text-decoration: none; max-width: fit-content; word-break: break-all;}
-    .contact-badge svg { flex-shrink: 0; } /* Evita que el ícono se apachurre */
+    .contact-badge { display: inline-flex; align-items: center; justify-content: flex-start; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 8px 15px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; max-width: fit-content; line-height: 1;}
+    .contact-badge svg { flex-shrink: 0; display: block; } 
     .contact-badge:hover { background: #3B82F6 !important; color: white !important; transform: translateY(-2px) !important;}
 
     /* WIDGET CHAT IA FORENSE */
@@ -138,7 +138,7 @@ const footerHTML = `
         <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
             <a href="/articulos/" style="margin: 0; color: #94A3B8;">Artículos</a>
             <a href="/como-funciona.html" style="margin: 0; color: #94A3B8;">Cómo Funciona</a>
-            <a href="/licencias.html" style="margin: 0; color: #94A3B8;">Licencias</a>
+            <a href="/licencias.html" style="margin: 0; color: #FCA5A5; font-weight: bold;">Plan PRO</a>
             <a href="/empresas.html" style="margin: 0; color: #94A3B8;">Empresas</a>
             <a href="/despachos-contables.html" style="margin: 0; color: #94A3B8;">Despachos</a>
             <a href="/terminos.html" style="margin: 0; color: #94A3B8;">Términos</a>
