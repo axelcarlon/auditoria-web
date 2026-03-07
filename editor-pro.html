@@ -205,7 +205,7 @@
             
             <div class="divider-v"></div>
 
-            <button class="btn-export" onclick="ExportEngine.buildPDF()">
+            <button class="btn-export" onclick="if(typeof consumirCredito === 'function'){consumirCredito(() => ExportEngine.buildPDF())}else{ExportEngine.buildPDF()}">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Exportar <span class="pro-badge">PRO</span>
             </button>
@@ -1070,8 +1070,9 @@
                                 else if(o.type === 'stamp') {
                                     let textStr = o.text || "SELLO";
                                     const w = fCour.widthOfTextAtSize(textStr, pSize);
-                                    pPdf.drawRectangle({ x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5, width: w + 20, height: pSize + 10, borderColor: pColor, borderWidth: 3, opacity: pOpac });
-                                    pPdf.drawText(textStr, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: pOpac });
+                                    const angle = PDFLib.degrees(15);
+                                    pPdf.drawRectangle({ x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5, width: w + 20, height: pSize + 10, borderColor: pColor, borderWidth: 3, opacity: pOpac, rotate: angle });
+                                    pPdf.drawText(textStr, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: pOpac, rotate: angle });
                                 }
                                 else if(o.type === 'redact' || o.type === 'highlight' || o.type === 'rect') {
                                     const wPdf = o.w * pW; const hPdf = o.h * pH;
@@ -1122,4 +1123,5 @@
     </script>
 </body>
 </html>
+
 
