@@ -205,7 +205,7 @@
             
             <div class="divider-v"></div>
 
-            <button class="btn-export" onclick="if(typeof consumirCredito === 'function'){consumirCredito(function(){ ExportEngine.buildPDF(); })}else{ExportEngine.buildPDF();}">
+            <button class="btn-export" onclick="if(typeof window.consumirCredito === 'function'){window.consumirCredito(() => ExportEngine.buildPDF())}else{ExportEngine.buildPDF()}">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Exportar <span class="pro-badge">PRO</span>
             </button>
@@ -1140,6 +1140,7 @@
     </script>
 </body>
 </html>
+
 
 
 
