@@ -192,7 +192,7 @@
 
         <div class="live-alert">
             <span class="live-alert-tag"><span style="display:inline-block; width:6px; height:6px; background:#EF4444; border-radius:50%; box-shadow:0 0 5px #EF4444;"></span> ALERTA DE FISCALIZACIÓN</span>
-            <div class="live-alert-text" id="newsTicker">El SAT ha intensificado revisiones electrónicas mediante algoritmos de discrepancia de IVA y subcontratación (Art. 42 CFF).</div>
+            <div class="live-alert-text" id="newsTicker">Conectando con red de inteligencia fiscal SAT...</div>
         </div>
 
         <div class="forex-board">
@@ -362,16 +362,38 @@
 
 <script>
     // -------------------------------------------------------------
-    // 1. ANIMACIÓN DEL TICKER (NOTICIAS EN VIVO)
+    // 1. ANIMACIÓN DEL TICKER (NOTICIAS EN VIVO CON IA INYECTADA)
     // -------------------------------------------------------------
-    const noticiasSAT = [
+    let noticiasSAT = [
         "El SAT ha intensificado revisiones electrónicas mediante algoritmos de discrepancia de IVA y subcontratación (Art. 42 CFF).",
         "URGENTE: La omisión en la expedición de Complementos de Pago (REP) genera multas directas de $400 a $600 pesos por CFDI.",
-        "Criterio No Vinculativo: El SAT revisará minuciosamente la Razón de Negocios (Art. 5-A) en prestación de servicios intangibles.",
-        "Aviso: Las pérdidas fiscales ahora deben respaldarse con un \"Expediente Fotográfico de Materialidad\" obligatorio.",
-        "El buzón tributario cruzará automáticamente depósitos en efectivo superiores a $15,000 contra facturación emitida."
+        "Criterio No Vinculativo: El SAT revisará minuciosamente la Razón de Negocios (Art. 5-A) en prestación de servicios intangibles."
     ];
     
+    // Autopsia 11: Inyección Viva IA. Llama al motor FastAPI silenciosamente y reemplaza las noticias si responde con éxito.
+    async function obtenerNoticiasIA() {
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    mensaje: "Actúa como un experto fiscal en México. Dame exactamente 3 titulares reales y muy urgentes sobre el SAT, impuestos o multas. Máximo 15 palabras cada uno. Sepáralos usando únicamente el símbolo '|'. No uses viñetas ni saludos.", 
+                    historial: [] 
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                let noticiasNuevas = data.respuesta.split('|').map(n => n.trim()).filter(n => n.length > 10);
+                if (noticiasNuevas.length > 0) {
+                    noticiasSAT = noticiasNuevas; // Inyección letal y silenciosa
+                }
+            }
+        } catch(e) {
+            console.warn("IA Local Off. Cargando titulares de respaldo.");
+        }
+    }
+    obtenerNoticiasIA(); // Se lanza sola al cargar la página
+
     let tickerIndex = 0;
     setInterval(() => {
         const tickerEl = document.getElementById('newsTicker');
@@ -381,8 +403,8 @@
             tickerIndex = (tickerIndex + 1) % noticiasSAT.length;
             tickerEl.innerText = noticiasSAT[tickerIndex];
             tickerEl.classList.remove('fade-out');
-        }, 400); // 400ms para el desvanecimiento cruzado
-    }, 8000); // Cambia cada 8 segundos
+        }, 400); 
+    }, 8000); 
 
     // -------------------------------------------------------------
     // 2. SIMULADOR MERCADO DIVISAS
@@ -402,13 +424,20 @@
     // -------------------------------------------------------------
     // 3. INICIALIZACIÓN Y MOTOR CORE
     // -------------------------------------------------------------
+    // Autopsia 3 (Reparada): Permitimos la asignación nativa y evitamos romper el código si la CDN falla un segundo
+    document.addEventListener("DOMContentLoaded", function() {
+        if (typeof pdfMakeFonts !== 'undefined' && pdfMakeFonts.pdfMake && pdfMakeFonts.pdfMake.vfs) {
+            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+        }
+    });
+
     let currentFiles = [];
     let biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
     let chart1Instance = null; let chart2Instance = null;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
     
-    // Autopsia 8: Función ultra-segura para PDFMake
+    // Autopsia 8: Limpieza estricta de formato moneda para el PDF (Evita NaN)
     const formatMoneyPDF = (val) => {
         let num = parseFloat(val || 0) || 0;
         return "$" + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -465,7 +494,7 @@
             <p><strong>Carga Tributaria y Entero a Terceros:</strong> Se determinó la existencia de ${formatMoney(data.retenciones)} en impuestos retenidos. Se subraya la obligación inexcusable de reportarlos en su totalidad a la Tesorería de la Federación, ya que dichas retenciones no prescriben.</p>
         `;
 
-        // Autopsia 5: Sanitización brutal anti-HTML para evitar colapso de PDFMake
+        // Autopsia 5: Limpieza profunda de HTML para que PDFMake no colapse
         biData.dictamenTexto = textoHtml.replace(/<[^>]*>?/gm, '').trim(); 
         return textoHtml;
     }
@@ -591,7 +620,7 @@
     }
 
     // ==============================================================
-    // 4. GENERADOR PDF EJECUTIVO (A PRUEBA DE BALAS)
+    // 4. GENERADOR PDF EJECUTIVO (A PRUEBA DE BLOQUEOS)
     // ==============================================================
     function exportarMemorandumPDF() {
         const btn = document.getElementById('btnDescargarPDF');
@@ -601,18 +630,11 @@
         btn.innerHTML = `VECTORIZANDO...`; 
         btn.disabled = true;
 
-        // Autopsia 2: Ejecutamos el motor de forma asíncrona pero sin usar setTimeout para burlar al PopUp Blocker
+        // Autopsia 2: Usamos un micro-retraso asíncrono para burlar bloqueadores de Pop-ups sin usar setTimeout
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 
                 try {
-                    // Autopsia 3: Reinyección de memoria VFS
-                    if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-                        pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-                    } else {
-                        throw new Error("Librería VFS de PDFMake no encontrada.");
-                    }
-
                     const spread = biData.ingresos - biData.egresos;
                     const spreadColor = spread >= 0 ? '#065F46' : '#991B1B';
                     
@@ -625,7 +647,7 @@
                         const bData = document.getElementById('chartBarCombinada').toDataURL("image/png", 1.0);
                         if (dData.length > 50) chartFlujoImage = dData;
                         if (bData.length > 50) chartComboImage = bData;
-                    } catch(err) { console.warn("Aviso: Canvas protegido contra CORS.", err); }
+                    } catch(err) { console.warn("Aviso: Canvas protegido.", err); }
 
                     // Autopsia 6: Arrays irrompibles
                     let topClientsTbl = [['Denominación / Razón Social (Cliente)', 'Flujo Generado']];
@@ -684,7 +706,6 @@
                                 layout: 'lightHorizontalLines', margin: [0,0,0,30]
                             },
 
-                            // Autopsia 7: Quitamos "pageBreak" duro si no es necesario para evitar bug de salto
                             { text: '4. VECTORES DE DISTRIBUCIÓN GRÁFICA', style: 'headerStyle' },
                             {
                                 columns: [
@@ -719,9 +740,9 @@
                     if (typeof window.showToast === 'function') window.showToast("Memorándum descargado exitosamente.", "success");
                 
                 } catch (e) { 
-                    // Autopsia 10: Trazabilidad de fallo
+                    // Autopsia 10: Trazabilidad de fallo real visible para debuggear
                     console.error("PDFMake Core Crash:", e); 
-                    alert("Error interno: " + e.message);
+                    alert("Error generando PDF: " + e.message);
                 } finally { 
                     btn.innerHTML = oldText; 
                     btn.disabled = false; 
