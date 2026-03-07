@@ -105,7 +105,7 @@
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="iniciarAnalisis()" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="if(typeof consumirCredito === 'function'){consumirCredito(iniciarAnalisis)}else{iniciarAnalisis()}" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H4a2 2 0 00-2 2v6a2 2 0 002 2h3a2 2 0 002-2zm0 0V9a2 2 0 012-2h3a2 2 0 012 2v10m-7 0a2 2 0 002 2h3a2 2 0 002-2m0 0V5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2z"></path></svg>
             GENERAR MATRIZ DE PARETO (80/20)
         </button>
@@ -502,3 +502,4 @@
 </script>
 </body>
 </html>
+
