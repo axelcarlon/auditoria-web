@@ -8,8 +8,8 @@ const footerHTML = `
     .footer-desc { margin: 0 0 20px 0; line-height: 1.6; font-size: 13px; color: #94A3B8;}
     
     /* Corrección de alineación del botón de contacto */
-    .contact-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 16px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; word-break: break-all; }
-    .contact-badge svg { flex-shrink: 0; width: 16px; height: 16px; } 
+    .contact-badge { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 16px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; white-space: nowrap; line-height: normal; width: max-content; }
+    .contact-badge svg { flex-shrink: 0; width: 16px; height: 16px; display: block; } 
     .contact-badge:hover { background: #3B82F6 !important; color: white !important; transform: translateY(-2px) !important;}
 
     /* WIDGET CHAT IA FORENSE */
@@ -31,7 +31,7 @@ const footerHTML = `
     .advisor-body::-webkit-scrollbar-thumb { background-color: #4B5563; border-radius: 10px; }
     
     .msg-bot { background: #1E293B; color: #E2E8F0; padding: 12px 16px; border-radius: 12px 12px 12px 0; max-width: 85%; font-size: 13px; line-height: 1.6; border: 1px solid rgba(255,255,255,0.05); align-self: flex-start; }
-    .msg-user { background: #2563EB; color: white; padding: 12px 16px; border-radius: 12px 12px 12px 0; max-width: 85%; font-size: 13px; line-height: 1.5; align-self: flex-end; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    .msg-user { background: #2563EB; color: white; padding: 12px 16px; border-radius: 12px 12px 0 12px; max-width: 85%; font-size: 13px; line-height: 1.5; align-self: flex-end; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
     
     .advisor-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 10px; background: #0F172A; }
     .advisor-input { flex: 1; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 13px; background: #1E293B; color: white; outline: none; transition: 0.2s; }
@@ -89,13 +89,13 @@ const footerHTML = `
 
         <div>
             <span class="footer-col-title">Riesgo y Cumplimiento</span>
-            <a href="/risk-score.html">Risk Score (Semáforo SAT)</a>
+            <a href="/auditoria-masiva.html">Auditoría Masiva de Datos</a>
             <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
-            <a href="/validador-csf-32d.html">Análisis de Idoneidad (32-D)</a>
+            <a href="/risk-score.html">Risk Score (Semáforo SAT)</a>
             <a href="/tasa-efectiva.html">Auditoría Tasa Efectiva (ISR)</a>
+            <a href="/auditor-materialidad.html">Razón de Negocios (Art. 5-A)</a>
+            <a href="/validador-csf-32d.html">Análisis de Idoneidad (32-D)</a>
             <a href="/prueba-servicio.html">Expediente de Materialidad</a>
-            <a href="/defensa-legal.html">Generador de Defensa Legal</a>
-            <a href="/verificador-estatus.html">Verificador Estatus SAT</a>
         </div>
 
         <div>
@@ -105,8 +105,8 @@ const footerHTML = `
             <a href="/auditor-nomina.html">Auditoría CFDI de Nómina</a>
             <a href="/proyector-iva.html">Proyector Forense de IVA</a>
             <a href="/buscador-conceptos.html">Buscador Forense XML</a>
-            <a href="/comparativo-sat.html">Comparativo CFDI vs SAT</a>
-            <a href="/visor-rep.html">Visor Complemento Pagos</a>
+            <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
+            <a href="/auditoria-viaticos.html">Escáner de Viáticos (Art. 28)</a>
         </div>
 
         <div>
@@ -116,19 +116,17 @@ const footerHTML = `
             <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
             <a href="/precios-aduana.html">Simulador Costos Aduanales</a>
             <a href="/calculadora-recargos.html">Calculadora Recargos INPC</a>
-            <a href="/descarga-masiva.html">Descarga Masiva XML SAT</a>
-            <a href="/validador-rfc.html">Validador Masivo RFCs</a>
+            <a href="/auditoria-activos.html">Auditoría de Activos Fijos</a>
         </div>
 
         <div>
             <span class="footer-col-title">PDF y Utilidades</span>
             <a href="/editor-pdf.html" style="color: #FCA5A5; font-weight: bold;">AuditorIA PDF Studio (PRO)</a>
             <a href="/editor-pro.html">Editor Canvas Interactivo</a>
-            <a href="/escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
             <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
+            <a href="/escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
+            <a href="/conversor-bancario.html">Bancos PDF a Excel (CSV)</a>
             <a href="/visor-xml.html">Visor y Decodificador XML</a>
-            <a href="/extraer-metadatos.html">Extractor de Metadatos PDF</a>
-            <a href="/limpiar-cfdi.html">Limpiador de CFDI</a>
         </div>
 
     </div>
