@@ -69,6 +69,9 @@
             animation: pulseDeepSlow 4s ease-in-out infinite;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        .card-super-hero .super-icon { transition: all 0.3s ease; }
+        
         .card-super-hero:hover {
             transform: translateY(-8px) scale(1.02);
             background: rgba(220, 38, 38, 0.1);
@@ -76,6 +79,10 @@
             box-shadow: 0 20px 60px rgba(220, 38, 38, 0.3);
             animation: none; /* Pausa la latencia para el hover interactivo */
         }
+        
+        /* Animación rotatoria para la tarjeta Super al hacer hover */
+        .card-super-hero:hover .super-icon { transform: scale(1.15) rotate(-5deg); background: white; color: #EF4444; box-shadow: 0 15px 35px rgba(220, 38, 38, 0.6);}
+
 
         @keyframes pulseDeepSlow {
             0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3); transform: scale(1); }
@@ -159,8 +166,19 @@
         .tool-card.mod-core:hover { border-color: var(--color-core); }
         .tool-card.mod-data:hover { border-color: var(--color-data); }
 
+        /* Interacción rotatoria de los iconos al hacer hover */
+        .tool-card:hover .tool-icon { transform: scale(1.1) rotate(-5deg); color: white; }
+
+        .tool-card.mod-fiscal:hover .tool-icon { background: var(--color-fiscal); }
+        .tool-card.mod-legal:hover .tool-icon { background: var(--color-legal); }
+        .tool-card.mod-finance:hover .tool-icon { background: var(--color-finance); }
+        .tool-card.mod-rh:hover .tool-icon { background: var(--color-rh); }
+        .tool-card.mod-core:hover .tool-icon { background: var(--color-core); }
+        .tool-card.mod-data:hover .tool-icon { background: var(--color-data); }
+
+
         .tool-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
-        .tool-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+        .tool-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s ease;}
         
         .mod-fiscal .tool-icon { background: rgba(239, 68, 68, 0.1); color: var(--color-fiscal); }
         .mod-legal .tool-icon { background: rgba(13, 148, 136, 0.1); color: var(--color-legal); }
