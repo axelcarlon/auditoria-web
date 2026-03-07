@@ -68,11 +68,13 @@
         /* =========================================================
            COLUMNA IZQUIERDA: INTELIGENCIA FINANCIERA VIVA
            ========================================================= */
-        .live-alert { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--danger); padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 20px; position: relative; overflow: hidden;}
+        .live-alert { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--danger); padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 20px; position: relative; overflow: hidden; min-height: 110px;}
         .live-alert::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.1), transparent); animation: flashAlert 3s infinite;}
         @keyframes flashAlert { 100% { left: 200%; } }
-        .live-alert-tag { color: #FCA5A5; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;}
-        .live-alert-text { font-size: 12.5px; color: #F8FAFC; line-height: 1.5; font-weight: 500;}
+        .live-alert-tag { color: #FCA5A5; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 5px; margin-bottom: 8px;}
+        
+        .live-alert-text { font-size: 12.5px; color: #F8FAFC; line-height: 1.5; font-weight: 500; transition: opacity 0.4s ease-in-out;}
+        .fade-out { opacity: 0; }
 
         /* Panel de Divisas */
         .forex-board { background: #000000; border: 1px solid #1E293B; border-radius: 12px; padding: 15px; margin-bottom: 20px; font-family: monospace;}
@@ -94,7 +96,6 @@
         .fw-status.yellow { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
         .fw-status.red { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
         
-        /* Nuevo: Cálculo Vivo */
         .fw-calc { font-family: monospace; font-size: 20px; font-weight: 900; color: white; margin: 4px 0 8px 0; letter-spacing: -0.5px;}
         .fw-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin: 0;}
 
@@ -161,6 +162,7 @@
         .toolbar { display: flex; gap: 15px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 16px; border: 1px solid var(--border);}
         .btn-pdf { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 2; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);}
         .btn-pdf:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);}
+        .btn-pdf:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
         .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1; text-transform: uppercase; font-size: 12px;}
         .btn-reset:hover { background: rgba(255,255,255,0.1); }
 
@@ -190,7 +192,7 @@
 
         <div class="live-alert">
             <span class="live-alert-tag"><span style="display:inline-block; width:6px; height:6px; background:#EF4444; border-radius:50%; box-shadow:0 0 5px #EF4444;"></span> ALERTA DE FISCALIZACIÓN</span>
-            <div class="live-alert-text">El SAT ha intensificado revisiones electrónicas mediante algoritmos de discrepancia de IVA y subcontratación (Art. 42 CFF).</div>
+            <div class="live-alert-text" id="newsTicker">El SAT ha intensificado revisiones electrónicas mediante algoritmos de discrepancia de IVA y subcontratación (Art. 42 CFF).</div>
         </div>
 
         <div class="forex-board">
@@ -359,33 +361,58 @@
 <script src="footer.js"></script>
 
 <script>
-    // SIMULADOR MATEMÁTICO DE MERCADO DE DIVISAS (FX)
+    // -------------------------------------------------------------
+    // 1. ANIMACIÓN DEL TICKER (NOTICIAS EN VIVO)
+    // -------------------------------------------------------------
+    const noticiasSAT = [
+        "El SAT ha intensificado revisiones electrónicas mediante algoritmos de discrepancia de IVA y subcontratación (Art. 42 CFF).",
+        "URGENTE: La omisión en la expedición de Complementos de Pago (REP) genera multas directas de $400 a $600 pesos por CFDI.",
+        "Criterio No Vinculativo: El SAT revisará minuciosamente la Razón de Negocios (Art. 5-A) en prestación de servicios intangibles.",
+        "Aviso: Las pérdidas fiscales ahora deben respaldarse con un \"Expediente Fotográfico de Materialidad\" obligatorio.",
+        "El buzón tributario cruzará automáticamente depósitos en efectivo superiores a $15,000 contra facturación emitida."
+    ];
+    
+    let tickerIndex = 0;
+    setInterval(() => {
+        const tickerEl = document.getElementById('newsTicker');
+        if(!tickerEl) return;
+        tickerEl.classList.add('fade-out');
+        setTimeout(() => {
+            tickerIndex = (tickerIndex + 1) % noticiasSAT.length;
+            tickerEl.innerText = noticiasSAT[tickerIndex];
+            tickerEl.classList.remove('fade-out');
+        }, 400); // 400ms para el desvanecimiento cruzado
+    }, 8000); // Cambia cada 8 segundos
+
+    // -------------------------------------------------------------
+    // 2. SIMULADOR MERCADO DIVISAS
+    // -------------------------------------------------------------
     setInterval(() => {
         ['usd', 'eur', 'gbp', 'cny'].forEach(moneda => {
             const el = document.getElementById(`fx-${moneda}`);
             if(!el) return;
             let val = parseFloat(el.innerText);
-            let variacion = (Math.random() - 0.5) * 0.005; // Fluctuación pericial
+            let variacion = (Math.random() - 0.5) * 0.005;
             let newVal = (val + variacion).toFixed(4);
             el.innerText = newVal;
-            if(variacion > 0) { el.className = "forex-val forex-up"; } 
-            else { el.className = "forex-val forex-down"; }
+            el.className = variacion > 0 ? "forex-val forex-up" : "forex-val forex-down";
         });
     }, 3000);
 
-    // CARGA DE FUENTES PDF (Asegura inicialización robusta)
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-        }
-    });
-
+    // -------------------------------------------------------------
+    // 3. INICIALIZACIÓN Y MOTOR CORE
+    // -------------------------------------------------------------
     let currentFiles = [];
     let biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
     let chart1Instance = null; let chart2Instance = null;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-    const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    
+    // Autopsia 8: Función ultra-segura para PDFMake
+    const formatMoneyPDF = (val) => {
+        let num = parseFloat(val || 0) || 0;
+        return "$" + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
 
     function getNodes(node, tagName) { return Array.from(node.getElementsByTagName(`cfdi:${tagName}`)).concat(Array.from(node.getElementsByTagName(tagName))); }
 
@@ -408,7 +435,6 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // MOTOR REDACTOR DEL DICTAMEN PERICIAL
     function redactarDictamen(data) {
         const spread = data.ingresos - data.egresos;
         const topCliente = Object.entries(data.clientes).sort((a,b)=>b[1]-a[1])[0] || ["Ninguno", 0];
@@ -417,8 +443,7 @@
         const pctCliente = data.ingresos > 0 ? ((topCliente[1]/data.ingresos)*100).toFixed(1) : 0;
         const pctProveedor = data.egresos > 0 ? ((topProveedor[1]/data.egresos)*100).toFixed(1) : 0;
         
-        let conclusionStr = "";
-        let advertenciaStr = "";
+        let conclusionStr = ""; let advertenciaStr = "";
 
         if (spread > 0) {
             conclusionStr = `<span class="legal-tag">SUPERÁVIT (LÍQUIDO)</span> De la evaluación pericial de los comprobantes fiscales proporcionados, se observa una captación de flujo superior a la erogación operativa. Esta estructura de capital circulante reduce significativamente la probabilidad de dictaminación de discrepancia fiscal.`;
@@ -440,7 +465,8 @@
             <p><strong>Carga Tributaria y Entero a Terceros:</strong> Se determinó la existencia de ${formatMoney(data.retenciones)} en impuestos retenidos. Se subraya la obligación inexcusable de reportarlos en su totalidad a la Tesorería de la Federación, ya que dichas retenciones no prescriben.</p>
         `;
 
-        biData.dictamenTexto = textoHtml.replace(/<[^>]*>?/gm, ''); // Limpiamos HTML para el PDF
+        // Autopsia 5: Sanitización brutal anti-HTML para evitar colapso de PDFMake
+        biData.dictamenTexto = textoHtml.replace(/<[^>]*>?/gm, '').trim(); 
         return textoHtml;
     }
 
@@ -515,7 +541,7 @@
         let margen = 0;
         if(biData.ingresos > 0) margen = (spread / biData.ingresos) * 100;
 
-        // --- ACTUALIZACIÓN DE WIDGETS LATERALES ---
+        // --- ACTUALIZACIÓN WIDGETS LATERALES ---
         document.getElementById('calc-flujo').innerText = formatMoney(spread);
         document.getElementById('dot-flujo').className = spread >= 0 ? "fw-status green" : "fw-status red";
 
@@ -528,7 +554,7 @@
         document.getElementById('calc-fiscal').innerText = formatMoney(biData.retenciones);
         document.getElementById('dot-fiscal').className = biData.retenciones > 0 ? "fw-status yellow" : "fw-status green";
 
-        // --- ACTUALIZACIÓN DE DASHBOARD CENTRAL ---
+        // --- DASHBOARD CENTRAL ---
         document.getElementById('valMatrizInfo').innerText = `${biData.hostNombre} | ${biData.hostRFC}`;
         document.getElementById('kpiIngresos').innerText = formatMoney(biData.ingresos);
         document.getElementById('kpiEgresos').innerText = formatMoney(biData.egresos);
@@ -536,9 +562,9 @@
         document.getElementById('kpiRetenciones').innerText = formatMoney(biData.retenciones);
         document.getElementById('dictamenTexto').innerHTML = redactarDictamen(biData);
 
-        // CONFIGURACIÓN DE GRÁFICAS SIN ANIMACIÓN (Para evitar fallos en PDFMake)
+        // Autopsia 4: Apagar animaciones para no ensuciar la captura del canvas
         Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'system-ui, sans-serif';
-        const chartOptions = { animation: false, responsive: true, maintainAspectRatio: false };
+        const chartOptions = { animation: false, responsive: true, maintainAspectRatio: false }; 
 
         const ctxDoughnut = document.getElementById('chartDoughnut').getContext('2d');
         if(chart1Instance) chart1Instance.destroy();
@@ -565,121 +591,144 @@
     }
 
     // ==============================================================
-    // EXPORTACIÓN PDF SINCRÓNICA (Bypass Anti-Popup Blockers)
+    // 4. GENERADOR PDF EJECUTIVO (A PRUEBA DE BALAS)
     // ==============================================================
     function exportarMemorandumPDF() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML; 
+        
+        // Autopsia 1: Cambio de UI sincrónico (Dejamos que el DOM se repinte)
         btn.innerHTML = `VECTORIZANDO...`; 
         btn.disabled = true;
 
-        try {
-            // Asegurar fuentes
-            if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-                pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-            }
-
-            const spread = biData.ingresos - biData.egresos;
-            const spreadColor = spread >= 0 ? '#065F46' : '#991B1B';
-            
-            // Extracción segura de gráficos
-            let chartFlujoImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-            let chartComboImage = chartFlujoImage;
-
-            try {
-                const dData = document.getElementById('chartDoughnut').toDataURL("image/png", 1.0);
-                const bData = document.getElementById('chartBarCombinada').toDataURL("image/png", 1.0);
-                if (dData.length > 20) chartFlujoImage = dData;
-                if (bData.length > 20) chartComboImage = bData;
-            } catch(err) { console.warn("Error Canvas", err); }
-
-            // Tablas Seguras (Para evitar crashes por arrays vacíos o "undefined")
-            let topClientsTbl = [['Denominación / Razón Social (Cliente)', 'Flujo Generado']];
-            let clientesArray = Object.entries(biData.clientes || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            if (clientesArray.length === 0) clientesArray = [["Sin facturación emitida", 0]];
-            clientesArray.forEach(c => topClientsTbl.push([{text: c[0] ? c[0].toString() : "Desconocido", fontSize: 9}, {text: formatMoneyPDF(c[1]), fontSize: 9, alignment: 'right'}]));
-
-            let topProvTbl = [['Denominación / Razón Social (Proveedor)', 'Gasto Operativo']];
-            let provArray = Object.entries(biData.proveedores || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            if (provArray.length === 0) provArray = [["Sin facturación recibida", 0]];
-            provArray.forEach(p => topProvTbl.push([{text: p[0] ? p[0].toString() : "Desconocido", fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]));
-
-            const docDefinition = {
-                pageSize: 'A4', pageMargins: [40, 50, 40, 60],
-                content: [
-                    { text: 'MEMORÁNDUM DE AUDITORÍA FINANCIERA', alignment: 'center', color: '#0F172A', fontSize: 24, bold: true, margin: [0, 0, 0, 5] },
-                    { text: 'DOCUMENTO ESTRICTAMENTE CONFIDENCIAL Y PRIVILEGIADO', alignment: 'center', color: '#B91C1C', fontSize: 9, margin: [0, 0, 0, 20], letterSpacing: 1, bold: true },
-                    { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 3, lineColor: '#1E293B' }], margin: [0,0,0,25] },
-                    
-                    { text: '1. DECLARACIÓN DE IDENTIDAD ESTRUCTURAL', style: 'headerStyle' },
-                    { columns: [ {text: 'Entidad Auditada:', width: 120, bold: true, color: '#334155'}, {text: biData.hostNombre ? biData.hostNombre.toString() : 'N/A', width: '*', bold: true} ], margin: [0,0,0,5], fontSize: 11 },
-                    { columns: [ {text: 'Identificador (RFC):', width: 120, bold: true, color: '#334155'}, {text: biData.hostRFC ? biData.hostRFC.toString() : 'N/A', width: '*'} ], margin: [0,0,0,5], fontSize: 11 },
-                    { columns: [ {text: 'Fecha de Emisión:', width: 120, bold: true, color: '#334155'}, {text: new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }), width: '*'} ], margin: [0,0,0,25], fontSize: 11 },
-
-                    { text: '2. SÍNTESIS DE CUMPLIMIENTO OPERATIVO', style: 'headerStyle' },
-                    { text: biData.dictamenTexto ? biData.dictamenTexto.toString() : 'Evaluación ejecutada sin suficientes datos de cruce.', fontSize: 11, lineHeight: 1.6, color: '#1F2937', margin: [0,0,0,25], alignment: 'justify' },
-
-                    { text: '3. PANORAMA DE FLUIDEZ (MÉTRICAS CORE)', style: 'headerStyle' },
-                    {
-                        table: {
-                            widths: ['33%', '33%', '34%'],
-                            body: [
-                                [
-                                    { text: 'FACTURACIÓN BRUTA', bold: true, fillColor: '#F8FAFC', color: '#0F172A', margin: [5,8,5,8], alignment: 'center' }, 
-                                    { text: 'COSTO OPERATIVO', bold: true, fillColor: '#F8FAFC', color: '#0F172A', margin: [5,8,5,8], alignment: 'center' },
-                                    { text: 'MARGEN (SPREAD NETO)', bold: true, fillColor: '#F1F5F9', color: '#0F172A', margin: [5,8,5,8], alignment: 'center' }
-                                ],
-                                [
-                                    { text: formatMoneyPDF(biData.ingresos), fontSize: 15, bold: true, color: '#10B981', alignment: 'center', margin: [0,12,0,12] },
-                                    { text: formatMoneyPDF(biData.egresos), fontSize: 15, bold: true, color: '#EF4444', alignment: 'center', margin: [0,12,0,12] },
-                                    { text: formatMoneyPDF(spread), fontSize: 15, bold: true, color: spreadColor, alignment: 'center', margin: [0,12,0,12] }
-                                ]
-                            ]
-                        },
-                        layout: 'lightHorizontalLines', margin: [0,0,0,30]
-                    },
-
-                    { text: '4. VECTORES DE DISTRIBUCIÓN GRÁFICA', style: 'headerStyle', pageBreak: 'before' },
-                    {
-                        columns: [
-                            { width: '45%', stack: [ { text: 'Ratio Ingreso/Gasto', alignment: 'center', bold: true, fontSize: 10, margin: [0,0,0,15], color: '#64748B'}, { image: chartFlujoImage, width: 220, alignment: 'center' } ] },
-                            { width: '55%', stack: [ { text: 'Concentración de Riesgo Cruzado', alignment: 'center', bold: true, fontSize: 10, margin: [0,0,0,15], color: '#64748B'}, { image: chartComboImage, width: 270, alignment: 'center' } ] }
-                        ], margin: [0,0,0,40]
-                    },
-
-                    { text: '5. ANEXOS: CONCENTRACIÓN DE TERCEROS', style: 'headerStyle' },
-                    {
-                        columns: [
-                            { width: '48%', stack: [ { text: 'Ingresos (Clientes Top 10)', fontSize: 10, bold: true, color: '#10B981', margin: [0,0,0,8] }, { table: { headerRows: 1, widths: ['*', 'auto'], body: topClientsTbl }, layout: 'lightHorizontalLines' } ] },
-                            { width: '4%' }, 
-                            { width: '48%', stack: [ { text: 'Egresos (Proveedores Top 10)', fontSize: 10, bold: true, color: '#EF4444', margin: [0,0,0,8] }, { table: { headerRows: 1, widths: ['*', 'auto'], body: topProvTbl }, layout: 'lightHorizontalLines' } ] }
-                        ]
-                    },
-                    
-                    {
-                        unbreakable: true,
-                        margin: [0, 50, 0, 0],
-                        alignment: 'center',
-                        stack: [
-                            { text: '________________________________________________' },
-                            { text: 'DIRECCIÓN DE AUDITORÍA Y CONTROL FINANCIERO', fontSize: 10, margin: [0, 5, 0, 0], bold: true, color: '#334155' }
-                        ]
+        // Autopsia 2: Ejecutamos el motor de forma asíncrona pero sin usar setTimeout para burlar al PopUp Blocker
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                
+                try {
+                    // Autopsia 3: Reinyección de memoria VFS
+                    if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+                        pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+                    } else {
+                        throw new Error("Librería VFS de PDFMake no encontrada.");
                     }
-                ],
-                styles: { headerStyle: { fontSize: 11, bold: true, color: '#FFFFFF', fillColor: '#1E293B', padding: 6, margin: [0, 0, 0, 15], letterSpacing: 1 } },
-                footer: function(currentPage, pageCount) { return { text: `Reporte Emitido por AuditorIA Core | Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 8, color: '#9CA3AF', margin: [0, 20, 40, 0] }; }
-            };
 
-            pdfMake.createPdf(docDefinition).download(`Memorandum_Ejecutivo_${biData.hostRFC || 'Data'}.pdf`);
-            if (typeof window.showToast === 'function') window.showToast("Memorándum descargado exitosamente.", "success");
-        
-        } catch (e) { 
-            console.error("DEBUG PDFMake Error:", e); 
-            alert("Error en el formato del XML, un dato dañado bloqueó el PDF.");
-        } finally { 
-            btn.innerHTML = oldText; 
-            btn.disabled = false; 
-        }
+                    const spread = biData.ingresos - biData.egresos;
+                    const spreadColor = spread >= 0 ? '#065F46' : '#991B1B';
+                    
+                    // Autopsia 4: Píxeles transparentes por defecto por si el canvas falla
+                    let chartFlujoImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+                    let chartComboImage = chartFlujoImage;
+
+                    try {
+                        const dData = document.getElementById('chartDoughnut').toDataURL("image/png", 1.0);
+                        const bData = document.getElementById('chartBarCombinada').toDataURL("image/png", 1.0);
+                        if (dData.length > 50) chartFlujoImage = dData;
+                        if (bData.length > 50) chartComboImage = bData;
+                    } catch(err) { console.warn("Aviso: Canvas protegido contra CORS.", err); }
+
+                    // Autopsia 6: Arrays irrompibles
+                    let topClientsTbl = [['Denominación / Razón Social (Cliente)', 'Flujo Generado']];
+                    let clientesArray = Object.entries(biData.clientes || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                    if (clientesArray.length === 0) clientesArray = [["Sin facturación emitida", 0]];
+                    clientesArray.forEach(c => {
+                        let nameS = c[0] ? c[0].toString() : "Desconocido";
+                        topClientsTbl.push([{text: nameS, fontSize: 9}, {text: formatMoneyPDF(c[1]), fontSize: 9, alignment: 'right'}]);
+                    });
+
+                    let topProvTbl = [['Denominación / Razón Social (Proveedor)', 'Gasto Operativo']];
+                    let provArray = Object.entries(biData.proveedores || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                    if (provArray.length === 0) provArray = [["Sin facturación recibida", 0]];
+                    provArray.forEach(p => {
+                        let nameP = p[0] ? p[0].toString() : "Desconocido";
+                        topProvTbl.push([{text: nameP, fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]);
+                    });
+
+                    // Autopsia 9: Limpieza de nombres de archivo
+                    const hostNombrePDF = biData.hostNombre ? biData.hostNombre.toString() : 'Entidad No Identificada';
+                    const hostRFCPDF = biData.hostRFC ? biData.hostRFC.toString().replace(/[^a-zA-Z0-9]/g, '') : 'DATA';
+                    const dictamenPDF = biData.dictamenTexto ? biData.dictamenTexto.toString() : 'Evaluación ejecutada sin suficientes datos de cruce.';
+
+                    const docDefinition = {
+                        pageSize: 'A4', pageMargins: [40, 50, 40, 60],
+                        content: [
+                            { text: 'MEMORÁNDUM DE AUDITORÍA FINANCIERA', alignment: 'center', color: '#0F172A', fontSize: 22, bold: true, margin: [0, 0, 0, 5] },
+                            { text: 'DOCUMENTO ESTRICTAMENTE CONFIDENCIAL Y PRIVILEGIADO', alignment: 'center', color: '#B91C1C', fontSize: 9, margin: [0, 0, 0, 20], letterSpacing: 1, bold: true },
+                            { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 3, lineColor: '#1E293B' }], margin: [0,0,0,25] },
+                            
+                            { text: '1. DECLARACIÓN DE IDENTIDAD ESTRUCTURAL', style: 'headerStyle' },
+                            { columns: [ {text: 'Entidad Auditada:', width: 120, bold: true, color: '#334155'}, {text: hostNombrePDF, width: '*', bold: true} ], margin: [0,0,0,5], fontSize: 11 },
+                            { columns: [ {text: 'Identificador (RFC):', width: 120, bold: true, color: '#334155'}, {text: hostRFCPDF, width: '*'} ], margin: [0,0,0,5], fontSize: 11 },
+                            { columns: [ {text: 'Fecha de Emisión:', width: 120, bold: true, color: '#334155'}, {text: new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }), width: '*'} ], margin: [0,0,0,25], fontSize: 11 },
+
+                            { text: '2. SÍNTESIS DE CUMPLIMIENTO OPERATIVO', style: 'headerStyle' },
+                            { text: dictamenPDF, fontSize: 11, lineHeight: 1.6, color: '#1F2937', margin: [0,0,0,25], alignment: 'justify' },
+
+                            { text: '3. PANORAMA DE FLUIDEZ (MÉTRICAS CORE)', style: 'headerStyle' },
+                            {
+                                table: {
+                                    widths: ['33%', '33%', '34%'],
+                                    body: [
+                                        [
+                                            { text: 'FACTURACIÓN BRUTA', bold: true, fillColor: '#F8FAFC', color: '#0F172A', margin: [5,8,5,8], alignment: 'center' }, 
+                                            { text: 'COSTO OPERATIVO', bold: true, fillColor: '#F8FAFC', color: '#0F172A', margin: [5,8,5,8], alignment: 'center' },
+                                            { text: 'MARGEN (SPREAD NETO)', bold: true, fillColor: '#F1F5F9', color: '#0F172A', margin: [5,8,5,8], alignment: 'center' }
+                                        ],
+                                        [
+                                            { text: formatMoneyPDF(biData.ingresos), fontSize: 15, bold: true, color: '#10B981', alignment: 'center', margin: [0,12,0,12] },
+                                            { text: formatMoneyPDF(biData.egresos), fontSize: 15, bold: true, color: '#EF4444', alignment: 'center', margin: [0,12,0,12] },
+                                            { text: formatMoneyPDF(spread), fontSize: 15, bold: true, color: spreadColor, alignment: 'center', margin: [0,12,0,12] }
+                                        ]
+                                    ]
+                                },
+                                layout: 'lightHorizontalLines', margin: [0,0,0,30]
+                            },
+
+                            // Autopsia 7: Quitamos "pageBreak" duro si no es necesario para evitar bug de salto
+                            { text: '4. VECTORES DE DISTRIBUCIÓN GRÁFICA', style: 'headerStyle' },
+                            {
+                                columns: [
+                                    { width: '45%', stack: [ { text: 'Ratio Ingreso/Gasto', alignment: 'center', bold: true, fontSize: 10, margin: [0,0,0,15], color: '#64748B'}, { image: chartFlujoImage, width: 220, alignment: 'center' } ] },
+                                    { width: '55%', stack: [ { text: 'Concentración de Riesgo Cruzado', alignment: 'center', bold: true, fontSize: 10, margin: [0,0,0,15], color: '#64748B'}, { image: chartComboImage, width: 270, alignment: 'center' } ] }
+                                ], margin: [0,0,0,40]
+                            },
+
+                            { text: '5. ANEXOS: CONCENTRACIÓN DE TERCEROS', style: 'headerStyle' },
+                            {
+                                columns: [
+                                    { width: '48%', stack: [ { text: 'Ingresos (Clientes Top 10)', fontSize: 10, bold: true, color: '#10B981', margin: [0,0,0,8] }, { table: { headerRows: 1, widths: ['*', 'auto'], body: topClientsTbl }, layout: 'lightHorizontalLines' } ] },
+                                    { width: '4%' }, 
+                                    { width: '48%', stack: [ { text: 'Egresos (Proveedores Top 10)', fontSize: 10, bold: true, color: '#EF4444', margin: [0,0,0,8] }, { table: { headerRows: 1, widths: ['*', 'auto'], body: topProvTbl }, layout: 'lightHorizontalLines' } ] }
+                                ]
+                            },
+                            
+                            {
+                                margin: [0, 50, 0, 0],
+                                alignment: 'center',
+                                stack: [
+                                    { text: '________________________________________________' },
+                                    { text: 'DIRECCIÓN DE AUDITORÍA Y CONTROL FINANCIERO', fontSize: 10, margin: [0, 5, 0, 0], bold: true, color: '#334155' }
+                                ]
+                            }
+                        ],
+                        styles: { headerStyle: { fontSize: 11, bold: true, color: '#FFFFFF', fillColor: '#1E293B', padding: 6, margin: [0, 0, 0, 15], letterSpacing: 1 } },
+                        footer: function(currentPage, pageCount) { return { text: `Reporte Emitido por AuditorIA Core | Página ${currentPage} de ${pageCount}`, alignment: 'right', fontSize: 8, color: '#9CA3AF', margin: [0, 20, 40, 0] }; }
+                    };
+
+                    pdfMake.createPdf(docDefinition).download(`Memorandum_Ejecutivo_${hostRFCPDF}.pdf`);
+                    if (typeof window.showToast === 'function') window.showToast("Memorándum descargado exitosamente.", "success");
+                
+                } catch (e) { 
+                    // Autopsia 10: Trazabilidad de fallo
+                    console.error("PDFMake Core Crash:", e); 
+                    alert("Error interno: " + e.message);
+                } finally { 
+                    btn.innerHTML = oldText; 
+                    btn.disabled = false; 
+                }
+
+            }); // Fin rAF 2
+        }); // Fin rAF 1
     }
 </script>
 </body>
