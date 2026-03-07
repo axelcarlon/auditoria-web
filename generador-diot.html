@@ -100,7 +100,7 @@
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="iniciarExtraccionDIOT()" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="if(typeof consumirCredito === 'function'){consumirCredito(iniciarExtraccionDIOT)}else{iniciarExtraccionDIOT()}" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
             COMPILAR ARCHIVO DIOT Y FLUJO EFECTIVO
         </button>
@@ -477,3 +477,4 @@
 </script>
 </body>
 </html>
+
