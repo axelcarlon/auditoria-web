@@ -8,8 +8,8 @@ const footerHTML = `
     .footer-desc { margin: 0 0 20px 0; line-height: 1.6; font-size: 13px; color: #94A3B8;}
     
     /* Corrección de alineación del botón de contacto */
-    .contact-badge { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 16px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; white-space: nowrap; line-height: normal; width: max-content; }
-    .contact-badge svg { flex-shrink: 0; width: 16px; height: 16px; display: block; } 
+    .contact-badge { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93C5FD !important; padding: 10px 16px; border-radius: 6px; font-weight: bold; margin-top: 10px; transition: 0.3s !important; max-width: fit-content; text-decoration: none; vertical-align: middle; }
+    .contact-badge svg { flex-shrink: 0; width: 16px; height: 16px; display: block; margin: auto 0; } 
     .contact-badge:hover { background: #3B82F6 !important; color: white !important; transform: translateY(-2px) !important;}
 
     /* WIDGET CHAT IA FORENSE */
@@ -117,6 +117,7 @@ const footerHTML = `
             <a href="/precios-aduana.html">Simulador Costos Aduanales</a>
             <a href="/calculadora-recargos.html">Calculadora Recargos INPC</a>
             <a href="/auditoria-activos.html">Auditoría de Activos Fijos</a>
+            <a href="/defensa-legal.html">Generador de Defensa Legal</a>
         </div>
 
         <div>
