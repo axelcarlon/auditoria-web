@@ -343,6 +343,7 @@
     setInterval(() => {
         ['usd', 'eur', 'gbp', 'cny'].forEach(moneda => {
             const el = document.getElementById(`fx-${moneda}`);
+            if(!el) return;
             let val = parseFloat(el.innerText);
             let variacion = (Math.random() - 0.5) * 0.005; // Fluctuación pericial
             let newVal = (val + variacion).toFixed(4);
@@ -498,11 +499,16 @@
         document.getElementById('dictamenTexto').innerHTML = redactarDictamen(biData);
 
         Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'system-ui, sans-serif';
+        
+        // OPTIMIZACIÓN: Quitamos animaciones para evitar fallos de PDFMake
+        const chartOptions = { animation: false, responsive: true, maintainAspectRatio: false };
+
         const ctxDoughnut = document.getElementById('chartDoughnut').getContext('2d');
         if(chart1Instance) chart1Instance.destroy();
         chart1Instance = new Chart(ctxDoughnut, {
-            type: 'doughnut', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [biData.ingresos, biData.egresos], backgroundColor: ['#10B981', '#EF4444'], borderColor: '#1E293B', borderWidth: 2 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } } } }
+            type: 'doughnut', 
+            data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [biData.ingresos, biData.egresos], backgroundColor: ['#10B981', '#EF4444'], borderColor: '#1E293B', borderWidth: 2 }] },
+            options: { ...chartOptions, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } } } }
         });
 
         const topClients = Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -513,29 +519,40 @@
         const ctxBarCombo = document.getElementById('chartBarCombinada').getContext('2d');
         if(chart2Instance) chart2Instance.destroy();
         chart2Instance = new Chart(ctxBarCombo, {
-            type: 'bar', data: { labels: combinedLabels, datasets: [ { label: 'Ingreso Cliente', data: dataClients, backgroundColor: '#10B981', borderRadius: 4 }, { label: 'Gasto Proveedor', data: dataProviders, backgroundColor: '#EF4444', borderRadius: 4 } ] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end' } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+            type: 'bar', 
+            data: { labels: combinedLabels, datasets: [ { label: 'Ingreso Cliente', data: dataClients, backgroundColor: '#10B981', borderRadius: 4 }, { label: 'Gasto Proveedor', data: dataProviders, backgroundColor: '#EF4444', borderRadius: 4 } ] },
+            options: { ...chartOptions, plugins: { legend: { position: 'top', align: 'end' } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
         });
+
         if (typeof window.showToast === 'function') window.showToast("Cálculo estructural finalizado.", "success");
     }
 
     // EL NUEVO PDF NIVEL BIG 4 (CFO LEVEL)
     function exportarMemorandumPDF() {
         const btn = document.getElementById('btnDescargarPDF');
-        const oldText = btn.innerHTML; btn.innerHTML = `COMPILANDO MEMORÁNDUM CORPORATIVO...`; btn.disabled = true;
+        const oldText = btn.innerHTML; 
+        btn.innerHTML = `COMPILANDO MEMORÁNDUM CORPORATIVO...`; 
+        btn.disabled = true;
 
+        // Le damos 800ms al navegador para asegurar que las gráficas estén pintadas antes de capturar
         setTimeout(() => {
             try {
                 const spread = biData.ingresos - biData.egresos;
                 const spreadColor = spread >= 0 ? '#065F46' : '#991B1B';
+                
+                // Forzamos la captura visual
                 const chartFlujoImage = document.getElementById('chartDoughnut').toDataURL("image/png", 1.0);
                 const chartComboImage = document.getElementById('chartBarCombinada').toDataURL("image/png", 1.0);
 
                 let topClientsTbl = [['Denominación / Razón Social (Cliente)', 'Flujo Generado']];
-                Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 10).forEach(c => topClientsTbl.push([{text: c[0], fontSize: 9}, {text: formatMoneyPDF(c[1]), fontSize: 9, alignment: 'right'}]));
+                let clientesArray = Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                if (clientesArray.length === 0) clientesArray = [["Sin datos registrados", 0]];
+                clientesArray.forEach(c => topClientsTbl.push([{text: c[0], fontSize: 9}, {text: formatMoneyPDF(c[1]), fontSize: 9, alignment: 'right'}]));
 
                 let topProvTbl = [['Denominación / Razón Social (Proveedor)', 'Gasto Operativo']];
-                Object.entries(biData.proveedores).sort((a, b) => b[1] - a[1]).slice(0, 10).forEach(p => topProvTbl.push([{text: p[0], fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]));
+                let provArray = Object.entries(biData.proveedores).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                if (provArray.length === 0) provArray = [["Sin datos registrados", 0]];
+                provArray.forEach(p => topProvTbl.push([{text: p[0], fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]));
 
                 const docDefinition = {
                     pageSize: 'A4', pageMargins: [40, 50, 40, 60],
@@ -545,12 +562,12 @@
                         { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 3, lineColor: '#1E293B' }], margin: [0,0,0,25] },
                         
                         { text: '1. DECLARACIÓN DE IDENTIDAD ESTRUCTURAL', style: 'headerStyle' },
-                        { columns: [ {text: 'Entidad Auditada:', width: 120, bold: true, color: '#334155'}, {text: biData.hostNombre, width: '*', bold: true} ], margin: [0,0,0,5], fontSize: 11 },
-                        { columns: [ {text: 'Identificador (RFC):', width: 120, bold: true, color: '#334155'}, {text: biData.hostRFC, width: '*'} ], margin: [0,0,0,5], fontSize: 11 },
+                        { columns: [ {text: 'Entidad Auditada:', width: 120, bold: true, color: '#334155'}, {text: biData.hostNombre || 'N/A', width: '*', bold: true} ], margin: [0,0,0,5], fontSize: 11 },
+                        { columns: [ {text: 'Identificador (RFC):', width: 120, bold: true, color: '#334155'}, {text: biData.hostRFC || 'N/A', width: '*'} ], margin: [0,0,0,5], fontSize: 11 },
                         { columns: [ {text: 'Fecha de Emisión:', width: 120, bold: true, color: '#334155'}, {text: new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }), width: '*'} ], margin: [0,0,0,25], fontSize: 11 },
 
                         { text: '2. SÍNTESIS DE CUMPLIMIENTO OPERATIVO', style: 'headerStyle' },
-                        { text: biData.dictamenTexto, fontSize: 11, lineHeight: 1.6, color: '#1F2937', margin: [0,0,0,25], alignment: 'justify' },
+                        { text: biData.dictamenTexto || 'Sin datos suficientes para emitir dictamen.', fontSize: 11, lineHeight: 1.6, color: '#1F2937', margin: [0,0,0,25], alignment: 'justify' },
 
                         { text: '3. PANORAMA DE FLUIDEZ (MÉTRICAS CORE)', style: 'headerStyle' },
                         {
@@ -608,8 +625,14 @@
 
                 pdfMake.createPdf(docDefinition).download(`Memorandum_Ejecutivo_${biData.hostRFC}.pdf`);
                 if (typeof window.showToast === 'function') window.showToast("Memorándum descargado.", "success");
-            } catch (e) { console.error(e); } finally { btn.innerHTML = oldText; btn.disabled = false; }
-        }, 800);
+            } catch (e) { 
+                console.error(e); 
+                alert("Error generando PDF: " + e.message);
+            } finally { 
+                btn.innerHTML = oldText; 
+                btn.disabled = false; 
+            }
+        }, 800); // 800ms de gracia para que Chart.js dibuje
     }
 </script>
 </body>
