@@ -1,38 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>https://auditoriaxml.mx/</loc>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-    </url>
-    <url>
-        <loc>https://auditoriaxml.mx/despachos-contables.html</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>https://auditoriaxml.mx/empresas.html</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
-    </url>
+    <url><loc>https://auditoriaxml.mx/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+    <url><loc>https://auditoriaxml.mx/despachos-contables.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+    <url><loc>https://auditoriaxml.mx/empresas.html</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 
-    <url><loc>https://auditoriaxml.mx/visor-xml.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/validador-efos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/auditor-nomina.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/analisis-proveedores.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/proyector-iva.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/calculadora-recargos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/generador-polizas.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/conciliador-pagos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/buscador-conceptos.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/conversor-xml-pdf.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-    <url><loc>https://auditoriaxml.mx/dashboard-xml.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://auditoriaxml.mx/licencias.html</loc><changefreq>monthly</changefreq><priority>0.88</priority></url>
+    <url><loc>https://auditoriaxml.mx/como-funciona.html</loc><changefreq>monthly</changefreq><priority>0.82</priority></url>
 
-    <url><loc>https://auditoriaxml.mx/articulos/multas-discrepancia-fiscal-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/auditoria-cfdi-despachos-contables.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/proteccion-empresas-art-30-b-cff.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/auditoria-uuid-cancelacion-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://auditoriaxml.mx/dashboard-xml.html</loc><changefreq>weekly</changefreq><priority>0.98</priority></url>
+    <url><loc>https://auditoriaxml.mx/escaner-ocr-fiscal.html</loc><changefreq>weekly</changefreq><priority>0.97</priority></url>
+    <url><loc>https://auditoriaxml.mx/editor-pdf.html</loc><changefreq>weekly</changefreq><priority>0.96</priority></url>
+    <url><loc>https://auditoriaxml.mx/editor-pro.html</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+
+    <url><loc>https://auditoriaxml.mx/risk-score.html</loc><changefreq>monthly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/validador-efos.html</loc><changefreq>monthly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/auditor-nomina.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/tasa-efectiva.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/prueba-servicio.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/validador-csf-32d.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/defensa-legal.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+
+    <url><loc>https://auditoriaxml.mx/generador-diot.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/proyector-iva.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/generador-polizas.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/conciliador-pagos.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/precios-aduana.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/visor-rep.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+    <url><loc>https://auditoriaxml.mx/analisis-proveedores.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+    <url><loc>https://auditoriaxml.mx/comparativo-sat.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+
+    <url><loc>https://auditoriaxml.mx/visor-xml.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/conversor-xml-pdf.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/buscador-conceptos.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/calculadora-recargos.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/validador-rfc.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/extraer-metadatos.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/descarga-masiva.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/limpiar-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+    <url><loc>https://auditoriaxml.mx/verificador-estatus.html</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+
+    <url><loc>https://auditoriaxml.mx/articulos/multas-discrepancia-fiscal-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.60</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/auditoria-cfdi-despachos-contables.html</loc><changefreq>monthly</changefreq><priority>0.60</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/proteccion-empresas-art-30-b-cff.html</loc><changefreq>monthly</changefreq><priority>0.60</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/auditoria-uuid-cancelacion-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.60</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.60</priority></url>
 
     <url><loc>https://auditoriaxml.mx/privacidad.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
     <url><loc>https://auditoriaxml.mx/terminos.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
