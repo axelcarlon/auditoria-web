@@ -13,36 +13,15 @@
     <title>Auditoría Técnica del UUID y Control de Cancelaciones en CFDI 4.0 | AuditorIA</title>
     <meta name="description" content="Trazabilidad algorítmica del Folio Fiscal (UUID) en CFDI 4.0. Evita multas por deducción de facturas canceladas y domina el nodo tfd:TimbreFiscalDigital.">
     <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="despertador.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; overflow-x: hidden; }
         
-        .header-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: #111827; flex-wrap: wrap; gap: 20px; }
-        .header-nav a.logo { color: #ffffff; text-decoration: none; font-weight: bold; font-size: 20px; flex-shrink: 0; }
-        .nav-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .nav-link { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .nav-link:hover { color: #ffffff; }
-        
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-toggle { color: #D1D5DB; text-decoration: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 10px 0; display: flex; align-items: center; gap: 4px; }
-        .dropdown-toggle:hover { color: #ffffff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 100%; background-color: #ffffff; min-width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); z-index: 100; border-radius: 12px; border: 1px solid #E5E7EB; margin-top: 10px; grid-template-columns: 1fr 1fr; padding: 15px; gap: 10px; text-align: left; }
-        .dropdown::after { content: ""; position: absolute; top: 100%; left: 0; width: 100%; height: 20px; }
-        .dropdown-column { display: flex; flex-direction: column; }
-        .dropdown-content a { color: #111827; padding: 10px 12px; text-decoration: none; display: block; font-size: 13px; border-radius: 6px; font-weight: 500; transition: all 0.2s; }
-        .dropdown-content a:hover { background-color: #F3F4F6; color: #2563EB; transform: translateX(3px); }
-        .dropdown:hover .dropdown-content { display: grid; }
-        .menu-category { padding: 10px 12px 4px; font-size: 11px; text-transform: uppercase; color: #2563EB; font-weight: 800; border-bottom: 1px solid #E5E7EB; margin-bottom: 5px; }
-
-        @media (max-width: 768px) {
-            .header-nav { padding: 15px 20px; justify-content: center; text-align: center; }
-            .nav-right { justify-content: center; width: 100%; }
-            .dropdown-content { position: fixed; top: 100px; left: 5%; right: 5%; min-width: 90vw; width: 90vw; grid-template-columns: 1fr; max-height: 75vh; overflow-y: auto; }
-            .dropdown:hover .dropdown-content { transform: none; }
-            .article-container { padding: 30px 20px; margin: 30px auto; }
-        }
-        
         .article-container { max-width: 800px; margin: 60px auto; background: #ffffff; padding: 50px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
+        @media (max-width: 768px) { .article-container { padding: 30px 20px; margin: 30px auto; } }
+        
         h1 { color: #111827; font-size: 36px; line-height: 1.2; margin-bottom: 24px; border-bottom: 3px solid #2563EB; padding-bottom: 15px; }
         h2 { color: #1F2937; font-size: 28px; margin-top: 48px; margin-bottom: 20px; }
         h3 { color: #2563EB; font-size: 22px; margin-top: 32px; margin-bottom: 16px; }
@@ -63,40 +42,11 @@
         .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
         .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
         .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
-        
-        .site-footer { text-align: center; padding: 60px 20px 40px; background-color: #111827; color: #6B7280; font-size: 14px; margin-top: 60px; }
     </style>
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="/" class="logo">AuditorIA</a>
-    <div class="nav-right">
-        <a href="/visor-xml.html" class="nav-link">Visor XML</a>
-        <div class="dropdown">
-            <div class="dropdown-toggle">Herramientas <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
-            <div class="dropdown-content">
-                <div class="dropdown-column">
-                    <div class="menu-category">Auditoría y Riesgo</div>
-                    <a href="/">Auditoría Masiva (Art. 30-B)</a>
-                    <a href="/validador-efos.html">Validador EFOS</a>
-                    <a href="/auditor-nomina.html">Auditor de Nómina</a>
-                    <div class="menu-category" style="margin-top: 15px;">Inteligencia Financiera</div>
-                    <a href="/dashboard-xml.html">Dashboard Financiero</a>
-                    <a href="/analisis-proveedores.html">Análisis de Proveedores</a>
-                </div>
-                <div class="dropdown-column">
-                    <div class="menu-category">Operativas</div>
-                    <a href="/generador-polizas.html">Generador de Pólizas</a>
-                    <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
-                    <a href="/proyector-iva.html">Proyector IVA Mensual</a>
-                    <a href="/buscador-conceptos.html">Buscador Forense XML</a>
-                    <a href="/conversor-xml-pdf.html">Conversor XML a PDF</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
+<script src="navbar.js"></script>
 
 <div class="article-container">
     <h1>Auditoría Técnica del UUID y Control de Cancelaciones en CFDI 4.0</h1>
@@ -142,42 +92,7 @@
     </div>
 </div>
 
-<footer class="site-footer">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: left; margin-bottom: 40px;">
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Plataforma</h4>
-            <a href="/" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditoría Masiva XML</a>
-            <a href="/despachos-contables.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Despachos Contables</a>
-            <a href="/empresas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Para Empresas corporativas</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Herramientas Gratuitas</h4>
-            <a href="/visor-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Visor y Decodificador XML</a>
-            <a href="/validador-efos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Validador EFOS (Art. 69-B)</a>
-            <a href="/dashboard-xml.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Dashboard Financiero</a>
-            <a href="/auditor-nomina.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Auditor Masivo de Nómina</a>
-            <a href="/conciliador-pagos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conciliador de Pagos (REP)</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Operación & Utilidades</h4>
-            <a href="/generador-polizas.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Generador de Pólizas (Layout)</a>
-            <a href="/conversor-xml-pdf.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Conversor XML a PDF</a>
-            <a href="/proyector-iva.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Proyector de IVA Mensual</a>
-            <a href="/buscador-conceptos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Buscador Forense XML</a>
-            <a href="/calculadora-recargos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Calculadora de Recargos</a>
-        </div>
-        <div>
-            <h4 style="color: #F8FAFC; margin-bottom: 20px; font-size: 16px;">Legal y Contacto</h4>
-            <a href="/privacidad.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Aviso de Privacidad</a>
-            <a href="/terminos.html" style="display: block; margin-bottom: 12px; color: #CBD5E1; text-decoration: none; transition: 0.2s;">Términos de Servicio</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=contacto@auditoriaxml.mx" target="_blank" rel="noopener" style="display: block; margin-bottom: 12px; color: #3B82F6; font-weight: 600; text-decoration: none; transition: 0.2s;">contacto@auditoriaxml.mx</a>
-        </div>
-    </div>
-    <div style="border-top: 1px solid #1E293B; padding-top: 20px; font-size: 12px;">
-        <p>&copy; 2026 AuditorIA. Herramienta diseñada para el cumplimiento fiscal en México.</p>
-        <p>No somos una entidad gubernamental ni estamos afiliados al Servicio de Administración Tributaria (SAT).</p>
-    </div>
-</footer>
+<script src="footer.js"></script>
 
 <style>
     .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
@@ -218,13 +133,6 @@
 </div>
 
 <script>
-    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-        toggle.addEventListener('touchstart', function(e) {
-            const content = this.nextElementSibling;
-            if (getComputedStyle(content).display === 'none') {}
-        }, {passive: true});
-    });
-
     const advisorBtn = document.getElementById('advisorBtn');
     const advisorChat = document.getElementById('advisorChat');
     const closeAdvisor = document.getElementById('closeAdvisor');
