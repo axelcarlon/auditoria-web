@@ -16,7 +16,6 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <script src="despertador.js"></script>
     <style>
-        /* AUTOPSIA RESUELTA: Variables inyectadas para revivir Navbar y Footer */
         :root { 
             --bg-primary: #0F172A; 
             --bg-secondary: #1E293B; 
@@ -57,11 +56,28 @@
         .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
         .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
         .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
+
+        /* Estilos del Advisor Integrado */
+        .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
+        .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+        .advisor-btn:hover { transform: scale(1.05); }
+        .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
+        .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
+        .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+        .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
+        .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
+        .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
+        .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
+        .advisor-input:focus { border-color: var(--brand, #2563EB); }
+        .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
+        @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
     </style>
 </head>
 <body>
 
-<script src="navbar.js"></script>
+<div id="navbar-container"></div>
 
 <div class="article-container">
     <h1>Automatización de Auditoría de CFDI 4.0 para Despachos Contables: Reducción de Riesgo Fiscal</h1>
@@ -71,7 +87,7 @@
     <p>El margen de rentabilidad de una firma contable disminuye cuando el personal invierte horas facturables en la validación unitaria de comprobantes. El riesgo aumenta exponencialmente debido al factor del error humano al interpretar las reglas de validación del CFDI 4.0.</p>
     
     <h3>Limitaciones de las Macros en Excel y Sistemas de Descarga Masiva</h3>
-    <p>La mayoría de los despachos resuelve la obtención de facturas utilizando software de conexión a los servicios web del SAT. Sin embargo, obtener el archivo es únicamente el primer paso de la cadena de cumplimiento. Las soluciones basadas en macros de VBA fallan al intentar parsear la estructura anidada de un CFDI complejo. Un XML con múltiples complementos de pago desborda la memoria de la hoja de cálculo.</p>
+    <p>La mayoría de los despachos resuelve la obtención de facturas utilizando software de conexión a los servicios web del SAT. Sin embargo, obtener el archivo es únicamente el primer paso de la cadena de cumplimiento. Las soluciones basadas en macros de VBA fallan al intentar parsear la structure anidada de un CFDI complejo. Un XML con múltiples complementos de pago desborda la memoria de la hoja de cálculo.</p>
     <p>Para anular este margen de error y procesar volúmenes ilimitados sin colapsos de software, <a href="https://auditoriaxml.mx/" class="cta-textual">audita el repositorio XML de tus clientes directamente en AuditorIA</a>, delegando la extracción a un algoritmo de Python.</p>
     
     <h2>Arquitectura Técnica de la Validación Fiscal</h2>
@@ -118,25 +134,8 @@
     </div>
 </div>
 
-<script src="footer.js"></script>
+<div id="footer-container"></div>
 
-<style>
-    .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
-    .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
-    .advisor-btn:hover { transform: scale(1.05); }
-    .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
-    .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-    .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
-    .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-    .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
-    .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
-    .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
-    .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
-    .advisor-input:focus { border-color: var(--brand, #2563EB); }
-    .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
-    @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
-</style>
 <div id="advisorWidget" class="advisor-widget">
     <button id="advisorBtn" class="advisor-btn">
         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
@@ -209,5 +208,9 @@
     sendAdvisor.onclick = handleSend;
     advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
 </script>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+
 </body>
 </html>
