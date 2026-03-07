@@ -102,7 +102,7 @@
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="iniciarEscaneo()" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="if(typeof consumirCredito === 'function'){consumirCredito(iniciarEscaneo)}else{iniciarEscaneo()}" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             INICIAR VECTORIZACIÓN OCR
         </button>
@@ -506,3 +506,4 @@
 </script>
 </body>
 </html>
+
