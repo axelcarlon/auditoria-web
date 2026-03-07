@@ -140,6 +140,7 @@ const navbarHTML = `
                     <a href="proyector-iva.html">Proyector Forense de IVA</a>
                     <a href="analisis-proveedores.html">Estrategia de Proveedores</a>
                     <a href="auditor-nomina.html">Auditoría de Nómina y Riesgos</a>
+                    <a href="buscador-conceptos.html">Auditoría de Compras y Conceptos</a>
                 </div>
                 <div class="dropdown-column">
                     <div class="menu-category">Automatización y PDF</div>
@@ -148,6 +149,7 @@ const navbarHTML = `
                     <a href="escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
                     <a href="conversor-bancario.html">Bancos PDF a Excel</a>
                     <a href="conciliacion-ia.html">Conciliación Bancaria IA</a>
+                    <a href="conciliador-pagos.html">Conciliador PPD vs REP</a>
                     <a href="generador-polizas.html">Generador Layout Pólizas</a>
                 </div>
             </div>
