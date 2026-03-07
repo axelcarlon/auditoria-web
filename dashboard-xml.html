@@ -353,13 +353,6 @@
         });
     }, 3000);
 
-    // CARGA DE FUENTES PDF
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
-            pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
-        }
-    });
-
     let currentFiles = [];
     let biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
     let chart1Instance = null; let chart2Instance = null;
@@ -371,11 +364,13 @@
 
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
-    drop.onclick = () => input.click();
-    ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
-    ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
-    drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
-    input.addEventListener('change', e => processFiles(e.target.files));
+    if(drop && input) {
+        drop.onclick = () => input.click();
+        ['dragover', 'dragenter'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1.02)"; }));
+        ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.style.transform = "scale(1)"; }));
+        drop.addEventListener('drop', e => processFiles(e.dataTransfer.files));
+        input.addEventListener('change', e => processFiles(e.target.files));
+    }
 
     function processFiles(files) {
         const validFiles = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.xml'));
@@ -386,7 +381,7 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // MOTOR REDACTOR DEL DICTAMEN PERICIAL (Cero menciones a IA)
+    // MOTOR REDACTOR DEL DICTAMEN PERICIAL
     function redactarDictamen(data) {
         const spread = data.ingresos - data.egresos;
         const topCliente = Object.entries(data.clientes).sort((a,b)=>b[1]-a[1])[0] || ["Ninguno", 0];
@@ -418,7 +413,7 @@
             <p><strong>Carga Tributaria y Entero a Terceros:</strong> Se determinó la existencia de ${formatMoney(data.retenciones)} en impuestos retenidos. Se subraya la obligación inexcusable de reportarlos en su totalidad a la Tesorería de la Federación, ya que dichas retenciones no prescriben.</p>
         `;
 
-        biData.dictamenTexto = textoHtml.replace(/<[^>]*>?/gm, ''); 
+        biData.dictamenTexto = textoHtml.replace(/<[^>]*>?/gm, ''); // Limpiamos HTML para el PDF
         return textoHtml;
     }
 
@@ -499,15 +494,12 @@
         document.getElementById('dictamenTexto').innerHTML = redactarDictamen(biData);
 
         Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'system-ui, sans-serif';
-        
-        // OPTIMIZACIÓN: Quitamos animaciones para evitar fallos de PDFMake
-        const chartOptions = { animation: false, responsive: true, maintainAspectRatio: false };
+        const chartOptions = { animation: false, responsive: true, maintainAspectRatio: false }; // INGENIERÍA INVERSA: Desactivar animación evita el crasheo del Canvas
 
         const ctxDoughnut = document.getElementById('chartDoughnut').getContext('2d');
         if(chart1Instance) chart1Instance.destroy();
         chart1Instance = new Chart(ctxDoughnut, {
-            type: 'doughnut', 
-            data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [biData.ingresos, biData.egresos], backgroundColor: ['#10B981', '#EF4444'], borderColor: '#1E293B', borderWidth: 2 }] },
+            type: 'doughnut', data: { labels: ['Ingresos', 'Gastos'], datasets: [{ data: [biData.ingresos, biData.egresos], backgroundColor: ['#10B981', '#EF4444'], borderColor: '#1E293B', borderWidth: 2 }] },
             options: { ...chartOptions, cutout: '75%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } } } }
         });
 
@@ -519,41 +511,71 @@
         const ctxBarCombo = document.getElementById('chartBarCombinada').getContext('2d');
         if(chart2Instance) chart2Instance.destroy();
         chart2Instance = new Chart(ctxBarCombo, {
-            type: 'bar', 
-            data: { labels: combinedLabels, datasets: [ { label: 'Ingreso Cliente', data: dataClients, backgroundColor: '#10B981', borderRadius: 4 }, { label: 'Gasto Proveedor', data: dataProviders, backgroundColor: '#EF4444', borderRadius: 4 } ] },
+            type: 'bar', data: { labels: combinedLabels, datasets: [ { label: 'Ingreso Cliente', data: dataClients, backgroundColor: '#10B981', borderRadius: 4 }, { label: 'Gasto Proveedor', data: dataProviders, backgroundColor: '#EF4444', borderRadius: 4 } ] },
             options: { ...chartOptions, plugins: { legend: { position: 'top', align: 'end' } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
         });
 
         if (typeof window.showToast === 'function') window.showToast("Cálculo estructural finalizado.", "success");
     }
 
-    // EL NUEVO PDF NIVEL BIG 4 (CFO LEVEL)
+    // ==============================================================
+    // EL NUEVO PDF NIVEL BIG 4 (BLINDADO CON INGENIERÍA INVERSA)
+    // ==============================================================
     function exportarMemorandumPDF() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML; 
-        btn.innerHTML = `COMPILANDO MEMORÁNDUM CORPORATIVO...`; 
+        btn.innerHTML = `VECTORIZANDO DATOS...`; 
         btn.disabled = true;
 
-        // Le damos 800ms al navegador para asegurar que las gráficas estén pintadas antes de capturar
         setTimeout(() => {
             try {
+                // PARCHE VFS: Reasignar las fuentes manualmente asegura que PDFMake no olvide la tipografía
+                if (typeof pdfMake !== 'undefined' && typeof pdfMakeFonts !== 'undefined') {
+                    pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
+                }
+
                 const spread = biData.ingresos - biData.egresos;
                 const spreadColor = spread >= 0 ? '#065F46' : '#991B1B';
                 
-                // Forzamos la captura visual
-                const chartFlujoImage = document.getElementById('chartDoughnut').toDataURL("image/png", 1.0);
-                const chartComboImage = document.getElementById('chartBarCombinada').toDataURL("image/png", 1.0);
+                // EXTRACCIÓN SEGURA DE GRÁFICOS
+                let chartFlujoImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; // Pixel transparente por defecto
+                let chartComboImage = chartFlujoImage;
 
+                try {
+                    const canvasD = document.getElementById('chartDoughnut');
+                    const canvasB = document.getElementById('chartBarCombinada');
+                    const dData = canvasD.toDataURL("image/png", 1.0);
+                    const bData = canvasB.toDataURL("image/png", 1.0);
+                    // Validar que el canvas no regresó código vacío (data:,)
+                    if (dData.length > 20) chartFlujoImage = dData;
+                    if (bData.length > 20) chartComboImage = bData;
+                } catch(err) { console.warn("Error menor de Canvas ignorado.", err); }
+
+                // GENERACIÓN SEGURA DE TABLAS (Si un dato es 'undefined', colapsa el PDF)
                 let topClientsTbl = [['Denominación / Razón Social (Cliente)', 'Flujo Generado']];
-                let clientesArray = Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 10);
-                if (clientesArray.length === 0) clientesArray = [["Sin datos registrados", 0]];
-                clientesArray.forEach(c => topClientsTbl.push([{text: c[0], fontSize: 9}, {text: formatMoneyPDF(c[1]), fontSize: 9, alignment: 'right'}]));
+                let clientesArray = Object.entries(biData.clientes || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                if (clientesArray.length === 0) clientesArray = [["Sin facturación emitida", 0]];
+                
+                clientesArray.forEach(c => {
+                    let nombreSano = c[0] ? c[0].toString() : "Desconocido";
+                    topClientsTbl.push([{text: nombreSano, fontSize: 9}, {text: formatMoneyPDF(c[1]), fontSize: 9, alignment: 'right'}]);
+                });
 
                 let topProvTbl = [['Denominación / Razón Social (Proveedor)', 'Gasto Operativo']];
-                let provArray = Object.entries(biData.proveedores).sort((a, b) => b[1] - a[1]).slice(0, 10);
-                if (provArray.length === 0) provArray = [["Sin datos registrados", 0]];
-                provArray.forEach(p => topProvTbl.push([{text: p[0], fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]));
+                let provArray = Object.entries(biData.proveedores || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                if (provArray.length === 0) provArray = [["Sin facturación recibida", 0]];
+                
+                provArray.forEach(p => {
+                    let nombreSano = p[0] ? p[0].toString() : "Desconocido";
+                    topProvTbl.push([{text: nombreSano, fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]);
+                });
 
+                // Sanitizamos las variables del Header del Documento
+                const hostNombrePDF = biData.hostNombre ? biData.hostNombre.toString() : 'Entidad No Identificada';
+                const hostRFCPDF = biData.hostRFC ? biData.hostRFC.toString() : 'RFC No Identificado';
+                const dictamenPDF = biData.dictamenTexto ? biData.dictamenTexto.toString() : 'Sin datos suficientes para procesar dictamen estructural.';
+
+                // EL DOCUMENTO
                 const docDefinition = {
                     pageSize: 'A4', pageMargins: [40, 50, 40, 60],
                     content: [
@@ -562,12 +584,12 @@
                         { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 3, lineColor: '#1E293B' }], margin: [0,0,0,25] },
                         
                         { text: '1. DECLARACIÓN DE IDENTIDAD ESTRUCTURAL', style: 'headerStyle' },
-                        { columns: [ {text: 'Entidad Auditada:', width: 120, bold: true, color: '#334155'}, {text: biData.hostNombre || 'N/A', width: '*', bold: true} ], margin: [0,0,0,5], fontSize: 11 },
-                        { columns: [ {text: 'Identificador (RFC):', width: 120, bold: true, color: '#334155'}, {text: biData.hostRFC || 'N/A', width: '*'} ], margin: [0,0,0,5], fontSize: 11 },
+                        { columns: [ {text: 'Entidad Auditada:', width: 120, bold: true, color: '#334155'}, {text: hostNombrePDF, width: '*', bold: true} ], margin: [0,0,0,5], fontSize: 11 },
+                        { columns: [ {text: 'Identificador (RFC):', width: 120, bold: true, color: '#334155'}, {text: hostRFCPDF, width: '*'} ], margin: [0,0,0,5], fontSize: 11 },
                         { columns: [ {text: 'Fecha de Emisión:', width: 120, bold: true, color: '#334155'}, {text: new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }), width: '*'} ], margin: [0,0,0,25], fontSize: 11 },
 
                         { text: '2. SÍNTESIS DE CUMPLIMIENTO OPERATIVO', style: 'headerStyle' },
-                        { text: biData.dictamenTexto || 'Sin datos suficientes para emitir dictamen.', fontSize: 11, lineHeight: 1.6, color: '#1F2937', margin: [0,0,0,25], alignment: 'justify' },
+                        { text: dictamenPDF, fontSize: 11, lineHeight: 1.6, color: '#1F2937', margin: [0,0,0,25], alignment: 'justify' },
 
                         { text: '3. PANORAMA DE FLUIDEZ (MÉTRICAS CORE)', style: 'headerStyle' },
                         {
@@ -623,17 +645,19 @@
                     }
                 };
 
-                pdfMake.createPdf(docDefinition).download(`Memorandum_Ejecutivo_${biData.hostRFC}.pdf`);
+                pdfMake.createPdf(docDefinition).download(`Memorandum_Ejecutivo_${hostRFCPDF}.pdf`);
                 if (typeof window.showToast === 'function') window.showToast("Memorándum descargado.", "success");
+            
             } catch (e) { 
-                console.error(e); 
-                alert("Error generando PDF: " + e.message);
+                console.error("DEBUG PDFMake Error:", e); 
+                alert("Fallo interno en la construcción del PDF. Revisa la consola.");
             } finally { 
                 btn.innerHTML = oldText; 
                 btn.disabled = false; 
             }
-        }, 800); // 800ms de gracia para que Chart.js dibuje
+        }, 500); 
     }
 </script>
 </body>
 </html>
+
