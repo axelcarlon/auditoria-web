@@ -205,7 +205,7 @@
             
             <div class="divider-v"></div>
 
-            <button class="btn-export" onclick="if(typeof consumirCredito === 'function'){consumirCredito(() => ExportEngine.buildPDF())}else{ExportEngine.buildPDF()}">
+            <button class="btn-export" onclick="if(typeof consumirCredito === 'function'){consumirCredito(function(){ ExportEngine.buildPDF(); })}else{ExportEngine.buildPDF();}">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Exportar <span class="pro-badge">PRO</span>
             </button>
@@ -496,19 +496,43 @@
         // ---------------------------------------------------------
         // 3. INGESTA Y RENDER (PDF.JS) BLINDADO DE ORIGEN
         // ---------------------------------------------------------
-        document.getElementById('fileInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
+        const initScreen = document.getElementById('initScreen');
+        const fileInput = document.getElementById('fileInput');
+
+        ['dragover', 'dragenter'].forEach(evt => {
+            initScreen.addEventListener(evt, e => {
+                e.preventDefault();
+                initScreen.style.opacity = "0.8";
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(evt => {
+            initScreen.addEventListener(evt, e => {
+                e.preventDefault();
+                initScreen.style.opacity = "1";
+            });
+        });
+        
+        initScreen.addEventListener('drop', e => {
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                processPDFFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', e => {
+            if (e.target.files && e.target.files.length > 0) {
+                processPDFFile(e.target.files[0]);
+            }
+        });
+
+        async function processPDFFile(file) {
             if(!file || file.type !== 'application/pdf') return Toast.show("Sube un archivo PDF válido.", "error");
 
-            const abrirEditor = async () => {
-                Loader.show("Desensamblando Vectores y Fuentes...");
+            Loader.show("Desensamblando Vectores y Fuentes...");
             try {
                 const reader = new FileReader();
                 reader.onload = async function() {
                     const arrayBuffer = this.result;
-                    // TRUCO MAESTRO: Sacamos dos copias exactas y separadas en la memoria
-                    // Una se la damos a PDF.js (que a veces la destruye en el worker)
-                    // Y otra la guardamos intacta para PDF-Lib al exportar.
                     pdfBytesOriginal = new Uint8Array(arrayBuffer).slice(0); 
                     const pdfjsBytes = new Uint8Array(arrayBuffer).slice(0);
 
@@ -535,14 +559,7 @@
                 Loader.hide();
                 Toast.show("Error de lectura. El documento puede estar protegido.", "error");
             }
-        };
-
-        if(typeof consumirCredito === 'function') {
-            consumirCredito(abrirEditor);
-        } else {
-            abrirEditor();
         }
-    });
 
         const Workspace = {
             async autoFit() {
@@ -1123,5 +1140,6 @@
     </script>
 </body>
 </html>
+
 
 
