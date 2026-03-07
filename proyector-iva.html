@@ -113,7 +113,7 @@
             </div>
         </div>
 
-        <button id="btnEjecutar" class="btn-action" onclick="if(typeof consumirCredito === 'function'){consumirCredito(iniciarProyeccion)}else{iniciarProyeccion()}" disabled>
+        <button id="btnEjecutar" class="btn-action" onclick="if(typeof window.consumirCredito === 'function'){window.consumirCredito(iniciarProyeccion)}else{iniciarProyeccion()}" disabled>
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             PROCESAR CÁLCULO DE IVA
         </button>
@@ -505,4 +505,5 @@
 </script>
 </body>
 </html>
+
 
