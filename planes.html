@@ -30,7 +30,7 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; line-height: 1.6;}
 
-        /* Background Grid & Animación Premium */
+        /* Background Grid & Animación Premium Base */
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
@@ -51,7 +51,7 @@
 
         .container { max-width: 1000px; margin: 0 auto; padding: 80px 20px; position: relative; }
         
-        .header-section { text-align: center; margin-bottom: 60px; }
+        .header-section { text-align: center; margin-bottom: 50px; }
         .header-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(225, 29, 72, 0.1); border: 1px solid var(--accent); color: #FDA4AF; padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase;}
         .header-badge .pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulseRed 2s infinite;}
         
@@ -61,29 +61,98 @@
 
         @keyframes pulseRed { 0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; } }
 
-        /* Pricing Card */
-        .pricing-card { 
-            background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 2px solid var(--accent); 
-            border-radius: 24px; 
-            padding: 50px; 
-            max-width: 650px; 
-            margin: 0 auto; 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(225, 29, 72, 0.05); 
+        /* =========================================
+           EFECTOS PREMIUM DE LA TARJETA
+           ========================================= */
+        
+        /* Envoltura del Borde Rotatorio */
+        .pricing-wrapper {
+            max-width: 650px;
+            margin: 0 auto;
             position: relative;
+            border-radius: 26px; /* Un poco más grande para el borde */
+            padding: 2px; /* Grosor del borde brillante */
+            background: rgba(30, 41, 59, 0.5); /* Color de respaldo */
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            overflow: hidden;
         }
 
+        /* Animación Conic Gradient (Borde Inteligente) */
+        .pricing-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent, transparent, rgba(59, 130, 246, 0.1), var(--accent), var(--brand), transparent 30%);
+            animation: rotateMagic 4s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotateMagic {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tarjeta Principal */
+        .pricing-card { 
+            background: rgba(15, 23, 42, 0.92); /* Fondo oscuro profundo */
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px; 
+            padding: 50px; 
+            position: relative;
+            z-index: 1; /* Por encima del borde rotatorio */
+            overflow: hidden; /* Corta el láser en los bordes */
+            box-shadow: inset 0 0 40px rgba(225, 29, 72, 0.05); 
+        }
+
+        /* Luz de Fondo Estática */
         .pricing-card::before {
             content: ''; position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
-            width: 300px; height: 100px; background: rgba(225, 29, 72, 0.3); filter: blur(60px); pointer-events: none;
+            width: 300px; height: 100px; background: rgba(225, 29, 72, 0.25); filter: blur(60px); pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Escáner Láser Forense Animado */
+        .pricing-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--brand);
+            box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.4);
+            animation: forensicScan 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes forensicScan {
+            0% { top: -10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* Insignia 30 Días Gratis */
+        .free-trial-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white; padding: 8px 20px; border-radius: 30px;
+            font-size: 14px; font-weight: 900; letter-spacing: 1px;
+            margin-bottom: 25px; text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            animation: freeTrialPulse 2.5s infinite;
+        }
+
+        @keyframes freeTrialPulse {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(16, 185, 129, 0.7); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
         }
 
         .price-header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 30px; margin-bottom: 30px; position: relative; z-index: 1;}
-        .plan-name { font-size: 24px; font-weight: 900; color: white; margin: 0 0 10px; }
+        .plan-name { font-size: 26px; font-weight: 900; color: white; margin: 0 0 10px; }
         
-        .price-strike { font-size: 24px; color: #64748B; text-decoration: line-through; font-weight: 700; margin-bottom: 5px; display: block;}
-        .price-amount { font-size: 64px; font-weight: 900; color: white; line-height: 1;}
+        .price-strike { font-size: 20px; color: #64748B; text-decoration: line-through; font-weight: 700; margin-bottom: 5px; display: block;}
+        .price-amount { font-size: 72px; font-weight: 900; color: white; line-height: 1; letter-spacing: -2px;}
         .price-currency { font-size: 24px; color: var(--text-muted); font-weight: 600;}
         .price-period { font-size: 16px; color: var(--text-muted); font-weight: 500;}
         .price-note { color: var(--success); font-size: 13px; font-weight: 700; margin-top: 15px; background: rgba(16, 185, 129, 0.1); display: inline-block; padding: 4px 12px; border-radius: 20px;}
@@ -96,21 +165,21 @@
 
         /* Acordeón de Beneficios Extra */
         .toggle-benefits-btn {
-            background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: var(--text-muted);
-            width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600;
+            background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.2); color: var(--text-muted);
+            width: 100%; padding: 14px; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 600;
             margin-bottom: 25px; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; z-index: 1;
         }
-        .toggle-benefits-btn:hover { background: rgba(255,255,255,0.05); color: white; border-color: var(--brand); }
+        .toggle-benefits-btn:hover { background: rgba(59, 130, 246, 0.05); color: white; border-color: var(--brand); }
         .toggle-benefits-btn svg { transition: transform 0.3s; }
         .toggle-benefits-btn.active svg { transform: rotate(180deg); }
 
         .extra-benefits-wrapper {
             max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; position: relative; z-index: 1;
         }
-        .extra-benefits-wrapper.show { max-height: 1000px; opacity: 1; margin-bottom: 30px; }
+        .extra-benefits-wrapper.show { max-height: 1200px; opacity: 1; margin-bottom: 30px; }
         
         .extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
-        .extra-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #CBD5E1; font-weight: 500; }
+        .extra-item { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: #CBD5E1; font-weight: 500; }
         .extra-item svg { color: var(--brand); flex-shrink: 0; }
 
         /* Botón de Compra Carmesí */
@@ -126,7 +195,7 @@
             100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } 
         }
 
-        .guarantee { text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px; position: relative; z-index: 1;}
+        .guarantee { text-align: center; color: var(--text-muted); font-size: 13.5px; margin-top: 20px; position: relative; z-index: 1;}
 
         /* FAQ Section */
         .faq-section { margin-top: 100px; }
@@ -162,89 +231,95 @@
         <p class="subtitle">Deja de cruzar datos a mano. Automatiza tus auditorías, blinda tu información y accede al arsenal forense que utilizan los grandes corporativos.</p>
     </div>
 
-    <div class="pricing-card">
-        <div class="price-header">
-            <h2 class="plan-name">Licencia PRO Universal</h2>
-            <span class="price-strike">Valor real: $999 MXN</span>
-            <div style="display: flex; align-items: baseline; justify-content: center; gap: 5px;">
-                <span class="price-amount">$199</span>
-                <span class="price-currency">MXN</span>
-                <span class="price-period">/ mes</span>
+    <div class="pricing-wrapper">
+        <div class="pricing-card">
+            
+            <div class="price-header">
+                <div class="free-trial-badge">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    30 Días de Prueba Gratis
+                </div>
+                
+                <h2 class="plan-name">Licencia PRO Universal</h2>
+                <span class="price-strike">Valor real: $999 MXN</span>
+                <div style="display: flex; align-items: baseline; justify-content: center; gap: 5px;">
+                    <span class="price-amount">$199</span>
+                    <span class="price-currency">MXN</span>
+                    <span class="price-period">/ mes</span>
+                </div>
+                <div class="price-note">Precio congelado de por vida al suscribirte hoy</div>
             </div>
-            <div class="price-note">Precio congelado de por vida al suscribirte hoy</div>
-        </div>
 
-        <ul class="features-list">
-            <li>
-                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>Auditoría Masiva de XML:</strong> Procesa miles de facturas, cuadra impuestos y exporta a Excel al instante.</span>
-            </li>
-            <li>
-                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>Detección EFOS (Art. 69-B):</strong> Cruza todo tu catálogo de proveedores contra las listas negras del SAT ilimitadamente.</span>
-            </li>
-            <li>
-                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>AuditorIA PDF Studio:</strong> Cuenta con 33 herramientas extra para modificar, censurar, firmar y aplanar PDFs con seguridad criptográfica.</span>
-            </li>
-            <li>
-                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>Generador Batch DIOT & Pólizas:</strong> Ahorra decenas de horas automatizando el envío de obligaciones fiscales.</span>
-            </li>
-            <li>
-                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>IA Legal Forense:</strong> Consulta ilimitada al Asesor Jurídico entrenado en la LISR, LIVA y CFF.</span>
-            </li>
-            <li>
-                <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>Privacidad Zero-Retention:</strong> Toda tu información se procesa en tu RAM. Jamás tocamos tus datos.</span>
-            </li>
-        </ul>
+            <ul class="features-list">
+                <li>
+                    <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span><strong>Auditoría Masiva de XML:</strong> Procesa miles de facturas, cuadra impuestos y exporta a Excel al instante.</span>
+                </li>
+                <li>
+                    <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span><strong>Detección EFOS (Art. 69-B):</strong> Cruza todo tu catálogo de proveedores contra las listas negras del SAT ilimitadamente.</span>
+                </li>
+                <li>
+                    <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span><strong>AuditorIA PDF Studio:</strong> Cuenta con 33 herramientas extra para modificar, censurar, firmar y aplanar PDFs con seguridad criptográfica.</span>
+                </li>
+                <li>
+                    <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span><strong>Generador Batch DIOT & Pólizas:</strong> Ahorra decenas de horas automatizando el envío de obligaciones fiscales.</span>
+                </li>
+                <li>
+                    <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span><strong>IA Legal Forense:</strong> Consulta ilimitada al Asesor Jurídico entrenado en la LISR, LIVA y CFF.</span>
+                </li>
+                <li>
+                    <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    <span><strong>Privacidad Zero-Retention:</strong> Toda tu información se procesa en tu RAM. Jamás tocamos tus datos.</span>
+                </li>
+            </ul>
 
-        <button class="toggle-benefits-btn" id="toggleBenefitsBtn">
-            Ver todas las herramientas PRO incluidas
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
-        </button>
+            <button class="toggle-benefits-btn" id="toggleBenefitsBtn">
+                Ver todas las herramientas PRO incluidas
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
 
-        <div class="extra-benefits-wrapper" id="extraBenefitsWrapper">
-            <div class="extra-grid">
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> <strong>Editor PRO (Canvas Interactivo)</strong></div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Dashboard Financiero XML</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Risk Score SAT (Semáforo)</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditor de Materialidad (Art. 5-A)</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Expediente de Materialidad</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría Tasa Efectiva ISR</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Validador de Constancias 32-D</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Generador de Defensa Legal</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría de Activos Fijos</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Escáner de Viáticos (Art. 28)</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Simulador de Costos Aduanales</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Proyector Forense de IVA</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Análisis de Proveedores</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría CFDI de Nómina</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Buscador Forense XML</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Visor y Decodificador XML</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conversor Masivo XML a PDF</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Escáner OCR de Tickets</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conversor Bancario PDF a Excel</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conciliación Bancaria IA</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conciliador PPD vs REP</div>
-                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Calculadora de Recargos INPC</div>
+            <div class="extra-benefits-wrapper" id="extraBenefitsWrapper">
+                <div class="extra-grid">
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> <strong style="color:white;">Editor PRO (Canvas Interactivo)</strong></div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Dashboard Financiero XML</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Risk Score SAT (Semáforo)</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditor de Materialidad (Art. 5-A)</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Expediente de Materialidad</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría Tasa Efectiva ISR</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Validador de Constancias 32-D</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Generador de Defensa Legal</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría de Activos Fijos</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Escáner de Viáticos (Art. 28)</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Simulador de Costos Aduanales</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Proyector Forense de IVA</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Análisis de Proveedores</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría CFDI de Nómina</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Buscador Forense XML</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Visor y Decodificador XML</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conversor Masivo XML a PDF</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Escáner OCR de Tickets</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conversor Bancario PDF a Excel</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conciliación Bancaria IA</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conciliador PPD vs REP</div>
+                    <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Calculadora de Recargos INPC</div>
+                </div>
             </div>
-        </div>
 
-        <a href="#" id="btn-pagar-pro" class="btn-buy">
-            ACTIVAR LICENCIA PRO AHORA
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </a>
+            <a href="#" id="btn-pagar-pro" class="btn-buy">
+                INICIAR MIS 30 DÍAS GRATIS
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
 
-        <div class="guarantee">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Cancela cuando quieras. Sin contratos ni letras chiquitas.
-        </div>
-    </div>
+            <div class="guarantee">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px; color: var(--success);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span style="color: white; font-weight: bold;">No se te cobrará nada hoy.</span> Cancela cuando quieras en 1 clic.
+            </div>
 
-    <div class="faq-section">
+        </div> </div> <div class="faq-section">
         <h3 class="faq-title">Preguntas Frecuentes</h3>
         <div class="faq-grid">
             <div class="faq-card">
