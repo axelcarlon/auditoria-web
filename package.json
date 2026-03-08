@@ -1,0 +1,9 @@
+{
+  "name": "auditoria-backend",
+  "version": "1.0.0",
+  "description": "Backend para pagos de AuditorIA",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "stripe": "^14.14.0"
+  }
+}
