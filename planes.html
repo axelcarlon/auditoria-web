@@ -30,11 +30,23 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; line-height: 1.6;}
 
-        /* Background Grid */
+        /* Background Grid & Animación Premium */
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 50px 50px; opacity: 0.05; z-index: -1; pointer-events: none;
+            background-size: 50px 50px; opacity: 0.05; z-index: -2; pointer-events: none;
+        }
+
+        .premium-glow {
+            position: absolute; top: 15%; left: 50%; transform: translate(-50%, -50%);
+            width: 800px; height: 800px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+            z-index: -1; animation: spinGlow 20s linear infinite; pointer-events: none;
+        }
+        
+        @keyframes spinGlow {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
         }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 80px 20px; position: relative; }
@@ -52,15 +64,14 @@
         /* Pricing Card */
         .pricing-card { 
             background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(20px); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 2px solid var(--accent); 
             border-radius: 24px; 
             padding: 50px; 
-            max-width: 600px; 
+            max-width: 650px; 
             margin: 0 auto; 
             box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 40px rgba(225, 29, 72, 0.05); 
             position: relative;
-            overflow: hidden;
         }
 
         .pricing-card::before {
@@ -78,10 +89,29 @@
         .price-note { color: var(--success); font-size: 13px; font-weight: 700; margin-top: 15px; background: rgba(16, 185, 129, 0.1); display: inline-block; padding: 4px 12px; border-radius: 20px;}
 
         /* Lista de Beneficios */
-        .features-list { list-style: none; padding: 0; margin: 0 0 40px 0; position: relative; z-index: 1;}
+        .features-list { list-style: none; padding: 0; margin: 0 0 30px 0; position: relative; z-index: 1;}
         .features-list li { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; font-size: 16px; color: #E2E8F0; font-weight: 500;}
         .features-list .check-icon { color: var(--success); flex-shrink: 0; margin-top: 2px;}
         .features-list strong { color: white; font-weight: 800;}
+
+        /* Acordeón de Beneficios Extra */
+        .toggle-benefits-btn {
+            background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: var(--text-muted);
+            width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600;
+            margin-bottom: 25px; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; z-index: 1;
+        }
+        .toggle-benefits-btn:hover { background: rgba(255,255,255,0.05); color: white; border-color: var(--brand); }
+        .toggle-benefits-btn svg { transition: transform 0.3s; }
+        .toggle-benefits-btn.active svg { transform: rotate(180deg); }
+
+        .extra-benefits-wrapper {
+            max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; position: relative; z-index: 1;
+        }
+        .extra-benefits-wrapper.show { max-height: 1000px; opacity: 1; margin-bottom: 30px; }
+        
+        .extra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+        .extra-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #CBD5E1; font-weight: 500; }
+        .extra-item svg { color: var(--brand); flex-shrink: 0; }
 
         /* Botón de Compra Carmesí */
         .btn-buy { 
@@ -111,12 +141,15 @@
             .pricing-card { padding: 40px 25px; }
             .price-amount { font-size: 52px; }
             .faq-grid { grid-template-columns: 1fr; }
+            .extra-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <script src="navbar.js"></script>
+
+<div class="premium-glow"></div>
 
 <div class="container">
     
@@ -152,7 +185,7 @@
             </li>
             <li>
                 <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                <span><strong>AuditorIA PDF Studio:</strong> Acceso total a las 34 Súper Herramientas forenses (Bóveda Criptográfica, Aplanado, Censura, Extracción OCR, etc).</span>
+                <span><strong>AuditorIA PDF Studio:</strong> Cuenta con 33 herramientas extra para modificar, censurar, firmar y aplanar PDFs con seguridad criptográfica.</span>
             </li>
             <li>
                 <svg class="check-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
@@ -168,7 +201,39 @@
             </li>
         </ul>
 
-        <a href="#" class="btn-buy" onclick="alert('Aquí se integrará tu pasarela de pagos (Stripe, PayPal, MercadoPago).')">
+        <button class="toggle-benefits-btn" id="toggleBenefitsBtn">
+            Ver todas las herramientas PRO incluidas
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+        </button>
+
+        <div class="extra-benefits-wrapper" id="extraBenefitsWrapper">
+            <div class="extra-grid">
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> <strong>Editor PRO (Canvas Interactivo)</strong></div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Dashboard Financiero XML</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Risk Score SAT (Semáforo)</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditor de Materialidad (Art. 5-A)</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Expediente de Materialidad</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría Tasa Efectiva ISR</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Validador de Constancias 32-D</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Generador de Defensa Legal</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría de Activos Fijos</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Escáner de Viáticos (Art. 28)</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Simulador de Costos Aduanales</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Proyector Forense de IVA</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Análisis de Proveedores</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Auditoría CFDI de Nómina</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Buscador Forense XML</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Visor y Decodificador XML</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conversor Masivo XML a PDF</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Escáner OCR de Tickets</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conversor Bancario PDF a Excel</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conciliación Bancaria IA</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Conciliador PPD vs REP</div>
+                <div class="extra-item"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg> Calculadora de Recargos INPC</div>
+            </div>
+        </div>
+
+        <a href="#" id="btn-pagar-pro" class="btn-buy">
             ACTIVAR LICENCIA PRO AHORA
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
@@ -204,6 +269,50 @@
 </div>
 
 <script src="footer.js"></script>
+
+<script>
+    // Lógica para desplegar el acordeón de beneficios
+    document.getElementById('toggleBenefitsBtn').addEventListener('click', function() {
+        const wrapper = document.getElementById('extraBenefitsWrapper');
+        this.classList.toggle('active');
+        if (wrapper.classList.contains('show')) {
+            wrapper.classList.remove('show');
+        } else {
+            wrapper.classList.add('show');
+        }
+    });
+
+    // Lógica de conexión con Stripe
+    document.getElementById('btn-pagar-pro').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Extraemos los datos de la sesión de Supabase que ya tienes en tu LocalStorage
+        const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
+        const rawSession = localStorage.getItem(sessionKey);
+        
+        // Tu enlace real de Stripe
+        let stripeUrl = "https://buy.stripe.com/14A6oI0c0bov3r93TZffy00";
+
+        if (rawSession) {
+            try {
+                const sessionData = JSON.parse(rawSession);
+                // Si el usuario está logueado, le pasamos el correo a Stripe
+                if (sessionData && sessionData.user && sessionData.user.email) {
+                    const userEmail = sessionData.user.email;
+                    // El payment link usa ?prefilled_email=
+                    stripeUrl += `?prefilled_email=${encodeURIComponent(userEmail)}`;
+                    window.location.href = stripeUrl;
+                    return;
+                }
+            } catch (err) {
+                console.error("Error leyendo sesión:", err);
+            }
+        }
+        
+        // Si no hay sesión válida o no está logueado, lo mandamos al login para que se registre primero
+        window.location.href = '/login.html?redirect=planes';
+    });
+</script>
 
 </body>
 </html>
