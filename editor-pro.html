@@ -102,7 +102,8 @@
         .tool-btn:hover { color: white; background: var(--bg-hover); }
         .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); box-shadow: inset 0 0 10px rgba(59,130,246,0.2);}
 
-        #dynamicTooltip { position: fixed; background: #000; border: 1px solid var(--border); color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 900; white-space: nowrap; pointer-events: none; z-index: 99999; box-shadow: var(--shadow-float); display: none; opacity: 0; transition: opacity 0.2s; transform: translateY(-50%);}
+        /* Corrección del Tooltip: visibility en lugar de display:none */
+        #dynamicTooltip { position: fixed; background: #000; border: 1px solid var(--border); color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 900; white-space: nowrap; pointer-events: none; z-index: 99999; box-shadow: var(--shadow-float); visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; transform: translateY(-50%);}
         #dynamicTooltip::before { content: ''; position: absolute; top: 50%; left: -6px; transform: translateY(-50%); border-width: 6px 6px 6px 0; border-style: solid; border-color: transparent var(--border) transparent transparent; }
 
         /* =========================================================
@@ -471,20 +472,22 @@
         };
 
         const tooltipEl = document.getElementById('dynamicTooltip');
+        let tooltipTimeout; // Nueva variable para prevenir el bug del mouse
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('mouseenter', () => {
+                clearTimeout(tooltipTimeout); // Limpiamos órdenes de ocultar previas
                 const text = btn.getAttribute('data-tooltip');
                 if(!text) return;
                 tooltipEl.innerText = text;
-                tooltipEl.style.display = 'block';
+                tooltipEl.style.visibility = 'visible';
                 const rect = btn.getBoundingClientRect();
                 tooltipEl.style.top = (rect.top + (rect.height/2)) + 'px';
                 tooltipEl.style.left = (rect.right + 15) + 'px';
-                requestAnimationFrame(() => tooltipEl.style.opacity = '1');
+                tooltipEl.style.opacity = '1';
             });
             btn.addEventListener('mouseleave', () => {
                 tooltipEl.style.opacity = '0';
-                setTimeout(() => tooltipEl.style.display = 'none', 200);
+                tooltipTimeout = setTimeout(() => tooltipEl.style.visibility = 'hidden', 200);
             });
         });
 
@@ -1070,15 +1073,15 @@
 
                     for(let i=1; i<=totalPages; i++) {
                         const objs = DB[i];
-                        // Detecta si hay alguna censura o borrador en esta página específica
-                        const hasRedaction = objs && objs.some(o => o.type === 'redact' || o.type === 'whiteout');
+                        // Detecta si hay CUALQUIER tipo de censura o resaltado para aplicar Rasterización Segura
+                        const hasRedaction = objs && objs.some(o => ['redact', 'whiteout', 'highlight'].includes(o.type));
 
                         if((!objs || objs.length === 0) && !hasRedaction) continue;
 
                         let pPdf = pdfDoc.getPages()[i-1];
                         let pW, pH;
 
-                        // SI HAY CENSURA: Se activa la Rasterización Segura para destruir el texto de fondo.
+                        // SI HAY MÁSCARAS: Se activa la Rasterización Segura para destruir el texto de fondo.
                         if (hasRedaction) {
                             Loader.show(`Aplicando Blindaje Anti-Recuperación en Hoja ${i}...`);
                             
@@ -1094,16 +1097,32 @@
                             // 1. Renderizamos la hoja original en la memoria
                             await pJS.render({ canvasContext: tempCtx, viewport: vp }).promise;
 
-                            // 2. QUEMADO DE PÍXELES (TRUE REDACTION): Destruimos el texto de la imagen base
+                            // 2. QUEMADO DE PÍXELES (TRUE REDACTION) EN LA FOTOGRAFÍA
                             objs.forEach(o => {
-                                if (o.type === 'redact' || o.type === 'whiteout') {
-                                    tempCtx.fillStyle = o.type === 'redact' ? '#000000' : '#FFFFFF';
+                                if (['redact', 'whiteout', 'highlight'].includes(o.type)) {
                                     const cx = o.x * tempCanvas.width;
                                     const cy = o.y * tempCanvas.height;
                                     const boxW = o.w * tempCanvas.width;
                                     const boxH = o.h * tempCanvas.height;
-                                    // Quemamos el rectángulo exactamente sobre el canvas antes de exportar
+
+                                    tempCtx.save();
+                                    const opac = (parseFloat(o.opacity) || 100) / 100;
+                                    tempCtx.globalAlpha = opac;
+
+                                    // Si es resaltador, emulamos la tinta mezclándose con el papel
+                                    if (o.type === 'highlight') {
+                                        tempCtx.globalCompositeOperation = 'multiply';
+                                    }
+
+                                    if (o.type === 'whiteout') {
+                                        tempCtx.fillStyle = '#FFFFFF';
+                                    } else {
+                                        const c = hex2rgb(o.color || '#000000');
+                                        tempCtx.fillStyle = `rgb(${c.r*255}, ${c.g*255}, ${c.b*255})`;
+                                    }
+
                                     tempCtx.fillRect(cx - (boxW/2), cy - (boxH/2), boxW, boxH);
+                                    tempCtx.restore();
                                 }
                             });
 
@@ -1128,10 +1147,13 @@
                             pH = size.height;
                         }
 
-                        // Finalmente, dibujamos los elementos encima de la hoja (sea original o blindada)
+                        // Finalmente, dibujamos los elementos vectoriales restantes encima
                         for(let o of objs) {
                             try {
                                 if(typeof o.x !== 'number' || typeof o.y !== 'number') continue;
+                                
+                                // OMITIR los elementos que ya fueron quemados en la fotografía para no duplicarlos
+                                if (hasRedaction && ['redact', 'whiteout', 'highlight'].includes(o.type)) continue;
 
                                 const c = hex2rgb(o.color || '#000000');
                                 const pColor = PDFLib.rgb(c.r, c.g, c.b);
@@ -1169,13 +1191,9 @@
                                     pPdf.drawRectangle({ x: pdfX - (w/2) - 10, y: pdfY - (pSize/2) - 5, width: w + 20, height: pSize + 10, borderColor: pColor, borderWidth: 3, opacity: pOpac, rotate: angle });
                                     pPdf.drawText(textStr, { x: pdfX - (w/2), y: pdfY - (pSize/3), size: pSize, font: fCour, color: pColor, opacity: pOpac, rotate: angle });
                                 }
-                                else if(o.type === 'redact' || o.type === 'highlight' || o.type === 'rect') {
+                                else if(o.type === 'rect') {
                                     const wPdf = o.w * pW; const hPdf = o.h * pH;
-                                    let opt = { x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf, opacity: pOpac };
-                                    if(o.type === 'rect') { opt.borderColor = pColor; opt.borderWidth = pStroke; }
-                                    else { opt.color = pColor; }
-                                    if(o.type === 'highlight') opt.blendMode = PDFLib.BlendMode.Multiply;
-                                    pPdf.drawRectangle(opt);
+                                    pPdf.drawRectangle({ x: pdfX - (wPdf/2), y: pdfY - (hPdf/2), width: wPdf, height: hPdf, opacity: pOpac, borderColor: pColor, borderWidth: pStroke });
                                 }
                                 else if (o.type === 'circle') {
                                     const rxPdf = (o.w * pW) / 2; const ryPdf = (o.h * pH) / 2;
