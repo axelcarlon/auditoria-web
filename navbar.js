@@ -243,11 +243,14 @@ setTimeout(async () => {
                 const SUPABASE_URL = https://qhuctouhkxyqhdfwcctl.supabase.co; 
                 const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE; 
 
-                const res = await fetch(\`\${SUPABASE_URL}/rest/v1/usuarios?email=eq.\${encodeURIComponent(userEmail)}&select=plan\`, {
+                // Usamos encodeURIComponent para escapar el correo de forma segura
+                const encodedEmail = encodeURIComponent(userEmail);
+                
+                const res = await fetch(SUPABASE_URL + "/rest/v1/usuarios?email=eq." + encodedEmail + "&select=plan", {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': \`Bearer \${sessionData.access_token}\`
+                        'Authorization': "Bearer " + sessionData.access_token
                     }
                 });
 
@@ -256,12 +259,11 @@ setTimeout(async () => {
                 if (data && data.length > 0 && data[0].plan === 'PRO') {
                     // CAMBIOS VISUALES SI ES PRO
                     const btn = document.getElementById('main-user-btn');
-                    const dot = document.getElementById('main-user-dot');
                     const upgradeLink = document.getElementById('upgrade-link');
 
-                    // Cambiar estilo del botón
+                    // Cambiar estilo del botón (sin usar backticks para evitar el bug del HTML inyectado)
                     btn.classList.add('pro-active');
-                    btn.innerHTML = \`<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>\`;
+                    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
                     
                     // Ocultar el enlace de "Mejorar a PRO" en el menú
                     if(upgradeLink) {
