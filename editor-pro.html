@@ -1059,7 +1059,7 @@
         const ExportEngine = {
             async buildPDF() {
                 Loader.show("Compilando código binario y quemando vectores...");
-                await new Promise(r => setTimeout(r, 600)); // Breve pausa para estabilizar la memoria UI
+                await new Promise(r => setTimeout(r, 600)); 
 
                 try {
                     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal.slice(0));
@@ -1091,7 +1091,23 @@
                             tempCanvas.height = Math.floor(vp.height);
                             const tempCtx = tempCanvas.getContext('2d');
 
+                            // 1. Renderizamos la hoja original en la memoria
                             await pJS.render({ canvasContext: tempCtx, viewport: vp }).promise;
+
+                            // 2. QUEMADO DE PÍXELES (TRUE REDACTION): Destruimos el texto de la imagen base
+                            objs.forEach(o => {
+                                if (o.type === 'redact' || o.type === 'whiteout') {
+                                    tempCtx.fillStyle = o.type === 'redact' ? '#000000' : '#FFFFFF';
+                                    const cx = o.x * tempCanvas.width;
+                                    const cy = o.y * tempCanvas.height;
+                                    const boxW = o.w * tempCanvas.width;
+                                    const boxH = o.h * tempCanvas.height;
+                                    // Quemamos el rectángulo exactamente sobre el canvas antes de exportar
+                                    tempCtx.fillRect(cx - (boxW/2), cy - (boxH/2), boxW, boxH);
+                                }
+                            });
+
+                            // 3. Extraemos la imagen ya censurada permanentemente
                             const imgData = tempCanvas.toDataURL('image/jpeg', 0.95);
 
                             pW = vp.width / scale;
