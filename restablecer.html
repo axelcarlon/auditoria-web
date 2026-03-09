@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Contraseña | AuditorIA</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="despertador.js"></script>
+
+    <style>
+        :root { --bg-primary: #0F172A; --bg-secondary: #1E293B; --text-main: #F8FAFC; --text-muted: #94A3B8; --brand: #06B6D4; --border: rgba(255,255,255,0.1); }
+        body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .auth-container { background: var(--bg-secondary); border: 1px solid var(--border); padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .auth-container h2 { margin: 0 0 10px; font-size: 24px; font-weight: 900; }
+        .auth-container p { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+        .input-group input { width: 100%; background: var(--bg-primary); border: 1px solid var(--border); color: white; padding: 12px 15px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; box-sizing: border-box;}
+        .input-group input:focus { border-color: var(--brand); }
+        .btn-submit { background: var(--brand); color: #083344; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-submit:hover { background: #0891B2; color: white; transform: translateY(-2px); }
+        #status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2>Nueva Contraseña</h2>
+        <p>Ingresa tu nueva contraseña para tu cuenta de AuditorIA.</p>
+
+        <form id="resetForm">
+            <div class="input-group">
+                <label>Nueva Contraseña</label>
+                <input type="password" id="newPassword" required placeholder="Mínimo 6 caracteres" minlength="6">
+            </div>
+            <button type="submit" class="btn-submit" id="btnReset">Actualizar Contraseña</button>
+        </form>
+
+        <div id="status-msg"></div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Supabase detecta automáticamente que venimos de un link de recuperación porque lee la URL
+        document.getElementById('resetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnReset');
+            const msg = document.getElementById('status-msg');
+            const newPassword = document.getElementById('newPassword').value;
+
+            btn.disabled = true;
+            btn.innerText = "Actualizando...";
+            msg.innerText = "";
+
+            // Actualiza la contraseña en la bóveda
+            const { data, error } = await supabase.auth.updateUser({
+                password: newPassword
+            });
+
+            if (error) {
+                msg.style.color = "#EF4444";
+                msg.innerText = "Error: El enlace expiró o es inválido. Solicita uno nuevo.";
+                btn.disabled = false;
+                btn.innerText = "Actualizar Contraseña";
+            } else {
+                msg.style.color = "#10B981";
+                msg.innerText = "¡Contraseña actualizada exitosamente!";
+                btn.style.display = "none";
+                
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
