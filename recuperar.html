@@ -31,7 +31,8 @@
         .auth-links a { color: var(--brand); text-decoration: none; font-weight: bold; }
         .auth-links a:hover { text-decoration: underline; }
         
-        #status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; min-height: 20px;}
+        /* Modificado para ocultarse por defecto y aparecer como caja de alerta */
+        #status-msg { display: none; margin-top: 15px; font-size: 13px; font-weight: bold; padding: 12px; border-radius: 8px; border: 1px solid transparent; }
     </style>
 </head>
 <body>
@@ -59,7 +60,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Inicialización protegida
             const SUPABASE_URL = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -71,7 +71,6 @@
 
             let countdownInterval;
 
-            // Vincular el evento Click y la tecla Enter de forma segura
             btnRecover.addEventListener('click', procesarEnvio);
             btnResend.addEventListener('click', procesarEnvio);
             
@@ -81,30 +80,47 @@
                 }
             });
 
+            function mostrarMensaje(texto, tipo) {
+                msg.style.display = 'block';
+                msg.innerText = texto;
+                if(tipo === 'error') {
+                    msg.style.color = '#FCA5A5';
+                    msg.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                    msg.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                } else if(tipo === 'success') {
+                    msg.style.color = '#10B981';
+                    msg.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                    msg.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                } else {
+                    msg.style.color = '#F59E0B';
+                    msg.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+                    msg.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                }
+            }
+
             async function procesarEnvio() {
                 const email = emailInput.value.trim();
 
                 if(!email) {
-                    msg.style.color = "#F59E0B";
-                    msg.innerText = "Por favor, ingresa un correo válido.";
+                    mostrarMensaje("Por favor, ingresa un correo electrónico válido.", "warning");
                     return;
                 }
 
-                // Bloqueamos la interfaz mientras carga
                 btnRecover.disabled = true;
                 btnRecover.innerText = "Verificando...";
-                msg.innerText = "";
+                msg.style.display = "none"; // Ocultar mientras carga
 
                 try {
+                    // Forzamos explícitamente la URL absoluta
+                    const redirectUrl = window.location.origin + '/restablecer.html';
+                    
                     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                        redirectTo: window.location.origin + '/restablecer.html',
+                        redirectTo: redirectUrl,
                     });
 
                     if (error) throw error;
 
-                    // ÉXITO: Cambiamos interfaz a modo de "Reenvío"
-                    msg.style.color = "#10B981";
-                    msg.innerText = "¡Enlace enviado! Revisa tu bandeja de entrada o la carpeta de spam.";
+                    mostrarMensaje("¡Enlace enviado! Revisa tu bandeja de entrada o la carpeta de spam.", "success");
                     
                     btnRecover.style.display = "none";
                     btnResend.style.display = "block";
@@ -112,13 +128,10 @@
 
                 } catch(error) {
                     console.error(error);
-                    msg.style.color = "#EF4444";
-                    
-                    // Traducción de errores comunes para mejor experiencia de usuario
                     if(error.message.includes("rate limit")) {
-                        msg.innerText = "Has solicitado demasiados enlaces. Espera un momento.";
+                        mostrarMensaje("Has solicitado demasiados enlaces. Espera un momento antes de volver a intentarlo.", "error");
                     } else {
-                        msg.innerText = "Error de conexión. Verifica tu correo e intenta de nuevo.";
+                        mostrarMensaje("Error de conexión. Verifica que tu correo esté registrado e intenta de nuevo.", "error");
                     }
                     
                     btnRecover.disabled = false;
