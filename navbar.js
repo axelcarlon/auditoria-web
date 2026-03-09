@@ -53,6 +53,13 @@ const navbarHTML = `
     .user-btn { display: flex; align-items: center; gap: 8px; background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); color: white; padding: 8px 18px; border-radius: 30px; font-weight: 800; font-size: 13.5px; cursor: pointer; transition: 0.3s; }
     .user-btn:hover { background: rgba(225, 29, 72, 0.2); border-color: rgba(225, 29, 72, 0.5); }
     
+    /* ESTILOS DEL BOTÓN CUANDO ES PRO */
+    .user-btn.pro-active { background: rgba(16, 185, 129, 0.15); border-color: #10B981; color: #10B981; }
+    .user-btn.pro-active:hover { background: rgba(16, 185, 129, 0.25); }
+    .pro-badge { background: #10B981; color: #064E3B; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 12px; letter-spacing: 1px; margin-left: 4px; animation: pulsePro 2.5s infinite;}
+    
+    @keyframes pulsePro { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
     .live-dot { width: 8px; height: 8px; background: var(--accent-nav); border-radius: 50%; box-shadow: 0 0 8px var(--accent-nav); animation: pulseDot 2s infinite; }
     @keyframes pulseDot { 0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); } 70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); } 100% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
 
@@ -168,8 +175,8 @@ const navbarHTML = `
             </div>
 
             <div class="user-dropdown" id="auth-logged-in" style="display: none;">
-                <div class="user-btn">
-                    <span class="live-dot"></span> Mi Cuenta
+                <div class="user-btn" id="main-user-btn">
+                    <span class="live-dot" id="main-user-dot"></span> Mi Cuenta
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
                 <div class="user-menu">
@@ -177,10 +184,12 @@ const navbarHTML = `
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> 
                         Mi Dashboard
                     </a>
-                    <a href="/planes.html" style="color: #93C5FD;">
+                    
+                    <a href="/planes.html" id="upgrade-link" style="color: #93C5FD;">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> 
                         Mejorar a PRO
                     </a>
+
                     <a href="/privacidad.html">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 
                         Privacidad
@@ -216,14 +225,53 @@ window.showToast = function(message, type = 'info') {
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 5000);
 };
 
-// Evaluamos silenciosamente si existe la sesión de Supabase en el LocalStorage
-setTimeout(() => {
+// Evaluamos silenciosamente si existe la sesión
+setTimeout(async () => {
     const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
     const userSession = localStorage.getItem(sessionKey);
     
     if (userSession) {
         document.getElementById('auth-logged-out').style.display = 'none';
         document.getElementById('auth-logged-in').style.display = 'inline-block';
+
+        try {
+            const sessionData = JSON.parse(userSession);
+            const userEmail = sessionData?.user?.email;
+
+            if(userEmail) {
+                // CONFIGURACIÓN SUPABASE - REEMPLAZAR CON TUS CLAVES
+                const SUPABASE_URL = https://qhuctouhkxyqhdfwcctl.supabase.co; 
+                const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE; 
+
+                const res = await fetch(\`\${SUPABASE_URL}/rest/v1/usuarios?email=eq.\${encodeURIComponent(userEmail)}&select=plan\`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': \`Bearer \${sessionData.access_token}\`
+                    }
+                });
+
+                const data = await res.json();
+                
+                if (data && data.length > 0 && data[0].plan === 'PRO') {
+                    // CAMBIOS VISUALES SI ES PRO
+                    const btn = document.getElementById('main-user-btn');
+                    const dot = document.getElementById('main-user-dot');
+                    const upgradeLink = document.getElementById('upgrade-link');
+
+                    // Cambiar estilo del botón
+                    btn.classList.add('pro-active');
+                    btn.innerHTML = \`<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>\`;
+                    
+                    // Ocultar el enlace de "Mejorar a PRO" en el menú
+                    if(upgradeLink) {
+                        upgradeLink.style.display = 'none';
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error validando el badge PRO en navbar:", error);
+        }
     }
 }, 50);
 
