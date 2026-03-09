@@ -99,6 +99,20 @@
         .step-content h4 { margin: 0 0 10px 0; font-size: 20px; color: white;}
         .step-content p { margin: 0; color: var(--text-muted); font-size: 15px; line-height: 1.6;}
 
+        /* Directorio de Herramientas */
+        .tools-directory { margin-top: 100px; border-top: 1px solid var(--border); padding-top: 60px; }
+        .tools-module { margin-bottom: 50px; }
+        .module-header { background: rgba(15, 23, 42, 0.8); border-left: 4px solid var(--accent); padding: 15px 25px; border-radius: 0 8px 8px 0; margin-bottom: 30px; }
+        .module-header h3 { margin: 0; color: white; font-size: 22px; font-weight: 800; }
+        
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .tool-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 25px; transition: 0.2s;}
+        .tool-card:hover { border-color: var(--text-muted); }
+        .tool-card h4 { margin: 0 0 15px 0; color: #93C5FD; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;}
+        .tool-detail { font-size: 14px; margin-bottom: 15px; }
+        .tool-detail strong { color: white; display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; margin-top: 15px; }
+        .tool-example { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 2px solid var(--success); font-size: 13px; font-style: italic; color: #A7F3D0; margin-top: 15px;}
+
         .trust-banner { background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; padding: 40px; border-radius: 16px; margin-top: 80px; color: #6EE7B7; font-size: 20px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
 
         @media (max-width: 768px) {
@@ -155,8 +169,6 @@
         </div>
     </div>
 
-    
-
     <div class="section-subtitle">Privacidad por Diseño</div>
     <h2 class="section-title" style="margin-top: 0;">Flujo de Seguridad Zero-Retention</h2>
     
@@ -184,6 +196,206 @@
         </div>
     </div>
 
+    <div class="tools-directory">
+        <div class="section-subtitle">Directorio de Funciones</div>
+        <h2 class="section-title" style="margin-top: 0; margin-bottom: 50px;">El Ecosistema Forense</h2>
+
+        <div class="tools-module">
+            <div class="module-header">
+                <h3>Módulo I: Auditoría SAT y Riesgo (Prevención y Defensa)</h3>
+            </div>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h4>Auditoría Masiva de Datos</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Lee miles de XML en segundos y genera un Data Lake, aplicando la Ley de Benford.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Los contadores no tienen tiempo de revisar factura por factura. Esto consolida todo.</div>
+                    <div class="tool-example">💡 Ejemplo: La gráfica muestra picos anormales, delatando que un empleado está inventando facturas para desviar fondos.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Validador EFOS (Art. 69-B)</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Cruza los RFC de las compras contra las listas negras del SAT alojadas en la memoria.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Detecta operaciones simuladas (delito de defraudación fiscal).</div>
+                    <div class="tool-example">💡 Ejemplo: El sistema alerta que un proveedor acaba de ser declarado EFOS. La empresa cancela la deducción y evita multas.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Risk Score (Semáforo SAT)</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Evalúa métricas y variaciones atípicas para arrojar un porcentaje de riesgo de auditoría.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Muestra al empresario exactamente cómo lo ve el algoritmo del SAT.</div>
+                    <div class="tool-example">💡 Ejemplo: Tu "Risk Score" está en rojo (90%) porque deduces puros intangibles. Decides meter más facturas tangibles para bajar el riesgo.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Auditoría Tasa Efectiva (ISR)</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Compara el ISR pagado con el Plan Maestro de Fiscalización del SAT por sector económico.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> El SAT audita a quienes pagan menos ISR que el promedio de su industria.</div>
+                    <div class="tool-example">💡 Ejemplo: Pagas 1.5% de ISR, pero el SAT espera un 3.2% en tu rubro, advirtiendo de una inminente carta invitación.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Análisis de Idoneidad (32-D)</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Lee PDFs de Opiniones de Cumplimiento masivamente y extrae su estatus.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Contratar a un proveedor con 32-D negativa hace tu gasto "no deducible".</div>
+                    <div class="tool-example">💡 Ejemplo: Compras procesa 50 PDFs y retiene el pago a un transportista porque debe impuestos al SAT.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Generador de Defensa Legal</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Extrae datos de requerimientos en PDF del SAT y autocompleta borradores legales.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Redactar oficios es tedioso (equivocarse en un número arruina el amparo).</div>
+                    <div class="tool-example">💡 Ejemplo: Sube la multa y en 3 clics tiene el oficio de revocación listo para firmar.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Calculadora de Recargos</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Matematiza la actualización por INPC y tasas de recargos por mora.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Evita errores de cálculo manual que el SAT penaliza severamente.</div>
+                    <div class="tool-example">💡 Ejemplo: Arroja exactamente cuánto debes pagar hoy por un IVA olvidado hace 8 meses.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tools-module">
+            <div class="module-header">
+                <h3>Módulo II: Materialidad y Cumplimiento (Compliance)</h3>
+            </div>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h4>Auditor de Razón de Negocios</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Algoritmo que busca palabras genéricas ("asesoría", "servicios") en el XML.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Protege contra el Art. 5-A, donde el SAT rechaza deducciones por falta de beneficio real.</div>
+                    <div class="tool-example">💡 Ejemplo: Exiges a tu proveedor que cancele una factura por "Servicios varios" y emita una detallada.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Expediente de Materialidad</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Une XML con fotografías subidas para armar un PDF pericial probatorio.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Es la única forma de ganarle un juicio al SAT si te acusan de simulación.</div>
+                    <div class="tool-example">💡 Ejemplo: Guardas la foto de las 50 laptops junto al XML como "prueba de vida".</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Auditoría de Activos Fijos</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Detecta inversiones, asigna tasa LISR y genera códigos QR.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> El desorden en las deducciones y la falta de control de inventario físico.</div>
+                    <div class="tool-example">💡 Ejemplo: Calcula la depreciación de 10 escritorios y arroja etiquetas QR para pegarlas a los muebles.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Escáner de Viáticos (LISR)</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Aplica límites de alimentos y la regla de >50km leyendo Códigos Postales del XML.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Detecta viáticos no deducibles que los empleados meten como "gasto".</div>
+                    <div class="tool-example">💡 Ejemplo: Marca en rojo facturas de restaurantes a 10km de la oficina y calcula el castigo fiscal.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Simulador Costos Aduanales</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Proyecta DTA, IGI e IVA para calcular el Landed Cost (Costo en almacén).</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Importadores calculan mal su precio de venta al olvidar los impuestos de aduana.</div>
+                    <div class="tool-example">💡 Ejemplo: Descubres que con los impuestos aduanales tu margen de ganancia desaparece, evitando la compra.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Estrategia de Proveedores</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Aplica regla de Pareto (80/20) para detectar dependencia económica hacia RFCs.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Detecta monopolios internos y vulnerabilidades operativas.</div>
+                    <div class="tool-example">💡 Ejemplo: El CFO ve que el 90% del gasto depende de un proveedor. Si cierra, la empresa colapsa.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tools-module">
+            <div class="module-header">
+                <h3>Módulo III: Operación e Inteligencia XML</h3>
+            </div>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h4>Dashboard Financiero XML</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Decodificador que grafica en tiempo real ingresos, egresos y flujos.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Transforma código de computadora en inteligencia visual para dueños.</div>
+                    <div class="tool-example">💡 Ejemplo: El dueño ve inmediatamente en su celular si la PyME ganó o perdió dinero en la semana.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Visor y Decodificador XML</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Visualizador individual. Convierte a PDF con QR o extrae partidas a Excel.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Es el microscopio diario cuando hay dudas sobre una factura específica.</div>
+                    <div class="tool-example">💡 Ejemplo: Arrastras la factura "A-45" y la lees en formato limpio y humano.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Auditoría CFDI de Nómina</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Suma deducciones exentas y calcula el castigo de deducibilidad patrón.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Las nóminas con vales o fondos de ahorro cuestan impuestos extra a la empresa.</div>
+                    <div class="tool-example">💡 Ejemplo: El sistema te dice exactamente cuánto ISR absorberá la empresa por los bonos dados.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Proyector Forense de IVA</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Discrimina PUE/PPD y tasas para cuadrar el flujo de efectivo.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Automatiza el cálculo del IVA mensual (la talacha contable #1).</div>
+                    <div class="tool-example">💡 Ejemplo: A fin de mes, arroja que hay IVA a pagar de $50,000, alertando al empresario a tiempo.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Buscador Forense XML</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Minería de texto para buscar claves o descripciones en miles de facturas.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Rastrea un artículo específico comprado meses atrás en segundos.</div>
+                    <div class="tool-example">💡 Ejemplo: Buscas la palabra "acero" y el sistema lista facturas, proveedores y fluctuaciones de precio.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Generador Batch DIOT</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Extrae la base de proveedores y crea el archivo TXT para el SAT.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Capturar la DIOT a mano es un infierno administrativo.</div>
+                    <div class="tool-example">💡 Ejemplo: Lo que tomaba 3 días enteros capturar en la web del SAT, ahora toma 1 clic.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Generador de Pólizas</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Convierte datos a esquema contable de Cargos y Abonos.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Elimina la captura repetitiva de gastos estándar (luz, renta) en el ERP.</div>
+                    <div class="tool-example">💡 Ejemplo: Exportas a Excel, lo cargas a tu software y contabilizas 300 pólizas en un minuto.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tools-module">
+            <div class="module-header">
+                <h3>Módulo IV: Automatización PDF y Bancos</h3>
+            </div>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h4>AuditorIA PDF Studio PRO</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Une, divide, extrae y protege PDFs con contraseña offline.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Reemplaza herramientas gratuitas de internet que roban tu información.</div>
+                    <div class="tool-example">💡 Ejemplo: Divides un PDF de nómina de 100 páginas para dar su recibo a cada empleado, 100% privado.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Editor Canvas Interactivo</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Motor gráfico para superponer firmas, sellos o censuras inviolables (Rasterizadas).</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Evita imprimir, firmar y escanear.</div>
+                    <div class="tool-example">💡 Ejemplo: El director estampa su firma PNG sobre un contrato y lo sella.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Conversor Masivo XML a PDF</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Pasa miles de XML a formato de impresión en un archivo ZIP.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> El SAT da XMLs, pero los clientes y auditores siempre exigen "los PDFs".</div>
+                    <div class="tool-example">💡 Ejemplo: Subes 2,000 facturas de todo el año y descargas el lote completo en PDF al instante.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Escáner OCR de Tickets</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Extrae montos de tickets impresos usando IA y detecta propinas.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Identifica conceptos no deducibles escondidos en tickets de viaje.</div>
+                    <div class="tool-example">💡 Ejemplo: De un ticket de $1,000, la IA detecta que $150 fueron de propina y ajusta la deducción.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Conversor Bancario a Excel</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Lee el árbol de nodos de Estados de Cuenta PDF y los pasa a tablas Excel.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Evita teclear número por número cuando el banco no entrega el CSV.</div>
+                    <div class="tool-example">💡 Ejemplo: Subes el PDF de Banorte y en 2 segundos tienes la tabla limpia para contabilidad.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Conciliación Bancaria IA</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Cruza el Excel del banco contra miles de XML usando algoritmos de tolerancia.</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Resuelve la "confronta", la tarea más pesada de los despachos.</div>
+                    <div class="tool-example">💡 Ejemplo: Hace "match" automático del pago de $10,400.00 con la factura de $10,399.50 entendiendo la variación por centavos.</div>
+                </div>
+                <div class="tool-card">
+                    <h4>Conciliador PPD vs REP</h4>
+                    <div class="tool-detail"><strong>Qué hace:</strong> Vincula facturas de crédito (PPD) con sus pagos (REP 2.0).</div>
+                    <div class="tool-detail"><strong>Problema:</strong> Detecta facturas que ante el SAT están cobradas pero en tu banco no.</div>
+                    <div class="tool-example">💡 Ejemplo: Detectas una factura de $50k a 60 días sin recibo de pago, activando la cobranza de inmediato.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     <div class="trust-banner">
         No somos una simple calculadora. Somos el espejo forense que te permite analizar tu información exactamente con la misma potencia de fuego que usan los algoritmos del SAT.
     </div>
@@ -194,4 +406,3 @@
 
 </body>
 </html>
-
