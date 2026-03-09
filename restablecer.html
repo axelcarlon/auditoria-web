@@ -28,7 +28,7 @@
         .btn-submit:hover:not(:disabled) { background: #0891B2; color: white; transform: translateY(-2px); }
         .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         
-        #status-msg { display: none; margin-top: 20px; font-size: 13px; font-weight: bold; padding: 12px; border-radius: 8px; border: 1px solid transparent; }
+        #status-msg { display: none; margin-top: 20px; font-size: 13px; font-weight: bold; padding: 12px; border-radius: 8px; border: 1px solid transparent; line-height: 1.4;}
     </style>
 </head>
 <body>
@@ -51,108 +51,119 @@
             <div class="password-hint" id="pwdHint">* La contraseña debe tener al menos 6 caracteres.</div>
             <div class="validation-error" id="valError">⚠️ Las contraseñas no coinciden.</div>
 
-            <button class="btn-submit" id="btnReset" onclick="actualizarContrasena()">Actualizar Contraseña</button>
+            <button type="button" class="btn-submit" id="btnReset">Actualizar Contraseña</button>
         </div>
 
         <div id="status-msg"></div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Encapsulamos todo para evitar choques con el archivo despertador.js
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const sbUrl = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
+            const sbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
+            const clientAuth = window.supabase.createClient(sbUrl, sbKey);
 
-        const pass1 = document.getElementById('newPassword');
-        const pass2 = document.getElementById('confirmPassword');
-        const valError = document.getElementById('valError');
-        const msg = document.getElementById('status-msg');
-        const btn = document.getElementById('btnReset');
+            const pass1 = document.getElementById('newPassword');
+            const pass2 = document.getElementById('confirmPassword');
+            const valError = document.getElementById('valError');
+            const msg = document.getElementById('status-msg');
+            const btn = document.getElementById('btnReset');
 
-        // Validación en tiempo real (al escribir)
-        function checkLiveValidation() {
-            if (pass2.value.length > 0 && pass1.value !== pass2.value) {
-                valError.style.display = 'block';
-                valError.innerText = '⚠️ Las contraseñas no coinciden.';
-            } else {
-                valError.style.display = 'none';
-            }
-        }
-
-        pass1.addEventListener('input', checkLiveValidation);
-        pass2.addEventListener('input', checkLiveValidation);
-
-        // Permitir "Enter" para activar el botón
-        pass2.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') actualizarContrasena();
-        });
-
-        function mostrarMensaje(texto, tipo) {
-            msg.style.display = 'block';
-            msg.innerText = texto;
-            if(tipo === 'error') {
-                msg.style.color = '#FCA5A5';
-                msg.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                msg.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-            } else if(tipo === 'success') {
-                msg.style.color = '#10B981';
-                msg.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-                msg.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-            }
-        }
-
-        async function actualizarContrasena() {
-            const p1 = pass1.value;
-            const p2 = pass2.value;
-
-            // Validaciones previas
-            if (p1.length < 6) {
-                valError.style.display = 'block';
-                valError.innerText = '⚠️ La contraseña es demasiado corta (min. 6 caracteres).';
-                return;
-            }
-
-            if (p1 !== p2) {
-                valError.style.display = 'block';
-                valError.innerText = '⚠️ Las contraseñas no coinciden.';
-                return;
-            }
-
-            valError.style.display = 'none';
-            btn.disabled = true;
-            btn.innerText = "Actualizando bóveda...";
-            msg.style.display = "none";
-
-            try {
-                // Supabase lee mágicamente el token gigante oculto en la URL y sabe a quién pertenece
-                const { data, error } = await supabase.auth.updateUser({
-                    password: p1
-                });
-
-                if (error) throw error;
-
-                // Éxito Total
-                mostrarMensaje("¡Contraseña actualizada exitosamente! Redirigiendo al sistema...", "success");
-                btn.style.display = "none";
-                
-                // Forzamos cierre de sesión para que el usuario entre desde cero por seguridad
-                await supabase.auth.signOut();
-                
-                setTimeout(() => {
-                    window.location.href = '/login.html';
-                }, 2500);
-
-            } catch (error) {
-                console.error(error);
-                btn.disabled = false;
-                btn.innerText = "Actualizar Contraseña";
-
-                if (error.message.includes("Auth session missing")) {
-                    mostrarMensaje("Acceso denegado. Este enlace ya caducó o es inválido. Ve al inicio de sesión y solicita uno nuevo.", "error");
+            // Validación en tiempo real (al escribir)
+            function checkLiveValidation() {
+                if (pass2.value.length > 0 && pass1.value !== pass2.value) {
+                    valError.style.display = 'block';
+                    valError.innerText = '⚠️ Las contraseñas no coinciden.';
                 } else {
-                    mostrarMensaje("Error: " + error.message, "error");
+                    valError.style.display = 'none';
                 }
             }
-        }
+
+            pass1.addEventListener('input', checkLiveValidation);
+            pass2.addEventListener('input', checkLiveValidation);
+
+            // Permitir "Enter" para activar el botón
+            pass2.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') actualizarContrasena();
+            });
+
+            // Disparador del botón
+            btn.addEventListener('click', actualizarContrasena);
+
+            function mostrarMensaje(texto, tipo) {
+                msg.style.display = 'block';
+                msg.innerText = texto;
+                if(tipo === 'error') {
+                    msg.style.color = '#FCA5A5';
+                    msg.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                    msg.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                } else if(tipo === 'success') {
+                    msg.style.color = '#10B981';
+                    msg.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                    msg.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                } else {
+                    msg.style.color = '#F59E0B';
+                    msg.style.backgroundColor = 'rgba(245, 158, 11, 0.1)';
+                    msg.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+                }
+            }
+
+            async function actualizarContrasena() {
+                const p1 = pass1.value;
+                const p2 = pass2.value;
+
+                // Validaciones previas
+                if (p1.length < 6) {
+                    valError.style.display = 'block';
+                    valError.innerText = '⚠️ La contraseña es demasiado corta (min. 6 caracteres).';
+                    return;
+                }
+
+                if (p1 !== p2) {
+                    valError.style.display = 'block';
+                    valError.innerText = '⚠️ Las contraseñas no coinciden.';
+                    return;
+                }
+
+                valError.style.display = 'none';
+                btn.disabled = true;
+                btn.innerText = "Actualizando bóveda...";
+                msg.style.display = "none";
+
+                try {
+                    // Actualizamos la clave en el servidor
+                    const { data, error } = await clientAuth.auth.updateUser({
+                        password: p1
+                    });
+
+                    if (error) throw error;
+
+                    // Éxito Total
+                    mostrarMensaje("¡Contraseña actualizada exitosamente! Redirigiendo al sistema...", "success");
+                    btn.style.display = "none";
+                    
+                    // Forzamos cierre de sesión para que el usuario entre desde cero por seguridad
+                    await clientAuth.auth.signOut();
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2500);
+
+                } catch (error) {
+                    console.error(error);
+                    btn.disabled = false;
+                    btn.innerText = "Actualizar Contraseña";
+
+                    if (error.message.includes("Auth session missing")) {
+                        mostrarMensaje("Acceso denegado. Es probable que este enlace ya haya sido usado o haya caducado. Por favor, solicita uno nuevo desde la página de inicio de sesión.", "error");
+                    } else {
+                        mostrarMensaje("Error: " + error.message, "error");
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
