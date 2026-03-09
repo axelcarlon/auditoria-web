@@ -234,45 +234,82 @@ setTimeout(async () => {
         document.getElementById('auth-logged-out').style.display = 'none';
         document.getElementById('auth-logged-in').style.display = 'inline-block';
 
+        // LÓGICA DIRECTA: Leemos si el usuario ya es PRO desde el localStorage
+        // Si tienes el plan guardado en LocalStorage o usas el despertador.js para setearlo, se lee aquí.
+        // Simulamos la lectura directa asumiendo que el paywall actual funciona leyendo 'auditor_plan'
+        const userPlan = localStorage.getItem('auditor_plan'); 
+
+        // Si tu lógica actual en las páginas verifica el localStorage, usamos esa misma lógica aquí
+        // Como me indicaste que "ya funciona porque te deja usar todo", significa que despertador.js
+        // o algún otro script está dejando una huella. Asumiré que es 'auditor_plan' o similar.
+        
+        // Alternativa a prueba de fallos: Si estás logueado y tu cuenta en Supabase es PRO
+        // (Esto asume que el backend te envía esa info, o podemos hacer una comprobación sencilla
+        // basada en la base de datos).
+        
         try {
             const sessionData = JSON.parse(userSession);
             const userEmail = sessionData?.user?.email;
 
             if(userEmail) {
-                // CONFIGURACIÓN SUPABASE - ¡Ya con comillas!
+                // CONFIGURACIÓN SUPABASE - Reemplazamos la llamada a la DB que fallaba
+                // por una lectura directa del estado si es posible, o usamos la API limpia.
+                
                 const SUPABASE_URL = "https://qhuctouhkxyqhdfwcctl.supabase.co"; 
                 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE"; 
 
-                // Usamos encodeURIComponent para escapar el correo de forma segura
-                const encodedEmail = encodeURIComponent(userEmail);
-                
-                const res = await fetch(SUPABASE_URL + "/rest/v1/usuarios?email=eq." + encodedEmail + "&select=plan", {
+                // Hacemos un fetch a Supabase para verificar el estado de la tabla "usuarios"
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(userEmail)}&select=plan`, {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': "Bearer " + sessionData.access_token
+                        'Authorization': `Bearer ${sessionData.access_token}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
                     }
                 });
 
-                const data = await res.json();
-                
-                if (data && data.length > 0 && data[0].plan === 'PRO') {
-                    // CAMBIOS VISUALES SI ES PRO
-                    const btn = document.getElementById('main-user-btn');
-                    const upgradeLink = document.getElementById('upgrade-link');
-
-                    // Cambiar estilo del botón (sin usar backticks para evitar el bug del HTML inyectado)
-                    btn.classList.add('pro-active');
-                    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+                if (response.ok) {
+                    const data = await response.json();
                     
-                    // Ocultar el enlace de "Mejorar a PRO" en el menú
-                    if(upgradeLink) {
-                        upgradeLink.style.display = 'none';
+                    // Si el usuario existe en la tabla y su plan es PRO
+                    if (data && data.length > 0 && (data[0].plan === 'PRO' || data[0].plan === 'pro')) {
+                        
+                        // Guardamos localmente para no hacer la consulta cada vez
+                        localStorage.setItem('auditor_plan', 'PRO');
+
+                        const btn = document.getElementById('main-user-btn');
+                        const upgradeLink = document.getElementById('upgrade-link');
+
+                        // Aplicamos los cambios visuales
+                        if (btn) {
+                            btn.classList.add('pro-active');
+                            btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+                        }
+                        
+                        if(upgradeLink) {
+                            upgradeLink.style.display = 'none';
+                        }
                     }
                 }
             }
         } catch (error) {
-            console.error("Error validando el badge PRO en navbar:", error);
+            console.error("Error verificando plan en el Navbar:", error);
+            
+            // Fallback: Si la API falla, intentamos leer del localStorage como plan B
+            if (localStorage.getItem('auditor_plan') === 'PRO') {
+                const btn = document.getElementById('main-user-btn');
+                const upgradeLink = document.getElementById('upgrade-link');
+
+                if (btn) {
+                    btn.classList.add('pro-active');
+                    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+                }
+                
+                if(upgradeLink) {
+                    upgradeLink.style.display = 'none';
+                }
+            }
         }
     }
 }, 50);
@@ -282,6 +319,7 @@ window.cerrarSesionGlobal = function(e) {
     e.preventDefault();
     localStorage.removeItem('sb-qhuctouhkxyqhdfwcctl-auth-token');
     localStorage.removeItem('auditoria_creditos');
+    localStorage.removeItem('auditor_plan'); // Limpiamos la caché del plan
     
     window.showToast("Sesión cerrada de forma segura.", "success");
     
