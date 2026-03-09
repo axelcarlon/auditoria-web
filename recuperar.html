@@ -18,12 +18,20 @@
         .input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
         .input-group input { width: 100%; background: var(--bg-primary); border: 1px solid var(--border); color: white; padding: 12px 15px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; box-sizing: border-box;}
         .input-group input:focus { border-color: var(--brand); }
-        .btn-submit { background: var(--brand); color: #083344; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-submit:hover { background: #0891B2; color: white; transform: translateY(-2px); }
+        
+        .btn-submit { background: var(--brand); color: #083344; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; margin-bottom: 10px;}
+        .btn-submit:hover:not(:disabled) { background: #0891B2; color: white; transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-resend { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 12px; width: 100%; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.3s; display: none;}
+        .btn-resend:hover:not(:disabled) { background: rgba(255,255,255,0.05); color: white; }
+        .btn-resend:disabled { opacity: 0.5; cursor: not-allowed; }
+
         .auth-links { margin-top: 20px; font-size: 13px; }
         .auth-links a { color: var(--brand); text-decoration: none; font-weight: bold; }
         .auth-links a:hover { text-decoration: underline; }
-        #status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; }
+        
+        #status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; min-height: 20px;}
     </style>
 </head>
 <body>
@@ -37,7 +45,9 @@
                 <label>Correo Electrónico</label>
                 <input type="email" id="email" required placeholder="ejemplo@empresa.com">
             </div>
-            <button class="btn-submit" id="btnRecover" onclick="enviarEnlace()">Enviar Enlace</button>
+            
+            <button class="btn-submit" id="btnRecover">Enviar Enlace</button>
+            <button class="btn-resend" id="btnResend" disabled>Reenviar enlace (30s)</button>
         </div>
 
         <div id="status-msg"></div>
@@ -48,52 +58,92 @@
     </div>
 
     <script>
-        // Inicializamos de forma global y segura
-        const SUPABASE_URL = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicialización protegida
+            const SUPABASE_URL = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Permitimos que funcione al dar "Enter"
-        document.getElementById('email').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                enviarEnlace();
+            const btnRecover = document.getElementById('btnRecover');
+            const btnResend = document.getElementById('btnResend');
+            const emailInput = document.getElementById('email');
+            const msg = document.getElementById('status-msg');
+
+            let countdownInterval;
+
+            // Vincular el evento Click y la tecla Enter de forma segura
+            btnRecover.addEventListener('click', procesarEnvio);
+            btnResend.addEventListener('click', procesarEnvio);
+            
+            emailInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    procesarEnvio();
+                }
+            });
+
+            async function procesarEnvio() {
+                const email = emailInput.value.trim();
+
+                if(!email) {
+                    msg.style.color = "#F59E0B";
+                    msg.innerText = "Por favor, ingresa un correo válido.";
+                    return;
+                }
+
+                // Bloqueamos la interfaz mientras carga
+                btnRecover.disabled = true;
+                btnRecover.innerText = "Verificando...";
+                msg.innerText = "";
+
+                try {
+                    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin + '/restablecer.html',
+                    });
+
+                    if (error) throw error;
+
+                    // ÉXITO: Cambiamos interfaz a modo de "Reenvío"
+                    msg.style.color = "#10B981";
+                    msg.innerText = "¡Enlace enviado! Revisa tu bandeja de entrada o la carpeta de spam.";
+                    
+                    btnRecover.style.display = "none";
+                    btnResend.style.display = "block";
+                    iniciarTemporizador();
+
+                } catch(error) {
+                    console.error(error);
+                    msg.style.color = "#EF4444";
+                    
+                    // Traducción de errores comunes para mejor experiencia de usuario
+                    if(error.message.includes("rate limit")) {
+                        msg.innerText = "Has solicitado demasiados enlaces. Espera un momento.";
+                    } else {
+                        msg.innerText = "Error de conexión. Verifica tu correo e intenta de nuevo.";
+                    }
+                    
+                    btnRecover.disabled = false;
+                    btnRecover.innerText = "Enviar Enlace";
+                }
+            }
+
+            function iniciarTemporizador() {
+                let segundos = 30;
+                btnResend.disabled = true;
+                
+                clearInterval(countdownInterval);
+                
+                countdownInterval = setInterval(() => {
+                    segundos--;
+                    btnResend.innerText = `Reenviar enlace (${segundos}s)`;
+                    
+                    if(segundos <= 0) {
+                        clearInterval(countdownInterval);
+                        btnResend.innerText = "Enviar enlace de nuevo";
+                        btnResend.disabled = false;
+                    }
+                }, 1000);
             }
         });
-
-        async function enviarEnlace() {
-            const btn = document.getElementById('btnRecover');
-            const msg = document.getElementById('status-msg');
-            const email = document.getElementById('email').value;
-
-            if(!email) {
-                msg.style.color = "#F59E0B";
-                msg.innerText = "Por favor, ingresa un correo válido.";
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = "Enviando...";
-            msg.innerText = "";
-
-            try {
-                const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + '/restablecer.html',
-                });
-
-                if (error) throw error;
-
-                msg.style.color = "#10B981";
-                msg.innerText = "¡Enlace enviado! Revisa tu bandeja de entrada o spam.";
-                btn.innerText = "Hecho";
-
-            } catch(error) {
-                console.error(error);
-                msg.style.color = "#EF4444";
-                msg.innerText = "Error al conectar. Verifica tu correo e intenta de nuevo.";
-                btn.disabled = false;
-                btn.innerText = "Enviar Enlace";
-            }
-        }
     </script>
 </body>
 </html>
