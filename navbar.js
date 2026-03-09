@@ -1,3 +1,66 @@
+// 1. LECTURA SÍNCRONA: Leemos el estado AL INSTANTE antes de pintar el HTML
+const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
+const userSession = localStorage.getItem(sessionKey);
+const isLogged = !!userSession;
+let userEmail = '';
+let accessToken = '';
+
+if (userSession) {
+    try { 
+        const parsed = JSON.parse(userSession);
+        userEmail = parsed?.user?.email || ''; 
+        accessToken = parsed?.access_token || '';
+    } catch(e){}
+}
+
+// Buscamos si la caché del navegador ya sabe que somos PRO
+const planStatus = localStorage.getItem('auditor_plan');
+const isPro = (planStatus === 'PRO' || planStatus === 'pro');
+
+// 2. CONSTRUCCIÓN INTELIGENTE DEL MENÚ DE USUARIO
+const authSectionHTML = isLogged ? `
+    <div class="user-dropdown" id="auth-logged-in">
+        <div class="user-btn ${isPro ? 'pro-active' : ''}" id="main-user-btn">
+            ${isPro 
+                ? '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>'
+                : '<span class="live-dot" id="main-user-dot"></span> Mi Cuenta <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>'
+            }
+        </div>
+        <div class="user-menu">
+            <a href="/dashboard-xml.html">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> 
+                Mi Dashboard
+            </a>
+            
+            <a href="/planes.html" id="upgrade-link" style="color: #93C5FD; display: ${isPro ? 'none' : 'flex'};">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> 
+                Mejorar a PRO
+            </a>
+
+            <a href="https://billing.stripe.com/p/login/14A6oI0c0bov3r93TZffy00" id="manage-sub-link" class="manage-sub-btn" style="display: ${isPro ? 'flex' : 'none'};">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 
+                Gestionar Suscripción
+            </a>
+
+            <a href="/privacidad.html">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 
+                Privacidad
+            </a>
+            <hr>
+            <a href="#" onclick="cerrarSesionGlobal(event)" class="logout-btn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> 
+                Cerrar Sesión
+            </a>
+        </div>
+    </div>
+` : `
+    <div class="nav-auth-group" id="auth-logged-out">
+        <a href="/login.html" class="nav-link">Acceso Cliente</a>
+        <a href="/planes.html" class="btn-pro-nav">Licencia Corporativa</a>
+    </div>
+`;
+
+// 3. INYECCIÓN DEL HTML ESTÁTICO (Cero parpadeo)
 const navbarHTML = `
 <style>
     :root { 
@@ -30,10 +93,7 @@ const navbarHTML = `
     .dropdown-toggle { color: #94A3B8; text-decoration: none; font-weight: 600; font-size: 14.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 10px 0; transition: color 0.2s; white-space: nowrap; }
     .dropdown:hover .dropdown-toggle { color: #FFFFFF; }
     
-    /* CORRECCIÓN DE CORTE: Anclado a la derecha (-60px para no estorbar al botón Mi Cuenta) */
     .mega-menu { display: none; position: absolute; top: 100%; right: -60px; left: auto; background: #1E293B; width: 980px; max-width: 92vw; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-radius: 12px; padding: 30px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); grid-template-columns: repeat(4, 1fr); gap: 25px; box-sizing: border-box; margin-top: 8px;}
-    
-    /* PUENTE INVISIBLE MEGA MENÚ */
     .mega-menu::before { content: ''; position: absolute; top: -15px; left: 0; width: 100%; height: 15px; background: transparent; }
 
     .dropdown:hover .mega-menu { display: grid; animation: dropFade 0.2s ease-out; }
@@ -54,8 +114,8 @@ const navbarHTML = `
     .user-btn:hover { background: rgba(225, 29, 72, 0.2); border-color: rgba(225, 29, 72, 0.5); }
     
     /* ESTILOS DEL BOTÓN CUANDO ES PRO */
-    .user-btn.pro-active { background: rgba(16, 185, 129, 0.15); border-color: #10B981; color: #10B981; }
-    .user-btn.pro-active:hover { background: rgba(16, 185, 129, 0.25); }
+    .user-btn.pro-active { background: rgba(16, 185, 129, 0.15) !important; border-color: #10B981 !important; color: #10B981 !important; }
+    .user-btn.pro-active:hover { background: rgba(16, 185, 129, 0.25) !important; }
     .pro-badge { background: #10B981; color: #064E3B; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 12px; letter-spacing: 1px; margin-left: 4px; animation: pulsePro 2.5s infinite;}
     
     @keyframes pulsePro { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
@@ -64,8 +124,6 @@ const navbarHTML = `
     @keyframes pulseDot { 0% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); } 70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); } 100% { transform: scale(0.95); opacity: 0.7; box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); } }
 
     .user-menu { display: none; position: absolute; top: 100%; right: 0; background: #1E293B; width: 220px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; z-index: 1000; border: 1px solid rgba(255,255,255,0.1); flex-direction: column; gap: 4px; margin-top: 8px;}
-    
-    /* PUENTE INVISIBLE MI CUENTA */
     .user-menu::before { content: ''; position: absolute; top: -15px; left: 0; width: 100%; height: 15px; background: transparent; }
 
     .user-dropdown:hover .user-menu { display: flex; animation: dropFade 0.2s ease-out; }
@@ -77,11 +135,9 @@ const navbarHTML = `
     .logout-btn { color: #FCA5A5 !important; }
     .logout-btn:hover { background: rgba(239, 68, 68, 0.1) !important; color: #EF4444 !important; }
     
-    /* Botón de Cancelar Suscripción */
     .manage-sub-btn { color: #94A3B8 !important; }
     .manage-sub-btn:hover { background: rgba(255,255,255,0.05) !important; color: #FFFFFF !important; }
 
-    /* BOTONES ESTADO DESLOGUEADO */
     .nav-auth-group { display: flex; align-items: center; gap: 24px; }
     .btn-pro-nav { background: var(--brand-nav); color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 800; font-size: 13px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); white-space: nowrap;}
     .btn-pro-nav:hover { background: #2563EB; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4); }
@@ -91,45 +147,26 @@ const navbarHTML = `
         .nav-right { flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%;}
         .dropdown { position: static; width: 100%; text-align: center; }
         .dropdown-toggle { justify-content: center; width: 100%; border-bottom: 1px solid var(--border-nav);}
-        /* CORRECCIÓN MÓVIL */
         .mega-menu { width: 100%; left: 0; right: auto; transform: none; grid-template-columns: 1fr; max-height: 60vh; overflow-y: auto; padding: 15px; gap: 15px; position: relative;}
         .dropdown:hover .mega-menu { display: grid; animation: none; }
-        
         .user-dropdown { position: relative; width: auto; }
         .user-menu { right: 50%; transform: translateX(50%); }
     }
 </style>
 
 <div id="toast-container"></div>
-
 <header class="header-core">
     <a href="/index.html" class="logo-container">
         <img src="/logo-oficial.png" alt="AuditorIA Logo">
         <span class="logo-text">AuditorIA</span>
     </a>
-    
     <div class="nav-right">
-        
-        <a href="/index.html" class="nav-link">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            Inicio
-        </a>
-
-        <a href="/como-funciona.html" class="nav-link">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Cómo Funciona
-        </a>
-
-        <a href="/articulos/" class="nav-link">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v10a2 2 0 01-2 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v6h6M8 11h8M8 15h6"></path></svg>
-            Artículos
-        </a>
+        <a href="/index.html" class="nav-link"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Inicio</a>
+        <a href="/como-funciona.html" class="nav-link"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Cómo Funciona</a>
+        <a href="/articulos/" class="nav-link"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v10a2 2 0 01-2 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v6h6M8 11h8M8 15h6"></path></svg> Artículos</a>
 
         <div class="dropdown">
-            <div class="dropdown-toggle">
-                Ecosistema de Soluciones
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-            </div>
+            <div class="dropdown-toggle">Ecosistema de Soluciones <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg></div>
             <div class="mega-menu">
                 <div class="dropdown-column">
                     <div class="menu-category">Auditoría SAT y Riesgo</div>
@@ -174,45 +211,8 @@ const navbarHTML = `
         </div>
 
         <div id="nav-auth-section">
-            <div class="nav-auth-group" id="auth-logged-out">
-                <a href="/login.html" class="nav-link">Acceso Cliente</a>
-                <a href="/planes.html" class="btn-pro-nav">Licencia Corporativa</a>
-            </div>
-
-            <div class="user-dropdown" id="auth-logged-in" style="display: none;">
-                <div class="user-btn" id="main-user-btn">
-                    <span class="live-dot" id="main-user-dot"></span> Mi Cuenta
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-                <div class="user-menu">
-                    <a href="/dashboard-xml.html">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> 
-                        Mi Dashboard
-                    </a>
-                    
-                    <a href="/planes.html" id="upgrade-link" style="color: #93C5FD;">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> 
-                        Mejorar a PRO
-                    </a>
-
-                    <a href="https://billing.stripe.com/p/login/14A6oI0c0bov3r93TZffy00" id="manage-sub-link" class="manage-sub-btn" style="display: none;">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> 
-                        Gestionar Suscripción
-                    </a>
-
-                    <a href="/privacidad.html">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> 
-                        Privacidad
-                    </a>
-                    <hr>
-                    <a href="#" onclick="cerrarSesionGlobal(event)" class="logout-btn">
-                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> 
-                        Cerrar Sesión
-                    </a>
-                </div>
-            </div>
+            ${authSectionHTML}
         </div>
-
     </div>
 </header>
 `;
@@ -220,7 +220,7 @@ const navbarHTML = `
 document.write(navbarHTML);
 
 // ----------------------------------------------------
-// LÓGICA DE INTERFAZ Y AUTENTICACIÓN
+// 4. VERIFICACIÓN DE SEGURIDAD EN SEGUNDO PLANO (Supabase)
 // ----------------------------------------------------
 
 window.showToast = function(message, type = 'info') {
@@ -235,43 +235,51 @@ window.showToast = function(message, type = 'info') {
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 5000);
 };
 
-// Evaluamos silenciosamente si existe la sesión y el estado PRO
-setTimeout(() => {
-    const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
-    const userSession = localStorage.getItem(sessionKey);
-    
-    if (userSession) {
-        document.getElementById('auth-logged-out').style.display = 'none';
-        document.getElementById('auth-logged-in').style.display = 'inline-block';
+// Después de pintar el HTML síncrono, verificamos en la base de datos si hubo cambios de suscripción
+if (isLogged && userEmail) {
+    const SUPABASE_URL = "https://qhuctouhkxyqhdfwcctl.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE"; 
 
-        // LECTURA DIRECTA Y EFICIENTE: Buscamos si tu código base guardó la huella 'auditor_plan'
-        // Esto evita depender de la red, de la base de datos o de romper el RLS de Supabase.
-        const planStatus = localStorage.getItem('auditor_plan'); 
-
-        if (planStatus === 'PRO' || planStatus === 'pro') {
-            const btn = document.getElementById('main-user-btn');
-            const upgradeLink = document.getElementById('upgrade-link');
-            const manageSubLink = document.getElementById('manage-sub-link');
-
-            if (btn) {
-                btn.classList.add('pro-active');
-                btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
-            }
+    fetch(`${SUPABASE_URL}/rest/v1/usuarios?email=eq.${encodeURIComponent(userEmail)}&select=plan`, {
+        method: 'GET',
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.length > 0) {
+            const dbPlan = data[0].plan;
             
-            // Ocultamos el botón de Comprar PRO
-            if(upgradeLink) {
-                upgradeLink.style.display = 'none';
-            }
-            
-            // Mostramos el botón de Cancelar Suscripción
-            if(manageSubLink) {
-                manageSubLink.style.display = 'flex';
+            // Si el usuario es PRO en la base de datos, pero la caché decía que no:
+            if ((dbPlan === 'PRO' || dbPlan === 'pro') && !isPro) {
+                localStorage.setItem('auditor_plan', 'PRO');
+                
+                // Actualizamos visualmente sin recargar la página
+                const btn = document.getElementById('main-user-btn');
+                if(btn) {
+                    btn.classList.add('pro-active');
+                    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+                }
+                const upgLink = document.getElementById('upgrade-link');
+                const mngLink = document.getElementById('manage-sub-link');
+                if(upgLink) upgLink.style.display = 'none';
+                if(mngLink) mngLink.style.display = 'flex';
+            } 
+            // Si el usuario canceló, es FREE en la base de datos, pero su caché aún decía PRO:
+            else if (dbPlan !== 'PRO' && dbPlan !== 'pro' && isPro) {
+                localStorage.removeItem('auditor_plan');
+                // En un SaaS real, forzaríamos recarga aquí, pero con limpiar la caché basta para la próxima visita.
             }
         }
-    }
-}, 50);
+    })
+    .catch(error => console.error("La verificación en segundo plano fue bloqueada por RLS o red.", error));
+}
 
-// Función para desconectar y limpiar la bóveda del navegador
+// Función para desconectar
 window.cerrarSesionGlobal = function(e) {
     e.preventDefault();
     localStorage.removeItem('sb-qhuctouhkxyqhdfwcctl-auth-token');
