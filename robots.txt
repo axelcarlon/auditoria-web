@@ -1,9 +1,23 @@
 User-agent: *
 Allow: /
 
-# Evitar que Google indexe bases de datos crudas o código de sesión
-Disallow: /efos.json
-Disallow: /despertador.js
+# 1. Rutas de autenticacion privadas
+Disallow: /recuperar
+Disallow: /restablecer
+Disallow: /recuperar.html
+Disallow: /restablecer.html
 
-# Apuntar al Sitemap oficial
+# 2. Archivos de configuracion y bases de datos crudas
+Disallow: /*.json$
+Disallow: /package.json
+Disallow: /vercel.json
+Disallow: /efos.json
+
+# 3. Scripts del sistema y endpoints
+Disallow: /api/
+Disallow: /despertador.js
+Disallow: /navbar.js
+Disallow: /footer.js
+
+# Apuntar al Sitemap oficial para el rastreo correcto
 Sitemap: https://auditoriaxml.mx/sitemap.xml
