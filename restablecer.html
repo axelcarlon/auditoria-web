@@ -20,20 +20,27 @@
         .input-group input:focus { border-color: var(--brand); }
         .btn-submit { background: var(--brand); color: #083344; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .btn-submit:hover { background: #0891B2; color: white; transform: translateY(-2px); }
-        #status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        #status-msg { margin-top: 15px; font-size: 13px; font-weight: bold; line-height: 1.4; }
     </style>
 </head>
 <body>
 
     <div class="auth-container">
         <h2>Nueva Contraseña</h2>
-        <p>Ingresa tu nueva contraseña para tu cuenta de AuditorIA.</p>
+        <p>Ingresa tu nueva contraseña corporativa para AuditorIA.</p>
 
         <form id="resetForm">
             <div class="input-group">
                 <label>Nueva Contraseña</label>
                 <input type="password" id="newPassword" required placeholder="Mínimo 6 caracteres" minlength="6">
             </div>
+            
+            <div class="input-group">
+                <label>Confirmar Contraseña</label>
+                <input type="password" id="confirmPassword" required placeholder="Repite la contraseña" minlength="6">
+            </div>
+
             <button type="submit" class="btn-submit" id="btnReset">Actualizar Contraseña</button>
         </form>
 
@@ -45,35 +52,54 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Supabase detecta automáticamente que venimos de un link de recuperación porque lee la URL
+        // El cliente de Supabase detecta automáticamente el token seguro oculto en la URL
         document.getElementById('resetForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnReset');
             const msg = document.getElementById('status-msg');
             const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // 1. Validación de seguridad (Antierrores humanos)
+            if (newPassword !== confirmPassword) {
+                msg.style.color = "#F59E0B"; // Color de advertencia
+                msg.innerText = "Las contraseñas no coinciden. Verifícalas e intenta de nuevo.";
+                return;
+            }
 
             btn.disabled = true;
-            btn.innerText = "Actualizando...";
+            btn.innerText = "Actualizando bóveda...";
             msg.innerText = "";
 
-            // Actualiza la contraseña en la bóveda
+            // 2. Petición de actualización a Supabase
             const { data, error } = await supabase.auth.updateUser({
                 password: newPassword
             });
 
             if (error) {
                 msg.style.color = "#EF4444";
-                msg.innerText = "Error: El enlace expiró o es inválido. Solicita uno nuevo.";
+                
+                // Traducción inteligente del error
+                if (error.message.includes("Auth session missing")) {
+                    msg.innerText = "Acceso denegado. Debes entrar a esta página usando el enlace que te enviamos por correo.";
+                } else {
+                    msg.innerText = "Error: El enlace de recuperación expiró o ya fue utilizado. Solicita uno nuevo.";
+                }
+                
                 btn.disabled = false;
                 btn.innerText = "Actualizar Contraseña";
             } else {
                 msg.style.color = "#10B981";
-                msg.innerText = "¡Contraseña actualizada exitosamente!";
+                msg.innerText = "¡Contraseña actualizada exitosamente! Redirigiendo...";
                 btn.style.display = "none";
                 
+                // 3. Cierre de sesión forzado (Zero-Trust)
+                await supabase.auth.signOut();
+                
+                // Redirección al login
                 setTimeout(() => {
                     window.location.href = '/login.html';
-                }, 2000);
+                }, 2500);
             }
         });
     </script>
