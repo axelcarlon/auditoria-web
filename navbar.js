@@ -239,9 +239,9 @@ setTimeout(async () => {
             const userEmail = sessionData?.user?.email;
 
             if(userEmail) {
-                // CONFIGURACIÓN SUPABASE - REEMPLAZAR CON TUS CLAVES
-                const SUPABASE_URL = https://qhuctouhkxyqhdfwcctl.supabase.co; 
-                const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE; 
+                // CONFIGURACIÓN SUPABASE - ¡Ya con comillas!
+                const SUPABASE_URL = "https://qhuctouhkxyqhdfwcctl.supabase.co"; 
+                const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE"; 
 
                 // Usamos encodeURIComponent para escapar el correo de forma segura
                 const encodedEmail = encodeURIComponent(userEmail);
