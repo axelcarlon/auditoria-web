@@ -32,13 +32,13 @@
         <h2>Recuperar Acceso</h2>
         <p>Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.</p>
 
-        <form id="recoverForm">
+        <div id="recoverForm">
             <div class="input-group">
                 <label>Correo Electrónico</label>
                 <input type="email" id="email" required placeholder="ejemplo@empresa.com">
             </div>
-            <button type="submit" class="btn-submit" id="btnRecover">Enviar Enlace</button>
-        </form>
+            <button class="btn-submit" id="btnRecover" onclick="enviarEnlace()">Enviar Enlace</button>
+        </div>
 
         <div id="status-msg"></div>
 
@@ -48,37 +48,52 @@
     </div>
 
     <script>
-        // Inicializa Supabase (Usa las mismas claves que tienes en login.html o despertador.js)
+        // Inicializamos de forma global y segura
         const SUPABASE_URL = 'https://qhuctouhkxyqhdfwcctl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        document.getElementById('recoverForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Permitimos que funcione al dar "Enter"
+        document.getElementById('email').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                enviarEnlace();
+            }
+        });
+
+        async function enviarEnlace() {
             const btn = document.getElementById('btnRecover');
             const msg = document.getElementById('status-msg');
             const email = document.getElementById('email').value;
+
+            if(!email) {
+                msg.style.color = "#F59E0B";
+                msg.innerText = "Por favor, ingresa un correo válido.";
+                return;
+            }
 
             btn.disabled = true;
             btn.innerText = "Enviando...";
             msg.innerText = "";
 
-            // Envia el correo de recuperación y le dice a Supabase a dónde redirigir al usuario al hacer clic
-            const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.origin + '/restablecer.html',
-            });
+            try {
+                const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/restablecer.html',
+                });
 
-            if (error) {
-                msg.style.color = "#EF4444";
-                msg.innerText = "Error: " + error.message;
-                btn.disabled = false;
-                btn.innerText = "Enviar Enlace";
-            } else {
+                if (error) throw error;
+
                 msg.style.color = "#10B981";
                 msg.innerText = "¡Enlace enviado! Revisa tu bandeja de entrada o spam.";
                 btn.innerText = "Hecho";
+
+            } catch(error) {
+                console.error(error);
+                msg.style.color = "#EF4444";
+                msg.innerText = "Error al conectar. Verifica tu correo e intenta de nuevo.";
+                btn.disabled = false;
+                btn.innerText = "Enviar Enlace";
             }
-        });
+        }
     </script>
 </body>
 </html>
