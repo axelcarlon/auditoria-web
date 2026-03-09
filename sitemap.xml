@@ -2,48 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
     <url><loc>https://auditoriaxml.mx/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-    <url><loc>https://auditoriaxml.mx/empresas.html</loc><changefreq>monthly</changefreq><priority>0.95</priority></url>
-    <url><loc>https://auditoriaxml.mx/despachos-contables.html</loc><changefreq>monthly</changefreq><priority>0.95</priority></url>
-    <url><loc>https://auditoriaxml.mx/planes.html</loc><changefreq>monthly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/empresas</loc><changefreq>monthly</changefreq><priority>0.95</priority></url>
+    <url><loc>https://auditoriaxml.mx/despachos-contables</loc><changefreq>monthly</changefreq><priority>0.95</priority></url>
+    <url><loc>https://auditoriaxml.mx/como-funciona</loc><changefreq>monthly</changefreq><priority>0.95</priority></url>
+    <url><loc>https://auditoriaxml.mx/planes</loc><changefreq>monthly</changefreq><priority>0.90</priority></url>
 
-    <url><loc>https://auditoriaxml.mx/dashboard-xml.html</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
-    <url><loc>https://auditoriaxml.mx/escaner-ocr-fiscal.html</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
-    <url><loc>https://auditoriaxml.mx/editor-pdf.html</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
-    <url><loc>https://auditoriaxml.mx/editor-pro.html</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
-    <url><loc>https://auditoriaxml.mx/auditoria-masiva.html</loc><changefreq>monthly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/dashboard-xml</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/escaner-ocr-fiscal</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/editor-pdf</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/editor-pro</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
+    <url><loc>https://auditoriaxml.mx/auditoria-masiva</loc><changefreq>monthly</changefreq><priority>0.90</priority></url>
 
-    <url><loc>https://auditoriaxml.mx/validador-efos.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/risk-score.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/tasa-efectiva.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/auditor-materialidad.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/auditoria-activos.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/prueba-servicio.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/validador-csf-32d.html</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
-    <url><loc>https://auditoriaxml.mx/defensa-legal.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/validador-efos</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/risk-score</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/tasa-efectiva</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/auditor-materialidad</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/auditoria-activos</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/prueba-servicio</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/validador-csf-32d</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+    <url><loc>https://auditoriaxml.mx/defensa-legal</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
 
-    <url><loc>https://auditoriaxml.mx/generador-diot.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/generador-polizas.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/conciliador-pagos.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/conciliacion-ia.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/precios-aduana.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/calculadora-recargos.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/analisis-proveedores.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/auditor-nomina.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/auditoria-viaticos.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/proyector-iva.html</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/buscador-conceptos.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-    <url><loc>https://auditoriaxml.mx/conversor-xml-pdf.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-    <url><loc>https://auditoriaxml.mx/conversor-bancario.html</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-    <url><loc>https://auditoriaxml.mx/visor-xml.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/generador-diot</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/generador-polizas</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/conciliador-pagos</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/conciliacion-ia</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/precios-aduana</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/calculadora-recargos</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/analisis-proveedores</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/auditor-nomina</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/auditoria-viaticos</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/proyector-iva</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/buscador-conceptos</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+    <url><loc>https://auditoriaxml.mx/conversor-xml-pdf</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+    <url><loc>https://auditoriaxml.mx/conversor-bancario</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+    <url><loc>https://auditoriaxml.mx/visor-xml</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
 
     <url><loc>https://auditoriaxml.mx/articulos/</loc><changefreq>weekly</changefreq><priority>0.80</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/auditoria-cfdi-despachos-contables.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/multas-discrepancia-fiscal-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/proteccion-empresas-art-30-b-cff.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/auditoria-uuid-cancelacion-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-    <url><loc>https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/auditoria-cfdi-despachos-contables</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/multas-discrepancia-fiscal-cfdi</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/proteccion-empresas-art-30-b-cff</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/auditoria-uuid-cancelacion-cfdi</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
 
-    <url><loc>https://auditoriaxml.mx/login.html</loc><changefreq>monthly</changefreq><priority>0.50</priority></url>
-    <url><loc>https://auditoriaxml.mx/registro.html</loc><changefreq>monthly</changefreq><priority>0.50</priority></url>
+    <url><loc>https://auditoriaxml.mx/login</loc><changefreq>monthly</changefreq><priority>0.50</priority></url>
+    <url><loc>https://auditoriaxml.mx/registro</loc><changefreq>monthly</changefreq><priority>0.50</priority></url>
+    <url><loc>https://auditoriaxml.mx/privacidad</loc><changefreq>yearly</changefreq><priority>0.30</priority></url>
+    <url><loc>https://auditoriaxml.mx/terminos</loc><changefreq>yearly</changefreq><priority>0.30</priority></url>
 
 </urlset>
