@@ -1,4 +1,4 @@
-// 1. LECTURA SÍNCRONA: Leemos el estado AL INSTANTE antes de pintar el HTML
+// 1. LECTURAS SÍNCRONAS: Leemos la memoria del navegador AL INSTANTE
 const sessionKey = 'sb-qhuctouhkxyqhdfwcctl-auth-token';
 const userSession = localStorage.getItem(sessionKey);
 const isLogged = !!userSession;
@@ -13,16 +13,15 @@ if (userSession) {
     } catch(e){}
 }
 
-// Buscamos si la caché del navegador ya sabe que somos PRO
 const planStatus = localStorage.getItem('auditor_plan');
 const isPro = (planStatus === 'PRO' || planStatus === 'pro');
 
-// 2. CONSTRUCCIÓN INTELIGENTE DEL MENÚ DE USUARIO
+// 2. CONSTRUCCIÓN INTELIGENTE DEL MENÚ (Cero parpadeos, palomita removida)
 const authSectionHTML = isLogged ? `
     <div class="user-dropdown" id="auth-logged-in">
         <div class="user-btn ${isPro ? 'pro-active' : ''}" id="main-user-btn">
             ${isPro 
-                ? '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>'
+                ? 'Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>'
                 : '<span class="live-dot" id="main-user-dot"></span> Mi Cuenta <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>'
             }
         </div>
@@ -60,8 +59,8 @@ const authSectionHTML = isLogged ? `
     </div>
 `;
 
-// 3. INYECCIÓN DEL HTML ESTÁTICO (Cero parpadeo)
-const navbarHTML = `
+// 3. INYECCIÓN DEL HTML
+const navbarHTML_Final = `
 <style>
     :root { 
         --bg-nav: rgba(15, 23, 42, 0.85); 
@@ -70,9 +69,7 @@ const navbarHTML = `
         --border-nav: rgba(255, 255, 255, 0.08);
         --accent-nav: #E11D48; /* Carmesí */
     }
-    
     body { margin: 0; padding: 0; overflow-x: hidden; }
-    
     #toast-container { position: fixed; top: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
     .toast-msg { background: rgba(17, 24, 39, 0.95); color: white; padding: 16px 24px; border-radius: 8px; font-family: system-ui, sans-serif; font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.3); backdrop-filter: blur(10px); border-left: 4px solid var(--brand-nav); transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px; pointer-events: auto; min-width: 300px; }
     .toast-msg.show { transform: translateX(0); }
@@ -108,7 +105,7 @@ const navbarHTML = `
     
     @keyframes pulseNav { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
 
-    /* MENÚ "MI CUENTA" (ESTADO LOGUEADO) */
+    /* MENÚ "MI CUENTA" */
     .user-dropdown { position: relative; display: inline-block; }
     .user-btn { display: flex; align-items: center; gap: 8px; background: rgba(225, 29, 72, 0.1); border: 1px solid rgba(225, 29, 72, 0.3); color: white; padding: 8px 18px; border-radius: 30px; font-weight: 800; font-size: 13.5px; cursor: pointer; transition: 0.3s; }
     .user-btn:hover { background: rgba(225, 29, 72, 0.2); border-color: rgba(225, 29, 72, 0.5); }
@@ -217,7 +214,7 @@ const navbarHTML = `
 </header>
 `;
 
-document.write(navbarHTML);
+document.write(navbarHTML_Final);
 
 // ----------------------------------------------------
 // 4. VERIFICACIÓN DE SEGURIDAD EN SEGUNDO PLANO (Supabase)
@@ -235,7 +232,7 @@ window.showToast = function(message, type = 'info') {
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 5000);
 };
 
-// Después de pintar el HTML síncrono, verificamos en la base de datos si hubo cambios de suscripción
+// Verificamos en la base de datos si hubo cambios de suscripción
 if (isLogged && userEmail) {
     const SUPABASE_URL = "https://qhuctouhkxyqhdfwcctl.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFodWN0b3Voa3h5cWhkZndjY3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MzU5NTgsImV4cCI6MjA4ODQxMTk1OH0.PFgK9iodQzPjSzxgBOwxDQgfKQOd2sIKhGhZ29stdWE"; 
@@ -254,25 +251,20 @@ if (isLogged && userEmail) {
         if (data && data.length > 0) {
             const dbPlan = data[0].plan;
             
-            // Si el usuario es PRO en la base de datos, pero la caché decía que no:
             if ((dbPlan === 'PRO' || dbPlan === 'pro') && !isPro) {
                 localStorage.setItem('auditor_plan', 'PRO');
-                
-                // Actualizamos visualmente sin recargar la página
                 const btn = document.getElementById('main-user-btn');
                 if(btn) {
                     btn.classList.add('pro-active');
-                    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
+                    btn.innerHTML = 'Cuenta <span class="pro-badge">PRO</span> <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-left:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>';
                 }
                 const upgLink = document.getElementById('upgrade-link');
                 const mngLink = document.getElementById('manage-sub-link');
                 if(upgLink) upgLink.style.display = 'none';
                 if(mngLink) mngLink.style.display = 'flex';
             } 
-            // Si el usuario canceló, es FREE en la base de datos, pero su caché aún decía PRO:
             else if (dbPlan !== 'PRO' && dbPlan !== 'pro' && isPro) {
                 localStorage.removeItem('auditor_plan');
-                // En un SaaS real, forzaríamos recarga aquí, pero con limpiar la caché basta para la próxima visita.
             }
         }
     })
