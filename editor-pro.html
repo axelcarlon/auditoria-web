@@ -46,7 +46,10 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; user-select: none; }
+        
+        /* FIX MOBILE: Contención estricta del Viewport */
+        html, body { width: 100%; max-width: 100vw; overflow: hidden; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; user-select: none; }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
@@ -56,8 +59,10 @@
         /* =========================================================
            2. TOPBAR DE NAVEGACIÓN Y CONTROLES
            ========================================================= */
-        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; padding: 0 25px; z-index: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-shrink: 0;}
+        /* FIX MOBILE: Añadido overflow-x: auto para desplazar los botones en celular sin romper la página */
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border-bottom: 1px solid var(--border); height: 60px; padding: 0 25px; z-index: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-shrink: 0; overflow-x: auto; width: 100%;}
         
+        .topbar-left, .topbar-center, .topbar-right { flex-shrink: 0; }
         .topbar-left { display: flex; align-items: center; gap: 20px; }
         .btn-exit { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: 0.2s;}
         .btn-exit:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted); color: white;}
@@ -74,12 +79,10 @@
         .topbar-right { display: flex; align-items: center; gap: 15px; visibility: hidden; opacity: 0; transition: opacity 0.3s;}
         .topbar-right.visible { visibility: visible; opacity: 1; }
         
-        /* Botón Deshacer Blanco (Sobrio) */
         .btn-undo { display: flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--text-muted); color: white; cursor: pointer; font-size: 13px; font-weight: 900; padding: 10px 20px; border-radius: 8px; transition: 0.2s; text-transform: uppercase;}
         .btn-undo:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: white; }
         .btn-undo:disabled { color: var(--border); border-color: rgba(255,255,255,0.05); cursor: not-allowed; }
         
-        /* Botón Exportar PDF con Insignia PRO Latente */
         .btn-export { display: flex; align-items: center; gap: 10px; background: transparent; border: 1px solid var(--brand); color: white; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 900; text-transform: uppercase; transition: 0.2s; box-shadow: inset 0 0 15px rgba(220, 38, 38, 0.2);}
         .btn-export:hover { background: rgba(220, 38, 38, 0.1); border-color: var(--brand-hover); box-shadow: inset 0 0 20px rgba(220, 38, 38, 0.4);}
         .pro-badge { background: var(--brand); color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; letter-spacing: 1px; animation: pulseRed 2s infinite; }
@@ -88,9 +91,10 @@
         /* =========================================================
            3. WORKSPACE Y BARRA LATERAL (HERRAMIENTAS)
            ========================================================= */
-        .main-workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+        /* FIX MOBILE: Contención del Workspace */
+        .main-workspace { display: flex; flex: 1; overflow-x: auto; overflow-y: hidden; position: relative; width: 100%; }
 
-        .toolbar-left { width: 75px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 100; overflow-y: auto; overflow-x: visible;}
+        .toolbar-left { width: 75px; flex-shrink: 0; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 100; overflow-y: auto; overflow-x: visible;}
         .tool-group { display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center;}
         .divider-h { width: 40px; height: 1px; background: var(--border); margin: 5px 0; }
 
@@ -98,14 +102,13 @@
         .tool-btn:hover { color: white; background: var(--bg-hover); }
         .tool-btn.active { color: var(--accent); background: rgba(59, 130, 246, 0.1); border-color: var(--accent); box-shadow: inset 0 0 10px rgba(59,130,246,0.2);}
 
-        /* Tooltip Dinámico JavaScript */
         #dynamicTooltip { position: fixed; background: #000; border: 1px solid var(--border); color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 900; white-space: nowrap; pointer-events: none; z-index: 99999; box-shadow: var(--shadow-float); display: none; opacity: 0; transition: opacity 0.2s; transform: translateY(-50%);}
         #dynamicTooltip::before { content: ''; position: absolute; top: 50%; left: -6px; transform: translateY(-50%); border-width: 6px 6px 6px 0; border-style: solid; border-color: transparent var(--border) transparent transparent; }
 
         /* =========================================================
            4. LIENZO CENTRAL Y MOTOR RENDER
            ========================================================= */
-        .canvas-area { flex: 1; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 60px; position: relative; cursor: grab;}
+        .canvas-area { flex: 1; min-width: 300px; background: var(--canvas-bg); overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 60px; position: relative; cursor: grab;}
         .canvas-area:active { cursor: grabbing; }
         
         .page-wrapper { position: relative; background: white; box-shadow: var(--shadow-doc); margin: 0 auto; transition: transform 0.1s ease-out; transform-origin: top center; margin-bottom: 80px;}
@@ -113,7 +116,7 @@
         #interactiveLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; overflow: hidden; }
 
         /* Panel de Propiedades Derecho */
-        .sidebar-right { width: 320px; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 30px; overflow-y: auto; z-index: 100; }
+        .sidebar-right { width: 320px; flex-shrink: 0; background: var(--bg-panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; gap: 30px; overflow-y: auto; z-index: 100; }
         
         .prop-section { display: flex; flex-direction: column; gap: 15px; }
         .prop-title { font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin: 0; display: flex; align-items: center; gap: 8px;}
@@ -175,15 +178,24 @@
         .ocr-content { background: var(--bg-panel); border: 1px solid var(--border); width: 650px; max-width: 90%; border-radius: 12px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: var(--shadow-float);}
         .ocr-textarea { width: 100%; height: 350px; background: var(--bg-base); color: var(--success); border: 1px solid var(--border); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; resize: none; outline: none; }
 
-        /* Toasts Rediseñados con colores dinámicos */
-        #toastContainer { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; }
-        .toast { background: #000; border: 1px solid var(--border); border-left: 5px solid var(--success); color: white; padding: 18px 25px; border-radius: 10px; box-shadow: var(--shadow-doc); font-size: 14px; font-weight: 900; display: flex; align-items: center; gap: 15px; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: auto;}
-        .toast.show { transform: translateX(0); }
+        /* FIX MOBILE: Toasts Rediseñados para no romper márgenes (Se usa Opacity y translateY en lugar de X) */
+        #toastContainer { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; max-width: 90vw;}
+        .toast { background: #000; border: 1px solid var(--border); border-left: 5px solid var(--success); color: white; padding: 18px 25px; border-radius: 10px; box-shadow: var(--shadow-doc); font-size: 14px; font-weight: 900; display: flex; align-items: center; gap: 15px; transform: translateY(30px); opacity: 0; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s; pointer-events: auto;}
+        .toast.show { transform: translateY(0); opacity: 1; }
         .toast.error { border-left-color: var(--brand); }
         
-        /* Estilo Específico "Deshacer" (Negro, Rojo y Blanco) */
         .toast.undo { background: #000; border: 1px solid var(--brand); border-left: 5px solid var(--brand); color: white; }
         .toast.redo { background: #000; border: 1px solid var(--accent); border-left: 5px solid var(--accent); color: white; }
+
+        /* =========================================================
+           7. MEDIA QUERIES PROTECTORES
+           ========================================================= */
+        @media (max-width: 768px) {
+            .upload-area { padding: 40px 20px; }
+            .topbar { padding: 0 15px; justify-content: flex-start; gap: 20px; }
+            .canvas-area { padding: 20px; }
+            #toastContainer { right: 5%; left: 5%; bottom: 20px; align-items: center; }
+        }
 
     </style>
 </head>
@@ -591,7 +603,6 @@
             async prevPage() { if(currentPage > 1) { currentPage--; ObjectManager.deselect(); await this.renderPage(); document.getElementById('ocrOutput').style.display = 'none';} },
             async nextPage() { if(currentPage < totalPages) { currentPage++; ObjectManager.deselect(); await this.renderPage(); document.getElementById('ocrOutput').style.display = 'none';} },
             updateUI() {
-                // Actualiza visualmente los medidores usando QuerySelectorAll por seguridad
                 document.querySelectorAll('#lblZoom').forEach(el => el.innerText = `${Math.round(zoom*100)}%`);
                 document.querySelectorAll('#lblPage').forEach(el => el.innerText = `${currentPage} / ${totalPages}`);
             },
@@ -1036,7 +1047,6 @@
             return { r: parseInt(hex.substring(0,2), 16)/255, g: parseInt(hex.substring(2,4), 16)/255, b: parseInt(hex.substring(4,6), 16)/255 };
         }
 
-        // Descarga Nativa (Bypass de bloqueadores y vaciados)
         function nativeDownload(bytes, filename) {
             const blob = new Blob([bytes], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
@@ -1052,7 +1062,6 @@
                 await new Promise(r => setTimeout(r, 600)); // Breve pausa para estabilizar la memoria UI
 
                 try {
-                    // Cargar copia exacta virgen
                     const pdfDoc = await PDFLib.PDFDocument.load(pdfBytesOriginal.slice(0));
                     const pages = pdfDoc.getPages();
                     
@@ -1068,7 +1077,7 @@
                         const { width: pW, height: pH } = pPdf.getSize();
 
                         for(let o of objs) {
-                            try { // SHIELD ANTI-CORRUPCIÓN INDIVIDUAL
+                            try {
                                 if(typeof o.x !== 'number' || typeof o.y !== 'number') continue;
 
                                 const c = hex2rgb(o.color || '#000000');
@@ -1078,7 +1087,7 @@
                                 const pStroke = parseFloat(o.stroke) || 2;
                                 
                                 const pdfX = o.x * pW;
-                                const pdfY = pH - (o.y * pH); // Invertimos Y para PDF-Lib
+                                const pdfY = pH - (o.y * pH);
 
                                 if(o.type === 'check') {
                                     const w = fSym.widthOfTextAtSize('4', pSize);
@@ -1135,7 +1144,7 @@
                     }
 
                     Loader.show("Aplanando capas y sellando documento...");
-                    await new Promise(r => setTimeout(r, 600)); // Breve pausa de aplanado
+                    await new Promise(r => setTimeout(r, 600)); 
 
                     try { const form = pdfDoc.getForm(); if(form) form.flatten(); } catch(e){}
 
@@ -1156,12 +1165,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
