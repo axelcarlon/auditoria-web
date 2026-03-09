@@ -11,7 +11,6 @@
     <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="despertador.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -30,7 +29,8 @@
         body { margin: 0; padding: 0; background-color: var(--bg-primary); color: var(--text-main); font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden;}
         *, *::before, *::after { box-sizing: border-box; }
         
-        .login-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 20px; position: relative;}
+        /* FIX MÓVIL APLICADO: overflow: hidden para cortar el fondo que rompía la pantalla */
+        .login-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 20px; position: relative; overflow: hidden; width: 100%;}
         .login-wrapper::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 40px 40px; opacity: 0.05; z-index: 0; pointer-events: none;}
         .login-wrapper::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%); z-index: 0; pointer-events: none;}
 
@@ -102,7 +102,7 @@
                     <label class="remember-me">
                         <input type="checkbox" checked style="accent-color: var(--brand);"> Recordar sesión
                     </label>
-                    <a href="mailto:soporte@auditoriaxml.mx?subject=Recuperar%20Contraseña" class="forgot-pwd">¿Olvidaste tu contraseña?</a>
+                    <a href="/recuperar.html" class="forgot-pwd">¿Olvidaste tu contraseña?</a>
                 </div>
 
                 <button type="submit" class="btn-login" id="btnSubmit">
@@ -145,7 +145,7 @@
 
             // 2. LÓGICA DE INICIO DE SESIÓN
             form.addEventListener('submit', async (e) => {
-                e.preventDefault(); // Bloquea la recarga de página
+                e.preventDefault(); 
 
                 if (!supabase) return;
 
@@ -160,22 +160,17 @@
                 errorMsg.style.display = 'none';
 
                 try {
-                    // Consultamos a la base de datos de Supabase
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email: email,
                         password: password,
                     });
 
-                    // Si hay un error (contraseña incorrecta o correo no existe)
                     if (error) throw error;
 
-                    // LOGIN EXITOSO: 
-                    // Supabase automáticamente guarda la sesión segura en el navegador.
                     if(typeof window.showToast === 'function') {
                         window.showToast("Acceso Autorizado. Iniciando sistema...", "success");
                     }
                     
-                    // Lo mandamos de regreso al inicio (Dashboard)
                     setTimeout(() => {
                         window.location.href = "index.html"; 
                     }, 1000);
@@ -183,7 +178,6 @@
                 } catch (error) {
                     console.error("Fallo de Login:", error);
                     
-                    // Traducir los errores al español para el usuario
                     let msj = error.message;
                     if (msj === "Invalid login credentials") msj = "Correo o contraseña incorrectos.";
                     if (msj === "Email not confirmed") msj = "Por favor confirma tu correo electrónico primero.";
@@ -191,7 +185,6 @@
                     errorMsg.innerText = msj;
                     errorMsg.style.display = 'block';
                     
-                    // Restaurar el botón
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
