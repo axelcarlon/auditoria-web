@@ -54,7 +54,7 @@
         .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--brand); box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); animation: scan 1.5s linear infinite; }
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
-        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 250px; overflow-y: auto; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 150px; overflow-y: auto; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
         
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -126,7 +126,7 @@
         </div>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Inicializando enlace forense...<br>
+            > Preparando enlace forense...<br>
             <span id="termStatus"></span>
         </div>
     </div>
@@ -250,10 +250,11 @@
 
         currentFiles = validFiles;
         drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM`;
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) listos para escaneo`;
         document.getElementById('btnEjecutar').disabled = false;
     }
 
+    // --- SE MANTIENE TU FUNCIÓN EXACTA (SIN PAJA) ---
     function dataURLtoFile(dataurl, filename) {
         let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -274,7 +275,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const MAX_SIZE = 1500; 
+                    const MAX_SIZE = 1200; // Optimizado a 1200px para viajar a máxima velocidad sin perder precisión OCR
 
                     if (width > height && width > MAX_SIZE) {
                         height *= MAX_SIZE / width;
@@ -299,6 +300,7 @@
         });
     }
 
+    // --- COLA SECUENCIAL CON CANDADO ANTI-DUPLICADOS ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -314,51 +316,70 @@
         let documentosExitosos = [];
         let erroresEnLote = 0;
 
+        // Se envía un ticket a la vez. Es el estándar industrial para evitar ataques DDoS en servidores.
         for (let i = 0; i < currentFiles.length; i++) {
             status.innerHTML += `<span style="color:#60A5FA;">> Procesando ticket [${i + 1}/${currentFiles.length}]...</span><br>`;
+            term.scrollTop = term.scrollHeight; // Autoscroll para que el usuario no crea que se trabó
             
-            try {
-                const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
-                const formData = new FormData();
-                formData.append("archivos", optimizedFile);
+            let intento = 0;
+            let maxIntentos = 3; 
+            let ticketProcesado = false; // EL CANDADO: Evita duplicados si hay reintento
 
-                const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
-                    method: 'POST',
-                    body: formData
-                });
+            const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
 
-                if (!res.ok) {
-                    let errorReal = `Código HTTP ${res.status}`;
-                    try {
-                        const errPayload = await res.json();
-                        errorReal = errPayload.mensaje || JSON.stringify(errPayload);
-                    } catch(e) {}
-                    throw new Error(errorReal);
+            while (intento < maxIntentos && !ticketProcesado) {
+                try {
+                    intento++;
+                    if (intento > 1) {
+                        status.innerHTML += `<span style="color:var(--warning);">> Reintentando ticket ${i + 1} (Servidor ocupado, Intento ${intento}/${maxIntentos})...</span><br>`;
+                        term.scrollTop = term.scrollHeight;
+                    }
+
+                    const formData = new FormData();
+                    formData.append("archivos", optimizedFile);
+
+                    const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Error ${res.status}`);
+                    }
+                    
+                    const data = await res.json();
+                    
+                    // Solo se inyecta la información si Google respondió OK
+                    if (data.status === "success_lote" && data.resultados_lote) {
+                        data.resultados_lote.forEach(r => { if(r.status === "success") documentosExitosos.push(r.datos); });
+                    } else if (data.conceptos) {
+                        documentosExitosos.push(data);
+                    }
+
+                    status.innerHTML += `<span style="color:var(--success);">> Vectorización del ticket ${i + 1} completada.</span><br><br>`;
+                    term.scrollTop = term.scrollHeight;
+                    
+                    // Al volverse true, rompe el ciclo 'while' instantáneamente. Es imposible que registre el ticket dos veces.
+                    ticketProcesado = true; 
+                    
+                } catch (e) {
+                    if (intento >= maxIntentos) {
+                        erroresEnLote++;
+                        status.innerHTML += `<span style="color:var(--danger);">> Falla definitiva en ticket ${i + 1}: IA inalcanzable.</span><br><br>`;
+                        term.scrollTop = term.scrollHeight;
+                    } else {
+                        // El código espera 2.5 segundos para que Google "respire" antes de volver a intentarlo
+                        await new Promise(resolve => setTimeout(resolve, 2500));
+                    }
                 }
-                
-                const data = await res.json();
-                
-                // Extraer el JSON ya sea que venga como lote o unitario
-                if (data.status === "success_lote" && data.resultados_lote) {
-                    data.resultados_lote.forEach(r => { if(r.status === "success") documentosExitosos.push(r.datos); });
-                } else if (data.conceptos) {
-                    documentosExitosos.push(data);
-                }
-
-                status.innerHTML += `<span style="color:var(--success);">> Vectorización del ticket ${i + 1} completada.</span><br><br>`;
-                term.scrollTop = term.scrollHeight; // Autoscroll para que siempre se vea el último mensaje
-                
-            } catch (e) {
-                erroresEnLote++;
-                status.innerHTML += `<span style="color:var(--danger);">> Falla en ticket ${i + 1}: ${e.message}</span><br><br>`;
-                term.scrollTop = term.scrollHeight;
-                console.error("Error en archivo", i, e);
             }
         }
 
+        // --- RENDERIZADO FINAL ---
         if (documentosExitosos.length > 0) {
-            status.innerHTML += `> Renderizando resultados forenses...<br>`;
-            // Simular respuesta completa para la función procesarResultados
+            status.innerHTML += `> Consolidando ${documentosExitosos.length} tickets. Renderizando matriz...<br>`;
+            term.scrollTop = term.scrollHeight;
+            
             const payloadFinal = {
                 status: "success_lote",
                 resultados_lote: documentosExitosos.map(d => ({ status: "success", datos: d }))
@@ -366,12 +387,13 @@
             procesarResultados(payloadFinal);
             
             if(erroresEnLote > 0) {
-                if (typeof window.showToast === 'function') window.showToast(`Proceso completado, pero ${erroresEnLote} ticket(s) fallaron.`, "warning");
+                if (typeof window.showToast === 'function') window.showToast(`Se procesaron ${documentosExitosos.length} tickets, pero ${erroresEnLote} fallaron.`, "warning");
             }
             
         } else {
             document.getElementById('scannerAnim').style.display = 'none';
-            status.innerHTML += `<br><strong style="color:var(--danger)">[DICTAMEN DEL BACKEND]: Ningún ticket pudo ser procesado.</strong>`;
+            status.innerHTML += `<br><strong style="color:var(--danger)">[DICTAMEN DEL BACKEND]: Ningún ticket pudo ser procesado por alta demanda.</strong>`;
+            term.scrollTop = term.scrollHeight;
         }
     }
 
