@@ -254,7 +254,6 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- BYPASS BASE64: COMPRESIÓN INDESTRUCTIBLE ---
     function dataURLtoFile(dataurl, filename) {
         let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -290,7 +289,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Transformación a Base64 puro y reconstrucción manual
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     const compressedFile = dataURLtoFile(dataUrl, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
                     resolve(compressedFile);
@@ -301,7 +299,6 @@
         });
     }
 
-    // --- EJECUCIÓN DEL FLUJO CON COMPRESIÓN SEGURA ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -330,7 +327,15 @@
                 body: formData
             });
 
-            if (!res.ok) throw new Error("Fallo en el servidor de IA. Posible saturación.");
+            if (!res.ok) {
+                // MODIFICACIÓN QUIRÚRGICA: Leer el mensaje real de Python
+                let errorReal = `Código HTTP ${res.status}`;
+                try {
+                    const errPayload = await res.json();
+                    errorReal = errPayload.mensaje || JSON.stringify(errPayload);
+                } catch(e) {}
+                throw new Error(errorReal);
+            }
             
             const data = await res.json();
             procesarResultados(data);
@@ -338,8 +343,7 @@
         } catch (e) {
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Servidor saturado. Intente de nuevo en un momento.</strong>`;
-            if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
+            term.innerHTML += `<br><strong style="color:var(--warning)">[DICTAMEN DEL BACKEND]: ${e.message}</strong><br><span style="color:var(--text-muted); font-size:12px;">Este mensaje viene directo de tu archivo main.py</span>`;
         }
     }
 
