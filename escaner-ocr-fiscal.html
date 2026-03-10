@@ -126,7 +126,7 @@
         </div>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Inicializando enlace forense...<br>
+            > Conectando con Motor de Visión IA...<br>
             <span id="termStatus"></span>
         </div>
     </div>
@@ -250,12 +250,19 @@
 
         currentFiles = validFiles;
         drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) listos para OCR`;
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM`;
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- COMPRESIÓN SEGURA Y LIGERA SIN DESBORDAR RAM ---
-    async function comprimirImagenSegura(file) {
+    // --- BYPASS BASE64: COMPRESIÓN INDESTRUCTIBLE ---
+    function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+        return new File([u8arr], filename, {type:mime});
+    }
+
+    async function comprimirImagenBase64(file) {
         if (file.type === 'application/pdf') return file;
 
         return new Promise((resolve) => {
@@ -268,7 +275,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const MAX_SIZE = 1200; 
+                    const MAX_SIZE = 1500; 
 
                     if (width > height && width > MAX_SIZE) {
                         height *= MAX_SIZE / width;
@@ -283,13 +290,10 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Convierte el lienzo nativamente a Blob sin usar bucles pesados
-                    canvas.toBlob((blob) => {
-                        if (!blob) return resolve(file);
-                        const fileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
-                        const compressedFile = new File([blob], fileName, { type: 'image/jpeg' });
-                        resolve(compressedFile);
-                    }, 'image/jpeg', 0.7);
+                    // Transformación a Base64 puro y reconstrucción manual
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedFile = dataURLtoFile(dataUrl, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+                    resolve(compressedFile);
                 };
                 img.onerror = () => resolve(file);
             };
@@ -297,7 +301,7 @@
         });
     }
 
-    // --- ENVÍO EN LOTE ÚNICO (Como lo procesa tu backend) ---
+    // --- EJECUCIÓN DEL FLUJO CON COMPRESIÓN SEGURA ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -310,35 +314,32 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Optimizando y empaquetando ${currentFiles.length} imágenes...<br>`;
+        status.innerHTML = `> Empaquetando y optimizando matriz de imágenes...<br>`;
+
+        const formData = new FormData();
+        for (let i = 0; i < currentFiles.length; i++) {
+            const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
+            formData.append("archivos", optimizedFile);
+        }
+
+        status.innerHTML += `> Transfiriendo a Motor Visión IA...`;
 
         try {
-            const formData = new FormData();
-            for (let i = 0; i < currentFiles.length; i++) {
-                const optimizedFile = await comprimirImagenSegura(currentFiles[i]);
-                formData.append("archivos", optimizedFile);
-            }
-
-            status.innerHTML += `> Transfiriendo lote al Motor Visión IA...<br>`;
-
             const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
                 method: 'POST',
                 body: formData
             });
 
-            if (!res.ok) {
-                // Atrapa el error HTTP exacto si Gemini limita la cuota por múltiples fotos
-                throw new Error(`El servidor rechazó el lote (Cód. ${res.status}). Es posible que se haya alcanzado el límite de peticiones.`);
-            }
+            if (!res.ok) throw new Error("Fallo en el servidor de IA. Posible saturación.");
             
-            status.innerHTML += `> Extrayendo vectores completado.<br>`;
             const data = await res.json();
             procesarResultados(data);
 
         } catch (e) {
-            console.error("Detalle técnico del fallo:", e);
+            console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: Falló la conexión con el motor IA.</strong><br><span style="color:var(--text-muted); font-size:12px;">Razones comunes: Múltiples fotos excedieron el tiempo de respuesta, o la cuota del servidor está saturada.</span><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Reintentar</button>`;
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Servidor saturado. Intente de nuevo en un momento.</strong>`;
+            if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
         }
     }
 
@@ -356,7 +357,7 @@
         } else if (data.conceptos) {
             docs.push(data);
         } else {
-            throw new Error("Respuesta del servidor en formato incorrecto.");
+            throw new Error("Estructura JSON irreconocible.");
         }
 
         auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
