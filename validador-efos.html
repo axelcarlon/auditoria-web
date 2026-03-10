@@ -41,6 +41,25 @@
         .header-section { text-align: center; margin-bottom: 50px; }
         .header-badge { display: inline-block; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--brand); color: #FCA5A5; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;}
         
+        /* BLOQUE NUEVO: BÚSQUEDA MANUAL */
+        .search-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
+        .search-title { font-size: 18px; font-weight: 800; margin: 0 0 15px 0; color: var(--text-main); }
+        .search-bar { display: flex; gap: 15px; }
+        .search-input { flex: 1; background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 8px; font-size: 16px; font-family: monospace; text-transform: uppercase; transition: 0.3s; }
+        .search-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+        .btn-search { background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 30px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+        .btn-search:hover { background: var(--brand); color: white; border-color: var(--brand); }
+        
+        .manual-result { margin-top: 20px; display: none; padding: 20px; border-radius: 8px; border-left: 4px solid transparent; font-family: monospace; font-size: 14px;}
+        .manual-ok { background: rgba(16, 185, 129, 0.1); border-left-color: var(--success); color: #34D399; }
+        .manual-bad { background: rgba(239, 68, 68, 0.1); border-left-color: var(--danger); color: #FCA5A5; animation: pulseBg 2s infinite; }
+        @keyframes pulseBg { 0% { background: rgba(239, 68, 68, 0.1); } 50% { background: rgba(239, 68, 68, 0.2); } 100% { background: rgba(239, 68, 68, 0.1); } }
+
+        .divider-text { text-align: center; color: var(--text-muted); margin: 30px 0; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; }
+        .divider-text::before, .divider-text::after { content: ''; flex: 1; height: 1px; background: var(--border); margin: 0 20px; }
+
+        /* FIN BLOQUE NUEVO */
+
         .upload-section { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 2px dashed rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 50px 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px;}
         .upload-section:hover { border-color: var(--brand); background: rgba(30, 41, 59, 0.8); }
         .upload-section.filled { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
@@ -74,8 +93,6 @@
         .badge-ok { background: rgba(16, 185, 129, 0.1); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);}
         .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); animation: pulseAlert 2s infinite;}
         
-        @keyframes pulseAlert { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-
         .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
         .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
@@ -93,6 +110,7 @@
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
 
         @media (max-width: 768px) {
+            .search-bar { flex-direction: column; }
             .btn-toolbar { flex-direction: column; }
         }
     </style>
@@ -116,11 +134,25 @@
         <div id="countDB" style="color: var(--text-muted);">Esperando carga</div>
     </div>
 
+    <div class="search-section" id="searchSection">
+        <h3 class="search-title">Búsqueda Rápida por RFC</h3>
+        <div class="search-bar">
+            <input type="text" id="rfcInput" class="search-input" placeholder="Ej: AAA121206EV5" maxlength="13">
+            <button class="btn-search" onclick="buscarRFCMAnual()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                Validar RFC
+            </button>
+        </div>
+        <div id="manualResult" class="manual-result"></div>
+    </div>
+
+    <div class="divider-text">O AUDITA TUS FACTURAS MASIVAMENTE</div>
+
     <div id="mainForm">
         <div class="upload-section" id="dropZone">
             <svg width="64" height="64" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             <h3 style="margin: 0 0 10px; font-size: 20px;">Anexar XMLs de Gastos</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus facturas recibidas (compras y gastos) para extraer los RFC de tus proveedores.</p>
+            <p style="font-size: 14px; color: var(--text-muted); margin: 0 0 15px;">Sube tus facturas recibidas (compras y gastos) para extraer los RFC de tus proveedores y validarlos en bloque.</p>
             <input type="file" id="inputFile" accept=".xml" multiple style="display: none;">
             <div id="statusFile" style="font-weight: 900; color: var(--brand);"></div>
         </div>
@@ -220,6 +252,14 @@
             pdfMake.vfs = pdfMakeFonts.pdfMake.vfs;
         }
 
+        // Permite buscar presionando "Enter" en el teclado
+        document.getElementById("rfcInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                buscarRFCMAnual();
+            }
+        });
+
         fetch('efos.json')
             .then(res => {
                 if(!res.ok) throw new Error("HTTP Status " + res.status);
@@ -257,6 +297,35 @@
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
+    // FUNCIÓN DE BÚSQUEDA MANUAL DE RFC
+    function buscarRFCMAnual() {
+        if (!dbLoaded) {
+            if (typeof window.showToast === 'function') window.showToast("La base de datos aún no ha cargado. Espera un segundo.", "warning");
+            return;
+        }
+
+        const inputObj = document.getElementById('rfcInput');
+        const rawText = inputObj.value.trim().toUpperCase();
+        const resultBox = document.getElementById('manualResult');
+
+        if(rawText.length < 12) {
+            if (typeof window.showToast === 'function') window.showToast("Introduce un RFC válido (12 o 13 caracteres).", "error");
+            return;
+        }
+
+        resultBox.style.display = 'block';
+        resultBox.className = 'manual-result'; // Reset classes
+
+        if (blacklistSAT.has(rawText)) {
+            resultBox.classList.add('manual-bad');
+            resultBox.innerHTML = `<strong>¡PELIGRO TRIBUTARIO!</strong><br>El RFC <strong>${rawText}</strong> se encuentra en el Listado Definitivo de EFOS (Art. 69-B) del SAT.<br><span style="font-size:12px; margin-top:8px; display:block;">Sugerencia: Detén cualquier operación con este contribuyente de inmediato.</span>`;
+        } else {
+            resultBox.classList.add('manual-ok');
+            resultBox.innerHTML = `<strong>PROVEEDOR LIMPIO</strong><br>El RFC <strong>${rawText}</strong> NO se encuentra en la lista negra del SAT. Es seguro operar.`;
+        }
+    }
+
+
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
     
@@ -284,6 +353,8 @@
 
     async function ejecutarAuditoriaEFOS() {
         document.getElementById('headerSection').style.display = 'none';
+        document.getElementById('searchSection').style.display = 'none';
+        document.querySelector('.divider-text').style.display = 'none';
         document.getElementById('btnEjecutar').style.display = 'none';
         drop.style.display = 'none';
         
@@ -469,7 +540,3 @@
 </script>
 </body>
 </html>
-
-
-
-
