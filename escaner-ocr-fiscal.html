@@ -126,7 +126,7 @@
         </div>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Conectando con Motor de Visión IA...<br>
+            > Preparando entorno de conexión...<br>
             <span id="termStatus"></span>
         </div>
     </div>
@@ -250,11 +250,10 @@
 
         currentFiles = validFiles;
         drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) en RAM`;
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) listos`;
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- BYPASS BASE64: COMPRESIÓN INDESTRUCTIBLE ---
     function dataURLtoFile(dataurl, filename) {
         let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -300,7 +299,7 @@
         });
     }
 
-    // --- EJECUCIÓN DEL FLUJO: IA REAL CON REINTENTO INTELIGENTE (SMART POLLING) ---
+    // FLUJO PURO Y DIRECTO
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -313,58 +312,39 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Empaquetando y optimizando matriz de imágenes...<br>`;
+        status.innerHTML = `> Optimizando archivo y preparando payload...<br>`;
 
-        const formData = new FormData();
-        for (let i = 0; i < currentFiles.length; i++) {
-            const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
-            formData.append("archivos", optimizedFile);
-        }
-
-        status.innerHTML += `> Transfiriendo a Motor Visión IA...<br>`;
-
-        const urlAPI = "https://fastapi-susu.onrender.com/api/ocr-fiscal";
-        let attempts = 0;
-        const maxAttempts = 4; // Intentará hasta 4 veces para darle tiempo a Render de despertar
-        let dataResult = null;
-
-        while (attempts < maxAttempts) {
-            try {
-                attempts++;
-                if (attempts > 1) {
-                    status.innerHTML += `> Reiniciando nodos de IA. Petición ${attempts}/${maxAttempts}...<br>`;
-                }
-
-                const res = await fetch(urlAPI, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (res.ok) {
-                    dataResult = await res.json();
-                    break; // Salió bien, rompemos el bucle
-                } else {
-                    throw new Error(`HTTP Error: ${res.status}`);
-                }
-
-            } catch (err) {
-                // Si el error es una desconexión o el servidor está dormido (Failed to fetch)
-                if (attempts >= maxAttempts) {
-                    document.getElementById('scannerAnim').style.display = 'none';
-                    term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: El motor de IA no responde. Intente nuevamente más tarde.</strong><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
-                    if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
-                    return; // Terminamos la función
-                }
-                
-                // Si falló pero quedan intentos, esperamos 8 segundos antes del siguiente
-                status.innerHTML += `> Enrutando por zona segura (Espera de calibración)...<br>`;
-                await new Promise(resolve => setTimeout(resolve, 8000));
+        try {
+            const formData = new FormData();
+            for (let i = 0; i < currentFiles.length; i++) {
+                const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
+                formData.append("archivos", optimizedFile);
             }
-        }
 
-        // Si logramos salir del bucle con data, procesamos los resultados
-        if (dataResult) {
-            procesarResultados(dataResult);
+            status.innerHTML += `> Estableciendo enlace seguro con IA...<br>`;
+
+            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!res.ok) {
+                const errTxt = await res.text();
+                throw new Error(`Servidor IA retornó estatus: ${res.status}`);
+            }
+            
+            status.innerHTML += `> Extrayendo vectores completado.<br>`;
+            const data = await res.json();
+            procesarResultados(data);
+
+        } catch (e) {
+            console.error("Detalle técnico del fallo:", e);
+            document.getElementById('scannerAnim').style.display = 'none';
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: ${e.message}</strong><br><span style="color:var(--text-muted); font-size:11px;">Asegúrese de no tener un AdBlocker o extensión que bloquee la conexión hacia el dominio de la API.</span><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
+            if (typeof window.showToast === 'function') window.showToast("Conexión interrumpida por la red.", "error");
         }
     }
 
@@ -382,7 +362,7 @@
         } else if (data.conceptos) {
             docs.push(data);
         } else {
-            throw new Error("Estructura JSON irreconocible.");
+            throw new Error("Respuesta del servidor en formato incorrecto.");
         }
 
         auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
