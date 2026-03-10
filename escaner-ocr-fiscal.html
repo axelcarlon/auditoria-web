@@ -301,7 +301,7 @@
         });
     }
 
-    // --- EJECUCIÓN DEL FLUJO CON COMPRESIÓN SEGURA ---
+    // --- EJECUCIÓN DEL FLUJO CONIA REAL (SIN MOCKS) ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -322,23 +322,39 @@
             formData.append("archivos", optimizedFile);
         }
 
-        status.innerHTML += `> Transfiriendo a Motor Visión IA...`;
+        status.innerHTML += `> Transfiriendo a Motor Visión IA...<br>`;
+
+        // Efecto visual para el video mientras el servidor despierta (hasta 60s)
+        let dotCount = 0;
+        const intervalId = setInterval(() => {
+            dotCount++;
+            if(dotCount === 1) status.innerHTML += `> Conectando con nodos de IA...<br>`;
+            if(dotCount === 3) status.innerHTML += `> Calibrando red neuronal (El servidor puede tardar 50s en arrancar)...<br>`;
+            if(dotCount > 3) status.innerHTML += `. `;
+        }, 3000);
 
         try {
+            // Petición real al servidor, sin límite de tiempo artificial
             const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
                 method: 'POST',
                 body: formData
             });
+            
+            clearInterval(intervalId);
 
-            if (!res.ok) throw new Error("Fallo en el servidor de IA. Posible saturación.");
+            if (!res.ok) {
+                const errTxt = await res.text();
+                throw new Error(`Fallo en el servidor IA: ${res.status}`);
+            }
             
             const data = await res.json();
             procesarResultados(data);
 
         } catch (e) {
+            clearInterval(intervalId);
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: Servidor saturado. Intente de nuevo en un momento.</strong>`;
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: ${e.message}. Intente de nuevo en 1 minuto.</strong><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
             if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
         }
     }
@@ -519,7 +535,3 @@
 </script>
 </body>
 </html>
-
-
-
-
