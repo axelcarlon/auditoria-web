@@ -126,7 +126,7 @@
         </div>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Conectando con Motor de Visión IA...<br>
+            > Inicializando enlace forense...<br>
             <span id="termStatus"></span>
         </div>
     </div>
@@ -328,7 +328,6 @@
             });
 
             if (!res.ok) {
-                // MODIFICACIÓN QUIRÚRGICA: Leer el mensaje real de Python
                 let errorReal = `Código HTTP ${res.status}`;
                 try {
                     const errPayload = await res.json();
@@ -343,7 +342,14 @@
         } catch (e) {
             console.error(e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--warning)">[DICTAMEN DEL BACKEND]: ${e.message}</strong><br><span style="color:var(--text-muted); font-size:12px;">Este mensaje viene directo de tu archivo main.py</span>`;
+            
+            // ESTILIZACIÓN ELEGANTE DEL ERROR DE CUOTA
+            let userMessage = e.message;
+            if (userMessage.includes("429") || userMessage.includes("RESOURCE_EXHAUSTED")) {
+                userMessage = "Límite de cuota excedido en el motor de Inteligencia Artificial. Por favor, espere 1 minuto o actualice la llave API a un plan de pago en Google AI Studio.";
+            }
+            
+            term.innerHTML += `<br><br><strong style="color:var(--warning)">[ALERTA DEL SISTEMA]: ${userMessage}</strong><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
         }
     }
 
