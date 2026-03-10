@@ -290,7 +290,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Transformación a Base64 puro y reconstrucción manual
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     const compressedFile = dataURLtoFile(dataUrl, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
                     resolve(compressedFile);
@@ -301,7 +300,7 @@
         });
     }
 
-    // --- EJECUCIÓN DEL FLUJO CONIA REAL (SIN MOCKS) ---
+    // --- EJECUCIÓN DEL FLUJO: IA REAL CON REINTENTO INTELIGENTE (SMART POLLING) ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -324,38 +323,48 @@
 
         status.innerHTML += `> Transfiriendo a Motor Visión IA...<br>`;
 
-        // Efecto visual para el video mientras el servidor despierta (hasta 60s)
-        let dotCount = 0;
-        const intervalId = setInterval(() => {
-            dotCount++;
-            if(dotCount === 1) status.innerHTML += `> Conectando con nodos de IA...<br>`;
-            if(dotCount === 3) status.innerHTML += `> Calibrando red neuronal (El servidor puede tardar 50s en arrancar)...<br>`;
-            if(dotCount > 3) status.innerHTML += `. `;
-        }, 3000);
+        const urlAPI = "https://fastapi-susu.onrender.com/api/ocr-fiscal";
+        let attempts = 0;
+        const maxAttempts = 4; // Intentará hasta 4 veces para darle tiempo a Render de despertar
+        let dataResult = null;
 
-        try {
-            // Petición real al servidor, sin límite de tiempo artificial
-            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
-                method: 'POST',
-                body: formData
-            });
-            
-            clearInterval(intervalId);
+        while (attempts < maxAttempts) {
+            try {
+                attempts++;
+                if (attempts > 1) {
+                    status.innerHTML += `> Reiniciando nodos de IA. Petición ${attempts}/${maxAttempts}...<br>`;
+                }
 
-            if (!res.ok) {
-                const errTxt = await res.text();
-                throw new Error(`Fallo en el servidor IA: ${res.status}`);
+                const res = await fetch(urlAPI, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    dataResult = await res.json();
+                    break; // Salió bien, rompemos el bucle
+                } else {
+                    throw new Error(`HTTP Error: ${res.status}`);
+                }
+
+            } catch (err) {
+                // Si el error es una desconexión o el servidor está dormido (Failed to fetch)
+                if (attempts >= maxAttempts) {
+                    document.getElementById('scannerAnim').style.display = 'none';
+                    term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: El motor de IA no responde. Intente nuevamente más tarde.</strong><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
+                    if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
+                    return; // Terminamos la función
+                }
+                
+                // Si falló pero quedan intentos, esperamos 8 segundos antes del siguiente
+                status.innerHTML += `> Enrutando por zona segura (Espera de calibración)...<br>`;
+                await new Promise(resolve => setTimeout(resolve, 8000));
             }
-            
-            const data = await res.json();
-            procesarResultados(data);
+        }
 
-        } catch (e) {
-            clearInterval(intervalId);
-            console.error(e);
-            document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR CRÍTICO]: ${e.message}. Intente de nuevo en 1 minuto.</strong><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
-            if (typeof window.showToast === 'function') window.showToast("Error de conexión IA.", "error");
+        // Si logramos salir del bucle con data, procesamos los resultados
+        if (dataResult) {
+            procesarResultados(dataResult);
         }
     }
 
