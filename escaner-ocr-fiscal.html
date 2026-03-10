@@ -126,7 +126,7 @@
         </div>
 
         <div class="terminal-loader" id="terminalLoader">
-            > Preparando entorno de conexión...<br>
+            > Inicializando enlace forense...<br>
             <span id="termStatus"></span>
         </div>
     </div>
@@ -250,18 +250,12 @@
 
         currentFiles = validFiles;
         drop.classList.add('filled');
-        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) listos`;
+        document.getElementById('statusFile').innerText = `${currentFiles.length} documento(s) listos para OCR`;
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    function dataURLtoFile(dataurl, filename) {
-        let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while(n--){ u8arr[n] = bstr.charCodeAt(n); }
-        return new File([u8arr], filename, {type:mime});
-    }
-
-    async function comprimirImagenBase64(file) {
+    // --- COMPRESIÓN NATIVA CON toBlob (Cero bloqueos de RAM) ---
+    async function comprimirImagen(file) {
         if (file.type === 'application/pdf') return file;
 
         return new Promise((resolve) => {
@@ -274,7 +268,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const MAX_SIZE = 1500; 
+                    const MAX_SIZE = 1200; 
 
                     if (width > height && width > MAX_SIZE) {
                         height *= MAX_SIZE / width;
@@ -289,9 +283,13 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                    const compressedFile = dataURLtoFile(dataUrl, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
-                    resolve(compressedFile);
+                    // Generamos el archivo directamente desde el buffer nativo, evitando el cuello de botella
+                    canvas.toBlob((blob) => {
+                        if(!blob) return resolve(file);
+                        const fileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                        const compressedFile = new File([blob], fileName, { type: 'image/jpeg' });
+                        resolve(compressedFile);
+                    }, 'image/jpeg', 0.6);
                 };
                 img.onerror = () => resolve(file);
             };
@@ -299,7 +297,6 @@
         });
     }
 
-    // FLUJO PURO Y DIRECTO
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -312,13 +309,13 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Optimizando archivo y preparando payload...<br>`;
+        status.innerHTML = `> Rasterizando lotes de imagen...<br>`;
 
         try {
             const formData = new FormData();
             for (let i = 0; i < currentFiles.length; i++) {
-                const optimizedFile = await comprimirImagenBase64(currentFiles[i]);
-                formData.append("archivos", optimizedFile);
+                const fileO = await comprimirImagen(currentFiles[i]);
+                formData.append("archivos", fileO);
             }
 
             status.innerHTML += `> Estableciendo enlace seguro con IA...<br>`;
@@ -332,19 +329,18 @@
             });
 
             if (!res.ok) {
-                const errTxt = await res.text();
-                throw new Error(`Servidor IA retornó estatus: ${res.status}`);
+                throw new Error(`Código del servidor: ${res.status}`);
             }
             
-            status.innerHTML += `> Extrayendo vectores completado.<br>`;
+            status.innerHTML += `> Vectores extraídos. Renderizando tabla...<br>`;
             const data = await res.json();
             procesarResultados(data);
 
         } catch (e) {
-            console.error("Detalle técnico del fallo:", e);
+            console.error("Fallo de red:", e);
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR]: ${e.message}</strong><br><span style="color:var(--text-muted); font-size:11px;">Asegúrese de no tener un AdBlocker o extensión que bloquee la conexión hacia el dominio de la API.</span><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
-            if (typeof window.showToast === 'function') window.showToast("Conexión interrumpida por la red.", "error");
+            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR EN LA RED]: Conexión rechazada.</strong><br><span style="color:var(--text-muted); font-size:12px;">El paquete de imágenes no pudo ser enviado correctamente. Inténtelo de nuevo.</span><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
+            if (typeof window.showToast === 'function') window.showToast("Error de transmisión.", "error");
         }
     }
 
@@ -362,7 +358,7 @@
         } else if (data.conceptos) {
             docs.push(data);
         } else {
-            throw new Error("Respuesta del servidor en formato incorrecto.");
+            throw new Error("Formato JSON incompatible.");
         }
 
         auditoriaDatos = { totalImpreso: 0, totalNoDeducible: 0, baseDeducible: 0, conceptos: [] };
