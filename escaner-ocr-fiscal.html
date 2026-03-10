@@ -54,7 +54,7 @@
         .scanner-line { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--brand); box-shadow: 0 0 20px var(--brand), 0 0 40px var(--brand); animation: scan 1.5s linear infinite; }
         @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
-        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 150px; overflow-y: auto; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
+        .terminal-loader { display: none; font-family: monospace; color: var(--brand); background: #000000; padding: 25px; border-radius: 12px; margin-top: 20px; text-align: left; height: 200px; overflow-y: auto; border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); font-size: 13px; line-height: 1.6; }
         
         .results-container { display: none; margin-top: 40px; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -254,49 +254,54 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
-    // --- COMPRESIÓN NATIVA CON toBlob (Cero bloqueos de RAM) ---
+    // --- COMPRESIÓN NATIVA CON URL OBJ Y toBlob (Limpia memoria al instante) ---
     async function comprimirImagen(file) {
         if (file.type === 'application/pdf') return file;
 
         return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const MAX_SIZE = 1200; 
+            const img = new Image();
+            // Esto evita leer todo el base64 a la RAM, creando un enlace directo en C++
+            const objectUrl = URL.createObjectURL(file);
+            img.src = objectUrl;
+            
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl); // Libera la RAM inmediatamente
+                
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_SIZE = 1200; 
 
-                    if (width > height && width > MAX_SIZE) {
-                        height *= MAX_SIZE / width;
-                        width = MAX_SIZE;
-                    } else if (height > MAX_SIZE) {
-                        width *= MAX_SIZE / height;
-                        height = MAX_SIZE;
-                    }
+                if (width > height && width > MAX_SIZE) {
+                    height *= MAX_SIZE / width;
+                    width = MAX_SIZE;
+                } else if (height > MAX_SIZE) {
+                    width *= MAX_SIZE / height;
+                    height = MAX_SIZE;
+                }
 
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
 
-                    // Generamos el archivo directamente desde el buffer nativo, evitando el cuello de botella
-                    canvas.toBlob((blob) => {
-                        if(!blob) return resolve(file);
-                        const fileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
-                        const compressedFile = new File([blob], fileName, { type: 'image/jpeg' });
-                        resolve(compressedFile);
-                    }, 'image/jpeg', 0.6);
-                };
-                img.onerror = () => resolve(file);
+                // Convertimos directo a Archivo Binario (Blob), sin tocar texto Base64
+                canvas.toBlob((blob) => {
+                    if(!blob) return resolve(file);
+                    const fileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                    const compressedFile = new File([blob], fileName, { type: 'image/jpeg' });
+                    resolve(compressedFile);
+                }, 'image/jpeg', 0.6);
             };
-            reader.onerror = () => resolve(file);
+            
+            img.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                resolve(file);
+            };
         });
     }
 
+    // --- ENVÍO SECUENCIAL ASÍNCRONO (Anti-Cuello de Botella) ---
     async function iniciarEscaneo() {
         if(currentFiles.length === 0) return;
         
@@ -309,37 +314,58 @@
         const status = document.getElementById('termStatus');
         term.style.display = 'block';
         
-        status.innerHTML = `> Rasterizando lotes de imagen...<br>`;
+        let documentosProcesados = [];
 
-        try {
-            const formData = new FormData();
-            for (let i = 0; i < currentFiles.length; i++) {
-                const fileO = await comprimirImagen(currentFiles[i]);
-                formData.append("archivos", fileO);
-            }
-
-            status.innerHTML += `> Estableciendo enlace seguro con IA...<br>`;
-
-            const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!res.ok) {
-                throw new Error(`Código del servidor: ${res.status}`);
-            }
+        // Procesamos UNO POR UNO para no saturar el servidor ni tumbar la conexión
+        for (let i = 0; i < currentFiles.length; i++) {
+            status.innerHTML = `> Optimizando imagen ${i + 1} de ${currentFiles.length}...<br>`;
             
-            status.innerHTML += `> Vectores extraídos. Renderizando tabla...<br>`;
-            const data = await res.json();
-            procesarResultados(data);
+            try {
+                const fileO = await comprimirImagen(currentFiles[i]);
+                const formData = new FormData();
+                formData.append("archivos", fileO);
 
-        } catch (e) {
-            console.error("Fallo de red:", e);
+                status.innerHTML += `> Extrayendo vectores OCR (Ticket ${i + 1}/${currentFiles.length})...<br>`;
+
+                const res = await fetch("https://fastapi-susu.onrender.com/api/ocr-fiscal", {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Servidor IA retornó estatus: ${res.status}`);
+                }
+                
+                const data = await res.json();
+                
+                // Extraemos la respuesta individual y la guardamos en la matriz global
+                if (data.status === "success_lote" && data.resultados_lote) {
+                    data.resultados_lote.forEach(r => { if(r.status === "success") documentosProcesados.push(r.datos); });
+                } else if (data.conceptos) {
+                    documentosProcesados.push(data);
+                }
+                
+                status.innerHTML += `<span style="color:var(--success)">> Ticket ${i + 1} procesado con éxito.</span><br><br>`;
+                
+            } catch (err) {
+                status.innerHTML += `<span style="color:var(--danger)">> Falla en ticket ${i + 1}: ${err.message}</span><br><br>`;
+                console.error("Error en archivo ", i, err);
+            }
+        }
+
+        // Si logramos procesar al menos un documento, pintamos la tabla
+        if (documentosProcesados.length > 0) {
+            status.innerHTML += `> Renderizando tabla forense...<br>`;
+            // Simulamos la estructura de un lote completo para reciclar tu función original intacta
+            const dataFinal = {
+                status: "success_lote",
+                resultados_lote: documentosProcesados.map(d => ({ status: "success", datos: d }))
+            };
+            procesarResultados(dataFinal);
+        } else {
             document.getElementById('scannerAnim').style.display = 'none';
-            term.innerHTML += `<br><strong style="color:var(--danger)">[ERROR EN LA RED]: Conexión rechazada.</strong><br><span style="color:var(--text-muted); font-size:12px;">El paquete de imágenes no pudo ser enviado correctamente. Inténtelo de nuevo.</span><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
+            term.innerHTML += `<strong style="color:var(--danger)">[ERROR CRÍTICO]: Ningún documento pudo ser procesado. Verifique su red y vuelva a intentarlo.</strong><br><button onclick="window.location.reload()" class="btn-secondary" style="margin-top:15px; padding: 10px;">Volver a Intentar</button>`;
             if (typeof window.showToast === 'function') window.showToast("Error de transmisión.", "error");
         }
     }
