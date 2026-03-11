@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Inicialización segura de variables
     if (localStorage.getItem('auditoria_creditos') === null) {
-        localStorage.setItem('auditoria_creditos', '3');
+        localStorage.setItem('auditoria_creditos', '5'); // AUMENTADO A 5 INTENTOS
     }
     if (localStorage.getItem('auditoria_pro') === null) {
         localStorage.setItem('auditoria_pro', 'false');
