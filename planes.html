@@ -462,7 +462,8 @@
     function activarLicencia() {
         const codeInput = document.getElementById('activationCode').value.trim().toUpperCase();
         
-        // AQUÍ PONES LA PALABRA CLAVE QUE QUIERAS. Yo puse AUDITORIA-2024
+        // LA CONTRASEÑA ESTRICTA. 
+        // Solo esta palabra exacta en mayúsculas funcionará.
         const secretCode = "AUDITORIA-2024";
 
         if (codeInput === secretCode) {
@@ -475,9 +476,9 @@
                 alert("¡Licencia PRO activada con éxito!");
             }
             
-            // Lo mandamos al Dashboard después de 1 segundo
+            // REDIRECCIÓN EXACTA AL DASHBOARD
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "https://auditoriaxml.mx/dashboard-xml";
             }, 1000);
 
         } else {
