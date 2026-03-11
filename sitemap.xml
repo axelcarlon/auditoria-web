@@ -38,6 +38,7 @@
     <url><loc>https://auditoriaxml.mx/visor-xml</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
 
     <url><loc>https://auditoriaxml.mx/articulos/</loc><changefreq>weekly</changefreq><priority>0.80</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/deteccion-efos-listas-negras-art-69-b</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
     <url><loc>https://auditoriaxml.mx/articulos/auditoria-cfdi-despachos-contables</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
     <url><loc>https://auditoriaxml.mx/articulos/multas-discrepancia-fiscal-cfdi</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
     <url><loc>https://auditoriaxml.mx/articulos/proteccion-empresas-art-30-b-cff</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
