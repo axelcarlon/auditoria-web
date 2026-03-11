@@ -132,11 +132,29 @@ function inyectarPaywallGlobal() {
         .btn-paywall-close:hover { color: white; }
 
         .paywall-features {
-            display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; text-align: left;
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; text-align: left;
             background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid #27272A;
         }
         .paywall-feature-item {
             display: flex; align-items: center; gap: 10px; color: #E2E8F0; font-size: 13px; font-weight: 600;
+        }
+
+        /* NUEVA ETIQUETA: 30 DÍAS GRATIS */
+        .paywall-trial-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34D399;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
     </style>
 
@@ -161,6 +179,11 @@ function inyectarPaywallGlobal() {
                     <svg width="16" height="16" fill="none" stroke="#10B981" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                     Prioridad de Hardware (Zero-Latency)
                 </div>
+            </div>
+
+            <div class="paywall-trial-badge">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Incluye 30 días de prueba gratis
             </div>
 
             <a href="planes.html" class="btn-paywall-pro">
