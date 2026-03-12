@@ -286,10 +286,14 @@
                 if(dateMatch && amountMatches && amountMatches.length >= 1) {
                     const fecha = dateMatch[0];
                     
-                    // 1. Limpiar descripción: Quitar fecha primero (Corrección Aplicada Aquí)
-                    // Usamos RegExp global para quitar la fecha en toda la línea, ignorando espacios al inicio
+                    // 1. Limpiar descripción: Quitar fecha primero
                     let desc = line.replace(new RegExp(fecha.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '');
                     
+                    // 1.5 Limpieza extra para años residuales o fechas al inicio (Corrige el "2018" o "01 ABR" suelto)
+                    desc = desc.replace(/^\s*\b(20\d{2})\b/g, ''); // Quita años sueltos al inicio
+                    desc = desc.replace(/^\s*\b\d{2}\s+(ENE|FEB|MAR|ABR|MAY|JUN|JUL|AGO|SEP|OCT|NOV|DIC)\b/gi, ''); // Quita fechas residuales en texto
+                    desc = desc.replace(/^\s*\d{2}[\/|\-]\d{2}\b/g, ''); // Quita fechas residuales cortas
+
                     // 2. Extirpar TODOS los montos de la descripción
                     const amounts = amountMatches.map(a => {
                         desc = desc.replace(a, ''); 
