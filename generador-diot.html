@@ -25,6 +25,9 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -68,9 +71,21 @@
         td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0;}
         .td-mono { font-family: monospace; text-align: right; font-weight: bold;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        
+        .btn-pdf { background: #10B981; color: #064E3B; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
+        .btn-pdf:hover { background: #059669; color: white; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);}
+        .btn-pdf:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-excel-pro { background: #3B82F6; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);}
+        .btn-excel-pro:hover { background: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -83,12 +98,9 @@
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
-        .bento-icon { width: 48px; height: 48px; background: rgba(16, 185, 129, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
-        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 768px) {
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
             .audit-banner { flex-direction: column; text-align: center; }
         }
     </style>
@@ -171,13 +183,17 @@
             </table>
         </div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Nuevo Mes</button>
-            <button onclick="descargarExcelDIOT()" class="btn-secondary" style="border-color: #065F46;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Papel de Trabajo (Excel)
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">Nuevo Mes</button>
+            <button onclick="descargarExcelCrudo()" class="btn-crudo">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
             </button>
-            <button onclick="descargarTxtDIOT()" class="btn-action" style="flex: 2;">
+            <button onclick="exportarPlantillaPro()" class="btn-excel-pro">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PLANTILLA EXCEL (PRO)
+            </button>
+            <button onclick="descargarTxtDIOT()" class="btn-pdf">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
                 DESCARGAR CARGA BATCH (TXT)
             </button>
@@ -434,7 +450,9 @@
         if (typeof window.showToast === 'function') window.showToast("Motor DIOT Procesado Exitosamente.", "success");
     }
 
-    // GENERADOR EXACTO DE TXT PARA DEM SAT (A-29) - 22 POSICIONES
+    // ==========================================
+    // EXPORTACIÓN 1: CARGA BATCH TXT (INTACTA)
+    // ==========================================
     function descargarTxtDIOT() {
         let txtContent = "";
 
@@ -472,25 +490,179 @@
         URL.revokeObjectURL(url);
     }
 
-    function descargarExcelDIOT() {
+    // ==========================================
+    // EXPORTACIÓN 2: EXCEL CRUDO
+    // ==========================================
+    function descargarExcelCrudo() {
         const results = [["PROVEEDOR", "RFC", "TIPO TERCERO", "TIPO OPERACIÓN", "BASE IVA 16% (PAGADO)", "BASE IVA 8%", "IVA RETENIDO"]];
         
         Object.values(dbDiot).forEach(d => {
             if(d.base16 > 0 || d.base8 > 0 || d.ivaRet > 0) {
-                results.push([d.nombre, d.rfc, d.tipoTercero, d.tipoOperacion, Math.round(d.base16), Math.round(d.base8), Math.round(d.ivaRet)]);
+                results.push([
+                    d.nombre, 
+                    d.rfc, 
+                    d.tipoTercero, 
+                    d.tipoOperacion, 
+                    Math.round(d.base16), 
+                    Math.round(d.base8), 
+                    Math.round(d.ivaRet)
+                ]);
             }
         });
 
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 40}, {wch: 15}, {wch: 15}, {wch: 18}, {wch: 22}, {wch: 15}, {wch: 15}];
+        ws['!cols'] = [{wch: 45}, {wch: 15}, {wch: 15}, {wch: 18}, {wch: 22}, {wch: 15}, {wch: 15}];
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Papel_Trabajo_DIOT");
-        XLSX.writeFile(wb, `Papel_Trabajo_DIOT_${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Base_Cruda_DIOT");
+        XLSX.writeFile(wb, `Datos_Crudos_DIOT_${Date.now()}.xlsx`);
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 3: PLANTILLA EXCEL (PRO) DASHBOARD
+    // ==========================================
+    async function exportarPlantillaPro() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO DASHBOARD...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD DIRECTIVO
+            const sheetDash = workbook.addWorksheet('Resumen DIOT', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'DASHBOARD ESTRATÉGICO: OPERACIONES A TERCEROS (DIOT)';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; // Verde Brand
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjetas KPI formuladas
+            sheetDash.getCell('B5').value = 'PROVEEDORES DECLARADOS';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'COUNTA(Base_Datos!A:A)-1' };
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('C5').value = 'BASE TOTAL (IVA 16%) PAGADA';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'SUM(Base_Datos!E:E)' };
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
+            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('D5').value = 'IVA RETENIDO (A DECLARAR)';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('D6').value = { formula: 'SUM(Base_Datos!G:G)' };
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFEF4444' } } };
+
+            // Tabla Resumen (Top 10 Fijo de Gasto)
+            sheetDash.mergeCells('B9:D9');
+            sheetDash.getCell('B9').value = 'TOP 10 PROVEEDORES POR VOLUMEN DE PAGO (PUE + REP)';
+            sheetDash.getCell('B9').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B9').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B9').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            ['B10:RFC PROVEEDOR', 'C10:RAZÓN SOCIAL', 'D10:BASE GRAVADA (16%)'].forEach(item => {
+                let parts = item.split(':');
+                sheetDash.getCell(parts[0]).value = parts[1];
+                sheetDash.getCell(parts[0]).font = { name: 'Arial', size: 10, bold: true, color: {argb: 'FFFFFFFF'} };
+                sheetDash.getCell(parts[0]).fill = { type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF475569'} };
+                sheetDash.getCell(parts[0]).alignment = { horizontal: 'center' };
+            });
+
+            // Lógica para inyectar Top 10 ordenado
+            const arrProveedores = Object.values(dbDiot)
+                .filter(d => d.base16 > 0)
+                .sort((a,b) => b.base16 - a.base16)
+                .slice(0, 10);
+
+            let rIdx = 11;
+            arrProveedores.forEach(p => {
+                sheetDash.getCell(`B${rIdx}`).value = p.rfc;
+                sheetDash.getCell(`C${rIdx}`).value = p.nombre;
+                
+                sheetDash.getCell(`D${rIdx}`).value = Math.round(p.base16);
+                sheetDash.getCell(`D${rIdx}`).numFmt = '"$"#,##0.00';
+                sheetDash.getCell(`D${rIdx}`).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF10B981' } };
+
+                ['B','C','D'].forEach(col => {
+                    sheetDash.getCell(`${col}${rIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+                });
+                rIdx++;
+            });
+
+            // Instrucción
+            let tipRow = rIdx + 2;
+            sheetDash.mergeCells(`B${tipRow}:D${tipRow}`);
+            sheetDash.getCell(`B${tipRow}`).value = '💡 Tip: Las tarjetas superiores reaccionan a la Pestaña "Base_Datos". Filtra por Tipo de Operación para segmentar pagos de Arrendamiento vs Operación General.';
+            sheetDash.getCell(`B${tipRow}`).font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+
+            // PESTAÑA 2: BASE DE DATOS DIOT
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'PROVEEDOR', key: 'nombre', width: 45 },
+                { header: 'RFC', key: 'rfc', width: 18 },
+                { header: 'TIPO TERCERO', key: 'tercero', width: 15 },
+                { header: 'TIPO OPERACIÓN', key: 'operacion', width: 18 },
+                { header: 'BASE IVA 16% (PAGADO)', key: 'base16', width: 22 },
+                { header: 'BASE IVA 8%', key: 'base8', width: 15 },
+                { header: 'IVA RETENIDO', key: 'retenido', width: 15 }
+            ];
+
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 7; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            Object.values(dbDiot).forEach(d => {
+                if(d.base16 > 0 || d.base8 > 0 || d.ivaRet > 0) {
+                    sheetData.addRow({
+                        nombre: d.nombre,
+                        rfc: d.rfc,
+                        tercero: d.tipoTercero,
+                        operacion: d.tipoOperacion,
+                        base16: Math.round(d.base16),
+                        base8: Math.round(d.base8),
+                        retenido: Math.round(d.ivaRet)
+                    });
+                }
+            });
+
+            // Formato de Moneda
+            ['E','F','G'].forEach(col => {
+                sheetData.getColumn(col).numFmt = '"$"#,##0.00';
+            });
+            sheetData.autoFilter = 'A1:G1'; 
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Papel_Trabajo_DIOT_PRO_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
     }
 </script>
 </body>
 </html>
-
-
-
-
