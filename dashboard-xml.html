@@ -25,6 +25,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -172,13 +176,20 @@
         .chart-header { font-size: 12px; font-weight: 800; color: white; text-transform: uppercase; margin-bottom: 15px; color: #94A3B8;}
         .canvas-box { position: relative; height: 220px; width: 100%; display: flex; justify-content: center; align-items: center;}
 
-        /* Toolbar */
-        .toolbar { display: flex; gap: 15px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 16px; border: 1px solid var(--border);}
-        .btn-pdf { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);}
+        /* Toolbar Optimizada para Excel PRO */
+        .toolbar { display: flex; gap: 15px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 16px; border: 1px solid var(--border); flex-wrap: wrap;}
+        .btn-pdf { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);}
         .btn-pdf:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);}
         .btn-pdf:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
-        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1; text-transform: uppercase; font-size: 12px;}
+        
+        .btn-excel-pro { background: #3B82F6; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);}
+        .btn-excel-pro:hover { background: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
         .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         @media (max-width: 1400px) {
             .spaceship-layout { grid-template-columns: 280px 1fr 280px; }
@@ -321,11 +332,16 @@
             </div>
 
             <div class="toolbar">
-                <button id="btnDescargarPDF" onclick="exportarMemorandumPDF()" class="btn-pdf">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    GENERAR MEMORÁNDUM EJECUTIVO (PDF)
-                </button>
                 <button onclick="window.location.reload()" class="btn-reset">Nuevo Lote</button>
+                <button onclick="exportarPlano()" class="btn-crudo">EXCEL CRUDO</button>
+                <button onclick="exportarPlantilla()" class="btn-excel-pro">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    PLANTILLA EXCEL (PRO)
+                </button>
+                <button id="btnDescargarPDF" onclick="exportarMemorandumPDF()" class="btn-pdf">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    IMPRIMIR PDF
+                </button>
             </div>
         </div>
     </main>
@@ -446,6 +462,7 @@
 
     let currentFiles = [];
     let biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
+    let dbFacturas = []; // Nueva Base de Datos Estructurada para Excel
     let chart1Instance = null; let chart2Instance = null;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
@@ -523,6 +540,7 @@
         biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
         let rfcCounts = {};
         let parsedXMLs = [];
+        dbFacturas = []; // Reseteamos la base de datos Excel
 
         status.innerText = "> Fase 1: Levantando nodo de procesamiento. Calculando árbol de RFCs...";
         for(let i=0; i<currentFiles.length; i++) {
@@ -532,6 +550,7 @@
                 const cfdi = getNodes(xml, 'Comprobante')[0];
                 const emisor = getNodes(xml, 'Emisor')[0];
                 const receptor = getNodes(xml, 'Receptor')[0];
+                const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
                 
                 if(!cfdi || !emisor || !receptor) continue;
 
@@ -540,6 +559,8 @@
 
                 parsedXMLs.push({
                     tipo: cfdi.getAttribute('TipoDeComprobante'),
+                    fecha: cfdi.getAttribute('Fecha') ? cfdi.getAttribute('Fecha').split('T')[0] : "N/A",
+                    uuid: timbre ? timbre.getAttribute('UUID') : "SIN-UUID",
                     subtotal: parseFloat(cfdi.getAttribute('SubTotal') || 0),
                     emisorRFC: emRFC, emisorNombre: emisor.getAttribute('Nombre') || "SIN NOMBRE",
                     receptorRFC: reRFC, receptorNombre: receptor.getAttribute('Nombre') || "SIN NOMBRE",
@@ -557,17 +578,42 @@
             if(x.emisorRFC === biData.hostRFC) biData.hostNombre = x.emisorNombre;
             if(x.receptorRFC === biData.hostRFC) biData.hostNombre = x.receptorNombre;
 
+            let tipoLogico = "";
+            let contraparte = "";
+            let rfcContraparte = "";
+            let factorImp = 1;
+
             if(x.tipo === 'I') {
                 if (x.emisorRFC === biData.hostRFC) {
                     biData.ingresos += x.subtotal; biData.countI++;
                     biData.clientes[x.receptorNombre] = (biData.clientes[x.receptorNombre] || 0) + x.subtotal;
+                    tipoLogico = 'INGRESO'; contraparte = x.receptorNombre; rfcContraparte = x.receptorRFC;
                 } else if (x.receptorRFC === biData.hostRFC) {
                     biData.egresos += x.subtotal; biData.retenciones += x.retencionesXML; biData.countE++;
                     biData.proveedores[x.emisorNombre] = (biData.proveedores[x.emisorNombre] || 0) + x.subtotal;
+                    tipoLogico = 'EGRESO'; contraparte = x.emisorNombre; rfcContraparte = x.emisorRFC;
                 }
             } else if (x.tipo === 'E') {
-                if (x.emisorRFC === biData.hostRFC) biData.ingresos -= x.subtotal; 
-                else if (x.receptorRFC === biData.hostRFC) biData.egresos -= x.subtotal; 
+                if (x.emisorRFC === biData.hostRFC) { 
+                    biData.ingresos -= x.subtotal; 
+                    tipoLogico = 'INGRESO (NOTA CRÉDITO)'; contraparte = x.receptorNombre; rfcContraparte = x.receptorRFC; factorImp = -1;
+                } 
+                else if (x.receptorRFC === biData.hostRFC) { 
+                    biData.egresos -= x.subtotal; 
+                    tipoLogico = 'EGRESO (NOTA CRÉDITO)'; contraparte = x.emisorNombre; rfcContraparte = x.emisorRFC; factorImp = -1;
+                }
+            }
+
+            if(tipoLogico !== "") {
+                dbFacturas.push({
+                    fecha: x.fecha,
+                    uuid: x.uuid,
+                    contraparte: contraparte,
+                    rfcContraparte: rfcContraparte,
+                    tipo: tipoLogico,
+                    importe: x.subtotal * factorImp,
+                    retenciones: x.retencionesXML
+                });
             }
         });
 
@@ -633,7 +679,182 @@
     }
 
     // ==============================================================
-    // 4. GENERADOR PDF EJECUTIVO (A PRUEBA DE BLOQUEOS)
+    // 4. EXPORTACIÓN EXCEL CRUDO
+    // ==============================================================
+    function exportarPlano() {
+        const results = [["FECHA", "UUID", "CONTRAPARTE", "RFC", "TIPO OPERACIÓN", "IMPORTE (SUBTOTAL)", "RETENCIONES"]];
+        
+        dbFacturas.forEach(f => {
+            results.push([
+                f.fecha, 
+                f.uuid, 
+                f.contraparte, 
+                f.rfcContraparte, 
+                f.tipo, 
+                f.importe, 
+                f.retenciones > 0 ? f.retenciones : 0
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 12}, {wch: 38}, {wch: 45}, {wch: 15}, {wch: 22}, {wch: 20}, {wch: 15}];
+        
+        // Aplicar formato contable para F y G
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let R = 1; R <= range.e.r; ++R) {
+            let cellF = ws[XLSX.utils.encode_cell({c: 5, r: R})];
+            let cellG = ws[XLSX.utils.encode_cell({c: 6, r: R})];
+            if(cellF) cellF.z = '"$"#,##0.00';
+            if(cellG) cellG.z = '"$"#,##0.00';
+        }
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Base_Datos_Facturas");
+        XLSX.writeFile(wb, `Sabana_Financiera_${Date.now()}.xlsx`);
+    }
+
+    // ==============================================================
+    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CON FÓRMULAS VIVAS
+    // ==============================================================
+    async function exportarPlantilla() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO PLANTILLA...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD EJECUTIVO
+            const sheetDash = workbook.addWorksheet('Resumen Ejecutivo', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'CENTRO DE MANDO FINANCIERO';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Azul Corporativo AuditorIA
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Subtítulo (Matriz)
+            sheetDash.mergeCells('B4:D4');
+            const subtitleCell = sheetDash.getCell('B4');
+            subtitleCell.value = `Matriz Analizada: ${biData.hostNombre} | RFC: ${biData.hostRFC}`;
+            subtitleCell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF475569' } };
+            subtitleCell.alignment = { horizontal: 'center' };
+
+            // Tarjeta 1: INGRESOS
+            sheetDash.getCell('B6').value = 'TOTAL INGRESOS BRUTOS';
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            // Fórmula inteligente: Suma cualquier tipo que comience con "INGRESO" (Abarca Facturas y Notas de Crédito Negativas)
+            sheetDash.getCell('B7').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!E:E, "INGRESO*")' };
+            sheetDash.getCell('B7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
+            sheetDash.getCell('B7').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('B7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 2: EGRESOS
+            sheetDash.getCell('C6').value = 'TOTAL EGRESOS OPERATIVOS';
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C7').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!E:E, "EGRESO*")' };
+            sheetDash.getCell('C7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('C7').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 3: FLUJO NETO
+            sheetDash.getCell('D6').value = 'FLUJO NETO (LIQUIDEZ SPREAD)';
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('D7').value = { formula: 'B7-C7' };
+            sheetDash.getCell('D7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF3B82F6' } };
+            sheetDash.getCell('D7').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Mini Tabla Inferior
+            sheetDash.mergeCells('B10:D10');
+            sheetDash.getCell('B10').value = 'MÉTRICAS ADICIONALES DE CUMPLIMIENTO';
+            sheetDash.getCell('B10').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B10').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B10').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            sheetDash.getCell('B11').value = 'Volumen Total de Documentos:';
+            sheetDash.getCell('B11').font = { name: 'Arial', size: 11, bold: true };
+            sheetDash.getCell('C11').value = { formula: 'COUNTA(Base_Datos!A:A)-1' }; 
+            sheetDash.getCell('C11').font = { name: 'Arial', size: 12, bold: true };
+            sheetDash.getCell('C11').alignment = { horizontal: 'left' };
+
+            sheetDash.getCell('B12').value = 'Total de Impuestos Retenidos:';
+            sheetDash.getCell('B12').font = { name: 'Arial', size: 11, bold: true };
+            sheetDash.getCell('C12').value = { formula: 'SUM(Base_Datos!G:G)' }; 
+            sheetDash.getCell('C12').font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF8B5CF6' } };
+            sheetDash.getCell('C12').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C12').alignment = { horizontal: 'left' };
+
+            // Instrucción de uso en el pie
+            sheetDash.mergeCells('B14:D14');
+            sheetDash.getCell('B14').value = '💡 Tip: Si filtras o eliminas documentos en la pestaña "Base_Datos", este panel recalculará la liquidez.';
+            sheetDash.getCell('B14').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+            // PESTAÑA 2: BASE DE DATOS
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'FECHA', key: 'fecha', width: 12 },
+                { header: 'UUID', key: 'uuid', width: 38 },
+                { header: 'CONTRAPARTE (CLIENTE/PROVEEDOR)', key: 'contraparte', width: 45 },
+                { header: 'RFC', key: 'rfc', width: 15 },
+                { header: 'TIPO OPERACIÓN', key: 'tipo', width: 22 },
+                { header: 'IMPORTE (SUBTOTAL)', key: 'importe', width: 22 },
+                { header: 'RETENCIONES', key: 'retenciones', width: 18 }
+            ];
+
+            // Celdas Azules: Aplicar fondo SOLO a los encabezados
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 7; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            // Inyectar datos
+            dbFacturas.forEach(f => {
+                sheetData.addRow({
+                    fecha: f.fecha,
+                    uuid: f.uuid,
+                    contraparte: f.contraparte,
+                    rfc: f.rfcContraparte,
+                    tipo: f.tipo,
+                    importe: parseFloat(f.importe) || 0,
+                    retenciones: f.retenciones > 0 ? parseFloat(f.retenciones) : 0
+                });
+            });
+
+            // Formato de Moneda para F y G
+            sheetData.getColumn('F').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('G').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:G1'; 
+
+            // Descargar el archivo
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Plantilla_Dashboard_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla en Excel.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+    // ==============================================================
+    // 6. GENERADOR PDF EJECUTIVO (A PRUEBA DE BLOQUEOS)
     // ==============================================================
     function exportarMemorandumPDF() {
         const btn = document.getElementById('btnDescargarPDF');
@@ -760,6 +981,3 @@
 </script>
 </body>
 </html>
-
-
-
