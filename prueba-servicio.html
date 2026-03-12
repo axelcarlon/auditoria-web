@@ -27,6 +27,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -72,9 +75,18 @@
         .preview-images { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;}
         .preview-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); background: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 40px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        
+        .btn-pdf { background: #0D9488; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4);}
+        .btn-pdf:hover { background: #0F766E; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13, 148, 136, 0.6);}
+        .btn-pdf:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-excel-pro { background: #1E293B; color: white; border: 1px solid #475569; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .btn-excel-pro:hover { background: #334155; transform: translateY(-2px); border-color: #64748B;}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -87,10 +99,13 @@
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(13, 148, 136, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-icon { width: 48px; height: 48px; background: rgba(13, 148, 136, 0.1); color: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 768px) {
             .grid-dropzones { grid-template-columns: 1fr; }
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
             .success-banner { flex-direction: column; text-align: center; }
         }
     </style>
@@ -163,11 +178,15 @@
         <div class="section-title">Vista Previa del Anexo Fotográfico</div>
         <div class="preview-images" id="previewGrid"></div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Volver / Nuevo Expediente</button>
-            <button onclick="exportarDictamenMaterialidadPDF()" class="btn-action" style="flex: 2;">
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">NUEVO EXPEDIENTE</button>
+            <button onclick="exportarBitacoraExcelPro()" class="btn-excel-pro">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                BITÁCORA EXCEL (PRO)
+            </button>
+            <button id="btnDescargarPDF" onclick="exportarDictamenMaterialidadPDF()" class="btn-pdf">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR DICTAMEN BLINDADO (PDF)
+                DESCARGAR DICTAMEN (PDF)
             </button>
         </div>
     </div>
@@ -194,14 +213,15 @@
                 <p class="bento-desc">Antes de generar expedientes, revisa si el proveedor ya se encuentra en las listas negras definitivas del SAT.</p>
             </div>
         </a>
-        <a href="defensa-legal.html" class="bento-card">
+        <a href="analisis-proveedores.html" class="bento-card">
             <div>
-                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
-                <h3 class="bento-title">Defensa Legal (Escritos)</h3>
-                <p class="bento-desc">Si el SAT te requiere, utiliza este dictamen como anexo probatorio junto con el escrito legal de contestación generado por la IA.</p>
+                <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+                <h3 class="bento-title">Estrategia de Proveedores</h3>
+                <p class="bento-desc">Identifica cuánto le pagas a los proveedores cuya 32-D salió vencida. Si concentran el 80% de tu gasto, tu cadena de suministro corre un riesgo fiscal enorme.</p>
             </div>
         </a>
     </div>
+
 </div>
 
 <script src="footer.js"></script>
@@ -388,6 +408,78 @@
         }
     }
 
+    // ==========================================
+    // EXPORTACIÓN 2: PLANTILLA EXCEL PRO (BITÁCORA)
+    // ==========================================
+    async function exportarBitacoraExcelPro() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO BITÁCORA...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            const sheetData = workbook.addWorksheet('Bitácora_Materialidad');
+            
+            sheetData.columns = [
+                { header: 'FECHA OPERACIÓN', key: 'fecha', width: 18 },
+                { header: 'FOLIO FISCAL (UUID)', key: 'uuid', width: 40 },
+                { header: 'PROVEEDOR (EMISOR)', key: 'proveedor', width: 45 },
+                { header: 'RFC PROVEEDOR', key: 'rfc', width: 18 },
+                { header: 'MONTO AMPARADO', key: 'monto', width: 22 },
+                { header: 'EVIDENCIAS ANEXADAS', key: 'fotos', width: 22 },
+                { header: 'ESTATUS PROTECCIÓN', key: 'estatus', width: 25 },
+                { header: 'URL VERIFICACIÓN (SAT)', key: 'url', width: 60 }
+            ];
+
+            // Formato de Encabezados (Azul Corporativo AuditorIA)
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 8; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            // Datos de la Operación
+            let satUrl = `https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=${xmlData.uuid}&re=${xmlData.emisorRfc}&rr=${xmlData.receptorRfc}&tt=${xmlData.total}`;
+            
+            const row = sheetData.addRow({
+                fecha: xmlData.fecha,
+                uuid: xmlData.uuid,
+                proveedor: xmlData.emisorNombre,
+                rfc: xmlData.emisorRfc,
+                monto: parseFloat(xmlData.total),
+                fotos: `${base64Images.length} FOTOGRAFÍAS`,
+                estatus: "BLINDADO",
+                url: satUrl
+            });
+
+            // Formato de Moneda
+            sheetData.getColumn('E').numFmt = '"$"#,##0.00';
+            
+            // Color Verde Éxito en Estatus
+            row.getCell(7).font = { bold: true, color: { argb: 'FF10B981' } };
+
+            sheetData.autoFilter = 'A1:H1'; 
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Bitacora_Materialidad_${xmlData.uuid.substring(0,8)}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Bitácora en Excel.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 3: DICTAMEN PERICIAL (PDF)
+    // ==========================================
     function exportarDictamenMaterialidadPDF() {
         if (typeof pdfMake === 'undefined') return;
 
@@ -476,7 +568,3 @@
 </script>
 </body>
 </html>
-
-
-
-
