@@ -25,6 +25,10 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -74,9 +78,17 @@
         .advisor-title { font-weight: 900; color: #60A5FA; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
         .dictamen-text { font-size: 14px; line-height: 1.7; color: #E2E8F0; margin: 0; text-align: justify;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 30px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        .btn-pdf { background: #1E293B; color: white; border: 1px solid #475569; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .btn-pdf:hover { background: #334155; transform: translateY(-2px); border-color: #64748B;}
+        
+        .btn-excel-pro { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
+        .btn-excel-pro:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);}
+        .btn-excel-pro:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -89,10 +101,13 @@
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-icon { width: 24px; height: 24px; color: var(--brand); margin-bottom: 15px;}
+        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 768px) {
             .grid-dropzones, .dashboard-layout, .kpi-grid { grid-template-columns: 1fr; }
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -186,11 +201,15 @@
             <p id="resDictamen" class="dictamen-text">El motor de IA está procesando la interpretación contable...</p>
         </div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Limpiar Memoria RAM</button>
-            <button id="btnDescargarPDF" onclick="descargarReportePDF()" class="btn-action" style="flex: 2;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Exportar Dictamen PDF
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">NUEVO CÁLCULO</button>
+            <button onclick="exportarPlantillaExcel()" class="btn-excel-pro">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PLANTILLA EXCEL (PRO)
+            </button>
+            <button id="btnDescargarPDF" onclick="descargarReportePDF()" class="btn-pdf">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXPORTAR DICTAMEN PDF
             </button>
         </div>
     </div>
@@ -239,6 +258,8 @@
 
     let filesEmitidas = [];
     let filesRecibidas = [];
+    let dbTributaria = []; // Base de datos estructural para el Excel
+    
     let metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: 0, isFavor: false, montoFinal: 0 };
     let dataDictamen = "";
 
@@ -276,8 +297,6 @@
         dropZone.classList.add('filled');
         document.getElementById(idStatus).innerText = `${validFiles.length} XMLs en Memoria`;
         document.getElementById('btnEjecutar').disabled = false;
-        
-        if (typeof window.showToast === 'function') window.showToast(`Lote cargado correctamente.`, "success");
     }
 
     function getNodes(node, tagName) {
@@ -294,7 +313,6 @@
         else fallback += `No se detectaron actos exentos. Proceda a la acreditación salvo revisión de requisitos estructurales.`;
 
         try {
-            // El AbortController es el seguro de vida. Evita que la web se congele si Render está apagado.
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 Segundos Máximo
 
@@ -335,6 +353,7 @@
         term.style.display = 'block';
         
         metrics = { cobrado: 0, pagado: 0, retenido: 0, prorrateo: false, totalFiles: filesEmitidas.length + filesRecibidas.length, isFavor: false, montoFinal: 0 };
+        dbTributaria = [];
 
         await procesarLote(filesEmitidas, true, status);
         await procesarLote(filesRecibidas, false, status);
@@ -355,13 +374,33 @@
                 const text = await files[i].text();
                 const xml = new DOMParser().parseFromString(text, "text/xml");
                 
+                const cfdi = getNodes(xml, 'Comprobante')[0];
+                const emisor = getNodes(xml, 'Emisor')[0];
+                const receptor = getNodes(xml, 'Receptor')[0];
+                const timbre = getNodes(xml, 'TimbreFiscalDigital')[0];
+                
+                if(!cfdi) continue;
+
+                let uuid = timbre ? timbre.getAttribute('UUID') : "NO-UUID";
+                let contraparte = isEmitida ? (receptor ? receptor.getAttribute('Nombre') : "") : (emisor ? emisor.getAttribute('Nombre') : "");
+                let totalDoc = parseFloat(cfdi.getAttribute('Total') || 0);
+                let baseGravable = parseFloat(cfdi.getAttribute('SubTotal') || 0);
+                let iva16 = 0;
+                let iva0 = 0;
+                let retencionIva = 0;
+
                 const conceptos = getNodes(xml, 'Concepto');
                 for(let c of conceptos) {
                     const trasladosConcepto = getNodes(c, 'Traslado');
                     for(let t of trasladosConcepto) {
                         const tasa = t.getAttribute('TasaOCuota');
                         const factor = t.getAttribute('TipoFactor');
-                        if (tasa === "0.000000" || factor === "Exento") metrics.prorrateo = true;
+                        const importeTraslado = parseFloat(t.getAttribute('Importe') || 0);
+                        
+                        if (tasa === "0.000000" || factor === "Exento") {
+                            metrics.prorrateo = true;
+                            iva0 += importeTraslado; 
+                        }
                     }
                 }
 
@@ -372,9 +411,14 @@
                     const traslados = getNodes(globalImpuestos, 'Traslado');
                     for(let t of traslados) {
                         const imp = t.getAttribute('Impuesto');
+                        const tasaImp = t.getAttribute('TasaOCuota');
+                        const importeImp = parseFloat(t.getAttribute('Importe') || 0);
+                        
                         if(imp === '002' || imp === 'IVA') {
-                            if (isEmitida) metrics.cobrado += parseFloat(t.getAttribute('Importe') || 0);
-                            else metrics.pagado += parseFloat(t.getAttribute('Importe') || 0);
+                            if (tasaImp === "0.160000") iva16 += importeImp;
+                            
+                            if (isEmitida) metrics.cobrado += importeImp;
+                            else metrics.pagado += importeImp;
                         }
                     }
 
@@ -382,10 +426,25 @@
                     for(let r of retenciones) {
                         const imp = r.getAttribute('Impuesto');
                         if(imp === '002' || imp === 'IVA') {
-                            if (isEmitida) metrics.retenido += parseFloat(r.getAttribute('Importe') || 0);
+                            const impRetenido = parseFloat(r.getAttribute('Importe') || 0);
+                            retencionIva += impRetenido;
+                            if (isEmitida) metrics.retenido += impRetenido;
                         }
                     }
                 }
+
+                // Guardar en la Base de Datos Estructural
+                dbTributaria.push({
+                    uuid: uuid,
+                    contraparte: contraparte || "PÚBLICO EN GENERAL",
+                    tipo: isEmitida ? "EMITIDO (INGRESO)" : "RECIBIDO (GASTO)",
+                    total: totalDoc,
+                    base: baseGravable,
+                    iva16: iva16,
+                    iva0: iva0,
+                    retenido: retencionIva
+                });
+
             } catch(e) {}
         }
     }
@@ -419,7 +478,140 @@
         if (typeof window.showToast === 'function') window.showToast("Cálculo Finalizado.", "success");
     }
 
-    // EL BOTÓN DEL PDF CURADO DEL BLOQUEO
+    // ==========================================
+    // EXPORTACIÓN EXCEL PRO (DASHBOARD FÓRMULAS)
+    // ==========================================
+    async function exportarPlantillaExcel() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO PLANTILLA...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD FISCAL (Puro Código Nativo Excel)
+            const sheetDash = workbook.addWorksheet('Tablero de Impuestos', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'PROYECTOR FISCAL DE IVA (PUE)';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Azul Brand
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjeta 1: IVA TRASLADADO (Cobrado)
+            sheetDash.getCell('B5').value = 'IVA TRASLADADO (COBRADO)';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!C:C, "EMITIDO (INGRESO)")' };
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF3B82F6' } }; 
+            sheetDash.getCell('B6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 2: IVA ACREDITABLE (Pagado)
+            sheetDash.getCell('C5').value = 'IVA ACREDITABLE (PAGADO)';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!C:C, "RECIBIDO (GASTO)")' };
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFF59E0B' } }; 
+            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 3: IVA RETENIDO
+            sheetDash.getCell('D5').value = 'IVA RETENIDO (SUFRIDO)';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('D6').value = { formula: 'SUMIFS(Base_Datos!H:H, Base_Datos!C:C, "EMITIDO (INGRESO)")' };
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta Larga: SALDO FINAL (A FAVOR O A CARGO)
+            sheetDash.mergeCells('B8:D8');
+            sheetDash.getCell('B8').value = 'POSICIÓN FISCAL ESTIMADA (A PAGAR O A FAVOR)';
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B8').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B8').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            sheetDash.mergeCells('B9:D10');
+            const resCell = sheetDash.getCell('B9');
+            // La fórmula evalúa: IVA Trasladado - IVA Acreditable - IVA Retenido
+            resCell.value = { formula: 'B6-C6-D6' };
+            resCell.font = { name: 'Arial', size: 36, bold: true };
+            // Formato Nativo Excel: Positivo = Rojo (A Pagar), Negativo = Verde (A Favor)
+            resCell.numFmt = '[Red]"$"#,##0.00 " (A CARGO)";[Color 10]"$"#,##0.00 " (A FAVOR)";"$"#,##0.00';
+            resCell.alignment = { vertical: 'middle', horizontal: 'center' };
+            resCell.border = { bottom: { style: 'medium', color: { argb: 'FF1E293B' } }, left: { style: 'medium', color: { argb: 'FF1E293B' } }, right: { style: 'medium', color: { argb: 'FF1E293B' } } };
+
+            // Instrucción
+            sheetDash.mergeCells('B12:D12');
+            sheetDash.getCell('B12').value = '💡 Tip: Todo el tablero reacciona a la Base de Datos. Elimina una factura dudosa en la hoja 2 y verás cómo cambia el IVA a pagar.';
+            sheetDash.getCell('B12').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+
+            // PESTAÑA 2: BASE DE DATOS TRIBUTARIA
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'FOLIO FISCAL (UUID)', key: 'uuid', width: 38 },
+                { header: 'CLIENTE / PROVEEDOR', key: 'contraparte', width: 45 },
+                { header: 'TIPO DE OPERACIÓN', key: 'tipo', width: 22 },
+                { header: 'TOTAL FACTURA', key: 'total', width: 18 },
+                { header: 'BASE GRAVABLE', key: 'base', width: 18 },
+                { header: 'IVA TRASLADADO (16%)', key: 'iva16', width: 22 },
+                { header: 'TASA 0% / EXENTOS', key: 'iva0', width: 22 },
+                { header: 'IVA RETENIDO', key: 'retenido', width: 18 }
+            ];
+
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 8; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            dbTributaria.forEach(t => {
+                sheetData.addRow({
+                    uuid: t.uuid,
+                    contraparte: t.contraparte,
+                    tipo: t.tipo,
+                    total: t.total > 0 ? parseFloat(t.total) : 0,
+                    base: t.base > 0 ? parseFloat(t.base) : 0,
+                    iva16: t.iva16 > 0 ? parseFloat(t.iva16) : 0,
+                    iva0: t.iva0 > 0 ? parseFloat(t.iva0) : 0,
+                    retenido: t.retenido > 0 ? parseFloat(t.retenido) : 0
+                });
+            });
+
+            // Formato de Moneda para Columnas Financieras
+            ['D','E','F','G','H'].forEach(col => {
+                sheetData.getColumn(col).numFmt = '"$"#,##0.00';
+            });
+            sheetData.autoFilter = 'A1:H1'; 
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Simulador_IVA_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+
+    // ==========================================
+    // EXPORTACIÓN PDF (DICTAMEN)
+    // ==========================================
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
         if(!btn) return;
@@ -431,7 +623,6 @@
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 try {
-                    // Refuerzo de memoria para evitar amnesia de tipografías
                     if (window.pdfMake && window.pdfMakeFonts && window.pdfMakeFonts.pdfMake) {
                         window.pdfMake.vfs = window.pdfMakeFonts.pdfMake.vfs;
                     }
@@ -512,14 +703,9 @@
                     btn.innerHTML = oldText; 
                     btn.disabled = false;
                 }
-            }); // rAF2
-        }); // rAF1
+            }); 
+        }); 
     }
 </script>
 </body>
 </html>
-
-
-
-
-
