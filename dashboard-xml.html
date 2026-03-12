@@ -502,7 +502,7 @@
         if (spread > 0) {
             conclusionStr = `<span class="legal-tag">SUPERÁVIT (LÍQUIDO)</span> De la evaluación pericial de los comprobantes fiscales proporcionados, se observa una captación de flujo superior a la erogación operativa. Esta estructura de capital circulante reduce significativamente la probabilidad de dictaminación de discrepancia fiscal.`;
         } else {
-            conclusionStr = `<span class="legal-tag" style="background:rgba(239,68,68,0.2); color:#FCA5A5; border-color:#EF4444;">DÉFICIT (ILÍQUIDO)</span> Se detecta una estructura financiera en donde las deducciones superan la generación de ingresos. De acuerdo a las facultades del Art. 42 del CFF, esta situación amerita una estricta revisión de la indispensabilidad de las compras amparadas (Art. 27 Fracc. I, LISR).`;
+            conclusionStr = `<span class="legal-tag" style="background:rgba(239,68,68,0.2); color:#FCA5A5; border-color:#EF4444;">DÉFICIT (ILÍQUIDO)</span> Se detecta una estructura financiera en donde las deducciones superan la generation de ingresos. De acuerdo a las facultades del Art. 42 del CFF, esta situación amerita una estricta revisión de la indispensabilidad de las compras amparadas (Art. 27 Fracc. I, LISR).`;
         }
 
         if (pctCliente > 40) {
@@ -604,7 +604,7 @@
                 }
             }
 
-            // Extraer Nombre del Mes (Enero - Diciembre)
+            // Extraer Nombre del Mes
             let mesNombres = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
             let mesStr = "N/A";
             if (x.fecha !== "N/A") {
@@ -727,7 +727,7 @@
     }
 
     // ==============================================================
-    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CERO ERRORES DE FÓRMULA
+    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CERO ERRORES
     // ==============================================================
     async function exportarPlantilla() {
         const btn = document.querySelector('.btn-excel-pro');
@@ -744,9 +744,9 @@
             
             sheetDash.columns = [
                 {width: 4},  // A
-                {width: 25}, // B
+                {width: 32}, // B
                 {width: 25}, // C
-                {width: 25}, // D
+                {width: 32}, // D
                 {width: 25}, // E
                 {width: 25}  // F
             ];
@@ -765,7 +765,7 @@
             subtitleCell.font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF475569' } };
             subtitleCell.alignment = { horizontal: 'center' };
 
-            // ================== TARJETAS KPI (Fórmulas sin Asteriscos) ==================
+            // ================== TARJETAS KPI ==================
             // Tarjeta 1: Ingresos Efectivos
             sheetDash.getCell('B6').value = 'INGRESOS EFECTIVOS (PUE)';
             sheetDash.getCell('B6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
@@ -791,7 +791,7 @@
             sheetDash.getCell('D7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
             // Tarjeta 4: Flujo Neto
-            sheetDash.getCell('E6').value = 'FLUJO NETO (LIQUIDEZ REAL)';
+            sheetDash.getCell('E6').value = 'FLUJO NETO (LIQUIDEZ)';
             sheetDash.getCell('E6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
             sheetDash.getCell('E7').value = { formula: 'B7-D7' };
             sheetDash.getCell('E7').font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FF3B82F6' } };
@@ -803,16 +803,9 @@
             sheetDash.getCell('F6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
             sheetDash.getCell('F7').value = { formula: 'IF(B7>0, E7/B7, 0)' };
             sheetDash.getCell('F7').font = { name: 'Arial', size: 18, bold: true };
-            sheetDash.getCell('F7').numFmt = '0.00%';
+            // FIX: Formato numérico nativo para evitar crash en ConditionalFormatting
+            sheetDash.getCell('F7').numFmt = '[Color 10]0.00%;[Red]-0.00%;0.00%';
             sheetDash.getCell('F7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
-            
-            sheetDash.addConditionalFormatting({
-                ref: 'F7:F7',
-                rules: [
-                    { type: 'cellIs', operator: 'lessThan', formula: ['0'], style: { font: { color: {argb: 'FFEF4444'}, bold: true } } },
-                    { type: 'cellIs', operator: 'greaterThan', formula: ['0'], style: { font: { color: {argb: 'FF10B981'}, bold: true } } }
-                ]
-            });
 
             // ================== TABLA MENSUAL ==================
             sheetDash.mergeCells('B10:F10');
@@ -821,7 +814,7 @@
             sheetDash.getCell('B10').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
             sheetDash.getCell('B10').alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // Encabezados
+            // Encabezados Mensual
             ['B11:MES', 'C11:INGRESOS (PUE)', 'D11:CUENTAS X COBRAR', 'E11:EGRESOS (PUE)', 'F11:FLUJO NETO REAL'].forEach(item => {
                 let parts = item.split(':');
                 sheetDash.getCell(parts[0]).value = parts[1];
@@ -842,23 +835,64 @@
                 sheetDash.getCell(`E${rowIdx}`).value = { formula: `SUMIFS(Base_Datos!I:I, Base_Datos!B:B, "${mes}", Base_Datos!H:H, "PAGADO")` };
                 sheetDash.getCell(`F${rowIdx}`).value = { formula: `C${rowIdx}-E${rowIdx}` };
 
-                ['C','D','E','F'].forEach(c => {
+                ['C','D','E'].forEach(c => {
                     sheetDash.getCell(`${c}${rowIdx}`).numFmt = '"$"#,##0.00';
                     sheetDash.getCell(`${c}${rowIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
                 });
 
-                sheetDash.addConditionalFormatting({
-                    ref: `F${rowIdx}:F${rowIdx}`,
-                    rules: [
-                        { type: 'cellIs', operator: 'lessThan', formula: ['0'], style: { font: { color: {argb: 'FFEF4444'} } } },
-                        { type: 'cellIs', operator: 'greaterThan', formula: ['0'], style: { font: { color: {argb: 'FF10B981'} } } }
-                    ]
-                });
+                // FIX: Formato numérico nativo para el flujo mensual (verde o rojo según el valor)
+                sheetDash.getCell(`F${rowIdx}`).numFmt = '[Color 10]"$"#,##0.00;[Red]-"$"#,##0.00;"$"#,##0.00';
+                sheetDash.getCell(`F${rowIdx}`).font = { name: 'Arial', size: 10, bold: true };
+                sheetDash.getCell(`F${rowIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
 
                 rowIdx++;
             });
 
-            // ================== PESTAÑA 2: BASE DE DATOS ==================
+            // ================== BLOQUE TOP 5 ==================
+            const rowTop = rowIdx + 2; 
+            sheetDash.mergeCells(`B${rowTop}:F${rowTop}`);
+            sheetDash.getCell(`B${rowTop}`).value = 'ANÁLISIS DE CONCENTRACIÓN (TOP 5 ENTIDADES)';
+            sheetDash.getCell(`B${rowTop}`).font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell(`B${rowTop}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell(`B${rowTop}`).alignment = { vertical: 'middle', horizontal: 'center' };
+
+            const rowTopH = rowTop + 1;
+            sheetDash.getCell(`B${rowTopH}`).value = 'CLIENTE (Ingresos)';
+            sheetDash.getCell(`C${rowTopH}`).value = 'MONTO FACTURADO';
+            sheetDash.getCell(`D${rowTopH}`).value = 'PROVEEDOR (Egresos)';
+            sheetDash.getCell(`E${rowTopH}`).value = 'GASTO OPERATIVO';
+            sheetDash.mergeCells(`E${rowTopH}:F${rowTopH}`);
+
+            [`B${rowTopH}`, `C${rowTopH}`, `D${rowTopH}`, `E${rowTopH}`].forEach(cell => {
+                sheetDash.getCell(cell).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+                sheetDash.getCell(cell).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF475569' } }; 
+                sheetDash.getCell(cell).alignment = { horizontal: 'center' };
+            });
+
+            const topClients = Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const topProviders = Object.entries(biData.proveedores).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+            for(let i=0; i<5; i++) {
+                let r = rowTopH + 1 + i;
+                
+                sheetDash.getCell(`B${r}`).value = topClients[i] ? topClients[i][0] : '-';
+                sheetDash.getCell(`C${r}`).value = topClients[i] ? topClients[i][1] : 0;
+                sheetDash.getCell(`C${r}`).numFmt = '"$"#,##0.00';
+                
+                sheetDash.getCell(`D${r}`).value = topProviders[i] ? topProviders[i][0] : '-';
+                sheetDash.getCell(`E${r}`).value = topProviders[i] ? topProviders[i][1] : 0;
+                sheetDash.getCell(`E${r}`).numFmt = '"$"#,##0.00';
+                sheetDash.mergeCells(`E${r}:F${r}`);
+
+                ['B','C','D','E'].forEach(col => {
+                    sheetDash.getCell(`${col}${r}`).font = { name: 'Arial', size: 9 };
+                    sheetDash.getCell(`${col}${r}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+                });
+            }
+
+            // ==========================================
+            // PESTAÑA 2: BASE DE DATOS
+            // ==========================================
             const sheetData = workbook.addWorksheet('Base_Datos');
             sheetData.columns = [
                 { header: 'FECHA', key: 'fecha', width: 12 },
@@ -901,7 +935,7 @@
             sheetData.autoFilter = 'A1:J1'; 
 
             const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `Dashboard_Operativo_${Date.now()}.xlsx`);
+            saveAs(new Blob([buffer]), `Dashboard_Financiero_${Date.now()}.xlsx`);
 
         } catch (e) {
             console.error(e);
