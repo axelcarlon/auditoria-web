@@ -348,7 +348,7 @@
 
     <aside class="scroll-panel">
         <div class="panel-header">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             Ecosistema de Herramientas
         </div>
 
@@ -400,7 +400,6 @@
         "Criterio No Vinculativo: El SAT revisará minuciosamente la Razón de Negocios (Art. 5-A) en prestación de servicios intangibles."
     ];
     
-    // Autopsia 11: Inyección Viva IA. Llama al motor FastAPI silenciosamente.
     async function obtenerNoticiasIA() {
         try {
             const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
@@ -415,14 +414,14 @@
                 const data = await res.json();
                 let noticiasNuevas = data.respuesta.split('|').map(n => n.trim()).filter(n => n.length > 10);
                 if (noticiasNuevas.length > 0) {
-                    noticiasSAT = noticiasNuevas; // Inyección letal y silenciosa
+                    noticiasSAT = noticiasNuevas; 
                 }
             }
         } catch(e) {
             console.warn("IA Local Off. Cargando titulares de respaldo.");
         }
     }
-    obtenerNoticiasIA(); // Se lanza sola al cargar la página
+    obtenerNoticiasIA(); 
 
     let tickerIndex = 0;
     setInterval(() => {
@@ -454,20 +453,16 @@
     // -------------------------------------------------------------
     // 3. INICIALIZACIÓN Y MOTOR CORE
     // -------------------------------------------------------------
-    
-    // Autopsia 3 (Reparada Definitiva): Asignación Segura de Fuentes
     if (typeof window.pdfMake !== 'undefined' && typeof window.pdfMakeFonts !== 'undefined' && window.pdfMakeFonts.pdfMake) {
         window.pdfMake.vfs = window.pdfMakeFonts.pdfMake.vfs;
     }
 
     let currentFiles = [];
     let biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
-    let dbFacturas = []; // Nueva Base de Datos Estructurada para Excel
+    let dbFacturas = []; 
     let chart1Instance = null; let chart2Instance = null;
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
-    
-    // Autopsia 8: Limpieza estricta de formato moneda para el PDF (Evita NaN)
     const formatMoneyPDF = (val) => {
         let num = parseFloat(val || 0) || 0;
         return "$" + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -524,7 +519,6 @@
             <p><strong>Carga Tributaria y Entero a Terceros:</strong> Se determinó la existencia de ${formatMoney(data.retenciones)} en impuestos retenidos. Se subraya la obligación inexcusable de reportarlos en su totalidad a la Tesorería de la Federación, ya que dichas retenciones no prescriben.</p>
         `;
 
-        // Autopsia 5: Limpieza profunda de HTML para que PDFMake no colapse
         biData.dictamenTexto = textoHtml.replace(/<[^>]*>?/gm, '').trim(); 
         return textoHtml;
     }
@@ -540,7 +534,7 @@
         biData = { hostRFC: "", hostNombre: "", ingresos: 0, egresos: 0, retenciones: 0, countI: 0, countE: 0, proveedores: {}, clientes: {}, dictamenTexto: "" };
         let rfcCounts = {};
         let parsedXMLs = [];
-        dbFacturas = []; // Reseteamos la base de datos Excel
+        dbFacturas = []; 
 
         status.innerText = "> Fase 1: Levantando nodo de procesamiento. Calculando árbol de RFCs...";
         for(let i=0; i<currentFiles.length; i++) {
@@ -629,7 +623,6 @@
         let margen = 0;
         if(biData.ingresos > 0) margen = (spread / biData.ingresos) * 100;
 
-        // --- ACTUALIZACIÓN WIDGETS LATERALES ---
         document.getElementById('calc-flujo').innerText = formatMoney(spread);
         document.getElementById('dot-flujo').className = spread >= 0 ? "fw-status green" : "fw-status red";
 
@@ -642,7 +635,6 @@
         document.getElementById('calc-fiscal').innerText = formatMoney(biData.retenciones);
         document.getElementById('dot-fiscal').className = biData.retenciones > 0 ? "fw-status yellow" : "fw-status green";
 
-        // --- DASHBOARD CENTRAL ---
         document.getElementById('valMatrizInfo').innerText = `${biData.hostNombre} | ${biData.hostRFC}`;
         document.getElementById('kpiIngresos').innerText = formatMoney(biData.ingresos);
         document.getElementById('kpiEgresos').innerText = formatMoney(biData.egresos);
@@ -650,7 +642,6 @@
         document.getElementById('kpiRetenciones').innerText = formatMoney(biData.retenciones);
         document.getElementById('dictamenTexto').innerHTML = redactarDictamen(biData);
 
-        // Autopsia 4: Apagar animaciones para no ensuciar la captura del canvas
         Chart.defaults.color = '#94A3B8'; Chart.defaults.font.family = 'system-ui, sans-serif';
         const chartOptions = { animation: false, responsive: true, maintainAspectRatio: false }; 
 
@@ -699,7 +690,6 @@
         const ws = XLSX.utils.aoa_to_sheet(results);
         ws['!cols'] = [{wch: 12}, {wch: 38}, {wch: 45}, {wch: 15}, {wch: 22}, {wch: 20}, {wch: 15}];
         
-        // Aplicar formato contable para F y G
         const range = XLSX.utils.decode_range(ws['!ref']);
         for(let R = 1; R <= range.e.r; ++R) {
             let cellF = ws[XLSX.utils.encode_cell({c: 5, r: R})];
@@ -714,7 +704,7 @@
     }
 
     // ==============================================================
-    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CON FÓRMULAS VIVAS
+    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CON GRÁFICOS Y TABLAS
     // ==============================================================
     async function exportarPlantilla() {
         const btn = document.querySelector('.btn-excel-pro');
@@ -733,28 +723,29 @@
                 {width: 4},  // A
                 {width: 35}, // B
                 {width: 35}, // C
-                {width: 35}  // D
+                {width: 35}, // D
+                {width: 35}  // E
             ];
 
             // Título Principal
-            sheetDash.mergeCells('B2:D3');
+            sheetDash.mergeCells('B2:E3');
             const titleCell = sheetDash.getCell('B2');
             titleCell.value = 'CENTRO DE MANDO FINANCIERO';
             titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
-            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Azul Corporativo AuditorIA
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Azul Corporativo 
             titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
             // Subtítulo (Matriz)
-            sheetDash.mergeCells('B4:D4');
+            sheetDash.mergeCells('B4:E4');
             const subtitleCell = sheetDash.getCell('B4');
             subtitleCell.value = `Matriz Analizada: ${biData.hostNombre} | RFC: ${biData.hostRFC}`;
             subtitleCell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF475569' } };
             subtitleCell.alignment = { horizontal: 'center' };
 
+            // ================== BLOQUE KPI PRINCIPAL ==================
             // Tarjeta 1: INGRESOS
             sheetDash.getCell('B6').value = 'TOTAL INGRESOS BRUTOS';
             sheetDash.getCell('B6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            // Fórmula inteligente: Suma cualquier tipo que comience con "INGRESO" (Abarca Facturas y Notas de Crédito Negativas)
             sheetDash.getCell('B7').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!E:E, "INGRESO*")' };
             sheetDash.getCell('B7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
             sheetDash.getCell('B7').numFmt = '"$"#,##0.00';
@@ -769,39 +760,78 @@
             sheetDash.getCell('C7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
             // Tarjeta 3: FLUJO NETO
-            sheetDash.getCell('D6').value = 'FLUJO NETO (LIQUIDEZ SPREAD)';
+            sheetDash.getCell('D6').value = 'FLUJO NETO (SPREAD)';
             sheetDash.getCell('D6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
             sheetDash.getCell('D7').value = { formula: 'B7-C7' };
             sheetDash.getCell('D7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF3B82F6' } };
             sheetDash.getCell('D7').numFmt = '"$"#,##0.00';
             sheetDash.getCell('D7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Mini Tabla Inferior
-            sheetDash.mergeCells('B10:D10');
-            sheetDash.getCell('B10').value = 'MÉTRICAS ADICIONALES DE CUMPLIMIENTO';
+            // Tarjeta 4: MARGEN Y RETENCIONES
+            sheetDash.getCell('E6').value = 'RETENCIONES / CARGA FISCAL';
+            sheetDash.getCell('E6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('E7').value = { formula: 'SUM(Base_Datos!G:G)' };
+            sheetDash.getCell('E7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF8B5CF6' } }; // Morado
+            sheetDash.getCell('E7').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('E7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // ================== BLOQUE TOP 5 CONCENTRACIÓN ==================
+            // Encabezado Tablas
+            sheetDash.mergeCells('B10:E10');
+            sheetDash.getCell('B10').value = 'ANÁLISIS DE CONCENTRACIÓN (TOP 5 ENTIDADES)';
             sheetDash.getCell('B10').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
             sheetDash.getCell('B10').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
             sheetDash.getCell('B10').alignment = { vertical: 'middle', horizontal: 'center' };
 
-            sheetDash.getCell('B11').value = 'Volumen Total de Documentos:';
-            sheetDash.getCell('B11').font = { name: 'Arial', size: 11, bold: true };
-            sheetDash.getCell('C11').value = { formula: 'COUNTA(Base_Datos!A:A)-1' }; 
-            sheetDash.getCell('C11').font = { name: 'Arial', size: 12, bold: true };
-            sheetDash.getCell('C11').alignment = { horizontal: 'left' };
+            // Cabeceras Top Clientes (B y C)
+            sheetDash.getCell('B11').value = 'CLIENTE (Ingresos)';
+            sheetDash.getCell('B11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; 
+            sheetDash.getCell('C11').value = 'MONTO FACTURADO';
+            sheetDash.getCell('C11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('C11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; 
 
-            sheetDash.getCell('B12').value = 'Total de Impuestos Retenidos:';
-            sheetDash.getCell('B12').font = { name: 'Arial', size: 11, bold: true };
-            sheetDash.getCell('C12').value = { formula: 'SUM(Base_Datos!G:G)' }; 
-            sheetDash.getCell('C12').font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF8B5CF6' } };
-            sheetDash.getCell('C12').numFmt = '"$"#,##0.00';
-            sheetDash.getCell('C12').alignment = { horizontal: 'left' };
+            // Cabeceras Top Proveedores (D y E)
+            sheetDash.getCell('D11').value = 'PROVEEDOR (Egresos)';
+            sheetDash.getCell('D11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('D11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; 
+            sheetDash.getCell('E11').value = 'GASTO OPERATIVO';
+            sheetDash.getCell('E11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('E11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; 
+
+            // Extraer el Top 5 para inyectarlo como valores estáticos en el resumen (Simulando tabla dinámica)
+            const topClients = Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const topProviders = Object.entries(biData.proveedores).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+            for(let i=0; i<5; i++) {
+                let rowIdx = 12 + i;
+                
+                // Inyectar Cliente
+                sheetDash.getCell(`B${rowIdx}`).value = topClients[i] ? topClients[i][0] : '-';
+                sheetDash.getCell(`B${rowIdx}`).font = { name: 'Arial', size: 10 };
+                sheetDash.getCell(`C${rowIdx}`).value = topClients[i] ? topClients[i][1] : 0;
+                sheetDash.getCell(`C${rowIdx}`).numFmt = '"$"#,##0.00';
+                
+                // Inyectar Proveedor
+                sheetDash.getCell(`D${rowIdx}`).value = topProviders[i] ? topProviders[i][0] : '-';
+                sheetDash.getCell(`D${rowIdx}`).font = { name: 'Arial', size: 10 };
+                sheetDash.getCell(`E${rowIdx}`).value = topProviders[i] ? topProviders[i][1] : 0;
+                sheetDash.getCell(`E${rowIdx}`).numFmt = '"$"#,##0.00';
+                
+                // Borde inferior ligero para la fila
+                ['B','C','D','E'].forEach(col => {
+                    sheetDash.getCell(`${col}${rowIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+                });
+            }
 
             // Instrucción de uso en el pie
-            sheetDash.mergeCells('B14:D14');
-            sheetDash.getCell('B14').value = '💡 Tip: Si filtras o eliminas documentos en la pestaña "Base_Datos", este panel recalculará la liquidez.';
-            sheetDash.getCell('B14').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+            sheetDash.mergeCells('B19:E19');
+            sheetDash.getCell('B19').value = '💡 Tip: Las tarjetas superiores están formuladas. Si filtras documentos en "Base_Datos", la liquidez se recalculará.';
+            sheetDash.getCell('B19').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
 
+            // ==========================================
             // PESTAÑA 2: BASE DE DATOS
+            // ==========================================
             const sheetData = workbook.addWorksheet('Base_Datos');
             sheetData.columns = [
                 { header: 'FECHA', key: 'fecha', width: 12 },
@@ -860,16 +890,13 @@
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML; 
         
-        // Autopsia 1: Cambio de UI sincrónico
         btn.innerHTML = `VECTORIZANDO...`; 
         btn.disabled = true;
 
-        // Autopsia 2: Evitamos setTimeout() que alerta a Chrome, usamos rAF para pintar el UI.
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 
                 try {
-                    // ASEGURAR VFS DE NUEVO POR SI ACASO
                     if (window.pdfMake && window.pdfMakeFonts && window.pdfMakeFonts.pdfMake) {
                         window.pdfMake.vfs = window.pdfMakeFonts.pdfMake.vfs;
                     }
@@ -877,7 +904,6 @@
                     const spread = biData.ingresos - biData.egresos;
                     const spreadColor = spread >= 0 ? '#065F46' : '#991B1B';
                     
-                    // Autopsia 4: Píxeles transparentes válidos por defecto
                     let chartFlujoImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
                     let chartComboImage = chartFlujoImage;
 
@@ -888,7 +914,6 @@
                         if (bData.length > 50) chartComboImage = bData;
                     } catch(err) { console.warn("Canvas bloqueado.", err); }
 
-                    // Autopsia 6: Arrays Indestructibles
                     let topClientsTbl = [['Denominación / Razón Social (Cliente)', 'Flujo Generado']];
                     let clientesArray = Object.entries(biData.clientes || {}).sort((a, b) => b[1] - a[1]).slice(0, 8);
                     if (clientesArray.length === 0) clientesArray = [["Sin facturación", 0]];
@@ -905,7 +930,6 @@
                         topProvTbl.push([{text: nameP, fontSize: 9}, {text: formatMoneyPDF(p[1]), fontSize: 9, alignment: 'right'}]);
                     });
 
-                    // Autopsia 9: Nombres Limpios
                     const hostNombrePDF = biData.hostNombre ? String(biData.hostNombre) : 'Entidad No Identificada';
                     const hostRFCPDF = biData.hostRFC ? String(biData.hostRFC).replace(/[^a-zA-Z0-9]/g, '') : 'DATA';
                     const dictamenPDF = biData.dictamenTexto ? String(biData.dictamenTexto) : 'Evaluación ejecutada sin suficientes datos de cruce.';
@@ -967,7 +991,6 @@
                     if (typeof window.showToast === 'function') window.showToast("Memorándum descargado con éxito.", "success");
 
                 } catch (err) {
-                    // Autopsia 10: Trazabilidad visible
                     console.error("PDF CORE CRASH:", err);
                     alert("Error interno PDFMake: " + err.message);
                 } finally {
@@ -975,8 +998,8 @@
                     btn.disabled = false;
                 }
 
-            }); // rAF 2
-        }); // rAF 1
+            }); 
+        }); 
     }
 </script>
 </body>
