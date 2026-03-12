@@ -24,9 +24,9 @@
     <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -149,10 +149,14 @@
         </div>
 
         <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Procesar Nuevo PDF</button>
+            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 1;">Nuevo PDF</button>
+            <button onclick="exportarPlano()" class="btn-secondary" style="flex: 1; border-color: #64748B; color: #94A3B8;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
+            </button>
             <button onclick="exportarBanco()" class="btn-action" style="flex: 2; background: #10B981; border-color: #059669; box-shadow: 0 4px 15px rgba(16,185,129,0.4);">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR LAYOUT EXCEL
+                DASHBOARD PRO
             </button>
         </div>
     </div>
@@ -271,25 +275,25 @@
 
             status.innerHTML += `> Aplicando filtros de limpieza heurística...<br>`;
 
-            // Lógica Heurística (Motor de Limpieza)
+            // Lógica Heurística (Motor de Limpieza Mejorado)
             rawLines.forEach(line => {
-                // Ignorar saldos iniciales o finales (ruido común en bancos)
-                if(line.toLowerCase().includes('saldo inicial') || line.toLowerCase().includes('saldo final')) return;
+                const lineLower = line.toLowerCase();
+                // Filtro para ignorar basura y saldos acumulados de los bancos
+                if(lineLower.includes('saldo inicial') || lineLower.includes('saldo final') || lineLower.includes('saldo anterior') || lineLower.includes('total') || lineLower.includes('página') || lineLower.includes('sucursal')) return;
 
-                // Regex para buscar Fechas (ej. 12/03, 12-03, 12 AGO) y montos financieros
-                const dateMatch = line.match(/(\d{2}[\/|-]\d{2}([\/|-]\d{2,4})?|\d{2}\s+(ENE|FEB|MAR|ABR|MAY|JUN|JUL|AGO|SEP|OCT|NOV|DIC))/i);
-                const amountMatches = line.match(/(\d{1,3}(,\d{3})*(\.\d{2}))/g);
+                // Regex ampliada para fechas (ej. 12/03, 12-03, 12 AGO, 12-03-2024)
+                const dateMatch = line.match(/\b(\d{2}[\/|-]\d{2}([\/|-]\d{2,4})?|\d{2}\s+(ENE|FEB|MAR|ABR|MAY|JUN|JUL|AGO|SEP|OCT|NOV|DIC)\.?(\s+\d{2,4})?)\b/i);
+                const amountMatches = line.match(/(-?\d{1,3}(,\d{3})*(\.\d{2}))/g);
 
                 if(dateMatch && amountMatches) {
                     const fecha = dateMatch[0];
-                    const amounts = amountMatches.map(a => parseFloat(a.replace(/,/g, '')));
+                    // Asegurarse de convertir a float absoluto para las fórmulas
+                    const amounts = amountMatches.map(a => Math.abs(parseFloat(a.replace(/,/g, ''))));
                     
-                    // Determinación de Cargo/Abono
                     let montoPrincipal = amounts[0];
                     let cargo = 0;
                     let abono = 0;
 
-                    const lineLower = line.toLowerCase();
                     if(line.includes('-') || lineLower.includes('retiro') || lineLower.includes('cargo') || lineLower.includes('pago a') || lineLower.includes('comision') || lineLower.includes('iva')) {
                         cargo = montoPrincipal;
                         totalRetiros += cargo;
@@ -341,112 +345,137 @@
         if (typeof window.showToast === 'function') window.showToast("Estado de Cuenta estructurado.", "success");
     }
 
+    // Exportación Secundaria: Solo Datos Crudos
+    function exportarPlano() {
+        const results = [["FECHA", "DESCRIPCIÓN", "RETIRO (CARGO)", "DEPÓSITO (ABONO)"]];
+        bankData.forEach(d => {
+            results.push([d.fecha, d.desc, d.cargo || "", d.abono || ""]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 15}, {wch: 55}, {wch: 20}, {wch: 20}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Datos_Crudos");
+        XLSX.writeFile(wb, `Datos_Crudos_Bancarios_${Date.now()}.xlsx`);
+    }
+
+    // Exportación Principal: Dashboard Profesional ExcelJS
     async function exportarBanco() {
-        const btn = document.querySelector('button[onclick="exportarBanco()"]');
-        const oldText = btn.innerHTML;
-        btn.innerHTML = 'GENERANDO DASHBOARD...';
-        btn.disabled = true;
+        const btn = document.querySelector('button[onclick="exportarBanco()"]');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO DASHBOARD...';
+        btn.disabled = true;
 
-        try {
-            const workbook = new ExcelJS.Workbook();
-            workbook.creator = 'AuditorIA';
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
 
-            // ==========================================
-            // PESTAÑA 1: DASHBOARD EJECUTIVO (Sin cuadrícula)
-            // ==========================================
-            const sheetDash = workbook.addWorksheet('Resumen Ejecutivo', {views:[{showGridLines:false}]});
-            sheetDash.columns = [
-                {width: 4},  // A: Espaciador
-                {width: 30}, // B: Ingresos
-                {width: 30}, // C: Egresos
-                {width: 30}  // D: Flujo Neto
-            ];
+            // ==========================================
+            // PESTAÑA 1: DASHBOARD EJECUTIVO (Sin cuadrícula)
+            // ==========================================
+            const sheetDash = workbook.addWorksheet('Resumen Financiero', {views:[{showGridLines:false}]});
+            
+            // Ancho de columnas ajustado para evitar el error ########
+            sheetDash.columns = [
+                {width: 4},  // A: Espaciador
+                {width: 35}, // B: Ingresos
+                {width: 35}, // C: Egresos
+                {width: 35}  // D: Flujo Neto
+            ];
 
-            // Título Principal
-            sheetDash.mergeCells('B2:D3');
-            const titleCell = sheetDash.getCell('B2');
-            titleCell.value = 'CONTROL DE FLUJO DE EFECTIVO';
-            titleCell.font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FFFFFFFF' } };
-            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } }; // Azul oscuro AuditorIA
-            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'CONTROL DE FLUJO DE EFECTIVO BANCARIO';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } }; // Azul oscuro AuditorIA
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // Tarjeta 1: INGRESOS
-            sheetDash.getCell('B5').value = 'INGRESOS TOTALES (ABONOS)';
-            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('B6').value = { formula: 'SUM(Base_Datos!D:D)' }; // Fórmula real
-            sheetDash.getCell('B6').font = { name: 'Arial', size: 22, bold: true, color: { argb: 'FF10B981' } }; // Verde
-            sheetDash.getCell('B6').numFmt = '"$"#,##0.00';
-            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+            // Tarjeta 1: INGRESOS
+            sheetDash.getCell('B5').value = 'TOTAL DEPÓSITOS (ABONOS)';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'SUM(Base_Datos!D:D)' };
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
+            sheetDash.getCell('B6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Tarjeta 2: EGRESOS
-            sheetDash.getCell('C5').value = 'EGRESOS TOTALES (CARGOS)';
-            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('C6').value = { formula: 'SUM(Base_Datos!C:C)' }; // Fórmula real
-            sheetDash.getCell('C6').font = { name: 'Arial', size: 22, bold: true, color: { argb: 'FFEF4444' } }; // Rojo
-            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
-            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+            // Tarjeta 2: EGRESOS
+            sheetDash.getCell('C5').value = 'TOTAL RETIROS (CARGOS)';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'SUM(Base_Datos!C:C)' };
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Tarjeta 3: FLUJO NETO
-            sheetDash.getCell('D5').value = 'FLUJO NETO REAL';
-            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('D6').value = { formula: 'B6-C6' }; // Fórmula real
-            sheetDash.getCell('D6').font = { name: 'Arial', size: 22, bold: true, color: { argb: 'FF3B82F6' } }; // Azul
-            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
-            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+            // Tarjeta 3: FLUJO NETO
+            sheetDash.getCell('D5').value = 'FLUJO NETO REAL (LIQUIDEZ)';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('D6').value = { formula: 'B6-C6' };
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF3B82F6' } };
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Instrucción de uso
-            sheetDash.mergeCells('B8:D8');
-            sheetDash.getCell('B8').value = '💡 Si modificas un monto en la pestaña "Base_Datos", este panel se actualizará automáticamente.';
-            sheetDash.getCell('B8').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+            // Mini Tabla de Resumen Operativo
+            sheetDash.mergeCells('B8:D8');
+            sheetDash.getCell('B8').value = 'RESUMEN OPERATIVO DE TRANSACCIONES';
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B8').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF475569' } };
+            sheetDash.getCell('B8').alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // ==========================================
-            // PESTAÑA 2: BASE DE DATOS (Data cruda inyectada)
-            // ==========================================
-            const sheetData = workbook.addWorksheet('Base_Datos');
-            sheetData.columns = [
-                { header: 'FECHA', key: 'fecha', width: 15 },
-                { header: 'CONCEPTO BANCARIO', key: 'concepto', width: 60 },
-                { header: 'CARGO (SALIDA)', key: 'cargo', width: 22 },
-                { header: 'ABONO (ENTRADA)', key: 'abono', width: 22 }
-            ];
+            sheetDash.getCell('B9').value = 'Total de Movimientos Detectados:';
+            sheetDash.getCell('B9').font = { name: 'Arial', size: 11, bold: true };
+            sheetDash.getCell('C9').value = { formula: 'COUNTA(Base_Datos!A:A)-1' }; // Cuenta filas ignorando encabezado
+            sheetDash.getCell('C9').font = { name: 'Arial', size: 12, bold: true };
+            sheetDash.getCell('C9').alignment = { horizontal: 'left' };
 
-            // Estilo a los encabezados de la tabla
-            sheetData.getRow(1).font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
-            sheetData.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
-            sheetData.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+            // Instrucción de uso en el pie
+            sheetDash.mergeCells('B11:D11');
+            sheetDash.getCell('B11').value = '💡 Tip: Si agregas o eliminas filas en la pestaña "Base_Datos", este panel de control se actualizará automáticamente.';
+            sheetDash.getCell('B11').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
 
-            // Inyectar datos
-            bankData.forEach(fila => {
-                sheetData.addRow({
-                    fecha: fila.fecha,
-                    concepto: fila.desc,
-                    cargo: parseFloat(fila.cargo) || 0,
-                    abono: parseFloat(fila.abono) || 0
-                });
-            });
+            // ==========================================
+            // PESTAÑA 2: BASE DE DATOS (Data cruda inyectada)
+            // ==========================================
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'FECHA', key: 'fecha', width: 15 },
+                { header: 'CONCEPTO BANCARIO', key: 'concepto', width: 65 },
+                { header: 'CARGO (SALIDA)', key: 'cargo', width: 25 },
+                { header: 'ABONO (ENTRADA)', key: 'abono', width: 25 }
+            ];
 
-            // Aplicar formato de Moneda Contable a las columnas C y D
-            sheetData.getColumn('C').numFmt = '"$"#,##0.00';
-            sheetData.getColumn('D').numFmt = '"$"#,##0.00';
-            sheetData.autoFilter = 'A1:D1'; // Activar filtros de Excel
+            // Estilo a los encabezados de la tabla
+            sheetData.getRow(1).font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetData.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+            sheetData.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // Descargar el archivo procesado
-            const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `Dashboard_Bancario_${Date.now()}.xlsx`);
+            // Inyectar datos asegurando que son números (Float) para que Excel no ponga error ######## ni texto
+            bankData.forEach(fila => {
+                sheetData.addRow({
+                    fecha: fila.fecha,
+                    concepto: fila.desc,
+                    cargo: fila.cargo > 0 ? parseFloat(fila.cargo) : 0,
+                    abono: fila.abono > 0 ? parseFloat(fila.abono) : 0
+                });
+            });
 
-        } catch (e) {
-            console.error(e);
-            if(typeof window.showToast === 'function') window.showToast("Error generando Dashboard en Excel.", "error");
-        } finally {
-            btn.innerHTML = oldText;
-            btn.disabled = false;
-        }
-    }
+            // Aplicar formato de Moneda Contable a las columnas C y D (Nativo de Excel)
+            sheetData.getColumn('C').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('D').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:D1'; // Activar filtros de Excel
+
+            // Descargar el archivo procesado
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Dashboard_Bancario_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Dashboard en Excel.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
 </script>
 </body>
 </html>
-
-
-
-
-
