@@ -553,6 +553,7 @@
 
                 parsedXMLs.push({
                     tipo: cfdi.getAttribute('TipoDeComprobante'),
+                    metodo: cfdi.getAttribute('MetodoPago') || "PUE",
                     fecha: cfdi.getAttribute('Fecha') ? cfdi.getAttribute('Fecha').split('T')[0] : "N/A",
                     uuid: timbre ? timbre.getAttribute('UUID') : "SIN-UUID",
                     subtotal: parseFloat(cfdi.getAttribute('SubTotal') || 0),
@@ -576,35 +577,54 @@
             let contraparte = "";
             let rfcContraparte = "";
             let factorImp = 1;
+            let estatusPago = "";
 
             if(x.tipo === 'I') {
                 if (x.emisorRFC === biData.hostRFC) {
                     biData.ingresos += x.subtotal; biData.countI++;
                     biData.clientes[x.receptorNombre] = (biData.clientes[x.receptorNombre] || 0) + x.subtotal;
                     tipoLogico = 'INGRESO'; contraparte = x.receptorNombre; rfcContraparte = x.receptorRFC;
+                    estatusPago = (x.metodo === 'PPD') ? 'CUENTAS POR COBRAR' : 'COBRADO';
                 } else if (x.receptorRFC === biData.hostRFC) {
                     biData.egresos += x.subtotal; biData.retenciones += x.retencionesXML; biData.countE++;
                     biData.proveedores[x.emisorNombre] = (biData.proveedores[x.emisorNombre] || 0) + x.subtotal;
                     tipoLogico = 'EGRESO'; contraparte = x.emisorNombre; rfcContraparte = x.emisorRFC;
+                    estatusPago = (x.metodo === 'PPD') ? 'CUENTAS POR PAGAR' : 'PAGADO';
                 }
             } else if (x.tipo === 'E') {
                 if (x.emisorRFC === biData.hostRFC) { 
                     biData.ingresos -= x.subtotal; 
                     tipoLogico = 'INGRESO (NOTA CRÉDITO)'; contraparte = x.receptorNombre; rfcContraparte = x.receptorRFC; factorImp = -1;
+                    estatusPago = 'DESCUENTO';
                 } 
                 else if (x.receptorRFC === biData.hostRFC) { 
                     biData.egresos -= x.subtotal; 
                     tipoLogico = 'EGRESO (NOTA CRÉDITO)'; contraparte = x.emisorNombre; rfcContraparte = x.emisorRFC; factorImp = -1;
+                    estatusPago = 'DESCUENTO';
+                }
+            }
+
+            // Extraer Nombre del Mes (Enero - Diciembre)
+            let mesNombres = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            let mesStr = "N/A";
+            if (x.fecha !== "N/A") {
+                let parts = x.fecha.split('-');
+                if (parts.length >= 2) {
+                    let mIndex = parseInt(parts[1], 10) - 1;
+                    mesStr = mesNombres[mIndex] || "N/A";
                 }
             }
 
             if(tipoLogico !== "") {
                 dbFacturas.push({
                     fecha: x.fecha,
+                    mes: mesStr,
                     uuid: x.uuid,
                     contraparte: contraparte,
                     rfcContraparte: rfcContraparte,
                     tipo: tipoLogico,
+                    metodo: x.metodo,
+                    estatus: estatusPago,
                     importe: x.subtotal * factorImp,
                     retenciones: x.retencionesXML
                 });
@@ -673,43 +693,46 @@
     // 4. EXPORTACIÓN EXCEL CRUDO
     // ==============================================================
     function exportarPlano() {
-        const results = [["FECHA", "UUID", "CONTRAPARTE", "RFC", "TIPO OPERACIÓN", "IMPORTE (SUBTOTAL)", "RETENCIONES"]];
+        const results = [["FECHA", "MES", "UUID", "CONTRAPARTE", "RFC", "CATEGORÍA", "MÉTODO PAGO", "ESTATUS", "IMPORTE", "RETENCIONES"]];
         
         dbFacturas.forEach(f => {
             results.push([
                 f.fecha, 
+                f.mes,
                 f.uuid, 
                 f.contraparte, 
                 f.rfcContraparte, 
                 f.tipo, 
+                f.metodo,
+                f.estatus,
                 f.importe, 
                 f.retenciones > 0 ? f.retenciones : 0
             ]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 12}, {wch: 38}, {wch: 45}, {wch: 15}, {wch: 22}, {wch: 20}, {wch: 15}];
+        ws['!cols'] = [{wch: 12}, {wch: 15}, {wch: 38}, {wch: 45}, {wch: 15}, {wch: 22}, {wch: 15}, {wch: 20}, {wch: 20}, {wch: 15}];
         
         const range = XLSX.utils.decode_range(ws['!ref']);
         for(let R = 1; R <= range.e.r; ++R) {
-            let cellF = ws[XLSX.utils.encode_cell({c: 5, r: R})];
-            let cellG = ws[XLSX.utils.encode_cell({c: 6, r: R})];
-            if(cellF) cellF.z = '"$"#,##0.00';
-            if(cellG) cellG.z = '"$"#,##0.00';
+            let cellI = ws[XLSX.utils.encode_cell({c: 8, r: R})];
+            let cellJ = ws[XLSX.utils.encode_cell({c: 9, r: R})];
+            if(cellI) cellI.z = '"$"#,##0.00';
+            if(cellJ) cellJ.z = '"$"#,##0.00';
         }
 
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Base_Datos_Facturas");
+        XLSX.utils.book_append_sheet(wb, ws, "Base_Datos");
         XLSX.writeFile(wb, `Sabana_Financiera_${Date.now()}.xlsx`);
     }
 
     // ==============================================================
-    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CON GRÁFICOS Y TABLAS
+    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CON DASHBOARD Y FÓRMULAS
     // ==============================================================
     async function exportarPlantilla() {
         const btn = document.querySelector('.btn-excel-pro');
         const oldText = btn.innerHTML;
-        btn.innerHTML = 'GENERANDO PLANTILLA...';
+        btn.innerHTML = 'GENERANDO DASHBOARD...';
         btn.disabled = true;
 
         try {
@@ -717,166 +740,174 @@
             workbook.creator = 'AuditorIA';
 
             // PESTAÑA 1: DASHBOARD EJECUTIVO
-            const sheetDash = workbook.addWorksheet('Resumen Ejecutivo', {views:[{showGridLines:false}]});
+            const sheetDash = workbook.addWorksheet('Dashboard Gerencial', {views:[{showGridLines:false}]});
             
             sheetDash.columns = [
                 {width: 4},  // A
-                {width: 35}, // B
-                {width: 35}, // C
-                {width: 35}, // D
-                {width: 35}  // E
+                {width: 25}, // B
+                {width: 25}, // C
+                {width: 25}, // D
+                {width: 25}, // E
+                {width: 25}  // F
             ];
 
             // Título Principal
-            sheetDash.mergeCells('B2:E3');
+            sheetDash.mergeCells('B2:F3');
             const titleCell = sheetDash.getCell('B2');
-            titleCell.value = 'CENTRO DE MANDO FINANCIERO';
-            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
-            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF3B82F6' } }; // Azul Corporativo 
+            titleCell.value = 'DASHBOARD FINANCIERO Y DE LIQUIDEZ';
+            titleCell.font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } }; 
             titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // Subtítulo (Matriz)
-            sheetDash.mergeCells('B4:E4');
+            sheetDash.mergeCells('B4:F4');
             const subtitleCell = sheetDash.getCell('B4');
-            subtitleCell.value = `Matriz Analizada: ${biData.hostNombre} | RFC: ${biData.hostRFC}`;
-            subtitleCell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF475569' } };
+            subtitleCell.value = `Entidad Analizada: ${biData.hostNombre} | RFC: ${biData.hostRFC}`;
+            subtitleCell.font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF475569' } };
             subtitleCell.alignment = { horizontal: 'center' };
 
-            // ================== BLOQUE KPI PRINCIPAL ==================
-            // Tarjeta 1: INGRESOS
-            sheetDash.getCell('B6').value = 'TOTAL INGRESOS BRUTOS';
-            sheetDash.getCell('B6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('B7').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!E:E, "INGRESO*")' };
-            sheetDash.getCell('B7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
+            // ================== TARJETAS KPI ==================
+            // Tarjeta 1: Ingresos Efectivos
+            sheetDash.getCell('B6').value = 'INGRESOS EFECTIVOS (PUE)';
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B7').value = { formula: 'SUMIFS(Base_Datos!I:I, Base_Datos!H:H, "COBRADO")' };
+            sheetDash.getCell('B7').font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FF10B981' } }; 
             sheetDash.getCell('B7').numFmt = '"$"#,##0.00';
             sheetDash.getCell('B7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Tarjeta 2: EGRESOS
-            sheetDash.getCell('C6').value = 'TOTAL EGRESOS OPERATIVOS';
-            sheetDash.getCell('C6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('C7').value = { formula: 'SUMIFS(Base_Datos!F:F, Base_Datos!E:E, "EGRESO*")' };
-            sheetDash.getCell('C7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } };
+            // Tarjeta 2: Cuentas por Cobrar
+            sheetDash.getCell('C6').value = 'CUENTAS POR COBRAR (PPD)';
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C7').value = { formula: 'SUMIFS(Base_Datos!I:I, Base_Datos!H:H, "CUENTAS POR COBRAR")' };
+            sheetDash.getCell('C7').font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FFF59E0B' } }; 
             sheetDash.getCell('C7').numFmt = '"$"#,##0.00';
             sheetDash.getCell('C7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Tarjeta 3: FLUJO NETO
-            sheetDash.getCell('D6').value = 'FLUJO NETO (SPREAD)';
-            sheetDash.getCell('D6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('D7').value = { formula: 'B7-C7' };
-            sheetDash.getCell('D7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF3B82F6' } };
+            // Tarjeta 3: Egresos Efectivos
+            sheetDash.getCell('D6').value = 'EGRESOS REALIZADOS (PUE)';
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('D7').value = { formula: 'SUMIFS(Base_Datos!I:I, Base_Datos!H:H, "PAGADO")' };
+            sheetDash.getCell('D7').font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FFEF4444' } };
             sheetDash.getCell('D7').numFmt = '"$"#,##0.00';
             sheetDash.getCell('D7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // Tarjeta 4: MARGEN Y RETENCIONES
-            sheetDash.getCell('E6').value = 'RETENCIONES / CARGA FISCAL';
-            sheetDash.getCell('E6').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
-            sheetDash.getCell('E7').value = { formula: 'SUM(Base_Datos!G:G)' };
-            sheetDash.getCell('E7').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF8B5CF6' } }; // Morado
+            // Tarjeta 4: Flujo Neto
+            sheetDash.getCell('E6').value = 'FLUJO NETO (LIQUIDEZ REAL)';
+            sheetDash.getCell('E6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('E7').value = { formula: 'B7-D7' };
+            sheetDash.getCell('E7').font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FF3B82F6' } };
             sheetDash.getCell('E7').numFmt = '"$"#,##0.00';
             sheetDash.getCell('E7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
 
-            // ================== BLOQUE TOP 5 CONCENTRACIÓN ==================
-            // Encabezado Tablas
-            sheetDash.mergeCells('B10:E10');
-            sheetDash.getCell('B10').value = 'ANÁLISIS DE CONCENTRACIÓN (TOP 5 ENTIDADES)';
+            // Tarjeta 5: Semáforo Rentabilidad
+            sheetDash.getCell('F6').value = 'RENTABILIDAD (MARGEN)';
+            sheetDash.getCell('F6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('F7').value = { formula: 'IF(B7>0, E7/B7, 0)' };
+            sheetDash.getCell('F7').font = { name: 'Arial', size: 18, bold: true };
+            sheetDash.getCell('F7').numFmt = '0.00%';
+            sheetDash.getCell('F7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+            
+            // Semáforo Condicional
+            sheetDash.addConditionalFormatting({
+                ref: 'F7:F7',
+                rules: [
+                    { type: 'cellIs', operator: 'lessThan', formula: ['0'], style: { font: { color: {argb: 'FFEF4444'}, bold: true } } },
+                    { type: 'cellIs', operator: 'greaterThan', formula: ['0'], style: { font: { color: {argb: 'FF10B981'}, bold: true } } }
+                ]
+            });
+
+            // ================== TABLA MENSUAL ==================
+            sheetDash.mergeCells('B10:F10');
+            sheetDash.getCell('B10').value = 'ANÁLISIS DE FLUJO DE CAJA MENSUAL';
             sheetDash.getCell('B10').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
             sheetDash.getCell('B10').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
             sheetDash.getCell('B10').alignment = { vertical: 'middle', horizontal: 'center' };
 
-            // Cabeceras Top Clientes (B y C)
-            sheetDash.getCell('B11').value = 'CLIENTE (Ingresos)';
-            sheetDash.getCell('B11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
-            sheetDash.getCell('B11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; 
-            sheetDash.getCell('C11').value = 'MONTO FACTURADO';
-            sheetDash.getCell('C11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
-            sheetDash.getCell('C11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } }; 
+            // Encabezados
+            ['B11:MES', 'C11:INGRESOS (PUE)', 'D11:CUENTAS X COBRAR', 'E11:EGRESOS (PUE)', 'F11:FLUJO NETO REAL'].forEach(item => {
+                let parts = item.split(':');
+                sheetDash.getCell(parts[0]).value = parts[1];
+                sheetDash.getCell(parts[0]).font = { name: 'Arial', size: 10, bold: true, color: {argb: 'FFFFFFFF'} };
+                sheetDash.getCell(parts[0]).fill = { type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF475569'} };
+                sheetDash.getCell(parts[0]).alignment = { horizontal: 'center' };
+            });
 
-            // Cabeceras Top Proveedores (D y E)
-            sheetDash.getCell('D11').value = 'PROVEEDOR (Egresos)';
-            sheetDash.getCell('D11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
-            sheetDash.getCell('D11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; 
-            sheetDash.getCell('E11').value = 'GASTO OPERATIVO';
-            sheetDash.getCell('E11').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
-            sheetDash.getCell('E11').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } }; 
+            const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            let rowIdx = 12;
 
-            // Extraer el Top 5 para inyectarlo como valores estáticos en el resumen (Simulando tabla dinámica)
-            const topClients = Object.entries(biData.clientes).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            const topProviders = Object.entries(biData.proveedores).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            meses.forEach(mes => {
+                sheetDash.getCell(`B${rowIdx}`).value = mes;
+                sheetDash.getCell(`B${rowIdx}`).font = { name: 'Arial', size: 10, bold: true, color: {argb: 'FF64748B'} };
+                
+                sheetDash.getCell(`C${rowIdx}`).value = { formula: `SUMIFS(Base_Datos!I:I, Base_Datos!B:B, "${mes}", Base_Datos!H:H, "COBRADO")` };
+                sheetDash.getCell(`D${rowIdx}`).value = { formula: `SUMIFS(Base_Datos!I:I, Base_Datos!B:B, "${mes}", Base_Datos!H:H, "CUENTAS POR COBRAR")` };
+                sheetDash.getCell(`E${rowIdx}`).value = { formula: `SUMIFS(Base_Datos!I:I, Base_Datos!B:B, "${mes}", Base_Datos!H:H, "PAGADO")` };
+                sheetDash.getCell(`F${rowIdx}`).value = { formula: `C${rowIdx}-E${rowIdx}` };
 
-            for(let i=0; i<5; i++) {
-                let rowIdx = 12 + i;
-                
-                // Inyectar Cliente
-                sheetDash.getCell(`B${rowIdx}`).value = topClients[i] ? topClients[i][0] : '-';
-                sheetDash.getCell(`B${rowIdx}`).font = { name: 'Arial', size: 10 };
-                sheetDash.getCell(`C${rowIdx}`).value = topClients[i] ? topClients[i][1] : 0;
-                sheetDash.getCell(`C${rowIdx}`).numFmt = '"$"#,##0.00';
-                
-                // Inyectar Proveedor
-                sheetDash.getCell(`D${rowIdx}`).value = topProviders[i] ? topProviders[i][0] : '-';
-                sheetDash.getCell(`D${rowIdx}`).font = { name: 'Arial', size: 10 };
-                sheetDash.getCell(`E${rowIdx}`).value = topProviders[i] ? topProviders[i][1] : 0;
-                sheetDash.getCell(`E${rowIdx}`).numFmt = '"$"#,##0.00';
-                
-                // Borde inferior ligero para la fila
-                ['B','C','D','E'].forEach(col => {
-                    sheetDash.getCell(`${col}${rowIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+                ['C','D','E','F'].forEach(c => {
+                    sheetDash.getCell(`${c}${rowIdx}`).numFmt = '"$"#,##0.00';
+                    sheetDash.getCell(`${c}${rowIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
                 });
-            }
 
-            // Instrucción de uso en el pie
-            sheetDash.mergeCells('B19:E19');
-            sheetDash.getCell('B19').value = '💡 Tip: Las tarjetas superiores están formuladas. Si filtras documentos en "Base_Datos", la liquidez se recalculará.';
-            sheetDash.getCell('B19').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+                // Semáforo para la columna de Flujo Mensual
+                sheetDash.addConditionalFormatting({
+                    ref: `F${rowIdx}:F${rowIdx}`,
+                    rules: [
+                        { type: 'cellIs', operator: 'lessThan', formula: ['0'], style: { font: { color: {argb: 'FFEF4444'} } } },
+                        { type: 'cellIs', operator: 'greaterThan', formula: ['0'], style: { font: { color: {argb: 'FF10B981'} } } }
+                    ]
+                });
 
-            // ==========================================
-            // PESTAÑA 2: BASE DE DATOS
-            // ==========================================
+                rowIdx++;
+            });
+
+            // ================== PESTAÑA 2: BASE DE DATOS ==================
             const sheetData = workbook.addWorksheet('Base_Datos');
             sheetData.columns = [
                 { header: 'FECHA', key: 'fecha', width: 12 },
+                { header: 'MES', key: 'mes', width: 15 },
                 { header: 'UUID', key: 'uuid', width: 38 },
                 { header: 'CONTRAPARTE (CLIENTE/PROVEEDOR)', key: 'contraparte', width: 45 },
                 { header: 'RFC', key: 'rfc', width: 15 },
-                { header: 'TIPO OPERACIÓN', key: 'tipo', width: 22 },
+                { header: 'CATEGORÍA', key: 'tipo', width: 22 },
+                { header: 'MÉTODO PAGO', key: 'metodo', width: 15 },
+                { header: 'ESTATUS', key: 'estatus', width: 22 },
                 { header: 'IMPORTE (SUBTOTAL)', key: 'importe', width: 22 },
                 { header: 'RETENCIONES', key: 'retenciones', width: 18 }
             ];
 
-            // Celdas Azules: Aplicar fondo SOLO a los encabezados
             const headerRow = sheetData.getRow(1);
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 1; i <= 10; i++) {
                 const cell = headerRow.getCell(i);
                 cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
                 cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
                 cell.alignment = { vertical: 'middle', horizontal: 'center' };
             }
 
-            // Inyectar datos
             dbFacturas.forEach(f => {
                 sheetData.addRow({
                     fecha: f.fecha,
+                    mes: f.mes,
                     uuid: f.uuid,
                     contraparte: f.contraparte,
                     rfc: f.rfcContraparte,
                     tipo: f.tipo,
+                    metodo: f.metodo,
+                    estatus: f.estatus,
                     importe: parseFloat(f.importe) || 0,
                     retenciones: f.retenciones > 0 ? parseFloat(f.retenciones) : 0
                 });
             });
 
-            // Formato de Moneda para F y G
-            sheetData.getColumn('F').numFmt = '"$"#,##0.00';
-            sheetData.getColumn('G').numFmt = '"$"#,##0.00';
-            sheetData.autoFilter = 'A1:G1'; 
+            sheetData.getColumn('I').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('J').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:J1'; 
 
-            // Descargar el archivo
             const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `Plantilla_Dashboard_${Date.now()}.xlsx`);
+            saveAs(new Blob([buffer]), `Dashboard_Operativo_${Date.now()}.xlsx`);
 
         } catch (e) {
             console.error(e);
-            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla en Excel.", "error");
+            if(typeof window.showToast === 'function') window.showToast("Error generando Dashboard Excel.", "error");
         } finally {
             btn.innerHTML = oldText;
             btn.disabled = false;
