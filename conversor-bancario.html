@@ -24,7 +24,9 @@
     <link rel="apple-touch-icon" href="favicon.ico">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -339,22 +341,111 @@
         if (typeof window.showToast === 'function') window.showToast("Estado de Cuenta estructurado.", "success");
     }
 
-    function exportarBanco() {
-        const results = [["FECHA", "DESCRIPCIÓN / CONCEPTO", "RETIRO (CARGO)", "DEPÓSITO (ABONO)"]];
-        
-        bankData.forEach(d => {
-            results.push([d.fecha, d.desc, d.cargo || "", d.abono || ""]);
-        });
+    async function exportarBanco() {
+        const btn = document.querySelector('button[onclick="exportarBanco()"]');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO DASHBOARD...';
+        btn.disabled = true;
 
-        const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 15}, {wch: 55}, {wch: 20}, {wch: 20}];
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Transacciones_Bancarias");
-        XLSX.writeFile(wb, `Movimientos_Banco_${Date.now()}.xlsx`);
-    }
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // ==========================================
+            // PESTAÑA 1: DASHBOARD EJECUTIVO (Sin cuadrícula)
+            // ==========================================
+            const sheetDash = workbook.addWorksheet('Resumen Ejecutivo', {views:[{showGridLines:false}]});
+            sheetDash.columns = [
+                {width: 4},  // A: Espaciador
+                {width: 30}, // B: Ingresos
+                {width: 30}, // C: Egresos
+                {width: 30}  // D: Flujo Neto
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'CONTROL DE FLUJO DE EFECTIVO';
+            titleCell.font = { name: 'Arial', size: 18, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } }; // Azul oscuro AuditorIA
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjeta 1: INGRESOS
+            sheetDash.getCell('B5').value = 'INGRESOS TOTALES (ABONOS)';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'SUM(Base_Datos!D:D)' }; // Fórmula real
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 22, bold: true, color: { argb: 'FF10B981' } }; // Verde
+            sheetDash.getCell('B6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 2: EGRESOS
+            sheetDash.getCell('C5').value = 'EGRESOS TOTALES (CARGOS)';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'SUM(Base_Datos!C:C)' }; // Fórmula real
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 22, bold: true, color: { argb: 'FFEF4444' } }; // Rojo
+            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 3: FLUJO NETO
+            sheetDash.getCell('D5').value = 'FLUJO NETO REAL';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('D6').value = { formula: 'B6-C6' }; // Fórmula real
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 22, bold: true, color: { argb: 'FF3B82F6' } }; // Azul
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Instrucción de uso
+            sheetDash.mergeCells('B8:D8');
+            sheetDash.getCell('B8').value = '💡 Si modificas un monto en la pestaña "Base_Datos", este panel se actualizará automáticamente.';
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+            // ==========================================
+            // PESTAÑA 2: BASE DE DATOS (Data cruda inyectada)
+            // ==========================================
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'FECHA', key: 'fecha', width: 15 },
+                { header: 'CONCEPTO BANCARIO', key: 'concepto', width: 60 },
+                { header: 'CARGO (SALIDA)', key: 'cargo', width: 22 },
+                { header: 'ABONO (ENTRADA)', key: 'abono', width: 22 }
+            ];
+
+            // Estilo a los encabezados de la tabla
+            sheetData.getRow(1).font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetData.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+            sheetData.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Inyectar datos
+            bankData.forEach(fila => {
+                sheetData.addRow({
+                    fecha: fila.fecha,
+                    concepto: fila.desc,
+                    cargo: parseFloat(fila.cargo) || 0,
+                    abono: parseFloat(fila.abono) || 0
+                });
+            });
+
+            // Aplicar formato de Moneda Contable a las columnas C y D
+            sheetData.getColumn('C').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('D').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:D1'; // Activar filtros de Excel
+
+            // Descargar el archivo procesado
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Dashboard_Bancario_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Dashboard en Excel.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
 </script>
 </body>
 </html>
+
 
 
 
