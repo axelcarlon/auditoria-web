@@ -251,6 +251,7 @@
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
+    // Setup Dropzone
     const drop = document.getElementById('dropZone');
     const input = document.getElementById('inputFile');
     
@@ -270,6 +271,7 @@
         document.getElementById('btnEjecutar').disabled = false;
     }
 
+    // Extractor Robusto
     function getNodes(node, tagName) {
         return Array.from(node.getElementsByTagName(`cfdi:${tagName}`))
             .concat(Array.from(node.getElementsByTagName(tagName)))
@@ -299,6 +301,7 @@
             for(let i=0; i<currentFiles.length; i++) {
                 if(i % 10 === 0) status.innerText = `> Minando información financiera... ${((i/currentFiles.length)*100).toFixed(0)}%`;
                 
+                // Micro-respiro para no trabar el navegador
                 await new Promise(r => setTimeout(r, 5));
 
                 try {
@@ -310,6 +313,7 @@
                     
                     if(!cfdi || !emisor) continue;
 
+                    // Solo validamos comprobantes de Ingreso (Gasto para nosotros) o Egreso puro
                     const tipo = cfdi.getAttribute('TipoDeComprobante');
                     if(tipo !== 'I' && tipo !== 'E') continue;
 
@@ -325,15 +329,17 @@
                     proveedoresDb[rfc].facturas += 1;
                     analisisMeta.totalSpend += total;
 
-                } catch(e) { } 
+                } catch(e) { } // Silenciamos errores de XML individuales
             }
 
             status.innerText = `> Compilando Algoritmo Pareto (80/20)...`;
 
+            // Transformar a Array y Ordenar de Mayor a Menor Monto
             arrayPareto = Object.values(proveedoresDb).sort((a, b) => b.monto - a.monto);
 
             let acumuladoPorcentaje = 0;
             
+            // Asignación de Categorías ABC
             arrayPareto.forEach(p => {
                 p.porcentaje = (p.monto / analisisMeta.totalSpend) * 100;
                 acumuladoPorcentaje += p.porcentaje;
@@ -369,10 +375,12 @@
         document.getElementById('terminalLoader').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
+        // KPI Updates
         document.getElementById('kpiTotal').innerText = formatMoney(analisisMeta.totalSpend);
         document.getElementById('kpiProveedores').innerText = arrayPareto.length;
         document.getElementById('kpiClaseA').innerText = analisisMeta.countA;
 
+        // Risk Banner Logic (Riesgo si el Top 1 tiene > 30% del gasto)
         if(arrayPareto.length > 0 && arrayPareto[0].porcentaje > 30) {
             document.getElementById('riskBanner').style.display = 'flex';
             document.getElementById('riskText').innerHTML = `El proveedor <strong>${arrayPareto[0].nombre}</strong> concentra el <strong>${arrayPareto[0].porcentaje.toFixed(1)}%</strong> del gasto total. Dependencia crítica detectada.`;
@@ -412,6 +420,7 @@
 
         const ws = XLSX.utils.aoa_to_sheet(results);
         
+        // Formato de porcentaje para la columna Excel
         const range = XLSX.utils.decode_range(ws['!ref']);
         for(let R = 1; R <= range.e.r; ++R) {
             let cellC = ws[XLSX.utils.encode_cell({r: R, c: 2})];
@@ -527,6 +536,12 @@
                 });
                 rIdx++;
             });
+
+            // Instrucción de uso en el pie
+            let tipRow = rIdx + 1;
+            sheetDash.mergeCells(`B${tipRow}:F${tipRow}`);
+            sheetDash.getCell(`B${tipRow}`).value = '💡 Tip: Las tarjetas y métricas están formuladas. Si filtras o modificas la pestaña "Base_Datos", este panel se actualizará automáticamente.';
+            sheetDash.getCell(`B${tipRow}`).font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
 
             // PESTAÑA 2: BASE DE DATOS ESTRUCTURADA
             const sheetData = workbook.addWorksheet('Base_Datos');
