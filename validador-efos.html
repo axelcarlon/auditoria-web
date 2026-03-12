@@ -27,6 +27,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -93,9 +96,20 @@
         .badge-ok { background: rgba(16, 185, 129, 0.1); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);}
         .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); animation: pulseAlert 2s infinite;}
         
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Optimizada para Excel PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;}
+        .btn-pdf { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);}
+        .btn-pdf:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);}
+        .btn-pdf:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-excel-pro { background: #3B82F6; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);}
+        .btn-excel-pro:hover { background: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -111,7 +125,7 @@
 
         @media (max-width: 768px) {
             .search-bar { flex-direction: column; }
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -200,14 +214,19 @@
             </table>
         </div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Volver</button>
-            <button onclick="descargarExcelEFOS()" class="btn-secondary" style="border-color: #059669; color: #10B981;">
-                EXCEL (DATOS)
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">Nueva Auditoría</button>
+            <button onclick="descargarExcelCrudo()" class="btn-crudo">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
             </button>
-            <button onclick="exportarDictamenPDF()" class="btn-action" style="flex: 2;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR DICTAMEN DE COMPLIANCE (PDF)
+            <button onclick="exportarPlantillaPro()" class="btn-excel-pro">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PLANTILLA EXCEL (PRO)
+            </button>
+            <button id="btnDescargarPDF" onclick="exportarDictamenPDF()" class="btn-pdf">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DICTAMEN EN PDF
             </button>
         </div>
     </div>
@@ -314,7 +333,7 @@
         }
 
         resultBox.style.display = 'block';
-        resultBox.className = 'manual-result'; // Reset classes
+        resultBox.className = 'manual-result'; 
 
         if (blacklistSAT.has(rawText)) {
             resultBox.classList.add('manual-bad');
@@ -455,21 +474,145 @@
         }
     }
 
-    function descargarExcelEFOS() {
+    // ==========================================
+    // EXPORTACIÓN 1: EXCEL CRUDO
+    // ==========================================
+    function descargarExcelCrudo() {
         const results = [["RFC PROVEEDOR", "RAZÓN SOCIAL", "VOLUMEN FACTURADO (MXN)", "CANTIDAD CFDI", "DICTAMEN SAT (69-B)"]];
         
         Object.entries(dbProveedores).forEach(([rfc, p]) => {
             let dictamen = p.isEFO === true ? "LISTA NEGRA 69-B DEFINITIVO" : "LIMPIO";
-            results.push([rfc, p.nombre, p.monto, p.docs, dictamen]);
+            results.push([rfc, p.nombre, p.monto > 0 ? p.monto : 0, p.docs, dictamen]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(results);
         ws['!cols'] = [{wch: 15}, {wch: 50}, {wch: 20}, {wch: 15}, {wch: 30}];
+        
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let R = 1; R <= range.e.r; ++R) {
+            let cellC = ws[XLSX.utils.encode_cell({c: 2, r: R})];
+            if(cellC) cellC.z = '"$"#,##0.00';
+        }
+
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Proveedores");
-        XLSX.writeFile(wb, `Reporte_Auditoria_69B_${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Datos_Crudos");
+        XLSX.writeFile(wb, `Auditoria_69B_Cruda_${Date.now()}.xlsx`);
     }
 
+    // ==========================================
+    // EXPORTACIÓN 2: PLANTILLA EXCEL PRO
+    // ==========================================
+    async function exportarPlantillaPro() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO DICTAMEN...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD RIESGO FISCAL
+            const sheetDash = workbook.addWorksheet('Control de Riesgo', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            // Título
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'DICTAMEN DE CUMPLIMIENTO DE PROVEEDORES (ART. 69-B)';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } }; 
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjetas de Semáforo
+            sheetDash.getCell('B5').value = 'PROVEEDORES AUDITADOS';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'COUNTA(Base_Datos!A:A)-1' };
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('C5').value = 'OPERACIONES SEGURAS (LIMPIAS)';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'SUMIFS(Base_Datos!C:C, Base_Datos!E:E, "LIMPIO")' };
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
+            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('D5').value = 'RIESGO FINANCIERO EFOS (PELIGRO)';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('D6').value = { formula: 'SUMIFS(Base_Datos!C:C, Base_Datos!E:E, "LISTA NEGRA 69-B DEFINITIVO")' };
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } }; 
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFEF4444' } } };
+
+            // PESTAÑA 2: BASE DE DATOS (CON FORMATO CONDICIONAL EXTREMO)
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'RFC PROVEEDOR', key: 'rfc', width: 20 },
+                { header: 'RAZÓN SOCIAL', key: 'nombre', width: 55 },
+                { header: 'VOLUMEN FACTURADO', key: 'monto', width: 25 },
+                { header: 'FACTURAS', key: 'docs', width: 15 },
+                { header: 'DICTAMEN SAT (69-B)', key: 'dictamen', width: 35 }
+            ];
+
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 5; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            Object.entries(dbProveedores).forEach(([rfc, p]) => {
+                let dictamen = p.isEFO === true ? "LISTA NEGRA 69-B DEFINITIVO" : "LIMPIO";
+                sheetData.addRow({
+                    rfc: rfc,
+                    nombre: p.nombre,
+                    monto: p.monto > 0 ? parseFloat(p.monto) : 0,
+                    docs: p.docs,
+                    dictamen: dictamen
+                });
+            });
+
+            sheetData.getColumn('C').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:E1'; 
+
+            // LA MAGIA: Formato Condicional para pintar toda la fila de rojo si es EFO
+            sheetData.addConditionalFormatting({
+                ref: 'A2:E1000',
+                rules: [
+                    {
+                        type: 'expression',
+                        formulae: ['=$E2="LISTA NEGRA 69-B DEFINITIVO"'],
+                        style: {
+                            fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: 'FFFEE2E2' } },
+                            font: { color: { argb: 'FF991B1B' }, bold: true }
+                        }
+                    }
+                ]
+            });
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Dictamen_Art69B_SAT_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 3: DICTAMEN EN PDF
+    // ==========================================
     function exportarDictamenPDF() {
         if (typeof pdfMake === 'undefined') return;
 
