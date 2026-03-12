@@ -80,6 +80,7 @@
 
         /* Toolbar Estandarizada PRO */
         .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        
         .btn-pdf { background: #1E293B; color: white; border: 1px solid #475569; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
         .btn-pdf:hover { background: #334155; transform: translateY(-2px); border-color: #64748B;}
         
@@ -89,6 +90,9 @@
         
         .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
         .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -101,9 +105,6 @@
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(59, 130, 246, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
-        .bento-icon { width: 24px; height: 24px; color: var(--brand); margin-bottom: 15px;}
-        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
-        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 768px) {
             .grid-dropzones, .dashboard-layout, .kpi-grid { grid-template-columns: 1fr; }
@@ -203,13 +204,17 @@
 
         <div class="toolbar">
             <button onclick="window.location.reload()" class="btn-reset">NUEVO CÁLCULO</button>
+            <button onclick="exportarPlano()" class="btn-crudo">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
+            </button>
             <button onclick="exportarPlantillaExcel()" class="btn-excel-pro">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 PLANTILLA EXCEL (PRO)
             </button>
             <button id="btnDescargarPDF" onclick="descargarReportePDF()" class="btn-pdf">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                EXPORTAR DICTAMEN PDF
+                DICTAMEN PDF
             </button>
         </div>
     </div>
@@ -297,6 +302,8 @@
         dropZone.classList.add('filled');
         document.getElementById(idStatus).innerText = `${validFiles.length} XMLs en Memoria`;
         document.getElementById('btnEjecutar').disabled = false;
+        
+        if (typeof window.showToast === 'function') window.showToast(`Lote cargado correctamente.`, "success");
     }
 
     function getNodes(node, tagName) {
@@ -313,6 +320,7 @@
         else fallback += `No se detectaron actos exentos. Proceda a la acreditación salvo revisión de requisitos estructurales.`;
 
         try {
+            // El AbortController es el seguro de vida. Evita que la web se congele si Render está apagado.
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 Segundos Máximo
 
@@ -479,7 +487,44 @@
     }
 
     // ==========================================
-    // EXPORTACIÓN EXCEL PRO (DASHBOARD FÓRMULAS)
+    // EXPORTACIÓN 1: EXCEL CRUDO
+    // ==========================================
+    function exportarPlano() {
+        const results = [["FOLIO FISCAL (UUID)", "CLIENTE / PROVEEDOR", "TIPO DE OPERACIÓN", "TOTAL FACTURA", "BASE GRAVABLE", "IVA TRASLADADO (16%)", "TASA 0% / EXENTOS", "IVA RETENIDO"]];
+        
+        dbTributaria.forEach(t => {
+            results.push([
+                t.uuid, 
+                t.contraparte, 
+                t.tipo, 
+                t.total > 0 ? t.total : 0, 
+                t.base > 0 ? t.base : 0, 
+                t.iva16 > 0 ? t.iva16 : 0, 
+                t.iva0 > 0 ? t.iva0 : 0, 
+                t.retenido > 0 ? t.retenido : 0
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 38}, {wch: 45}, {wch: 22}, {wch: 18}, {wch: 18}, {wch: 22}, {wch: 22}, {wch: 18}];
+        
+        // Aplicar formato contable $0.00 nativo
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let R = 1; R <= range.e.r; ++R) {
+            ['D','E','F','G','H'].forEach((colStr, idx) => {
+                let colIdx = 3 + idx; // D is 3 (0-indexed)
+                let cell = ws[XLSX.utils.encode_cell({c: colIdx, r: R})];
+                if(cell && R > 0) cell.z = '"$"#,##0.00';
+            });
+        }
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Base_Datos_IVA");
+        XLSX.writeFile(wb, `Extraccion_IVA_Cruda_${Date.now()}.xlsx`);
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 2: EXCEL PRO (DASHBOARD FÓRMULAS)
     // ==========================================
     async function exportarPlantillaExcel() {
         const btn = document.querySelector('.btn-excel-pro');
@@ -597,7 +642,7 @@
             sheetData.autoFilter = 'A1:H1'; 
 
             const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `Simulador_IVA_${Date.now()}.xlsx`);
+            saveAs(new Blob([buffer]), `Simulador_IVA_PRO_${Date.now()}.xlsx`);
 
         } catch (e) {
             console.error(e);
@@ -610,7 +655,7 @@
 
 
     // ==========================================
-    // EXPORTACIÓN PDF (DICTAMEN)
+    // EXPORTACIÓN 3: PDF (DICTAMEN)
     // ==========================================
     function descargarReportePDF() {
         const btn = document.getElementById('btnDescargarPDF');
@@ -623,6 +668,7 @@
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 try {
+                    // Refuerzo de memoria para evitar amnesia de tipografías
                     if (window.pdfMake && window.pdfMakeFonts && window.pdfMakeFonts.pdfMake) {
                         window.pdfMake.vfs = window.pdfMakeFonts.pdfMake.vfs;
                     }
@@ -637,7 +683,7 @@
                         pageMargins: [50, 60, 50, 60],
                         defaultStyle: { lineHeight: 1.5, font: 'Roboto' },
                         content: [
-                            { text: 'DICTAMEN TÉCNICO - PROYECCIÓN', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
+                            { text: 'DICTAMEN TÉCNICO - PROYECCIÓN DE IVA', alignment: 'center', color: '#111827', fontSize: 12, bold: true, margin: [0, -10, 0, 20], characterSpacing: 1 },
                             { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 512, y2: 10, lineWidth: 2, lineColor: '#111827' }] },
                             
                             {
@@ -703,8 +749,8 @@
                     btn.innerHTML = oldText; 
                     btn.disabled = false;
                 }
-            }); 
-        }); 
+            }); // rAF2
+        }); // rAF1
     }
 </script>
 </body>
