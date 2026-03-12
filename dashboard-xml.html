@@ -727,7 +727,7 @@
     }
 
     // ==============================================================
-    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CON DASHBOARD Y FÓRMULAS
+    // 5. EXPORTACIÓN PLANTILLA EXCEL (PRO) CERO ERRORES DE FÓRMULA
     // ==============================================================
     async function exportarPlantilla() {
         const btn = document.querySelector('.btn-excel-pro');
@@ -765,7 +765,7 @@
             subtitleCell.font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF475569' } };
             subtitleCell.alignment = { horizontal: 'center' };
 
-            // ================== TARJETAS KPI ==================
+            // ================== TARJETAS KPI (Fórmulas sin Asteriscos) ==================
             // Tarjeta 1: Ingresos Efectivos
             sheetDash.getCell('B6').value = 'INGRESOS EFECTIVOS (PUE)';
             sheetDash.getCell('B6').font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
@@ -806,7 +806,6 @@
             sheetDash.getCell('F7').numFmt = '0.00%';
             sheetDash.getCell('F7').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
             
-            // Semáforo Condicional
             sheetDash.addConditionalFormatting({
                 ref: 'F7:F7',
                 rules: [
@@ -848,7 +847,6 @@
                     sheetDash.getCell(`${c}${rowIdx}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
                 });
 
-                // Semáforo para la columna de Flujo Mensual
                 sheetDash.addConditionalFormatting({
                     ref: `F${rowIdx}:F${rowIdx}`,
                     rules: [
@@ -915,7 +913,7 @@
     }
 
     // ==============================================================
-    // 6. GENERADOR PDF EJECUTIVO (A PRUEBA DE BLOQUEOS)
+    // 6. GENERADOR PDF EJECUTIVO
     // ==============================================================
     function exportarMemorandumPDF() {
         const btn = document.getElementById('btnDescargarPDF');
