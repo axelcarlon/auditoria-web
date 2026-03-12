@@ -26,6 +26,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -72,8 +74,8 @@
         .badge-warn { background: rgba(245, 158, 11, 0.1); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3);}
         .badge-bad { background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3);}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
@@ -171,13 +173,20 @@
 
         <div class="btn-toolbar">
             <button onclick="window.location.reload()" class="btn-secondary">Purgar Enlaces</button>
-            <button onclick="descargarExcel()" class="btn-secondary" style="background: #064E3B; color: #34D399; border-color: #065F46;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Matriz de Control (Excel)
+            
+            <button onclick="exportarPlano()" class="btn-secondary" style="border-color: #64748B; color: #94A3B8;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
             </button>
-            <button id="btnDescargarPDF" onclick="descargarPDF()" class="btn-action" style="flex: 2;">
+
+            <button onclick="exportarPlantilla()" class="btn-action" style="flex: 1 1 250px; background: #10B981; border-color: #059669; box-shadow: 0 4px 15px rgba(16,185,129,0.4); color: white;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PLANTILLA EXCEL (PRO)
+            </button>
+
+            <button id="btnDescargarPDF" onclick="descargarPDF()" class="btn-action" style="flex: 1 1 250px;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                IMPRIMIR REPORTE DE SALDOS
+                IMPRIMIR PDF
             </button>
         </div>
     </div>
@@ -321,8 +330,6 @@
                     const pagoReal = montoPagado > 0 ? montoPagado : montoPagadoV1;
 
                     if(uuidTarget) {
-                        // Si el UUID del REP existe en nuestra base de PPDs, lo sumamos.
-                        // Si no existe, significa que pagaron una factura que no se subió, la registramos como "Huérfana".
                         if(dbPPD[uuidTarget]) {
                             dbPPD[uuidTarget].pagado += pagoReal;
                         } else {
@@ -351,7 +358,7 @@
             else if (dbPPD[k].pagado === 0) { estatus = "SIN PAGO"; css = "badge-bad"; }
             else { estatus = "PARCIALIDAD"; css = "badge-warn"; }
 
-            return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus, css: css };
+            return { uuid: k, ...dbPPD[k], saldo: saldo > 0 ? saldo : 0, estatus: estatus, css: css };
         });
 
         // Sumar solo saldos positivos de PPDs reales
@@ -376,8 +383,9 @@
         if (typeof window.showToast === 'function') window.showToast("Conciliación Completada.", "success");
     }
 
-    function descargarExcel() {
-        const results = [["UUID PPD", "RAZON SOCIAL", "TOTAL FACTURA", "PAGOS ENCONTRADOS", "SALdo RESTANTE", "ESTATUS"]];
+    // Exportación Secundaria: Solo Datos Crudos (Plano)
+    function exportarPlano() {
+        const results = [["UUID PPD", "RAZON SOCIAL", "TOTAL FACTURA", "PAGOS AMORTIZADOS", "SALDO RESTANTE", "ESTATUS"]];
         
         const dataArr = Object.keys(dbPPD).map(k => {
             const saldo = dbPPD[k].total - dbPPD[k].pagado;
@@ -386,18 +394,174 @@
             else if (saldo <= 0.5 && saldo >= -0.5) estatus = "LIQUIDADO";
             else if (dbPPD[k].pagado === 0) estatus = "SIN PAGO";
             else estatus = "PAGO PARCIAL";
-            return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus };
+            return { uuid: k, ...dbPPD[k], saldo: saldo > 0 ? saldo : 0, estatus: estatus };
         });
 
         dataArr.forEach(e => {
-            results.push([e.uuid, e.nombre, e.total, e.pagado, e.saldo, e.estatus]);
+            results.push([
+                e.uuid, 
+                e.nombre, 
+                e.total > 0 ? e.total : 0, 
+                e.pagado > 0 ? e.pagado : 0, 
+                e.saldo > 0 ? e.saldo : 0, 
+                e.estatus
+            ]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 38}, {wch: 35}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}];
+        ws['!cols'] = [{wch: 38}, {wch: 45}, {wch: 18}, {wch: 20}, {wch: 18}, {wch: 18}];
+        
+        // Formato contable $0.00 nativo
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let R = 1; R <= range.e.r; ++R) {
+            let cellC = ws[XLSX.utils.encode_cell({c: 2, r: R})];
+            let cellD = ws[XLSX.utils.encode_cell({c: 3, r: R})];
+            let cellE = ws[XLSX.utils.encode_cell({c: 4, r: R})];
+            if(cellC) cellC.z = '"$"#,##0.00';
+            if(cellD) cellD.z = '"$"#,##0.00';
+            if(cellE) cellE.z = '"$"#,##0.00';
+        }
+
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Estado_Cuenta");
-        XLSX.writeFile(wb, `Estado_Cuenta_PPD_${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Datos_Crudos");
+        XLSX.writeFile(wb, `Datos_Crudos_Conciliacion_${Date.now()}.xlsx`);
+    }
+
+    // Exportación Principal: Dashboard Profesional ExcelJS
+    async function exportarPlantilla() {
+        const btn = document.querySelector('button[onclick="exportarPlantilla()"]');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO PLANTILLA...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // ==========================================
+            // PESTAÑA 1: DASHBOARD EJECUTIVO
+            // ==========================================
+            const sheetDash = workbook.addWorksheet('Resumen de Cartera', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'CONCILIACIÓN Y CONTROL DE CARTERA (PPD vs REP)';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } }; // Azul Oscuro
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjeta 1: TOTAL PPD
+            sheetDash.getCell('B5').value = 'DEUDA TOTAL FACTURADA (PPD)';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'SUM(Base_Datos!C:C)' };
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 2: TOTAL REP
+            sheetDash.getCell('C5').value = 'PAGOS AMORTIZADOS (REP)';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'SUM(Base_Datos!D:D)' };
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; // Verde
+            sheetDash.getCell('C6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjeta 3: SALDO VIVO
+            sheetDash.getCell('D5').value = 'SALDO VIVO (POR COBRAR/PAGAR)';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('D6').value = { formula: 'SUM(Base_Datos!E:E)' }; 
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } }; // Rojo
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            // Mini Tabla de Resumen Operativo
+            sheetDash.mergeCells('B8:D8');
+            sheetDash.getCell('B8').value = 'RESUMEN OPERATIVO DE DOCUMENTOS';
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B8').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; // Ambar AuditorIA
+            sheetDash.getCell('B8').alignment = { vertical: 'middle', horizontal: 'center' };
+
+            sheetDash.getCell('B9').value = 'Total de UUIDs Analizados:';
+            sheetDash.getCell('B9').font = { name: 'Arial', size: 11, bold: true };
+            sheetDash.getCell('C9').value = { formula: 'COUNTA(Base_Datos!A:A)-1' }; 
+            sheetDash.getCell('C9').font = { name: 'Arial', size: 12, bold: true };
+            sheetDash.getCell('C9').alignment = { horizontal: 'left' };
+
+            // Instrucción de uso en el pie
+            sheetDash.mergeCells('B11:D11');
+            sheetDash.getCell('B11').value = '💡 Tip: Si modificas algún pago en la pestaña "Base_Datos", este panel de cartera se actualizará automáticamente.';
+            sheetDash.getCell('B11').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+            // ==========================================
+            // PESTAÑA 2: BASE DE DATOS
+            // ==========================================
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'UUID PPD', key: 'uuid', width: 38 },
+                { header: 'RAZON SOCIAL', key: 'nombre', width: 45 },
+                { header: 'TOTAL FACTURA', key: 'total', width: 22 },
+                { header: 'PAGOS AMORTIZADOS', key: 'pagado', width: 22 },
+                { header: 'SALDO RESTANTE', key: 'saldo', width: 22 },
+                { header: 'ESTATUS', key: 'estatus', width: 20 }
+            ];
+
+            // Solución de Celdas Azules limitadas
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 6; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            const dataArr = Object.keys(dbPPD).map(k => {
+                const saldo = dbPPD[k].total - dbPPD[k].pagado;
+                let estatus = "";
+                if (!dbPPD[k].original) estatus = "PAGO SIN FACTURA";
+                else if (saldo <= 0.5 && saldo >= -0.5) estatus = "LIQUIDADO";
+                else if (dbPPD[k].pagado === 0) estatus = "SIN PAGO";
+                else estatus = "PAGO PARCIAL";
+                return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus };
+            });
+
+            // Inyectar datos garantizando formato numérico
+            dataArr.forEach(fila => {
+                let s = fila.saldo > 0 ? fila.saldo : 0;
+                sheetData.addRow({
+                    uuid: fila.uuid,
+                    nombre: fila.nombre,
+                    total: fila.total > 0 ? parseFloat(fila.total) : 0,
+                    pagado: fila.pagado > 0 ? parseFloat(fila.pagado) : 0,
+                    saldo: s > 0 ? parseFloat(s) : 0,
+                    estatus: fila.estatus
+                });
+            });
+
+            // Formato de Moneda para Excel (C, D, E)
+            sheetData.getColumn('C').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('D').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('E').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:F1'; 
+
+            // Descargar el archivo
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Plantilla_Conciliacion_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla en Excel.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
     }
 
     function descargarPDF() {
@@ -418,7 +582,7 @@
                     else if (saldo <= 0.5 && saldo >= -0.5) estatus = "LIQUIDADO";
                     else if (dbPPD[k].pagado === 0) estatus = "ABIERTO";
                     else estatus = "PARCIAL";
-                    return { uuid: k, ...dbPPD[k], saldo: saldo, estatus: estatus };
+                    return { uuid: k, ...dbPPD[k], saldo: saldo > 0 ? saldo : 0, estatus: estatus };
                 });
                 
                 const bodyTabla = [
@@ -503,7 +667,3 @@
 </script>
 </body>
 </html>
-
-
-
-
