@@ -27,6 +27,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -78,9 +81,21 @@
         .progress-bar-bg { width: 100px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 5px;}
         .progress-bar-fill { height: 100%; border-radius: 4px;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        
+        .btn-excel-pro { background: var(--brand); color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px var(--brand-glow);}
+        .btn-excel-pro:hover { background: #4F46E5; transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow);}
+        .btn-excel-pro:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-pdf { background: #1E293B; color: white; border: 1px solid #475569; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .btn-pdf:hover { background: #334155; transform: translateY(-2px); border-color: #64748B;}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -99,7 +114,7 @@
         .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 768px) {
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
             .score-banner { flex-direction: column; text-align: center; }
         }
     </style>
@@ -179,14 +194,19 @@
             </table>
         </div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">Analizar Otro Lote</button>
-            <button onclick="descargarExcelSemantico()" class="btn-secondary" style="border-color: #059669; color: #10B981;">
-                SÁBANA DATOS (EXCEL)
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">NUEVO LOTE</button>
+            <button onclick="descargarExcelCrudo()" class="btn-crudo">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
             </button>
-            <button onclick="exportarDictamenRiesgoPDF()" class="btn-action" style="flex: 2;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR DICTAMEN DE RAZÓN DE NEGOCIOS (PDF)
+            <button onclick="exportarPlantillaPro()" class="btn-excel-pro">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PLANTILLA EXCEL (PRO)
+            </button>
+            <button id="btnDescargarPDF" onclick="exportarDictamenRiesgoPDF()" class="btn-pdf">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DICTAMEN EN PDF
             </button>
         </div>
     </div>
@@ -269,7 +289,7 @@
         let motivos = [];
         let t = texto.toLowerCase();
 
-        // 1. Regla de Longitud (Razón de Negocios requiere explicación)
+        // 1. Regla de Longitud
         if (t.length < 15) {
             score += 45;
             motivos.push("Texto extremadamente genérico/corto.");
@@ -278,26 +298,26 @@
             motivos.push("Descripción poco detallada.");
         }
 
-        // 2. Regla de Especificidad (Falta de números/fechas)
+        // 2. Regla de Especificidad (Números)
         if (!/\d/.test(t)) {
             score += 30;
-            motivos.push("Carece de identificadores, folios, series o fechas.");
+            motivos.push("Carece de identificadores, folios, o fechas.");
         }
 
-        // 3. Regla de Palabras Bandera (Intangibles auditados por SAT/EFOS)
+        // 3. Regla de Palabras Bandera
         const flags = /asesor|consultor|honorario|servicio administrativo|apoyo|gesti(o|ó)n|tr(a|á)mite|pago de|anticipo|varios|general|servicios prestados/i;
         if (flags.test(t)) {
             score += 40;
             motivos.push("Contiene concepto intangible de alto riesgo fiscal.");
         }
 
-        // 4. Claves SAT Peligrosas (Ej. 84111500 Servicios de contabilidad)
+        // 4. Claves SAT Peligrosas
         if (claveSAT.startsWith('8411') || claveSAT.startsWith('8010')) {
             score += 20;
             motivos.push("Clave SAT sujeta a estricta revisión de materialidad.");
         }
 
-        // Normalización y Nivel
+        // Normalización
         score = Math.min(score, 100);
         let nivel = ""; let badge = ""; let color = "";
         
@@ -347,10 +367,10 @@
 
                     const emisorNombre = emisor.getAttribute('Nombre') || emisor.getAttribute('Rfc');
                     const folio = cfdi.getAttribute('Folio') || "S/F";
+                    const uuid = getNodes(xml, 'TimbreFiscalDigital')[0]?.getAttribute('UUID') || "SIN-UUID";
 
                     const nodosC = getNodes(xml, 'Concepto');
                     
-                    // Unir todos los conceptos en uno solo para no hacer 10,000 filas
                     let textoFull = "";
                     let cvePrimaria = "";
                     nodosC.forEach(c => {
@@ -358,8 +378,7 @@
                         if(!cvePrimaria) cvePrimaria = c.getAttribute('ClaveProdServ') || "";
                     });
 
-                    // Si la factura tiene muchos conceptos, asume mayor materialidad
-                    if(nodosC.length > 5) textoFull += " (MÚLTIPLES PARTIDAS 123)"; // Cheat the algorithm positively
+                    if(nodosC.length > 5) textoFull += " (MÚLTIPLES PARTIDAS 123)";
 
                     const evaluacion = evaluarSemantica(textoFull, cvePrimaria);
                     
@@ -371,6 +390,7 @@
                     analisisConceptos.push({
                         proveedor: emisorNombre,
                         folio: folio,
+                        uuid: uuid,
                         descripcion: textoFull.substring(0, 150) + (textoFull.length > 150 ? "..." : ""),
                         motivo: evaluacion.motivos,
                         score: evaluacion.score,
@@ -384,7 +404,6 @@
 
             status.innerText = `> Compilando Dictamen Final de Riesgo...`;
 
-            // Ordenar por riesgo crítico arriba
             analisisConceptos.sort((a, b) => b.score - a.score);
 
             scoreGlobalMeta = analisisConceptos.length > 0 ? Math.round(sumScore / analisisConceptos.length) : 0;
@@ -401,12 +420,10 @@
         document.getElementById('terminalLoader').style.display = 'none';
         document.getElementById('results').style.display = 'block';
 
-        // Llenar Dashboards
         document.getElementById('kpiCritico').innerText = kpiData.critico;
         document.getElementById('kpiMedio').innerText = kpiData.medio;
         document.getElementById('kpiSolido').innerText = kpiData.solido;
 
-        // Configuración de la Rueda de Score Global
         const circulo = document.getElementById('scoreCircle');
         const txtVal = document.getElementById('scoreValue');
         const txtMsg = document.getElementById('scoreText');
@@ -452,20 +469,136 @@
         if(typeof window.showToast === 'function') window.showToast("Análisis Semántico Completado.", "success");
     }
 
-    function descargarExcelSemantico() {
-        const results = [["PROVEEDOR", "FOLIO CFDI", "DESCRIPCIÓN ORIGINAL", "DICTAMEN FORENSE (NLP)", "SCORE (0-100)", "NIVEL RIESGO MATERIALIDAD"]];
+    // ==========================================
+    // EXPORTACIÓN 1: EXCEL CRUDO
+    // ==========================================
+    function descargarExcelCrudo() {
+        const results = [["PROVEEDOR", "UUID CFDI", "FOLIO", "DESCRIPCIÓN ORIGINAL", "DICTAMEN FORENSE (NLP)", "SCORE (0-100)", "NIVEL RIESGO"]];
         
         analisisConceptos.forEach(c => {
-            results.push([c.proveedor, c.folio, c.descripcion, c.motivo, c.score, c.nivel]);
+            results.push([c.proveedor, c.uuid, c.folio, c.descripcion, c.motivo, c.score, c.nivel]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 35}, {wch: 15}, {wch: 60}, {wch: 45}, {wch: 15}, {wch: 25}];
+        ws['!cols'] = [{wch: 35}, {wch: 38}, {wch: 15}, {wch: 60}, {wch: 45}, {wch: 15}, {wch: 25}];
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Auditoria_Semantica");
-        XLSX.writeFile(wb, `Sabana_Riesgo_Materialidad_${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Datos_Crudos");
+        XLSX.writeFile(wb, `Auditoria_Materialidad_Cruda_${Date.now()}.xlsx`);
     }
 
+    // ==========================================
+    // EXPORTACIÓN 2: PLANTILLA EXCEL (PRO) CON DASHBOARD
+    // ==========================================
+    async function exportarPlantillaPro() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO DASHBOARD...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD RIESGO SEMÁNTICO
+            const sheetDash = workbook.addWorksheet('Resumen Art 5A', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'DASHBOARD DE RIESGO: RAZÓN DE NEGOCIOS (ART. 5-A)';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF6366F1' } }; // Indigo Corporativo
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjetas KPI formuladas dinámicamente
+            sheetDash.getCell('B5').value = 'FACTURAS AUDITADAS';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = { formula: 'COUNTA(Base_Datos!A:A)-1' };
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('C5').value = 'DESCRIPCIONES SÓLIDAS (VERDES)';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'COUNTIFS(Base_Datos!G:G, "SÓLIDO")' };
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } }; 
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('D5').value = 'CONCEPTOS GENÉRICOS (ROJOS/ÁMBAR)';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('D6').value = { formula: 'COUNTIFS(Base_Datos!G:G, "CRÍTICO") + COUNTIFS(Base_Datos!G:G, "MEDIO")' };
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FFEF4444' } } };
+
+            // Instrucción de uso en el pie
+            sheetDash.mergeCells('B8:D8');
+            sheetDash.getCell('B8').value = '💡 Tip: Dirígete a la pestaña "Base_Datos" y filtra por NIVEL DE RIESGO para detectar los CFDI que debes refacturar.';
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+
+            // PESTAÑA 2: BASE DE DATOS ESTRUCTURADA
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'PROVEEDOR', key: 'proveedor', width: 35 },
+                { header: 'UUID CFDI', key: 'uuid', width: 38 },
+                { header: 'FOLIO', key: 'folio', width: 15 },
+                { header: 'DESCRIPCIÓN ORIGINAL', key: 'desc', width: 60 },
+                { header: 'DICTAMEN FORENSE (NLP)', key: 'motivo', width: 45 },
+                { header: 'SCORE DE RIESGO (%)', key: 'score', width: 22 },
+                { header: 'NIVEL DE RIESGO', key: 'nivel', width: 25 }
+            ];
+
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 7; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            analisisConceptos.forEach(c => {
+                const row = sheetData.addRow({
+                    proveedor: c.proveedor,
+                    uuid: c.uuid,
+                    folio: c.folio,
+                    desc: c.descripcion,
+                    motivo: c.motivo,
+                    score: c.score / 100, // Formateado a % nativo en Excel
+                    nivel: c.nivel
+                });
+
+                // Colorización inyectada físicamente (Cero riesgo de Crash)
+                let bgColor = c.nivel === 'CRÍTICO' ? 'FFFEE2E2' : (c.nivel === 'MEDIO' ? 'FFFEF3C7' : 'FFD1FAE5');
+                let textColor = c.nivel === 'CRÍTICO' ? 'FF991B1B' : (c.nivel === 'MEDIO' ? 'FFB45309' : 'FF065F46');
+                
+                row.getCell(7).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColor } };
+                row.getCell(7).font = { bold: true, color: { argb: textColor } };
+            });
+
+            sheetData.getColumn('F').numFmt = '0.00%'; // Formato de porcentaje
+            sheetData.autoFilter = 'A1:G1'; 
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Dashboard_Materialidad_5A_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 3: DICTAMEN PERICIAL (PDF)
+    // ==========================================
     function exportarDictamenRiesgoPDF() {
         if (typeof pdfMake === 'undefined') return;
 
@@ -547,7 +680,3 @@
 </script>
 </body>
 </html>
-
-
-
-
