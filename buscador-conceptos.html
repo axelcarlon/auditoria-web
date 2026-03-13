@@ -27,6 +27,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -83,9 +86,21 @@
         th { background: rgba(0,0,0,0.2); padding: 15px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;}
         td { padding: 12px 15px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #E2E8F0; vertical-align: middle;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        
+        .btn-pdf { background: #1E293B; color: white; border: 1px solid #475569; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .btn-pdf:hover { background: #334155; transform: translateY(-2px); border-color: #64748B;}
+        
+        .btn-excel-pro { background: var(--brand); color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px var(--brand-glow);}
+        .btn-excel-pro:hover { background: #EA580C; transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow);}
+        .btn-excel-pro:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -94,11 +109,16 @@
         .feature-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
         .feature-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
+        .showcase-header { font-size: 24px; margin: 80px 0 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; font-weight: 800; color: var(--text-main);}
+        .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
+        .bento-card:hover { transform: translateY(-5px); border-color: rgba(249, 115, 22, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+
         @media (max-width: 768px) {
             .search-input-wrapper { flex-direction: column; }
             .variance-banner { flex-direction: column; text-align: center; }
             .variance-stats { flex-wrap: wrap; justify-content: center; gap: 15px;}
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -213,14 +233,19 @@
             </table>
         </div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">Cargar Nueva Bóveda</button>
-            <button onclick="exportarExcel()" class="btn-secondary" style="border-color: #059669; color: #10B981;" id="btnXLS" disabled>
-                SÁBANA DATOS (EXCEL)
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">NUEVO LOTE</button>
+            <button onclick="descargarExcelCrudo()" class="btn-crudo" id="btnXLS" disabled>
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
             </button>
-            <button onclick="exportarDictamenPDF()" class="btn-action" style="flex: 2;" id="btnPDF" disabled>
+            <button onclick="exportarPlantillaPro()" class="btn-excel-pro" id="btnPRO" disabled>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                DASHBOARD GERENCIAL (PRO)
+            </button>
+            <button onclick="exportarDictamenPDF()" class="btn-pdf" id="btnPDF" disabled>
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR REPORTE DE MINERÍA (PDF)
+                REPORTE DE MINERÍA (PDF)
             </button>
         </div>
     </div>
@@ -237,6 +262,7 @@
             <p class="feature-desc">El botón de "Alerta EFOS" dispara una expresión regular que escanea tu facturación buscando palabras como <i>asesoría, honorario, comisión</i>; servicios intangibles altamente auditados por el SAT.</p>
         </div>
     </div>
+
 </div>
 
 <script src="footer.js"></script>
@@ -249,9 +275,16 @@
     });
 
     let currentFiles = [];
-    let baseConceptos = []; // Base de datos maestra
-    let currentResults = []; // Resultados de la última búsqueda
+    let baseConceptos = []; 
+    let currentResults = []; 
     let currentSearchTerm = "";
+    
+    // Variables Variación de Precios
+    let minPrice = Infinity;
+    let maxPrice = -Infinity;
+    let avgPrice = 0;
+    let totalImporte = 0;
+    let provSet = new Set();
 
     const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
 
@@ -310,7 +343,6 @@
                     
                     if(!cfdi || !emisor) continue;
 
-                    // Ignorar Pagos puros, solo Ingresos y Egresos tienen conceptos valuados
                     const tipoXml = cfdi.getAttribute('TipoDeComprobante');
                     if(tipoXml === 'P') continue;
 
@@ -373,11 +405,9 @@
         if(isRegex) {
             try { pattern = new RegExp(input.substring(6), 'i'); } catch(e) { return; }
         } else {
-            // Busqueda normal case-insensitive
             pattern = new RegExp(input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
         }
 
-        // Filtro Principal
         currentResults = baseConceptos.filter(c => {
             return pattern.test(c.descripcion) || pattern.test(c.claveSAT) || pattern.test(c.emisor) || pattern.test(c.rfc);
         });
@@ -395,11 +425,10 @@
             return;
         }
 
-        // Analíticas
-        let totalImporte = 0;
-        let provSet = new Set();
-        let minPrice = Infinity;
-        let maxPrice = -Infinity;
+        totalImporte = 0;
+        provSet = new Set();
+        minPrice = Infinity;
+        maxPrice = -Infinity;
         let sumPrices = 0;
         let validPriceCount = 0;
 
@@ -442,12 +471,12 @@
         document.getElementById('kpiProv').innerText = provSet.size;
         document.getElementById('kpiTotal').innerText = formatMoney(totalImporte);
 
-        // Lógica de Variación de Precios (Solo si hay más de 1 precio válido y provSet > 1 para comparar manzanas con manzanas)
+        // Lógica de Variación de Precios 
         const vBanner = document.getElementById('varianceBanner');
         if(validPriceCount > 1 && maxPrice > minPrice) {
-            let avg = sumPrices / validPriceCount;
+            avgPrice = sumPrices / validPriceCount;
             document.getElementById('varMin').innerText = formatMoney(minPrice);
-            document.getElementById('varAvg').innerText = formatMoney(avg);
+            document.getElementById('varAvg').innerText = formatMoney(avgPrice);
             document.getElementById('varMax').innerText = formatMoney(maxPrice);
             vBanner.style.display = 'flex';
         } else {
@@ -456,6 +485,7 @@
 
         // Habilitar descargas
         document.getElementById('btnXLS').disabled = false;
+        document.getElementById('btnPRO').disabled = false;
         document.getElementById('btnPDF').disabled = false;
     }
 
@@ -464,10 +494,14 @@
         document.getElementById('kpiProv').innerText = "0";
         document.getElementById('kpiTotal').innerText = "$0.00";
         document.getElementById('btnXLS').disabled = true;
+        document.getElementById('btnPRO').disabled = true;
         document.getElementById('btnPDF').disabled = true;
     }
 
-    function exportarExcel() {
+    // ==========================================
+    // EXPORTACIÓN 1: EXCEL CRUDO
+    // ==========================================
+    function descargarExcelCrudo() {
         const results = [["FECHA", "FOLIO", "PROVEEDOR", "RFC", "CLAVE SAT", "DESCRIPCIÓN CONCEPTO", "CANTIDAD", "PRECIO UNITARIO", "IMPORTE", "UUID"]];
         
         currentResults.forEach(c => {
@@ -476,56 +510,193 @@
 
         const ws = XLSX.utils.aoa_to_sheet(results);
         ws['!cols'] = [{wch: 12}, {wch: 10}, {wch: 40}, {wch: 15}, {wch: 12}, {wch: 60}, {wch: 10}, {wch: 15}, {wch: 15}, {wch: 38}];
+        
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let R = 1; R <= range.e.r; ++R) {
+            let cellH = ws[XLSX.utils.encode_cell({c: 7, r: R})]; // Precio Unitario
+            let cellI = ws[XLSX.utils.encode_cell({c: 8, r: R})]; // Importe
+            if(cellH && R > 0) cellH.z = '"$"#,##0.00';
+            if(cellI && R > 0) cellI.z = '"$"#,##0.00';
+        }
+
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Mineria_Conceptos");
-        XLSX.writeFile(wb, `Mineria_Gastos_${Date.now()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Sábana_Cruda");
+        XLSX.writeFile(wb, `Extraccion_Conceptos_Cruda_${Date.now()}.xlsx`);
     }
 
+    // ==========================================
+    // EXPORTACIÓN 2: EXCEL PRO (DASHBOARD)
+    // ==========================================
+    async function exportarPlantillaPro() {
+        const btn = document.getElementById('btnPRO');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO DASHBOARD...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD DIRECTIVO
+            const sheetDash = workbook.addWorksheet('Resumen de Búsqueda', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 25}, // C
+                {width: 25}  // D
+            ];
+
+            // Título Principal
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'DASHBOARD: ANÁLISIS DE CONCEPTOS Y VARIACIÓN DE PRECIOS';
+            titleCell.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF97316' } }; // Orange Brand
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjeta de Búsqueda
+            sheetDash.mergeCells('B5:D5');
+            sheetDash.getCell('B5').value = `TÉRMINO BUSCADO: "${currentSearchTerm.replace('REGEX:', 'Filtro IA: ')}"`;
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF1E293B' } };
+            sheetDash.getCell('B5').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+            sheetDash.getCell('B5').alignment = { horizontal: 'center' };
+            sheetDash.getCell('B5').border = { bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } }, top: { style: 'thin', color: { argb: 'FFCBD5E1' } } };
+
+            // Tarjetas KPI 
+            sheetDash.getCell('B7').value = 'CONCEPTOS ENCONTRADOS';
+            sheetDash.getCell('B7').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B8').value = currentResults.length;
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B8').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('C7').value = 'PROVEEDORES IMPLICADOS';
+            sheetDash.getCell('C7').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C8').value = provSet.size;
+            sheetDash.getCell('C8').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('C8').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('D7').value = 'VOLUMEN DE GASTO';
+            sheetDash.getCell('D7').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFF97316' } };
+            sheetDash.getCell('D8').value = { formula: 'SUM(Base_Datos!I:I)' }; 
+            sheetDash.getCell('D8').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFF97316' } };
+            sheetDash.getCell('D8').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D8').border = { bottom: { style: 'medium', color: { argb: 'FFF97316' } } };
+
+            // Si hay variación de precios, inyectar el bloque de dispersión
+            let nextRow = 11;
+            if(minPrice !== Infinity && maxPrice !== -Infinity && minPrice < maxPrice) {
+                let diff = ((maxPrice - minPrice) / minPrice) * 100;
+
+                sheetDash.mergeCells(`B${nextRow}:D${nextRow}`);
+                sheetDash.getCell(`B${nextRow}`).value = 'ANÁLISIS DE DISPERSIÓN DE PRECIOS (SOBREPRECIO / INFLACIÓN)';
+                sheetDash.getCell(`B${nextRow}`).font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+                sheetDash.getCell(`B${nextRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } }; 
+                sheetDash.getCell(`B${nextRow}`).alignment = { vertical: 'middle', horizontal: 'center' };
+                nextRow++;
+
+                ['B:PRECIO MÍNIMO', 'C:PRECIO PROMEDIO', 'D:PRECIO MÁXIMO'].forEach(item => {
+                    let parts = item.split(':');
+                    sheetDash.getCell(parts[0]+nextRow).value = parts[1];
+                    sheetDash.getCell(parts[0]+nextRow).font = { name: 'Arial', size: 10, bold: true, color: {argb: 'FFFFFFFF'} };
+                    sheetDash.getCell(parts[0]+nextRow).fill = { type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF475569'} };
+                    sheetDash.getCell(parts[0]+nextRow).alignment = { horizontal: 'center' };
+                });
+                nextRow++;
+
+                sheetDash.getCell(`B${nextRow}`).value = minPrice;
+                sheetDash.getCell(`B${nextRow}`).font = { size: 16, bold: true, color: { argb: 'FF10B981' } };
+                sheetDash.getCell(`C${nextRow}`).value = avgPrice;
+                sheetDash.getCell(`C${nextRow}`).font = { size: 16, bold: true, color: { argb: 'FF64748B' } };
+                sheetDash.getCell(`D${nextRow}`).value = maxPrice;
+                sheetDash.getCell(`D${nextRow}`).font = { size: 16, bold: true, color: { argb: 'FFEF4444' } };
+
+                ['B','C','D'].forEach(c => {
+                    sheetDash.getCell(`${c}${nextRow}`).numFmt = '"$"#,##0.00';
+                    sheetDash.getCell(`${c}${nextRow}`).alignment = { horizontal: 'center' };
+                    sheetDash.getCell(`${c}${nextRow}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+                });
+                nextRow++;
+
+                sheetDash.mergeCells(`B${nextRow}:D${nextRow}`);
+                sheetDash.getCell(`B${nextRow}`).value = `Diferencial de costo más alto encontrado: +${diff.toFixed(2)}%`;
+                sheetDash.getCell(`B${nextRow}`).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FFEF4444' } };
+                sheetDash.getCell(`B${nextRow}`).alignment = { horizontal: 'center' };
+                nextRow += 2;
+            }
+
+            // Instrucción
+            sheetDash.mergeCells(`B${nextRow}:D${nextRow}`);
+            sheetDash.getCell(`B${nextRow}`).value = '💡 Tip: Ve a la pestaña "Base_Datos". Filtra la columna Precio Unitario de mayor a menor para encontrar a los proveedores con sobreprecio.';
+            sheetDash.getCell(`B${nextRow}`).font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+
+            // PESTAÑA 2: BASE DE DATOS ESTRUCTURADA
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'FECHA', key: 'fecha', width: 12 },
+                { header: 'FOLIO', key: 'folio', width: 10 },
+                { header: 'PROVEEDOR', key: 'prov', width: 40 },
+                { header: 'RFC', key: 'rfc', width: 15 },
+                { header: 'CLAVE SAT', key: 'clave', width: 12 },
+                { header: 'DESCRIPCIÓN CONCEPTO', key: 'desc', width: 60 },
+                { header: 'CANTIDAD', key: 'cant', width: 10 },
+                { header: 'PRECIO UNITARIO', key: 'pu', width: 15 },
+                { header: 'IMPORTE', key: 'importe', width: 15 },
+                { header: 'UUID', key: 'uuid', width: 38 }
+            ];
+
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 10; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            currentResults.forEach(c => {
+                sheetData.addRow({
+                    fecha: c.fecha,
+                    folio: c.folio,
+                    prov: c.emisor,
+                    rfc: c.rfc,
+                    clave: c.claveSAT,
+                    desc: c.descripcion,
+                    cant: parseFloat(c.cantidad) || 0,
+                    pu: parseFloat(c.precioU) || 0,
+                    importe: parseFloat(c.importe) || 0,
+                    uuid: c.uuid
+                });
+            });
+
+            sheetData.getColumn('H').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('I').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:J1'; 
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Dashboard_Conceptos_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+
+    // ==========================================
+    // EXPORTACIÓN 3: DICTAMEN PDF
+    // ==========================================
     function exportarDictamenPDF() {
         if (typeof pdfMake === 'undefined') return;
 
         let fechaImpresion = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' });
         
-        let provSet = new Set();
-        let totalImporte = 0;
-        let minP = Infinity; let maxP = -Infinity; let validCount = 0;
-
-        currentResults.forEach(c => {
-            provSet.add(c.rfc);
-            totalImporte += c.importe;
-            if(c.precioU > 0) {
-                if(c.precioU < minP) minP = c.precioU;
-                if(c.precioU > maxP) maxP = c.precioU;
-                validCount++;
-            }
-        });
-
-        // Tabla Top 15 resultados para el PDF (No meter miles para no saturar memoria)
-        let topBody = [[
-            { text: 'Fecha', style: 'th' },
-            { text: 'Proveedor', style: 'th' },
-            { text: 'Descripción Específica', style: 'th' },
-            { text: 'Cant.', style: 'th', alignment: 'right' },
-            { text: 'P. Unitario', style: 'th', alignment: 'right' },
-            { text: 'Importe', style: 'th', alignment: 'right' }
-        ]];
-
-        const limite = Math.min(currentResults.length, 30); // Primeros 30 registros como muestra pericial
-        for(let i=0; i<limite; i++) {
-            let c = currentResults[i];
-            topBody.push([
-                { text: c.fecha, fontSize: 8 },
-                { text: c.emisor.substring(0,25), fontSize: 8 },
-                { text: c.descripcion.substring(0,60), fontSize: 8 },
-                { text: c.cantidad.toFixed(2), fontSize: 8, alignment: 'right' },
-                { text: formatMoney(c.precioU), fontSize: 8, alignment: 'right' },
-                { text: formatMoney(c.importe), fontSize: 8, alignment: 'right', color: '#F97316', bold: true }
-            ]);
-        }
-
         let varianzaObj = { text: 'Sin datos comparativos de precio unitario suficientes.', fontSize: 10, italics: true, color: '#64748B' };
-        if(validCount > 1 && maxP > minP) {
-            let diff = ((maxP - minP) / minP) * 100;
+        if(minPrice !== Infinity && maxPrice !== -Infinity && maxPrice > minPrice) {
+            let diff = ((maxPrice - minPrice) / minPrice) * 100;
             varianzaObj = {
                 table: {
                     widths: ['33%', '33%', '34%'],
@@ -536,13 +707,35 @@
                             { text: 'DIFERENCIAL (INFLACIÓN/SOBREPRECIO)', alignment: 'center', fillColor: '#FFF7ED', fontSize: 9, bold: true }
                         ],
                         [
-                            { text: formatMoney(minP), alignment: 'center', color: '#10B981', fontSize: 14, bold: true, margin: [0,5] },
-                            { text: formatMoney(maxP), alignment: 'center', color: '#EF4444', fontSize: 14, bold: true, margin: [0,5] },
+                            { text: formatMoney(minPrice), alignment: 'center', color: '#10B981', fontSize: 14, bold: true, margin: [0,5] },
+                            { text: formatMoney(maxPrice), alignment: 'center', color: '#EF4444', fontSize: 14, bold: true, margin: [0,5] },
                             { text: `+${diff.toFixed(2)}%`, alignment: 'center', color: '#F97316', fontSize: 14, bold: true, margin: [0,5] }
                         ]
                     ]
                 }, margin: [0, 0, 0, 20]
             }
+        }
+
+        let topBody = [[
+            { text: 'Fecha', style: 'th' },
+            { text: 'Proveedor', style: 'th' },
+            { text: 'Descripción Específica', style: 'th' },
+            { text: 'Cant.', style: 'th', alignment: 'right' },
+            { text: 'P. Unitario', style: 'th', alignment: 'right' },
+            { text: 'Importe', style: 'th', alignment: 'right' }
+        ]];
+
+        const limite = Math.min(currentResults.length, 30); 
+        for(let i=0; i<limite; i++) {
+            let c = currentResults[i];
+            topBody.push([
+                { text: c.fecha, fontSize: 8 },
+                { text: c.emisor.substring(0,25), fontSize: 8 },
+                { text: c.descripcion.substring(0,60), fontSize: 8 },
+                { text: c.cantidad.toFixed(2), fontSize: 8, alignment: 'right' },
+                { text: formatMoney(c.precioU), fontSize: 8, alignment: 'right' },
+                { text: formatMoney(c.importe), fontSize: 8, alignment: 'right', color: '#F97316', bold: true }
+            ]);
         }
 
         const docDefinition = {
@@ -600,8 +793,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
