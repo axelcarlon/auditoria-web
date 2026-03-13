@@ -26,6 +26,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
@@ -78,9 +82,20 @@
         .alert-title { font-weight: 900; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; color: var(--warning);}
         .alert-desc { font-size: 13px; line-height: 1.5; margin: 0; color: #FDE68A;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
+        
+        .btn-pdf { background: #1E3A8A; color: white; border: 1px solid #3B82F6; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4);}
+        .btn-pdf:hover { background: #1E40AF; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30, 58, 138, 0.6);}
+        
+        .btn-excel-pro { background: #3B82F6; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);}
+        .btn-excel-pro:hover { background: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -96,7 +111,7 @@
 
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -108,7 +123,7 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">LITIGIO Y DEFENSA FISCAL</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Asistente de Escritos SAT</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga el requerimiento original del SAT en PDF. El motor extraerá la autoridad, el folio y el RFC, y redactará un oficio editable con la fundamentación jurídica aplicable.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Carga el requerimiento original del SAT en PDF. El motor extraerá la autoridad, el folio y el RFC, y redactará un oficio editable con la fundamentación jurídica aplicable. Descarga tu matriz de seguimiento (Excel) para llevar control de los plazos.</p>
     </div>
 
     <div class="upload-section" id="dropZoneSAT">
@@ -175,7 +190,7 @@
         <div id="alertBox" class="alert-box">
             <div>
                 <div class="alert-title">Modo de Edición Activo</div>
-                <p class="alert-desc">Puedes modificar libremente el texto dentro del recuadro punteado para añadir detalles específicos del caso (ej. número de facturas, argumentos adicionales). Al terminar, descarga el PDF compilado.</p>
+                <p class="alert-desc">Puedes modificar libremente el texto dentro del recuadro punteado para añadir detalles específicos del caso (ej. número de facturas, argumentos adicionales). Al terminar, descarga el PDF compilado o el Excel de Seguimiento.</p>
             </div>
         </div>
 
@@ -185,11 +200,19 @@
             <div class="legal-footer-static" id="docFooter"></div>
         </div>
 
-        <div class="btn-toolbar">
-            <button onclick="window.location.reload()" class="btn-secondary">Reiniciar Herramienta</button>
-            <button id="btnDescargarPDF" onclick="exportarEscritoPDF()" class="btn-action" style="flex: 2;">
+        <div class="toolbar">
+            <button onclick="window.location.reload()" class="btn-reset">NUEVO ESCRITO</button>
+            <button onclick="descargarExcelCrudo()" class="btn-crudo">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                EXCEL CRUDO
+            </button>
+            <button onclick="exportarPlantillaPro()" class="btn-excel-pro">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                MATRIZ DE SEGUIMIENTO (PRO)
+            </button>
+            <button id="btnDescargarPDF" onclick="exportarEscritoPDF()" class="btn-pdf">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                DESCARGAR OFICIO EN FORMATO PDF
+                DESCARGAR OFICIO (PDF)
             </button>
         </div>
     </div>
@@ -201,9 +224,9 @@
             <p class="feature-desc">El motor te entrega una base legal infalible, pero te permite inyectar la argumentación específica de tu caso antes de sellar el documento en PDF.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
-            <h3 class="feature-title">Estándar de Oficialía</h3>
-            <p class="feature-desc">El PDF final se renderiza respetando la alineación, el interlineado y los márgenes asimétricos exigidos para encuadernación en litigios.</p>
+            <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+            <h3 class="feature-title">Dashboard de Plazos (Excel)</h3>
+            <p class="feature-desc">Descarga una matriz de control que calcula automáticamente los días hábiles restantes para contestar al SAT basándose en la fecha de notificación extraída.</p>
         </div>
     </div>
 
@@ -299,8 +322,12 @@
     let formData = {};
 
     function generarEscrito() {
+        const selectTipo = document.getElementById('inpTipo');
+        const nombreTramite = selectTipo.options[selectTipo.selectedIndex].text;
+
         formData = {
-            tipo: document.getElementById('inpTipo').value,
+            tipoId: document.getElementById('inpTipo').value,
+            tipoNombre: nombreTramite,
             autoridad: document.getElementById('inpAutoridad').value.toUpperCase(),
             oficio: document.getElementById('inpOficio').value.toUpperCase(),
             fechaNot: document.getElementById('inpFechaNot').value,
@@ -320,15 +347,15 @@
 
         let fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
 
-        if(formData.tipo === 'carta_invitacion') {
+        if(formData.tipoId === 'carta_invitacion') {
             docJuridico.asunto = "SE ATIENDE CARTA INVITACIÓN Y SE REALIZAN ACLARACIONES";
             docJuridico.cuerpoBase = `Que por medio del presente escrito y con fundamento en los Artículos 18, 18-A y 33 del Código Fiscal de la Federación (CFF), comparezco ante esta H. Autoridad para dar atención en tiempo y forma a la Carta Invitación contenida en el Oficio No. ${formData.oficio}${formData.fechaNot ? ', notificada a mi representada en fecha ' + formData.fechaNot : ''}.\n\nAl respecto, manifiesto que las presuntas diferencias o discrepancias señaladas por la autoridad respecto a los ingresos declarados contra los comprobantes fiscales digitales por internet (CFDI) emitidos, quedan plenamente aclaradas y desvirtuadas con la documentación contable y fiscal que se anexa al presente ocurso, demostrando el correcto cumplimiento de las obligaciones fiscales de mi representada.\n\n[ESCRIBE AQUÍ LOS DETALLES ADICIONALES DE TU ACLARACIÓN]`;
         } 
-        else if (formData.tipo === 'sello_digital') {
+        else if (formData.tipoId === 'sello_digital') {
             docJuridico.asunto = "SOLICITUD DE ACLARACIÓN PARA SUBSANAR IRREGULARIDADES Y RESTABLECER EL USO DEL CSD";
             docJuridico.cuerpoBase = `Que mediante el presente ocurso, con fundamento en el artículo 17-H Bis del Código Fiscal de la Federación, vengo a presentar solicitud de aclaración tendiente a subsanar las presuntas irregularidades detectadas mediante el Oficio de Restricción Temporal No. ${formData.oficio}${formData.fechaNot ? ', notificado el ' + formData.fechaNot : ''}.\n\nBajo protesta de decir verdad, manifiesto que mi representada ha dado cabal cumplimiento a las obligaciones omitidas y desvirtúa categóricamente las causales que motivaron la restricción del Certificado de Sello Digital. Se adjuntan las documentales públicas y privadas que soportan el dicho de la contribuyente, solicitando se levante la restricción temporal al día hábil siguiente a la presentación de este escrito, conforme a derecho.\n\n[ESCRIBE AQUÍ LAS PRUEBAS O FOLIOS PRESENTADOS]`;
         }
-        else if (formData.tipo === 'efos') {
+        else if (formData.tipoId === 'efos') {
             docJuridico.asunto = "SE APORTAN PRUEBAS PARA DESVIRTUAR PRESUNCIÓN DE INEXISTENCIA DE OPERACIONES (ART. 69-B CFF)";
             docJuridico.cuerpoBase = `Con fundamento en el octavo párrafo del artículo 69-B del Código Fiscal de la Federación, acudo en tiempo y forma a dar contestación al requerimiento No. ${formData.oficio}${formData.fechaNot ? ', notificado el ' + formData.fechaNot : ''}, mediante el cual esa Autoridad requiere información para acreditar la efectiva materialidad de las operaciones celebradas con terceros.\n\nPara tal efecto, exhibo y aporto en este acto el expediente integrado por contratos, evidencia fotográfica, registros contables, comprobantes de pago (transferencias bancarias) y entregables físicos que acreditan fehacientemente la materialidad de los bienes adquiridos y/o servicios recibidos. Queda de manifiesto que las operaciones amparadas por los CFDI respectivos existieron real y materialmente, desvirtuando así cualquier presunción en contrario.\n\n[ENLISTA AQUÍ LOS CONTRATOS O FACTURAS A DEFENDER]`;
         }
@@ -362,6 +389,131 @@
         if (typeof window.showToast === 'function') window.showToast("Borrador listo para edición.", "success");
     }
 
+    // ==========================================
+    // EXPORTACIÓN 1: EXCEL CRUDO
+    // ==========================================
+    function descargarExcelCrudo() {
+        const results = [
+            ["RFC EMPRESA", "RAZÓN SOCIAL", "AUTORIDAD EMISORA", "NÚMERO DE OFICIO", "FECHA NOTIFICACIÓN", "TIPO DE TRÁMITE", "REPRESENTANTE LEGAL"],
+            [formData.rfc, formData.empresa, formData.autoridad, formData.oficio, formData.fechaNot, formData.tipoNombre, formData.repLegal]
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 15}, {wch: 40}, {wch: 35}, {wch: 25}, {wch: 15}, {wch: 40}, {wch: 30}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Base_Cruda");
+        XLSX.writeFile(wb, `Control_Litigios_Crudo_${Date.now()}.xlsx`);
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 2: EXCEL PRO (DASHBOARD PLAZOS)
+    // ==========================================
+    async function exportarPlantillaPro() {
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            const sheetDash = workbook.addWorksheet('Matriz de Plazos', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 40}, // B
+                {width: 25}, // C
+                {width: 25}  // D
+            ];
+
+            // Título
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'MATRIZ DE SEGUIMIENTO DE LITIGIOS Y PLAZOS (SAT)';
+            titleCell.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } }; // Blue Brand
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Info Expediente
+            sheetDash.mergeCells('B5:D5');
+            sheetDash.getCell('B5').value = '1. DATOS DEL EXPEDIENTE';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B5').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+
+            sheetDash.getCell('B6').value = 'Contribuyente (RFC):';
+            sheetDash.getCell('C6').value = formData.rfc;
+            sheetDash.getCell('C6').font = { bold: true };
+
+            sheetDash.getCell('B7').value = 'Razón Social:';
+            sheetDash.getCell('C7').value = formData.empresa;
+            
+            sheetDash.getCell('B8').value = 'Número de Oficio / Crédito:';
+            sheetDash.getCell('C8').value = formData.oficio;
+            sheetDash.getCell('C8').font = { bold: true, color: { argb: 'FF1E3A8A' } };
+
+            sheetDash.getCell('B9').value = 'Autoridad Emisora:';
+            sheetDash.getCell('C9').value = formData.autoridad;
+
+            sheetDash.getCell('B10').value = 'Materia del Trámite:';
+            sheetDash.getCell('C10').value = formData.tipoNombre;
+
+            // Fórmulas de Plazos
+            sheetDash.mergeCells('B12:D12');
+            sheetDash.getCell('B12').value = '2. CONTROL DE PLAZOS LEGALES Y VENCIMIENTO';
+            sheetDash.getCell('B12').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B12').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
+
+            // Determinar plazo por ley en base al tipo (Simplificado para el Excel)
+            let diasPlazo = 15;
+            if(formData.tipoId === 'efos') diasPlazo = 15; // 69-B son 15 dias
+            if(formData.tipoId === 'sello_digital') diasPlazo = 40; // 17-H Bis permite aclarar en 40 dias max (simplificado a dias corridos)
+            if(formData.tipoId === 'carta_invitacion') diasPlazo = 20;
+
+            sheetDash.getCell('B13').value = 'Fecha de Notificación Oficial:';
+            sheetDash.getCell('C13').value = formData.fechaNot ? new Date(formData.fechaNot) : new Date();
+            sheetDash.getCell('C13').numFmt = 'dd/mm/yyyy';
+            sheetDash.getCell('C13').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } }; // Editable
+            sheetDash.getCell('C13').font = { bold: true, color: { argb: 'FF0369A1' } };
+
+            sheetDash.getCell('B14').value = 'Plazo de Ley Asignado (Días):';
+            sheetDash.getCell('C14').value = diasPlazo;
+            sheetDash.getCell('C14').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } }; // Editable
+            sheetDash.getCell('C14').font = { bold: true, color: { argb: 'FF0369A1' } };
+
+            sheetDash.getCell('B15').value = 'FECHA LÍMITE DE CONTESTACIÓN:';
+            // Formula: Fecha Notificacion + Dias Plazo
+            sheetDash.getCell('C15').value = { formula: 'C13+C14' };
+            sheetDash.getCell('C15').numFmt = 'dd/mm/yyyy';
+            sheetDash.getCell('C15').font = { size: 14, bold: true, color: { argb: 'FFEF4444' } };
+
+            sheetDash.getCell('B16').value = 'Días Restantes para Vencimiento:';
+            // Formula: Limite - Hoy
+            sheetDash.getCell('C16').value = { formula: 'C15-TODAY()' };
+            // Formato Condicional nativo (Verde >5, Rojo <0)
+            sheetDash.getCell('C16').numFmt = '[Red][<0]0 "Días (VENCIDO)";[Color 10][>5]0 "Días";0 "Días"';
+            sheetDash.getCell('C16').font = { size: 14, bold: true };
+
+            // Bordes y estilos
+            [6,7,8,9,10, 13,14,15,16].forEach(r => {
+                sheetDash.getCell(`B${r}`).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+                sheetDash.getCell(`B${r}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+                sheetDash.getCell(`C${r}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
+            });
+
+            // Tip
+            sheetDash.mergeCells('B18:D18');
+            sheetDash.getCell('B18').value = '💡 Tip: Ajusta la "Fecha de Notificación" y el "Plazo de Ley" en las celdas celestes. El Excel calculará automáticamente los días que te quedan para enviar el escrito al SAT.';
+            sheetDash.getCell('B18').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Matriz_Seguimiento_${formData.rfc}.xlsx`);
+
+            if (typeof window.showToast === 'function') window.showToast("Dashboard Excel Generado.", "success");
+        } catch (e) {
+            console.error(e);
+            if (typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        }
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 3: PDF (DOCUMENTO LEGAL EDITADO)
+    // ==========================================
     function exportarEscritoPDF() {
         const btn = document.getElementById('btnDescargarPDF');
         const oldText = btn.innerHTML;
@@ -375,7 +527,6 @@
                 let fechaActual = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
                 const repLegalTextPDF = formData.repLegal ? `${formData.repLegal}, actuando en mi carácter de Representante Legal de la persona moral denominada ` : `Por mi propio derecho, en representación de la empresa `;
                 
-                // Extraer el texto editado por el usuario
                 const textoEditado = document.getElementById('editorCuerpo').value;
 
                 const docDefinition = {
@@ -417,7 +568,3 @@
 </script>
 </body>
 </html>
-
-
-
-
