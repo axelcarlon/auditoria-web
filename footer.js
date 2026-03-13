@@ -91,43 +91,43 @@ const footerHTML = `
             <span class="footer-col-title">Riesgo y Cumplimiento</span>
             <a href="/auditoria-masiva.html">Auditoría Masiva de Datos</a>
             <a href="/validador-efos.html">Validador EFOS (Art. 69-B)</a>
-            <a href="/risk-score.html">Risk Score (Semáforo SAT)</a>
+            <a href="/risk-score.html">Auditoría de Riesgo SAT (Risk Score)</a>
             <a href="/tasa-efectiva.html">Auditoría Tasa Efectiva (ISR)</a>
-            <a href="/auditor-materialidad.html">Razón de Negocios (Art. 5-A)</a>
-            <a href="/validador-csf-32d.html">Análisis de Idoneidad (32-D)</a>
+            <a href="/auditor-materialidad.html">Auditor de Razón de Negocios</a>
+            <a href="/validador-csf-32d.html">Auditor de Constancias (CSF / 32-D)</a>
             <a href="/prueba-servicio.html">Expediente de Materialidad</a>
         </div>
 
         <div>
             <span class="footer-col-title">Análisis Financiero</span>
             <a href="/dashboard-xml.html">Dashboard Financiero XML</a>
-            <a href="/analisis-proveedores.html">Estrategia de Proveedores</a>
-            <a href="/auditor-nomina.html">Auditoría CFDI de Nómina</a>
+            <a href="/analisis-proveedores.html">Análisis Estratégico de Proveedores</a>
+            <a href="/auditor-nomina.html">Auditoría de Nómina y Riesgos</a>
             <a href="/proyector-iva.html">Proyector Forense de IVA</a>
-            <a href="/buscador-conceptos.html">Buscador Forense XML</a>
+            <a href="/buscador-conceptos.html">Auditoría de Compras y Conceptos</a>
             <a href="/conciliacion-ia.html">Conciliación Bancaria IA</a>
-            <a href="/auditoria-viaticos.html">Escáner de Viáticos (Art. 28)</a>
+            <a href="/auditoria-viaticos.html">Escáner de Viáticos y Gastos de Viaje</a>
         </div>
 
         <div>
             <span class="footer-col-title">Operación e Impuestos</span>
-            <a href="/generador-diot.html">Generador Batch DIOT SAT</a>
-            <a href="/generador-polizas.html">Generador Pólizas (Layout)</a>
+            <a href="/generador-diot.html">Generador DIOT SAT (Carga Batch)</a>
+            <a href="/generador-polizas.html">Generador Layout Pólizas ERP</a>
             <a href="/conciliador-pagos.html">Conciliador PPD vs REP</a>
-            <a href="/precios-aduana.html">Simulador Costos Aduanales</a>
-            <a href="/calculadora-recargos.html">Calculadora Recargos INPC</a>
+            <a href="/precios-aduana.html">Simulador de Costos Aduanales</a>
+            <a href="/calculadora-recargos.html">Calculadora de Recargos SAT</a>
             <a href="/auditoria-activos.html">Auditoría de Activos Fijos</a>
-            <a href="/defensa-legal.html">Generador de Defensa Legal</a>
+            <a href="/defensa-legal.html">Asistente de Escritos SAT</a>
         </div>
 
         <div>
             <span class="footer-col-title">PDF y Utilidades</span>
-            <a href="/editor-pdf.html" style="color: #FCA5A5; font-weight: bold;">AuditorIA PDF Studio (PRO)</a>
-            <a href="/editor-pro.html">Editor Canvas Interactivo</a>
+            <a href="/editor-pdf.html" style="color: #FCA5A5; font-weight: bold;">AuditorIA PDF Studio PRO</a>
+            <a href="/editor-pro.html">Editor Libre (Canvas Pro)</a>
             <a href="/conversor-xml-pdf.html">Conversor Masivo XML a PDF</a>
             <a href="/escaner-ocr-fiscal.html">Escáner OCR de Tickets</a>
-            <a href="/conversor-bancario.html">Bancos PDF a Excel (CSV)</a>
-            <a href="/visor-xml.html">Visor y Decodificador XML</a>
+            <a href="/conversor-bancario.html">Conversor Bancario a Excel</a>
+            <a href="/visor-xml.html">Microscopio XML a PDF</a>
         </div>
 
     </div>
