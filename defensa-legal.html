@@ -82,20 +82,9 @@
         .alert-title { font-weight: 900; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; color: var(--warning);}
         .alert-desc { font-size: 13px; line-height: 1.5; margin: 0; color: #FDE68A;}
 
-        /* Toolbar Estandarizada PRO */
-        .toolbar { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;}
-        
-        .btn-pdf { background: #1E3A8A; color: white; border: 1px solid #3B82F6; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4);}
-        .btn-pdf:hover { background: #1E40AF; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30, 58, 138, 0.6);}
-        
-        .btn-excel-pro { background: #3B82F6; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);}
-        .btn-excel-pro:hover { background: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);}
-        
-        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
-        .btn-reset:hover { background: rgba(255,255,255,0.1); }
-        
-        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
-        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
+        .btn-toolbar { display: flex; gap: 15px; margin-top: 20px;}
+        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -111,7 +100,7 @@
 
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
-            .toolbar { flex-direction: column; }
+            .btn-toolbar { flex-direction: column; }
         }
     </style>
 </head>
@@ -141,6 +130,7 @@
                 <label class="form-label">Tipo de Recurso / Escrito</label>
                 <select id="inpTipo" class="form-select">
                     <option value="carta_invitacion">Aclaración de Carta Invitación (Discrepancia Fiscal)</option>
+                    <option value="omision_declaraciones">Aclaración por Omisión de Declaraciones</option>
                     <option value="sello_digital">Solicitud de Aclaración para Desbloqueo de CSD (Art. 17-H Bis)</option>
                     <option value="efos">Contestación de Requerimiento de Materialidad (Art. 69-B)</option>
                 </select>
@@ -156,6 +146,10 @@
             <div class="form-group">
                 <label class="form-label">Fecha de Notificación (Buzón)</label>
                 <input type="date" id="inpFechaNot" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Monto en Riesgo (MXN)</label>
+                <input type="number" id="inpMontoRiesgo" class="form-input" placeholder="Ej. 150000" step="0.01">
             </div>
         </div>
 
@@ -260,6 +254,8 @@
         }
     });
 
+    const formatMoney = (val) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+
     const dropSAT = document.getElementById('dropZoneSAT');
     const inputSAT = document.getElementById('inputPDFSAT');
     const statusSAT = document.getElementById('statusPDFSAT');
@@ -331,6 +327,7 @@
             autoridad: document.getElementById('inpAutoridad').value.toUpperCase(),
             oficio: document.getElementById('inpOficio').value.toUpperCase(),
             fechaNot: document.getElementById('inpFechaNot').value,
+            montoRiesgo: parseFloat(document.getElementById('inpMontoRiesgo').value) || 0,
             empresa: document.getElementById('inpEmpresa').value.toUpperCase(),
             rfc: document.getElementById('inpRFC').value.toUpperCase(),
             repLegal: document.getElementById('inpRepLegal').value.toUpperCase()
@@ -351,6 +348,10 @@
             docJuridico.asunto = "SE ATIENDE CARTA INVITACIÓN Y SE REALIZAN ACLARACIONES";
             docJuridico.cuerpoBase = `Que por medio del presente escrito y con fundamento en los Artículos 18, 18-A y 33 del Código Fiscal de la Federación (CFF), comparezco ante esta H. Autoridad para dar atención en tiempo y forma a la Carta Invitación contenida en el Oficio No. ${formData.oficio}${formData.fechaNot ? ', notificada a mi representada en fecha ' + formData.fechaNot : ''}.\n\nAl respecto, manifiesto que las presuntas diferencias o discrepancias señaladas por la autoridad respecto a los ingresos declarados contra los comprobantes fiscales digitales por internet (CFDI) emitidos, quedan plenamente aclaradas y desvirtuadas con la documentación contable y fiscal que se anexa al presente ocurso, demostrando el correcto cumplimiento de las obligaciones fiscales de mi representada.\n\n[ESCRIBE AQUÍ LOS DETALLES ADICIONALES DE TU ACLARACIÓN]`;
         } 
+        else if(formData.tipoId === 'omision_declaraciones') {
+            docJuridico.asunto = "SE ATIENDE REQUERIMIENTO POR OMISIÓN DE DECLARACIONES Y SE ACREDITA CUMPLIMIENTO";
+            docJuridico.cuerpoBase = `Con fundamento en lo dispuesto por los artículos 18 y 18-A del Código Fiscal de la Federación, comparezco a dar oportuna contestación al requerimiento de obligaciones número ${formData.oficio}${formData.fechaNot ? ', notificado el ' + formData.fechaNot : ''}, mediante el cual se solicita la presentación de declaraciones presuntamente omitidas.\n\nAl respecto, manifiesto bajo protesta de decir verdad que mi representada ha dado cabal cumplimiento a las obligaciones fiscales señaladas, por lo que exhibo como prueba documental los acuses de recibo y declaraciones correspondientes, demostrando que no existe omisión alguna ni proceden las multas o recargos pretendidos por un monto de $${formatMoney(formData.montoRiesgo)}.\n\n[ESCRIBE AQUÍ LOS FOLIOS O NÚMEROS DE OPERACIÓN DE TUS DECLARACIONES]`;
+        }
         else if (formData.tipoId === 'sello_digital') {
             docJuridico.asunto = "SOLICITUD DE ACLARACIÓN PARA SUBSANAR IRREGULARIDADES Y RESTABLECER EL USO DEL CSD";
             docJuridico.cuerpoBase = `Que mediante el presente ocurso, con fundamento en el artículo 17-H Bis del Código Fiscal de la Federación, vengo a presentar solicitud de aclaración tendiente a subsanar las presuntas irregularidades detectadas mediante el Oficio de Restricción Temporal No. ${formData.oficio}${formData.fechaNot ? ', notificado el ' + formData.fechaNot : ''}.\n\nBajo protesta de decir verdad, manifiesto que mi representada ha dado cabal cumplimiento a las obligaciones omitidas y desvirtúa categóricamente las causales que motivaron la restricción del Certificado de Sello Digital. Se adjuntan las documentales públicas y privadas que soportan el dicho de la contribuyente, solicitando se levante la restricción temporal al día hábil siguiente a la presentación de este escrito, conforme a derecho.\n\n[ESCRIBE AQUÍ LAS PRUEBAS O FOLIOS PRESENTADOS]`;
@@ -394,12 +395,16 @@
     // ==========================================
     function descargarExcelCrudo() {
         const results = [
-            ["RFC EMPRESA", "RAZÓN SOCIAL", "AUTORIDAD EMISORA", "NÚMERO DE OFICIO", "FECHA NOTIFICACIÓN", "TIPO DE TRÁMITE", "REPRESENTANTE LEGAL"],
-            [formData.rfc, formData.empresa, formData.autoridad, formData.oficio, formData.fechaNot, formData.tipoNombre, formData.repLegal]
+            ["RFC EMPRESA", "RAZÓN SOCIAL", "AUTORIDAD EMISORA", "NÚMERO DE OFICIO", "FECHA NOTIFICACIÓN", "TIPO DE TRÁMITE", "REPRESENTANTE LEGAL", "MONTO EN RIESGO (MXN)"],
+            [formData.rfc, formData.empresa, formData.autoridad, formData.oficio, formData.fechaNot, formData.tipoNombre, formData.repLegal, formData.montoRiesgo]
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(results);
-        ws['!cols'] = [{wch: 15}, {wch: 40}, {wch: 35}, {wch: 25}, {wch: 15}, {wch: 40}, {wch: 30}];
+        ws['!cols'] = [{wch: 15}, {wch: 40}, {wch: 35}, {wch: 25}, {wch: 15}, {wch: 40}, {wch: 30}, {wch: 25}];
+        
+        const cellH2 = ws[XLSX.utils.encode_cell({c: 7, r: 1})];
+        if(cellH2 && typeof cellH2.v === 'number') cellH2.z = '"$"#,##0.00';
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Base_Cruda");
         XLSX.writeFile(wb, `Control_Litigios_Crudo_${Date.now()}.xlsx`);
@@ -453,53 +458,59 @@
             sheetDash.getCell('B10').value = 'Materia del Trámite:';
             sheetDash.getCell('C10').value = formData.tipoNombre;
 
+            sheetDash.getCell('B11').value = 'Monto en Riesgo (Controversia):';
+            sheetDash.getCell('C11').value = formData.montoRiesgo;
+            sheetDash.getCell('C11').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('C11').font = { bold: true, color: { argb: 'FFEF4444' } };
+
             // Fórmulas de Plazos
-            sheetDash.mergeCells('B12:D12');
-            sheetDash.getCell('B12').value = '2. CONTROL DE PLAZOS LEGALES Y VENCIMIENTO';
-            sheetDash.getCell('B12').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
-            sheetDash.getCell('B12').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
+            sheetDash.mergeCells('B13:D13');
+            sheetDash.getCell('B13').value = '2. CONTROL DE PLAZOS LEGALES Y VENCIMIENTO';
+            sheetDash.getCell('B13').font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+            sheetDash.getCell('B13').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEF4444' } };
 
             // Determinar plazo por ley en base al tipo (Simplificado para el Excel)
             let diasPlazo = 15;
-            if(formData.tipoId === 'efos') diasPlazo = 15; // 69-B son 15 dias
-            if(formData.tipoId === 'sello_digital') diasPlazo = 40; // 17-H Bis permite aclarar en 40 dias max (simplificado a dias corridos)
+            if(formData.tipoId === 'efos') diasPlazo = 15; 
+            if(formData.tipoId === 'sello_digital') diasPlazo = 40; 
             if(formData.tipoId === 'carta_invitacion') diasPlazo = 20;
+            if(formData.tipoId === 'omision_declaraciones') diasPlazo = 15;
 
-            sheetDash.getCell('B13').value = 'Fecha de Notificación Oficial:';
-            sheetDash.getCell('C13').value = formData.fechaNot ? new Date(formData.fechaNot) : new Date();
-            sheetDash.getCell('C13').numFmt = 'dd/mm/yyyy';
-            sheetDash.getCell('C13').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } }; // Editable
-            sheetDash.getCell('C13').font = { bold: true, color: { argb: 'FF0369A1' } };
-
-            sheetDash.getCell('B14').value = 'Plazo de Ley Asignado (Días):';
-            sheetDash.getCell('C14').value = diasPlazo;
+            sheetDash.getCell('B14').value = 'Fecha de Notificación Oficial:';
+            sheetDash.getCell('C14').value = formData.fechaNot ? new Date(formData.fechaNot) : new Date();
+            sheetDash.getCell('C14').numFmt = 'dd/mm/yyyy';
             sheetDash.getCell('C14').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } }; // Editable
             sheetDash.getCell('C14').font = { bold: true, color: { argb: 'FF0369A1' } };
 
-            sheetDash.getCell('B15').value = 'FECHA LÍMITE DE CONTESTACIÓN:';
-            // Formula: Fecha Notificacion + Dias Plazo
-            sheetDash.getCell('C15').value = { formula: 'C13+C14' };
-            sheetDash.getCell('C15').numFmt = 'dd/mm/yyyy';
-            sheetDash.getCell('C15').font = { size: 14, bold: true, color: { argb: 'FFEF4444' } };
+            sheetDash.getCell('B15').value = 'Plazo de Ley Asignado (Días):';
+            sheetDash.getCell('C15').value = diasPlazo;
+            sheetDash.getCell('C15').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0F2FE' } }; // Editable
+            sheetDash.getCell('C15').font = { bold: true, color: { argb: 'FF0369A1' } };
 
-            sheetDash.getCell('B16').value = 'Días Restantes para Vencimiento:';
+            sheetDash.getCell('B16').value = 'FECHA LÍMITE DE CONTESTACIÓN:';
+            // Formula: Fecha Notificacion + Dias Plazo
+            sheetDash.getCell('C16').value = { formula: 'C14+C15' };
+            sheetDash.getCell('C16').numFmt = 'dd/mm/yyyy';
+            sheetDash.getCell('C16').font = { size: 14, bold: true, color: { argb: 'FFEF4444' } };
+
+            sheetDash.getCell('B17').value = 'Días Restantes para Vencimiento:';
             // Formula: Limite - Hoy
-            sheetDash.getCell('C16').value = { formula: 'C15-TODAY()' };
+            sheetDash.getCell('C17').value = { formula: 'C16-TODAY()' };
             // Formato Condicional nativo (Verde >5, Rojo <0)
-            sheetDash.getCell('C16').numFmt = '[Red][<0]0 "Días (VENCIDO)";[Color 10][>5]0 "Días";0 "Días"';
-            sheetDash.getCell('C16').font = { size: 14, bold: true };
+            sheetDash.getCell('C17').numFmt = '[Red][<0]0 "Días (VENCIDO)";[Color 10][>5]0 "Días";0 "Días"';
+            sheetDash.getCell('C17').font = { size: 14, bold: true };
 
             // Bordes y estilos
-            [6,7,8,9,10, 13,14,15,16].forEach(r => {
+            [6,7,8,9,10,11, 14,15,16,17].forEach(r => {
                 sheetDash.getCell(`B${r}`).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
                 sheetDash.getCell(`B${r}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
                 sheetDash.getCell(`C${r}`).border = { bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } } };
             });
 
             // Tip
-            sheetDash.mergeCells('B18:D18');
-            sheetDash.getCell('B18').value = '💡 Tip: Ajusta la "Fecha de Notificación" y el "Plazo de Ley" en las celdas celestes. El Excel calculará automáticamente los días que te quedan para enviar el escrito al SAT.';
-            sheetDash.getCell('B18').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+            sheetDash.mergeCells('B19:D19');
+            sheetDash.getCell('B19').value = '💡 Tip: Ajusta la "Fecha de Notificación" y el "Plazo de Ley" en las celdas celestes. El Excel calculará automáticamente los días que te quedan para enviar el escrito al SAT y te alertará si estás por vencer.';
+            sheetDash.getCell('B19').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
 
             const buffer = await workbook.xlsx.writeBuffer();
             saveAs(new Blob([buffer]), `Matriz_Seguimiento_${formData.rfc}.xlsx`);
