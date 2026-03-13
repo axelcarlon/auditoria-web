@@ -83,8 +83,8 @@
         .btn-pdf { background: #1E293B; color: white; border: 1px solid #475569; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
         .btn-pdf:hover { background: #334155; transform: translateY(-2px); border-color: #64748B;}
         
-        .btn-excel-pro { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
-        .btn-excel-pro:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);}
+        .btn-excel-pro { background: var(--brand); color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px var(--brand-glow);}
+        .btn-excel-pro:hover { background: #0891B2; transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow);}
         .btn-excel-pro:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
         
         .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
@@ -642,10 +642,17 @@
                 eIdx++;
             });
 
+            // Instrucción (Tip) dinámico en la parte inferior
+            let tipRow = Math.max(rIdx, eIdx) + 2;
+            sheetDash.mergeCells(`B${tipRow}:G${tipRow}`);
+            sheetDash.getCell(`B${tipRow}`).value = '💡 Tip: Este Data Lake está estructurado sin celdas combinadas. Conéctalo directamente a PowerBI o Tableau para cruzar los RFCs y montos al instante.';
+            sheetDash.getCell(`B${tipRow}`).font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
 
             // PESTAÑA 2: DATA LAKE ESTRUCTURADO
             const sheetData = workbook.addWorksheet('Data_Lake_XML');
             
+            // Mapear headers
             if(masterData.length > 0) {
                 const keys = Object.keys(masterData[0]);
                 sheetData.columns = keys.map((k, index) => {
@@ -663,7 +670,7 @@
 
                 masterData.forEach(row => { sheetData.addRow(row); });
 
-                // Formatos Monetarios (Índices exactos del objeto Row)
+                // Formatos Monetarios
                 ['SubTotal', 'Descuento', 'Total', 'TotalTraslados', 'TotalRetenciones'].forEach(colKey => {
                     let col = sheetData.getColumn(colKey);
                     if(col) col.numFmt = '"$"#,##0.00';
