@@ -28,6 +28,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
@@ -78,11 +81,21 @@
         .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;}
         .total-row.grand { font-size: 18px; font-weight: 900; color: var(--brand); margin-top: 10px; border-top: 1px solid #D1D5DB; padding-top: 10px;}
 
-        .btn-toolbar { display: flex; gap: 15px; margin-bottom: 20px;}
-        .btn-action { background: var(--brand); color: #000; border: none; padding: 16px 24px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--brand-glow);}
-        .btn-action:hover { background: #D97706; transform: translateY(-2px); color: white;}
-        .btn-secondary { background: var(--bg-primary); color: var(--text-main); border: 1px solid var(--border); padding: 16px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; flex: 1; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted);}
+        /* Toolbar Estandarizada PRO */
+        .toolbar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;}
+        
+        .btn-pdf { background: var(--brand); color: #000; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 2 1 250px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px var(--brand-glow);}
+        .btn-pdf:hover { background: #D97706; color: white; transform: translateY(-2px); box-shadow: 0 8px 25px var(--brand-glow);}
+        .btn-pdf:disabled { opacity: 0.6; transform: none; cursor: not-allowed; box-shadow: none;}
+        
+        .btn-excel-pro { background: #10B981; color: white; border: none; padding: 14px 20px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s; flex: 1 1 200px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
+        .btn-excel-pro:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);}
+        
+        .btn-reset { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border); padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 120px; text-transform: uppercase; font-size: 12px;}
+        .btn-reset:hover { background: rgba(255,255,255,0.1); }
+        
+        .btn-crudo { background: var(--bg-primary); color: #94A3B8; border: 1px solid #64748B; padding: 14px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; flex: 1 1 150px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px;}
+        .btn-crudo:hover { background: var(--bg-secondary); border-color: white; color: white;}
 
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 80px;}
         .feature-card { background: var(--bg-secondary); border: 1px solid var(--border); padding: 30px; border-radius: 16px; transition: 0.3s; }
@@ -95,11 +108,14 @@
         .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .bento-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 30px; transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; }
         .bento-card:hover { transform: translateY(-5px); border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        .bento-icon { width: 24px; height: 24px; color: var(--brand); margin-bottom: 15px;}
+        .bento-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .bento-desc { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin: 0; }
 
         @media (max-width: 768px) {
             .workspace { flex-direction: column; }
             .sidebar-xml { width: 100%; height: 300px; }
-            .btn-toolbar { flex-direction: column; }
+            .toolbar { flex-direction: column; }
             .inv-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -112,7 +128,7 @@
     <div class="header-section" id="headerSection">
         <div class="header-badge">VISUALIZADOR FORENSE CFDI</div>
         <h1 style="font-size: 36px; font-weight: 900; margin: 0 0 15px; letter-spacing: -1px;">Microscopio XML a PDF</h1>
-        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Arrastra uno o múltiples archivos XML para renderizar las facturas instantáneamente en una lista lateral. Descarga el PDF con Código QR Oficial del SAT en Alta Resolución o extrae los conceptos a Excel.</p>
+        <p style="color: var(--text-muted); font-size: 16px; max-width: 700px; margin: 0 auto;">Arrastra uno o múltiples archivos XML para renderizar las facturas instantáneamente en una lista lateral. Descarga el PDF con Código QR Oficial del SAT en Alta Resolución o extrae masivamente los conceptos a Excel.</p>
     </div>
 
     <div id="mainForm">
@@ -131,18 +147,22 @@
 
         <div class="results-container" id="results">
             
-            <div class="btn-toolbar">
-                <button onclick="window.location.reload()" class="btn-secondary" style="flex: 0.5;">
+            <div class="toolbar">
+                <button onclick="window.location.reload()" class="btn-reset">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Volver
                 </button>
-                <button onclick="descargarExcelIndividual()" class="btn-secondary" style="border-color: #065F46; color: #34D399;">
+                <button onclick="descargarExcelCrudo()" class="btn-crudo">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Tabla (Excel)
+                    EXCEL CRUDO
                 </button>
-                <button id="btnDescargarPDF" onclick="if(typeof window.consumirCredito === 'function'){window.consumirCredito(exportarPDF)}else{exportarPDF()}" class="btn-action">
+                <button onclick="exportarPlantillaPro()" class="btn-excel-pro">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    PLANTILLA EXCEL (PRO)
+                </button>
+                <button id="btnDescargarPDF" onclick="if(typeof window.consumirCredito === 'function'){window.consumirCredito(exportarPDF)}else{exportarPDF()}" class="btn-pdf">
                     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    DESCARGAR PDF ORIGINAL (CON QR)
+                    DESCARGAR PDF ORIGINAL
                 </button>
             </div>
 
@@ -217,8 +237,8 @@
         </div>
         <div class="feature-card">
             <div class="feature-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg></div>
-            <h3 class="feature-title">Extracción a Hoja de Cálculo</h3>
-            <p class="feature-desc">Si el XML tiene 50 conceptos, no los captures a mano. Un clic transfiere todas las filas de la factura a un archivo de Excel ordenado.</p>
+            <h3 class="feature-title">Extracción Masiva a Excel</h3>
+            <p class="feature-desc">Si tus XML tienen decenas de conceptos, no los captures a mano. Un clic transfiere todas las filas de todas las facturas cargadas a un archivo de Excel ordenado para integrarlo a tu contabilidad.</p>
         </div>
     </div>
 
@@ -235,7 +255,7 @@
             <div>
                 <div class="bento-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg></div>
                 <h3 class="bento-title">Escáner de Tickets (OCR)</h3>
-                <p class="bento-desc">Si no tienes el XML, toma una foto del ticket físico. Nuestra IA extraerá el folio y el RFC para que puedas deducirlo contablemente.</p>
+                <p class="bento-desc">Si no tienes el XML, toma una foto del ticket físico. Nuestra IA extraerá los importes y descontará las propinas para que puedas deducirlo contablemente.</p>
             </div>
         </a>
     </div>
@@ -350,7 +370,6 @@
         }
 
         if(uploadedFilesData.length > 0) {
-            // Renderizar el primero por defecto
             renderVista(uploadedFilesData[0].id, xmlListDiv.firstChild);
         } else {
             alert("Ningún XML válido detectado.");
@@ -359,7 +378,6 @@
     }
 
     function renderVista(id, element) {
-        // Estilos de selección
         document.querySelectorAll('.xml-item').forEach(el => el.classList.remove('active'));
         if(element) element.classList.add('active');
 
@@ -393,9 +411,8 @@
             </tr>
         `).join('');
 
-        // Generador QR
         try {
-            document.getElementById('qrContainer').innerHTML = ''; // Limpiar anterior
+            document.getElementById('qrContainer').innerHTML = ''; 
             qrDataURI = null;
             if(d.uuid !== "NO-TIMBRADO") {
                 const selloCorto = d.sello ? d.sello.substring(d.sello.length - 8) : "";
@@ -415,6 +432,151 @@
         }
     }
 
+    // ==========================================
+    // EXPORTACIÓN 1: EXCEL CRUDO MASIVO
+    // ==========================================
+    function descargarExcelCrudo() {
+        if(uploadedFilesData.length === 0) return;
+        
+        const results = [["PROVEEDOR", "FOLIO FACTURA", "FECHA", "UUID", "CANTIDAD", "CVE SAT", "DESCRIPCIÓN CONCEPTO", "PRECIO UNITARIO", "IMPORTE"]];
+        
+        uploadedFilesData.forEach(d => {
+            d.conceptos.forEach(c => {
+                results.push([d.emisorNombre, d.folio, d.fecha, d.uuid, c.cant, c.cve, c.desc, c.pu, c.importe]);
+            });
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(results);
+        ws['!cols'] = [{wch: 35}, {wch: 15}, {wch: 15}, {wch: 38}, {wch: 10}, {wch: 12}, {wch: 50}, {wch: 15}, {wch: 15}];
+        
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for(let R = 1; R <= range.e.r; ++R) {
+            let cellH = ws[XLSX.utils.encode_cell({c: 7, r: R})]; // Precio Unitario
+            let cellI = ws[XLSX.utils.encode_cell({c: 8, r: R})]; // Importe
+            if(cellH) cellH.z = '"$"#,##0.00';
+            if(cellI) cellI.z = '"$"#,##0.00';
+        }
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Todos_Los_Conceptos");
+        XLSX.writeFile(wb, `Extraccion_Conceptos_Masiva_${Date.now()}.xlsx`);
+    }
+
+    // ==========================================
+    // EXPORTACIÓN 2: EXCEL PRO (DASHBOARD)
+    // ==========================================
+    async function exportarPlantillaPro() {
+        const btn = document.querySelector('.btn-excel-pro');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'GENERANDO...';
+        btn.disabled = true;
+
+        try {
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'AuditorIA';
+
+            // PESTAÑA 1: DASHBOARD
+            const sheetDash = workbook.addWorksheet('Resumen Directivo', {views:[{showGridLines:false}]});
+            
+            sheetDash.columns = [
+                {width: 4},  // A
+                {width: 35}, // B
+                {width: 35}, // C
+                {width: 35}  // D
+            ];
+
+            sheetDash.mergeCells('B2:D3');
+            const titleCell = sheetDash.getCell('B2');
+            titleCell.value = 'DASHBOARD DE EXTRACCIÓN MASIVA DE CONCEPTOS';
+            titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF59E0B' } }; // Amber Brand
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+            // Tarjetas KPI
+            sheetDash.getCell('B5').value = 'FACTURAS ANALIZADAS';
+            sheetDash.getCell('B5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('B6').value = uploadedFilesData.length;
+            sheetDash.getCell('B6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF1E293B' } }; 
+            sheetDash.getCell('B6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('C5').value = 'CONCEPTOS EXTRAÍDOS';
+            sheetDash.getCell('C5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF64748B' } };
+            sheetDash.getCell('C6').value = { formula: 'COUNTA(Base_Datos!G:G)-1' }; // Cuenta la columna de descripciones
+            sheetDash.getCell('C6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FFF59E0B' } }; 
+            sheetDash.getCell('C6').border = { bottom: { style: 'medium', color: { argb: 'FFCBD5E1' } } };
+
+            sheetDash.getCell('D5').value = 'VALOR TOTAL DE CONCEPTOS';
+            sheetDash.getCell('D5').font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF10B981' } };
+            sheetDash.getCell('D6').value = { formula: 'SUM(Base_Datos!I:I)' }; // Suma la columna de importes
+            sheetDash.getCell('D6').font = { name: 'Arial', size: 24, bold: true, color: { argb: 'FF10B981' } };
+            sheetDash.getCell('D6').numFmt = '"$"#,##0.00';
+            sheetDash.getCell('D6').border = { bottom: { style: 'medium', color: { argb: 'FF10B981' } } };
+
+            // Instrucción
+            sheetDash.mergeCells('B8:D8');
+            sheetDash.getCell('B8').value = '💡 Tip: Ve a la pestaña "Base_Datos". Cada fila corresponde a un producto/servicio distinto. Ideal para inventarios y auditoría de precios unitarios.';
+            sheetDash.getCell('B8').font = { name: 'Arial', size: 10, color: { argb: 'FF94A3B8' }, italic: true };
+
+
+            // PESTAÑA 2: BASE DE DATOS
+            const sheetData = workbook.addWorksheet('Base_Datos');
+            sheetData.columns = [
+                { header: 'PROVEEDOR', key: 'prov', width: 35 },
+                { header: 'FOLIO FACTURA', key: 'folio', width: 15 },
+                { header: 'FECHA', key: 'fecha', width: 15 },
+                { header: 'UUID', key: 'uuid', width: 38 },
+                { header: 'CANTIDAD', key: 'cant', width: 12 },
+                { header: 'CVE SAT', key: 'cve', width: 12 },
+                { header: 'DESCRIPCIÓN CONCEPTO', key: 'desc', width: 50 },
+                { header: 'PRECIO UNITARIO', key: 'pu', width: 18 },
+                { header: 'IMPORTE', key: 'importe', width: 18 }
+            ];
+
+            const headerRow = sheetData.getRow(1);
+            for (let i = 1; i <= 9; i++) {
+                const cell = headerRow.getCell(i);
+                cell.font = { name: 'Arial', bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            }
+
+            uploadedFilesData.forEach(d => {
+                d.conceptos.forEach(c => {
+                    sheetData.addRow({
+                        prov: d.emisorNombre,
+                        folio: d.folio,
+                        fecha: d.fecha,
+                        uuid: d.uuid,
+                        cant: c.cant,
+                        cve: c.cve,
+                        desc: c.desc,
+                        pu: c.pu,
+                        importe: c.importe
+                    });
+                });
+            });
+
+            // Formatos de Moneda
+            sheetData.getColumn('H').numFmt = '"$"#,##0.00';
+            sheetData.getColumn('I').numFmt = '"$"#,##0.00';
+            sheetData.autoFilter = 'A1:I1'; 
+
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `Extraccion_Conceptos_PRO_${Date.now()}.xlsx`);
+
+        } catch (e) {
+            console.error(e);
+            if(typeof window.showToast === 'function') window.showToast("Error generando Plantilla PRO.", "error");
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    }
+
+
+    // ==========================================
+    // EXPORTACIÓN 3: PDF ORIGINAL (FACTURA VISUALIZADA)
+    // ==========================================
     function exportarPDF() {
         if(!currentInvoiceData) return;
         const btn = document.getElementById('btnDescargarPDF');
@@ -437,6 +599,8 @@
                     ]);
                 });
 
+                const formatMoneyPDF = (val) => "$" + parseFloat(val || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
                 let qrContent = qrDataURI ? { image: qrDataURI, width: 85, height: 85, alignment: 'center' } : { text: '' };
 
                 const docDefinition = {
@@ -455,10 +619,10 @@
                             columns: [
                                 { width: '*', text: '' },
                                 { width: '40%', table: { widths: ['*', 'auto'], body: [
-                                    [{ text: 'Subtotal:', alignment: 'right', fontSize: 10 }, { text: formatMoney(d.subtotal), alignment: 'right', fontSize: 10, bold: true }],
-                                    [{ text: 'IVA:', alignment: 'right', fontSize: 10 }, { text: formatMoney(d.iva), alignment: 'right', fontSize: 10 }],
-                                    [{ text: 'Retenciones:', alignment: 'right', fontSize: 10 }, { text: formatMoney(d.retenciones), alignment: 'right', fontSize: 10, color: '#EF4444' }],
-                                    [{ text: 'TOTAL:', alignment: 'right', fontSize: 12, bold: true, color: '#F59E0B' }, { text: formatMoney(d.total), alignment: 'right', fontSize: 12, bold: true }]
+                                    [{ text: 'Subtotal:', alignment: 'right', fontSize: 10 }, { text: formatMoneyPDF(d.subtotal), alignment: 'right', fontSize: 10, bold: true }],
+                                    [{ text: 'IVA:', alignment: 'right', fontSize: 10 }, { text: formatMoneyPDF(d.iva), alignment: 'right', fontSize: 10 }],
+                                    [{ text: 'Retenciones:', alignment: 'right', fontSize: 10 }, { text: formatMoneyPDF(d.retenciones), alignment: 'right', fontSize: 10, color: '#EF4444' }],
+                                    [{ text: 'TOTAL:', alignment: 'right', fontSize: 12, bold: true, color: '#F59E0B' }, { text: formatMoneyPDF(d.total), alignment: 'right', fontSize: 12, bold: true }]
                                 ] }, layout: 'noBorders' }
                             ]
                         },
@@ -487,21 +651,6 @@
             }
         }, 500);
     }
-
-    function descargarExcelIndividual() {
-        if(!currentInvoiceData) return;
-        const d = currentInvoiceData;
-        const results = [["CANTIDAD", "CVE SAT", "DESCRIPCIÓN", "PRECIO UNITARIO", "IMPORTE"]];
-        d.conceptos.forEach(c => results.push([c.cant, c.cve, c.desc, c.pu, c.importe]));
-        const ws = XLSX.utils.aoa_to_sheet(results);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Conceptos");
-        XLSX.writeFile(wb, `Conceptos_${d.folio}.xlsx`);
-    }
 </script>
 </body>
 </html>
-
-
-
-
