@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cómo convertir estados de cuenta bancarios PDF a Excel sin perder el formato | AuditorIA</title>
+    <meta name="description" content="Deja de perder horas capturando números. Aprende a convertir estados de cuenta bancarios PDF a Excel sin perder el formato para tu conciliación usando IA.">
+    <meta name="robots" content="index, follow">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://auditoriaxml.mx/articulos/convertir-estado-de-cuenta-pdf-a-excel.html"> 
+    <meta property="og:title" content="Cómo convertir estados de cuenta bancarios PDF a Excel | AuditorIA"> 
+    <meta property="og:description" content="Deja de perder horas capturando números. Aprende a convertir estados de cuenta bancarios de Bancomer, Santander, etc. a Excel en segundos.">
+    <meta property="og:image" content="https://auditoriaxml.mx/articulos/portada-seo.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://auditoriaxml.mx/articulos/convertir-estado-de-cuenta-pdf-a-excel.html">
+    <meta name="twitter:title" content="Cómo convertir estados de cuenta bancarios PDF a Excel | AuditorIA">
+    <meta name="twitter:description" content="Ahorra días de talacha contable transformando PDFs bancarios a Excel con formato perfecto.">
+    <meta name="twitter:image" content="https://auditoriaxml.mx/articulos/portada-seo.png">
+    
+    <link rel="canonical" href="https://auditoriaxml.mx/articulos/convertir-estado-de-cuenta-pdf-a-excel.html" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script src="/despertador.js"></script>
+    
+    <style>
+        :root { 
+            --bg-primary: #0F172A; 
+            --bg-secondary: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8; 
+            --border: rgba(255,255,255,0.1); 
+            --brand: #2563EB; 
+            --brand-glow: rgba(37, 99, 235, 0.4); 
+            --success: #10B981; 
+            --warning: #F59E0B; 
+            --danger: #EF4444;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; overflow-x: hidden; }
+        
+        .article-container { max-width: 800px; margin: 60px auto; background: #ffffff; padding: 50px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
+        @media (max-width: 768px) { .article-container { padding: 30px 20px; margin: 30px auto; } }
+        
+        h1 { color: #111827; font-size: 36px; line-height: 1.2; margin-bottom: 24px; border-bottom: 3px solid #2563EB; padding-bottom: 15px; }
+        h2 { color: #1F2937; font-size: 28px; margin-top: 48px; margin-bottom: 20px; }
+        h3 { color: #2563EB; font-size: 22px; margin-top: 32px; margin-bottom: 16px; }
+        p { font-size: 17px; margin-bottom: 24px; }
+        ul, ol { margin-bottom: 24px; padding-left: 24px; }
+        li { font-size: 17px; margin-bottom: 10px; }
+        strong { color: #111827; }
+        .code-block { background-color: #F3F4F6; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 14px; border-left: 4px solid #4B5563; margin-bottom: 24px; overflow-x: auto; }
+        .cta-textual { font-weight: bold; color: #2563EB; text-decoration: underline; }
+        
+        .cta-visual { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 40px; border-radius: 12px; text-align: center; color: white; margin: 50px 0; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); }
+        .cta-visual h3 { color: white; margin-top: 0; font-size: 26px; }
+        .cta-visual p { color: #E0E7FF; font-size: 16px; }
+        .cta-button { display: inline-block; background-color: #ffffff; color: #1E3A8A; padding: 16px 32px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 18px; margin-top: 20px; transition: transform 0.2s; }
+        .cta-button:hover { transform: translateY(-2px); }
+        
+        .article-cta { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 12px; padding: 40px; text-align: center; margin: 60px 0; }
+        .article-cta h3 { color: #1E3A8A; font-size: 24px; margin-top: 0; margin-bottom: 15px; }
+        .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
+        .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
+        .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
+
+        /* Estilos del Advisor Integrado */
+        .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
+        .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+        .advisor-btn:hover { transform: scale(1.05); }
+        .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
+        .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
+        .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+        .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
+        .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
+        .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
+        .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
+        .advisor-input:focus { border-color: var(--brand, #2563EB); }
+        .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
+        @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
+    </style>
+</head>
+<body>
+
+<script src="/navbar.js"></script>
+
+<div class="article-container">
+    <h1>Cómo convertir estados de cuenta bancarios PDF a Excel sin perder el formato para tu conciliación</h1>
+    <p>Fin de mes. Tu escritorio está lleno, la fecha límite de impuestos se acerca y ahí está: un estado de cuenta bancario en PDF con más de 500 movimientos. El equipo contable se prepara para lo inevitable: <strong>perder días enteros transcribiendo números manualmente a Excel</strong> para poder cuadrar los saldos.</p>
+    
+    <h2>El infierno de la talacha: Transcribir PDFs bancarios</h2>
+    <p>Todos hemos intentado el clásico "Seleccionar, Copiar y Pegar" desde un PDF de Bancomer, Santander o Banorte hacia una hoja de cálculo. El resultado siempre es un desastre que te toma más tiempo arreglar que si lo hubieras tecleado desde cero:</p>
+    <ul>
+        <li><strong>Celdas fusionadas:</strong> Las fechas, los conceptos y los montos terminan amontonados en una sola columna interminable.</li>
+        <li><strong>Formatos rotos:</strong> Los números negativos pierden su signo, o peor aún, Excel los interpreta como texto o fechas, arruinando tus fórmulas de suma.</li>
+        <li><strong>Errores de dedo (Riesgo Crítico):</strong> Al transcribir manualmente cientos de filas, un solo cero de más o un punto decimal mal colocado destruye horas de trabajo en la conciliación.</li>
+    </ul>
+    
+    <h3>El problema con los conversores gratuitos de internet</h3>
+    <p>Quizás has buscado en Google "PDF a Excel gratis". El problema es que esas herramientas genéricas no entienden la <strong>estructura financiera</strong>. Solo reconocen texto visual y lo tiran en la hoja sin lógica de negocio, mezclando encabezados de página, logotipos del banco y avisos legales junto con tus transacciones.</p>
+    
+    <div class="cta-visual">
+        <h3>Pasa de 4 horas a 15 segundos</h3>
+        <p>Deja de teclear. Sube el estado de cuenta de cualquier banco y nuestra Inteligencia Artificial te devolverá un Excel estructurado con Fecha, Concepto, Cargo, Abono y Saldo perfectos.</p>
+        <a href="/conversor-bancario" class="cta-button">Convertir Estado de Cuenta (PDF a Excel)</a>
+    </div>
+    
+    <h2>La Solución: Extracción Estructural con IA Paramétrica</h2>
+    <p>Para hacer una conciliación contable, necesitas datos puros, no solo texto. Nuestro <a href="/conversor-bancario" class="cta-textual">Conversor Bancario</a> utiliza tecnología de reconocimiento de patrones específica para la banca mexicana. El algoritmo sabe identificar dónde terminan los encabezados y dónde empieza la tabla transaccional real.</p>
+    
+    <div class="code-block">
+[CÓDIGO CAÓTICO DEL PDF]
+12/04 PAGO PROVEEDOR TRANSFERENCIA SPEI -15,400.00 102,000.00
+
+↓ Transformación AuditorIA ↓
+
+[EXCEL ESTRUCTURADO]
+[Columna A: Fecha]      -> 12/04/2026
+[Columna B: Concepto]   -> PAGO PROVEEDOR TRANSFERENCIA SPEI
+[Columna C: Retiro]     -> $15,400.00
+[Columna D: Depósito]   -> $0.00
+[Columna E: Saldo]      -> $102,000.00
+    </div>
+    <p>El sistema limpia los caracteres extraños, respeta la polaridad de los importes (cargos y abonos) y te entrega una matriz tabular impecable, lista para aplicar tablas dinámicas o cruzarla con tu software contable.</p>
+    
+    <h2>Cierra tu mes en tiempo récord</h2>
+    <p>Una vez que tienes tu estado de cuenta en Excel en cuestión de segundos, la mitad del trabajo está hecho. El siguiente paso lógico para los despachos modernos es cruzar esos movimientos bancarios directamente con los XMLs de ingresos y egresos.</p>
+    <p>Para cerrar el ciclo de automatización al 100%, puedes utilizar nuestra herramienta de <a href="/conciliacion-ia" class="cta-textual">Conciliación IA</a> o el <a href="/conciliador-pagos" class="cta-textual">Conciliador de Pagos (REP)</a>. Lo que antes tomaba a un auxiliar contable tres días de trabajo manual exhaustivo, ahora se resuelve con un par de clics.</p>
+
+    <div class="article-cta">
+        <h3>Automatiza tu Conciliación Bancaria Hoy</h3>
+        <p>El tiempo de tu equipo contable es demasiado valioso para gastarlo en copiar y pegar. Convierte PDFs bancarios a Excel con precisión milimétrica, sin instalar software y respetando tu privacidad financiera.</p>
+        <a href="/conversor-bancario" class="article-cta-btn">Probar el Conversor Bancario IA</a>
+    </div>
+</div>
+
+<script src="/footer.js"></script>
+
+<div id="advisorWidget" class="advisor-widget">
+    <button id="advisorBtn" class="advisor-btn">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        Asesor Fiscal IA
+    </button>
+    <div id="advisorChat" class="advisor-chat">
+        <div class="advisor-header">
+            <span>Paula - AuditorIA Advisor</span>
+            <button id="closeAdvisor" class="advisor-close">×</button>
+        </div>
+        <div id="advisorBody" class="advisor-body">
+            <div class="msg-bot">Analista en línea. ¿Tienes problemas para extraer información de un PDF o dudas sobre la conciliación?</div>
+            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
+        </div>
+        <div class="advisor-footer">
+            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
+            <button id="sendAdvisor" class="advisor-send">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const advisorBtn = document.getElementById('advisorBtn');
+    const advisorChat = document.getElementById('advisorChat');
+    const closeAdvisor = document.getElementById('closeAdvisor');
+    const sendAdvisor = document.getElementById('sendAdvisor');
+    const advisorInput = document.getElementById('advisorInput');
+    const advisorBody = document.getElementById('advisorBody');
+    const typingIndicator = document.getElementById('typingIndicator');
+    let chatHistory = [];
+
+    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
+    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
+
+    function renderMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
+        div.innerText = text;
+        advisorBody.insertBefore(div, typingIndicator);
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = advisorInput.value.trim();
+        if (!text) return;
+        renderMessage(text, 'user');
+        advisorInput.value = '';
+        typingIndicator.style.display = 'block';
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+
+        const currentHistory = [...chatHistory];
+        chatHistory.push({ rol: "usuario", texto: text });
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: text, historial: currentHistory })
+            });
+            if (!res.ok) throw new Error('Error API');
+            const data = await res.json();
+            renderMessage(data.respuesta, 'bot');
+            chatHistory.push({ rol: "modelo", texto: data.respuesta });
+        } catch (err) {
+            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
+            chatHistory.pop();
+        } finally {
+            typingIndicator.style.display = 'none';
+        }
+    }
+    sendAdvisor.onclick = handleSend;
+    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
+</script>
+</body>
+</html>
