@@ -11,20 +11,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conciliación Automatizada de Complementos de Pago en CFDI 4.0 | AuditorIA</title>
-    <meta name="description" content="Auditoría técnica del Complemento de Recepción de Pagos (CRP). Soluciona diferencias cambiarias y cuadra nodos de impuestos en facturas PPD.">
+    <meta name="description" content="Auditoría técnica del Complemento de Recepción de Pagos (CRP). Soluciona diferencias cambiarias, cuadra nodos de impuestos en facturas PPD y evita multas del SAT.">
     <meta name="robots" content="index, follow">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html"> 
     <meta property="og:title" content="Conciliación Automatizada de CRP en CFDI 4.0 | AuditorIA"> 
-    <meta property="og:description" content="Auditoría técnica del Complemento de Recepción de Pagos (CRP). Soluciona diferencias cambiarias y cuadra nodos de impuestos en facturas PPD.">
+    <meta property="og:description" content="Auditoría técnica del Complemento de Pago (CRP). Soluciona diferencias cambiarias y cuadra nodos de impuestos en facturas PPD.">
     <meta property="og:image" content="https://auditoriaxml.mx/articulos/portada-seo.png">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html">
+    <meta name="twitter:title" content="Conciliación Automatizada de CRP en CFDI 4.0 | AuditorIA">
+    <meta name="twitter:description" content="Ahorra horas de talacha conciliando tus facturas PPD con sus Complementos de Pago. Evita multas del SAT por emisión extemporánea.">
     <meta name="twitter:image" content="https://auditoriaxml.mx/articulos/portada-seo.png">
     <link rel="canonical" href="https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi.html" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="/despertador.js"></script>
     <style>
-        /* Variables globales necesarias para heredar colores del navbar/footer */
         :root { 
             --bg-primary: #0F172A; 
             --bg-secondary: #1E293B; 
@@ -65,6 +67,23 @@
         .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
         .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
         .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
+
+        /* Estilos del Advisor Integrado */
+        .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
+        .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+        .advisor-btn:hover { transform: scale(1.05); }
+        .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
+        .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
+        .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+        .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
+        .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
+        .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
+        .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
+        .advisor-input:focus { border-color: var(--brand, #2563EB); }
+        .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
+        @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
     </style>
 </head>
 <body>
@@ -73,46 +92,149 @@
 
 <div class="article-container">
     <h1>Conciliación Automatizada de Complementos de Pago (CRP) en CFDI 4.0</h1>
-    <p>La gestión del flujo de efectivo fiscal se fragmentó con la obligatoriedad del Complemento de Recepción de Pagos (CRP) versión 2.0. El Servicio de Administración Tributaria (SAT) utiliza este documento para determinar el momento exacto de causación del Impuesto al Valor Agregado (IVA) y la retención del Impuesto Sobre la Renta (ISR).</p>
     
-    <h2>La Estructura Técnica del Complemento de Recepción de Pagos</h2>
-    <p>A diferencia del CFDI de Ingreso, el CRP contiene atributos diseñados exclusivamente para la trazabilidad financiera.</p>
+    <p>Son las 8:00 PM del día 4 del mes. Estás revisando la cobranza y te das cuenta de un problema masivo: tu empresa emitió 450 facturas con método de pago PPD (Pago en Parcialidades o Diferido) durante el mes pasado, recibiste depósitos bancarios para cubrir casi todas, pero el sistema de facturación <strong>solo ha emitido 120 Complementos de Recepción de Pagos (CRP)</strong>.</p>
     
-    <h3>Nodos cfdi:Pagos y cfdi:DoctoRelacionado</h3>
-    <p>El SAT cruza el importe bancario depositado contra el nodo <code>pago20:Pago</code>. Dentro de este, el bloque <code>pago20:DoctoRelacionado</code> debe contener el UUID de la factura origen y la desintegración exacta de los impuestos proporcionales pagados.</p>
+    <p>Empieza el pánico. Tienes hasta el quinto día natural del mes para emitir todos los complementos faltantes. Si no lo haces, los clientes te van a rechazar el pago, no podrán acreditar su IVA, y lo peor de todo: tu empresa se expone a multas devastadoras por parte del Servicio de Administración Tributaria (SAT). Este es el infierno operativo mensual que viven los departamentos de tesorería y facturación en México.</p>
+    
+    <h2>El PPD y el CRP: La trampa del flujo de efectivo</h2>
+    <p>Antes de la versión 3.3 y 4.0 del CFDI, el control del IVA era relativamente "basado en la buena fe" y en los estados de cuenta bancarios. Hoy, la gestión del flujo de efectivo fiscal está completamente fragmentada y fiscalizada en tiempo real. El SAT utiliza el Complemento de Recepción de Pagos (CRP) versión 2.0 como la única herramienta legal para determinar <strong>el momento exacto de causación</strong> del Impuesto al Valor Agregado (IVA) y la retención del Impuesto Sobre la Renta (ISR).</p>
+    
+    <p>Para la autoridad fiscal, no importa si el dinero ya está en tu cuenta bancaria. Si cobraste una factura PPD y no emitiste su respectivo complemento de pago (CRP), fiscalmente ese ingreso no existe para el cálculo del IVA trasladado, generando una bomba de tiempo en tus declaraciones.</p>
+    
+    <h3>La estructura técnica: Nodos cfdi:Pagos y cfdi:DoctoRelacionado</h3>
+    <p>Hacer el "match" entre una factura origen y su pago no es un simple cruce en Excel. A diferencia de un CFDI de Ingreso tradicional (como una factura PUE), el CRP contiene atributos y nodos XML diseñados exclusivamente para la trazabilidad financiera profunda.</p>
+
+    <p>El algoritmo del SAT cruza el importe bancario depositado contra el nodo <code>pago20:Pago</code>. Pero la verdadera auditoría ocurre un nivel más abajo: en el bloque <code>pago20:DoctoRelacionado</code>. Este nodo debe contener, sin margen de error, el UUID (Folio Fiscal) de la factura origen PPD que se está cobrando, así como la desintegración matemática exacta de los impuestos proporcionales pagados.</p>
+
     <div class="code-block">
 &lt;pago20:DoctoRelacionado IdDocumento="F3C2B1A0-1234-5678-90AB-CDEF12345678" MonedaDR="MXN" NumParcialidad="1" ImpSaldoAnt="11600.00" ImpPagado="5800.00" ImpSaldoInsoluto="5800.00"&gt;
+  &lt;pago20:ImpuestosDR&gt;
+    &lt;pago20:TrasladosDR&gt;
+      &lt;pago20:TrasladoDR BaseDR="5000.00" ImpuestoDR="002" TipoFactorDR="Tasa" TasaOCuotaDR="0.160000" ImporteDR="800.00"/&gt;
+    &lt;/pago20:TrasladosDR&gt;
+  &lt;/pago20:ImpuestosDR&gt;
+&lt;/pago20:DoctoRelacionado&gt;
     </div>
-    <p>Si la suma de los atributos <code>ImporteDR</code> de todos los complementos asociados a una factura no cuadra con el impuesto trasladado en el CFDI origen, la plataforma del SAT bloquea la pre-carga en la declaración. <a href="/" class="cta-textual">Automatiza la conciliación y el recálculo de impuestos con el validador de AuditorIA</a>.</p>
+
     
-    <h2>El Problema Matemático de los PPD</h2>
-    <p>La emisión de facturas con Método de Pago PPD (Pago en Parcialidades o Diferido) exige la emisión obligatoria de un CRP a más tardar el quinto día natural del mes inmediato siguiente.</p>
-    
-    <h3>Diferencias Cambiarias en el Complemento</h3>
-    <p>El riesgo de discrepancia se agrava en operaciones con moneda extranjera (USD, EUR). Los sistemas contables que redondean a dos decimales en lugar de truncar a seis generan diferencias de centavos. El SAT detecta esta disparidad y exige el pago del impuesto faltante mediante requerimiento formal.</p>
+
+    <p>Aquí radica el principal dolor de cabeza: Si la sumatoria de los atributos <code>ImporteDR</code> (Importe del Documento Relacionado) de todos los complementos asociados a una factura, a lo largo de los meses, no cuadra exactamente con el impuesto trasladado en el CFDI origen, la plataforma del SAT bloquea la pre-carga automática en tu declaración mensual.</p>
     
     <div class="cta-visual">
-        <h3>Cuadra tus CRPs antes del Cierre de Mes</h3>
-        <p>Extrae todos los UUIDs relacionados y valida matemáticamente los saldos insolutos de tus complementos de pago en segundos.</p>
-        <a href="/" class="cta-button">Ejecutar Conciliación de Pagos</a>
+        <h3>Cuadra tus CRPs antes del Cierre de Mes (El 5to Día)</h3>
+        <p>Deja de buscar diferencias en Excel. Extrae todos los UUIDs origen y valida matemáticamente los saldos insolutos de tus complementos de pago en segundos, garantizando que el IVA cruce a la perfección.</p>
+        <a href="/conciliador-pagos" class="cta-button">Ejecutar Conciliación de Pagos (REP)</a>
     </div>
     
-    <h2>Multas por Omisión o Emisión Extemporánea del CRP</h2>
-    <p>El Artículo 83, fracción VII del Código Fiscal de la Federación tipifica la no emisión o emisión extemporánea de complementos como una infracción grave. La multa aplicable oscila entre $400 y $600 pesos por cada CRP no emitido en tiempo y forma.</p>
+    <h2>El Problema Matemático: Diferencias Cambiarias y Centavos Perdidos</h2>
+    <p>Si conciliar operaciones en pesos mexicanos (MXN) es tedioso, hacer la cuadratura de facturas PPD en dólares (USD) o euros (EUR) es un verdadero riesgo de cumplimiento. El tipo de cambio fluctúa entre el día que emitiste la factura origen y el día en que tu cliente te depositó el dinero.</p>
     
-    <h3>Automatización de la Cuadratura PPD vs CRP</h3>
-    <p>La única defensa efectiva para corporativos con alto volumen transaccional es auditar masivamente las carpetas XML al finalizar el mes. El motor de extracción debe aislar todas las facturas PPD, buscar los CRPs que contengan su UUID en el nodo <code>IdDocumento</code> y restar matemáticamente el atributo <code>ImpPagado</code> del total de la factura original.</p>
-    <p><a href="/" class="cta-textual">Sube el repositorio XML de tu empresa a nuestra herramienta y obtén un dictamen preciso</a> que señale facturas PPD huérfanas o CRPs con cálculos de impuestos discrepantes.</p>
+    <p>Además, existe un choque matemático sistémico: muchos ERPs y sistemas contables antiguos redondean los montos a dos decimales, mientras que el estándar del Anexo 20 del SAT exige truncar operaciones de impuestos hasta con seis decimales. Esta diferencia tecnológica genera discrepancias de 1 o 2 centavos en el nodo <code>ImpSaldoInsoluto</code> (Saldo Insoluto).</p>
+    
+    <p>¿Qué hace el SAT? Su algoritmo detecta que el saldo de la factura no quedó en "0.00", sino en "0.01". Por un mísero centavo, el SAT considera que la factura no ha sido liquidada en su totalidad, dejando el folio "abierto" y exigiendo el pago de impuestos faltantes o generando inconsistencias en la contabilidad electrónica. Para arreglar esto de golpe, te recomendamos auditar todas tus carpetas mensuales usando la <a href="/auditoria-masiva" class="cta-textual">Auditoría Masiva XML</a> para cazar facturas "abiertas" por error de centavos.</p>
+    
+    <h2>El peso de la Ley: Multas por Omisión o Emisión Extemporánea</h2>
+    <p>Emitir los CRP no es opcional, ni es algo que puedas dejar para el cierre anual. El Artículo 83, fracción VII del Código Fiscal de la Federación tipifica la "no expedición, no entrega o no puesta a disposición" de los complementos fiscales como una infracción grave.</p>
+    
+    <p><strong>La multa aplicable es aterradora: oscila entre $400.00 y $600.00 MXN por cada Comprobante (CRP) no emitido o emitido con errores.</strong></p>
+    
+    <p>Hagamos la cuenta: Si tu empresa tiene un atraso de 300 cobranzas sin su respectivo complemento de pago a lo largo del trimestre, estás acumulando una contingencia fiscal de hasta $180,000 pesos en multas, sin contar los recargos. Si necesitas estimar el daño potencial por impuestos no enterados debido a este descontrol, puedes apoyarte en nuestra <a href="/calculadora-recargos" class="cta-textual">Calculadora de Recargos y Actualizaciones</a>.</p>
+    
+    <h2>Automatización de la Cuadratura: La Defensa Definitiva</h2>
+    <p>Tratar de llevar el control de los Complementos de Pago en "sábanas" interminables de Excel cruzando datos con la función <code>BUSCARV</code> es invitar al desastre. La única defensa efectiva y escalable para empresas o despachos contables con un alto volumen transaccional es <strong>auditar masivamente el código XML</strong>.</p>
+    
+    <p>El motor de extracción de AuditorIA hace exactamente lo que haría un auditor del SAT, pero en segundos:</p>
+    <ol>
+        <li>Aísla todas las facturas emitidas y recibidas con método PPD.</li>
+        <li>Busca en todo tu repositorio los archivos CRP que contengan el UUID de esas facturas dentro de su nodo <code>IdDocumento</code>.</li>
+        <li>Resta matemáticamente el atributo <code>ImpPagado</code> de cada CRP contra el total de la factura original.</li>
+        <li>Verifica la cuadratura de los impuestos (Traslados y Retenciones).</li>
+        <li>Te entrega un reporte marcando en rojo las "Facturas Huérfanas" (PPDs que fueron cobrados en el banco pero no tienen CRP emitido).</li>
+    </ol>
+    
+    <p>Resolver la conciliación de pagos no debería ser un motivo de estrés a las 11:00 PM cada inicio de mes. Automatizar este proceso asegura la deducibilidad de tus gastos, el correcto acreditamiento de tu IVA y blinda a tu empresa contra multas absurdas por omisión administrativa.</p>
 
     <div class="article-cta">
-        <h3>Pasa de la teoría a la práctica</h3>
-        <p>No dejes que los errores matemáticos en tus CFDI 4.0 se conviertan en multas. Automatiza la validación de retenciones de ISR e IVA en segundos, sin instalar programas y de forma 100% gratuita.</p>
-        <a href="/" class="article-cta-btn">Ejecutar Auditoría Gratuita Ahora</a>
+        <h3>Toma el Control Total de tus Complementos de Pago</h3>
+        <p>Sube el repositorio XML de tu empresa a nuestra herramienta y obtén un dictamen preciso que señale de inmediato facturas PPD huérfanas, CRPs con cálculos de impuestos discrepantes y folios con errores por tipo de cambio. Evita multas y cierra tu mes con seguridad matemática.</p>
+        <a href="/conciliador-pagos" class="article-cta-btn">Probar el Conciliador de Pagos (REP) Ahora</a>
     </div>
 </div>
 
 <script src="/footer.js"></script>
 
+<div id="advisorWidget" class="advisor-widget">
+    <button id="advisorBtn" class="advisor-btn">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        Asesor Fiscal IA
+    </button>
+    <div id="advisorChat" class="advisor-chat">
+        <div class="advisor-header">
+            <span>Paula - AuditorIA Advisor</span>
+            <button id="closeAdvisor" class="advisor-close">×</button>
+        </div>
+        <div id="advisorBody" class="advisor-body">
+            <div class="msg-bot">Analista fiscal en línea. ¿Tienes facturas PPD sin pagar, dudas sobre el quinto día natural o problemas cuadrando complementos de pago?</div>
+            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
+        </div>
+        <div class="advisor-footer">
+            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
+            <button id="sendAdvisor" class="advisor-send">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const advisorBtn = document.getElementById('advisorBtn');
+    const advisorChat = document.getElementById('advisorChat');
+    const closeAdvisor = document.getElementById('closeAdvisor');
+    const sendAdvisor = document.getElementById('sendAdvisor');
+    const advisorInput = document.getElementById('advisorInput');
+    const advisorBody = document.getElementById('advisorBody');
+    const typingIndicator = document.getElementById('typingIndicator');
+    let chatHistory = [];
+
+    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
+    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
+
+    function renderMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
+        div.innerText = text;
+        advisorBody.insertBefore(div, typingIndicator);
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = advisorInput.value.trim();
+        if (!text) return;
+        renderMessage(text, 'user');
+        advisorInput.value = '';
+        typingIndicator.style.display = 'block';
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+
+        const currentHistory = [...chatHistory];
+        chatHistory.push({ rol: "usuario", texto: text });
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: text, historial: currentHistory })
+            });
+            if (!res.ok) throw new Error('Error API');
+            const data = await res.json();
+            renderMessage(data.respuesta, 'bot');
+            chatHistory.push({ rol: "modelo", texto: data.respuesta });
+        } catch (err) {
+            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
+            chatHistory.pop();
+        } finally {
+            typingIndicator.style.display = 'none';
+        }
+    }
+    sendAdvisor.onclick = handleSend;
+    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
+</script>
 </body>
 </html>
-
