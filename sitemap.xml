@@ -45,6 +45,7 @@
     <url><loc>https://auditoriaxml.mx/articulos/auditoria-uuid-cancelacion-cfdi</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
     <url><loc>https://auditoriaxml.mx/articulos/conciliacion-complemento-pagos-cfdi</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
     <url><loc>https://auditoriaxml.mx/articulos/convertir-estado-de-cuenta-pdf-a-excel</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+    <url><loc>https://auditoriaxml.mx/articulos/requisitos-deduccion-viaticos-tickets</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
 
     <url><loc>https://auditoriaxml.mx/login</loc><changefreq>monthly</changefreq><priority>0.50</priority></url>
     <url><loc>https://auditoriaxml.mx/registro</loc><changefreq>monthly</changefreq><priority>0.50</priority></url>
