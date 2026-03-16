@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planes y Precios | AuditorIA PRO</title>
@@ -22,8 +29,6 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.ico">
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
-    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-KJW30G9ETZ');</script>
     <script src="despertador.js"></script>
 
     <style>
@@ -201,54 +206,6 @@
 
         .guarantee { text-align: center; color: var(--text-muted); font-size: 13.5px; margin-top: 20px; position: relative; z-index: 1;}
 
-        /* SECCIÓN NUEVA: SISTEMA DE ACTIVACIÓN MANUAL */
-        .activation-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        .activation-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 13px;
-            text-decoration: underline;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .activation-btn:hover { color: white; }
-        
-        .activation-form {
-            display: none;
-            margin-top: 15px;
-            gap: 10px;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .activation-form.active { display: flex; }
-        .activation-input {
-            flex: 1;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            text-transform: uppercase;
-        }
-        .activation-submit {
-            background: var(--brand);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .activation-submit:hover { background: #2563EB; }
-
         /* FAQ Section */
         .faq-section { margin-top: 100px; }
         .faq-title { text-align: center; font-size: 32px; font-weight: 900; margin-bottom: 50px;}
@@ -263,7 +220,6 @@
             .price-amount { font-size: 52px; }
             .faq-grid { grid-template-columns: 1fr; }
             .extra-grid { grid-template-columns: 1fr; }
-            .activation-form { flex-direction: column; }
         }
     </style>
 </head>
@@ -372,14 +328,6 @@
                 <span style="color: white; font-weight: bold;">No se te cobrará nada hoy.</span> Cancela cuando quieras en 1 clic.
             </div>
 
-            <div class="activation-section">
-                <button class="activation-btn" id="btnShowActivation">¿Ya tienes tu código de activación? Ingrésalo aquí</button>
-                <div class="activation-form" id="activationForm">
-                    <input type="text" id="activationCode" class="activation-input" placeholder="INGRESA TU CÓDIGO">
-                    <button class="activation-submit" onclick="activarLicencia()">ACTIVAR PRO</button>
-                </div>
-            </div>
-
         </div> 
     </div>
 
@@ -451,44 +399,6 @@
         // Si no hay sesión válida o no está logueado, lo mandamos al login para que se registre primero
         window.location.href = '/login.html?redirect=planes';
     });
-
-    // ==========================================
-    // NUEVA LÓGICA DE ACTIVACIÓN MANUAL PRO
-    // ==========================================
-    document.getElementById('btnShowActivation').addEventListener('click', function() {
-        document.getElementById('activationForm').classList.toggle('active');
-    });
-
-    function activarLicencia() {
-        const codeInput = document.getElementById('activationCode').value.trim().toUpperCase();
-        
-        // LA CONTRASEÑA ESTRICTA. 
-        // Solo esta palabra exacta en mayúsculas funcionará.
-        const secretCode = "AUDITORIA-2024";
-
-        if (codeInput === secretCode) {
-            // El usuario metió la clave correcta, lo desbloqueamos
-            localStorage.setItem('auditoria_pro', 'true');
-            
-            if (typeof window.showToast === 'function') {
-                window.showToast("¡Licencia PRO activada con éxito!", "success");
-            } else {
-                alert("¡Licencia PRO activada con éxito!");
-            }
-            
-            // REDIRECCIÓN EXACTA AL DASHBOARD
-            setTimeout(() => {
-                window.location.href = "https://auditoriaxml.mx/dashboard-xml";
-            }, 1000);
-
-        } else {
-            if (typeof window.showToast === 'function') {
-                window.showToast("Código inválido. Verifica tu confirmación de pago.", "error");
-            } else {
-                alert("Código inválido. Verifica tu confirmación de pago.");
-            }
-        }
-    }
 </script>
 
 </body>
