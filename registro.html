@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Cuenta Corporativa | AuditorIA</title>
@@ -84,6 +91,10 @@
                     <label class="input-label">Contraseña</label>
                     <input type="password" id="password" class="input-control" placeholder="Crea una contraseña (mín. 6 caracteres)" required minlength="6">
                 </div>
+                <div class="input-group">
+                    <label class="input-label">Confirmar Contraseña</label>
+                    <input type="password" id="confirmPassword" class="input-control" placeholder="Repite tu contraseña" required minlength="6">
+                </div>
 
                 <button type="submit" class="btn-login" id="btnSubmit">
                     REGISTRAR Y ACCEDER
@@ -133,8 +144,16 @@
 
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value; // Obtenemos el valor de la confirmación
                 const nombre = document.getElementById('nombre').value;
                 const btn = document.getElementById('btnSubmit');
+
+                // NUEVA VALIDACIÓN: Verificar que las contraseñas coincidan
+                if (password !== confirmPassword) {
+                    errorMsg.innerText = "Las contraseñas no coinciden. Por favor, verifícalas.";
+                    errorMsg.style.display = 'block';
+                    return; // Detenemos la ejecución aquí si no son iguales
+                }
 
                 // UI de Carga
                 btn.innerHTML = `<svg style="animation: spin 1s linear infinite;" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> CREANDO CUENTA...`;
