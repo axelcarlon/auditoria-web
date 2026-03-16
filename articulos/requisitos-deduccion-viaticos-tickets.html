@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJW30G9ETZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KJW30G9ETZ');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deducción de viáticos y cómo separar propinas en tickets | AuditorIA</title>
+    <meta name="description" content="Evita que el SAT rechaze tus viáticos. Conoce los requisitos del Art. 28 de la LISR y cómo usar IA para extraer subtotales de tickets ignorando propinas.">
+    <meta name="robots" content="index, follow">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://auditoriaxml.mx/articulos/requisitos-deduccion-viaticos-tickets.html"> 
+    <meta property="og:title" content="Deducción de viáticos (Art. 28 LISR) y separación de propinas | AuditorIA"> 
+    <meta property="og:description" content="Aprende a deducir viáticos correctamente. Extrae datos de tickets arrugados con Inteligencia Artificial y evita rechazos del SAT por incluir propinas o alcohol.">
+    <meta property="og:image" content="https://auditoriaxml.mx/articulos/portada-seo.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://auditoriaxml.mx/articulos/requisitos-deduccion-viaticos-tickets.html">
+    <meta name="twitter:title" content="Deducción de viáticos (Art. 28 LISR) y separación de propinas | AuditorIA">
+    <meta name="twitter:description" content="Deja de capturar tickets arrugados a mano. Descubre cómo la IA automatiza tus reportes de viáticos y cumple con la LISR.">
+    <meta name="twitter:image" content="https://auditoriaxml.mx/articulos/portada-seo.png">
+    
+    <link rel="canonical" href="https://auditoriaxml.mx/articulos/requisitos-deduccion-viaticos-tickets.html" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script src="/despertador.js"></script>
+    
+    <style>
+        :root { 
+            --bg-primary: #0F172A; 
+            --bg-secondary: #1E293B; 
+            --text-main: #F8FAFC; 
+            --text-muted: #94A3B8; 
+            --border: rgba(255,255,255,0.1); 
+            --brand: #2563EB; 
+            --brand-glow: rgba(37, 99, 235, 0.4); 
+            --success: #10B981; 
+            --warning: #F59E0B; 
+            --danger: #EF4444;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background-color: #F9FAFB; font-family: system-ui, -apple-system, sans-serif; color: #374151; line-height: 1.8; overflow-x: hidden; }
+        
+        .article-container { max-width: 800px; margin: 60px auto; background: #ffffff; padding: 50px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #E5E7EB; }
+        @media (max-width: 768px) { .article-container { padding: 30px 20px; margin: 30px auto; } }
+        
+        h1 { color: #111827; font-size: 36px; line-height: 1.2; margin-bottom: 24px; border-bottom: 3px solid #2563EB; padding-bottom: 15px; }
+        h2 { color: #1F2937; font-size: 28px; margin-top: 48px; margin-bottom: 20px; }
+        h3 { color: #2563EB; font-size: 22px; margin-top: 32px; margin-bottom: 16px; }
+        p { font-size: 17px; margin-bottom: 24px; }
+        ul, ol { margin-bottom: 24px; padding-left: 24px; }
+        li { font-size: 17px; margin-bottom: 10px; }
+        strong { color: #111827; }
+        .code-block { background-color: #F3F4F6; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 14px; border-left: 4px solid #4B5563; margin-bottom: 24px; overflow-x: auto; }
+        .cta-textual { font-weight: bold; color: #2563EB; text-decoration: underline; }
+        
+        .cta-visual { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); padding: 40px; border-radius: 12px; text-align: center; color: white; margin: 50px 0; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2); }
+        .cta-visual h3 { color: white; margin-top: 0; font-size: 26px; }
+        .cta-visual p { color: #E0E7FF; font-size: 16px; }
+        .cta-button { display: inline-block; background-color: #ffffff; color: #1E3A8A; padding: 16px 32px; border-radius: 8px; font-weight: 700; text-decoration: none; font-size: 18px; margin-top: 20px; transition: transform 0.2s; }
+        .cta-button:hover { transform: translateY(-2px); }
+        
+        .article-cta { background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 12px; padding: 40px; text-align: center; margin: 60px 0; }
+        .article-cta h3 { color: #1E3A8A; font-size: 24px; margin-top: 0; margin-bottom: 15px; }
+        .article-cta p { color: #1E40AF; font-size: 16px; margin-bottom: 25px; line-height: 1.6; }
+        .article-cta-btn { background: #2563EB; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37,99,235,0.2); transition: 0.2s; }
+        .article-cta-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(37,99,235,0.3); }
+
+        /* Estilos del Advisor Integrado */
+        .advisor-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, -apple-system, sans-serif; }
+        .advisor-btn { background: var(--brand, #2563EB); color: white; border: none; padding: 12px 20px; border-radius: 30px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+        .advisor-btn:hover { transform: scale(1.05); }
+        .advisor-chat { display: none; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 1px solid #E5E7EB; flex-direction: column; overflow: hidden; position: absolute; bottom: 60px; right: 0; }
+        .advisor-header { background: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .advisor-close { background: none; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1; padding: 0; }
+        .advisor-body { flex: 1; padding: 15px; overflow-y: auto; background: #F9FAFB; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+        .msg-bot { background: white; border: 1px solid #E5E7EB; padding: 10px 15px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 85%; color: #374151; line-height: 1.5; }
+        .msg-user { background: var(--brand, #2563EB); color: white; padding: 10px 15px; border-radius: 12px 12px 0 12px; align-self: flex-end; max-width: 85%; line-height: 1.5; }
+        .advisor-footer { padding: 10px; background: white; border-top: 1px solid #E5E7EB; display: flex; gap: 8px; }
+        .advisor-input { flex: 1; padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 13px; outline: none; }
+        .advisor-input:focus { border-color: var(--brand, #2563EB); }
+        .advisor-send { background: var(--brand, #2563EB); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .typing-indicator { font-size: 12px; color: #6B7280; font-style: italic; align-self: flex-start; display: none; }
+        @media (max-width: 768px) { .advisor-chat { width: calc(100vw - 40px); height: calc(100vh - 100px); bottom: 60px; right: 0; } }
+    </style>
+</head>
+<body>
+
+<script src="/navbar.js"></script>
+
+<div class="article-container">
+    <h1>Requisitos para la deducción de viáticos (Art. 28 LISR) y cómo separar propinas en tickets</h1>
+    
+    <p>Es fin de mes. El equipo de ventas y los directivos regresan de sus viajes de negocios y vierten sobre tu escritorio lo que parece ser el contenido de una papelera de reciclaje: un montón de tickets de consumo arrugados, manchados de café, con la tinta térmica a medio borrar y facturas PDF que no coinciden con los montos de la tarjeta corporativa. Empieza la pesadilla del auxiliar contable.</p>
+
+    
+
+    <p>Revisar y capturar viáticos a mano no solo es una de las tareas más tediosas y desmoralizantes en cualquier departamento de administración, sino que es un campo minado de riesgos fiscales. Un solo descuido al deducir un concepto no permitido, y el Servicio de Administración Tributaria (SAT) rechazará todo el bloque de gastos de viaje, generando créditos fiscales y recargos para la empresa.</p>
+
+    <h2>El campo minado de los Viáticos: Lo que dice el Artículo 28 de la LISR</h2>
+    <p>Para el SAT, que un vendedor haya ido a comer a un restaurante no significa que el gasto sea automáticamente deducible. La Ley del Impuesto Sobre la Renta (LISR), específicamente en su Artículo 28, fracción V, establece reglas draconianas sobre lo que se considera un viático o gasto de viaje válido.</p>
+    
+    <p>Para que la alimentación, el hospedaje o la renta de autos sean deducibles, deben cumplir con tres reglas de oro inquebrantables:</p>
+
+    <ul>
+        <li><strong>La regla de los 50 kilómetros:</strong> El gasto debe erogarse a una distancia mayor a 50 kilómetros de la franja que circunde al establecimiento del contribuyente. Si el vendedor come a 30 km de la oficina porque "estaba visitando a un cliente" y trae factura, ese gasto es considerado un gasto personal, no un viático deducible.</li>
+        <li><strong>Relación laboral comprobable:</strong> El gasto debe destinarse a personas que tengan una relación de trabajo subordinado con la empresa (nómina) o presten servicios profesionales comprobables.</li>
+        <li><strong>Topes máximos diarios:</strong> La ley establece límites claros. Por ejemplo, en alimentación dentro del territorio nacional, el tope es de $750.00 MXN diarios por beneficiario. Si el ticket es por $1,200.00 MXN, solo puedes deducir hasta el tope de ley, siempre y cuando anexes el comprobante fiscal (CFDI) de hospedaje o transporte del mismo viaje.</li>
+    </ul>
+
+    <h2>La Trampa de la Propina y el Alcohol en los tickets de restaurante</h2>
+    <p>Incluso si cumples con la regla de los 50 kilómetros y los topes diarios, hay un enemigo oculto en casi todos los tickets de restaurantes y bares corporativos: la propina.</p>
+
+    <p><strong>Las propinas no son deducibles de impuestos bajo ninguna circunstancia.</strong> No forman parte del costo del servicio (no gravan IVA) y son una gratificación voluntaria. De igual manera, el consumo de bebidas alcohólicas de forma aislada no es un gasto estrictamente indispensable para los fines de la empresa.</p>
+
+    <p>El problema radica en la captura manual. Cuando un auxiliar tiene una montaña de 200 tickets que registrar en el ERP (COI, Contpaqi, etc.), la inercia lo lleva a mirar rápidamente la parte inferior del papel térmico y teclear el número en grande que dice "TOTAL". Si el total del ticket es de $1,150.00 (que incluye $1,000 de consumo y $150 de propina), y el contador captura los $1,150.00 como gasto de la tarjeta corporativa, acaba de cometer una infracción fiscal.</p>
+
+    <p>El SAT cruzará ese monto contra el XML timbrado por el restaurante (que solo dirá $1,000.00 de subtotal + IVA). Inmediatamente, se genera una discrepancia. El SAT rechaza la deducibilidad, la empresa debe ajustar sus papeles de trabajo y, en auditorías estrictas, se exigen recargos por el impuesto evadido. Revisar esto a mano ticket por ticket es inhumano.</p>
+
+    <div class="cta-visual">
+        <h3>El Reto de AuditorIA: Prueba la precisión de nuestra Inteligencia Artificial</h3>
+        <p>¿No nos crees? Sube la foto de tu ticket de restaurante más arrugado y mira cómo nuestra IA extrae el Subtotal y el IVA correctos, ignorando automáticamente la propina, el cambio y la "basura visual" del papel.</p>
+        <a href="/escaner-ocr-fiscal" class="cta-button">Escanear Ticket OCR Ahora</a>
+    </div>
+
+    <h2>¿Qué pasa si el viático no se comprueba? (El riesgo de Nómina)</h2>
+    <p>Existe un daño colateral gravísimo del que pocos directores se dan cuenta cuando los tickets se pierden, se borran o no son aceptados por contabilidad: <strong>El viático se convierte en ingreso para el trabajador.</strong></p>
+
+    <p>Si la empresa le deposita $10,000 MXN a la cuenta de un ingeniero para viáticos de una obra foránea, y el ingeniero solo logra comprobar $6,000 MXN con CFDI y tickets válidos, quedan $4,000 MXN volando. Si ese dinero no se reintegra a la cuenta de la empresa, la Ley del ISR dictamina que esos $4,000 MXN deben timbrarse en el recibo de nómina del trabajador como un "Ingreso Acumulable".</p>
+
+    <p>Esto significa que el trabajador tendrá que pagar ISR por ese dinero que en realidad gastó en la calle pero que no supo comprobar. Y la empresa tendrá que ajustar sus bases del IMSS. Por esto, llevar una <a href="/auditor-nomina" class="cta-textual">auditoría de nómina rigurosa</a> y un control absoluto de los viáticos es vital para la paz laboral y fiscal.</p>
+
+    <h2>La Solución Tecnológica: Escáner OCR de Viáticos con IA</h2>
+    <p>Transcribir el papel térmico que se desvanece con el calor es una práctica del pasado. Los despachos y empresas modernas ya no capturan; escanean y auditan.</p>
+
+    <p>Es importante diferenciar entre un OCR genérico (reconocimiento óptico de caracteres gratuito en internet) y un <strong>Escáner OCR Financiero</strong>. Un OCR normal solo lee letras. Si escaneas un ticket, te devolverá un bloque de texto plano inútil donde mezcla el RFC de la gasolinera con la frase "Propina sugerida 15%".</p>
+
+    <p>Nuestra herramienta de <a href="/auditoria-viaticos" class="cta-textual">Auditoría de Viáticos</a> utiliza algoritmos de Procesamiento de Lenguaje Natural (NLP) entrenados con millones de tickets mexicanos. ¿Qué hace la Inteligencia Artificial?</p>
+    
+    <ol>
+        <li><strong>Binarización y enderezado:</strong> Toma la foto que el vendedor tomó desde su celular, la endereza, le quita las sombras y realza la tinta borrosa del papel térmico.</li>
+        <li><strong>Lectura Estructural:</strong> Identifica al vuelo el RFC del emisor, la fecha, el folio y desglosa los impuestos.</li>
+        <li><strong>Purgado de la Propina:</strong> El algoritmo lee palabras clave como "Tip", "Propina", "Servicio", o "Donativo", las aísla, y extrae como "Gasto Deducible" única y exclusivamente el subtotal y el IVA real de los alimentos o el combustible.</li>
+        <li><strong>Cruce contra el XML:</strong> ¿De qué sirve el ticket si la factura está cancelada o el proveedor es fantasma? Una vez extraídos los datos del ticket, el sistema los puede cruzar masivamente utilizando nuestro <a href="/visor-xml" class="cta-textual">Visor XML</a> para confirmar que el comprobante electrónico existe y es válido en las bases del SAT.</li>
+    </ol>
+
+    <h2>De la "Caja de Zapatos" al Control Financiero Total</h2>
+    <p>El cierre de mes no tiene por qué ser una batalla campal entre el equipo de ventas, viáticos y el contador general. Al sistematizar la captura de tickets mediante Inteligencia Artificial, eliminas de tajo los errores de dedo, evitas las discrepancias por montos no deducibles como el alcohol y las propinas, y garantizas el cumplimiento milimétrico del Artículo 28 de la LISR.</p>
+
+    <p>Además, al digitalizar y procesar los comprobantes en el momento en que ocurre el gasto, evitas el clásico problema de la "tinta térmica que desapareció" después de 15 días en la guantera del coche del gerente de ventas.</p>
+
+    <div class="article-cta">
+        <h3>Automatiza tus Reportes de Viáticos Hoy Mismo</h3>
+        <p>Libera a tu equipo contable de la captura manual de comprobantes físicos. Audita carpetas enteras de gastos de viaje en minutos, cruza los datos extraídos de las fotos contra sus CFDI correspondientes y asegura la deducibilidad de cada peso gastado por tu empresa.</p>
+        <a href="/auditoria-viaticos" class="article-cta-btn">Probar Auditoría de Viáticos IA</a>
+    </div>
+</div>
+
+<script src="/footer.js"></script>
+
+<div id="advisorWidget" class="advisor-widget">
+    <button id="advisorBtn" class="advisor-btn">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        Asesor Fiscal IA
+    </button>
+    <div id="advisorChat" class="advisor-chat">
+        <div class="advisor-header">
+            <span>Paula - AuditorIA Advisor</span>
+            <button id="closeAdvisor" class="advisor-close">×</button>
+        </div>
+        <div id="advisorBody" class="advisor-body">
+            <div class="msg-bot">Analista fiscal en línea. ¿Tienes dudas sobre los topes de viáticos, la regla de los 50km o cómo el SAT rechaza las propinas?</div>
+            <div id="typingIndicator" class="typing-indicator">Analizando normatividad...</div>
+        </div>
+        <div class="advisor-footer">
+            <input type="text" id="advisorInput" class="advisor-input" placeholder="Escribe tu consulta..." autocomplete="off">
+            <button id="sendAdvisor" class="advisor-send">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const advisorBtn = document.getElementById('advisorBtn');
+    const advisorChat = document.getElementById('advisorChat');
+    const closeAdvisor = document.getElementById('closeAdvisor');
+    const sendAdvisor = document.getElementById('sendAdvisor');
+    const advisorInput = document.getElementById('advisorInput');
+    const advisorBody = document.getElementById('advisorBody');
+    const typingIndicator = document.getElementById('typingIndicator');
+    let chatHistory = [];
+
+    advisorBtn.onclick = () => { advisorChat.style.display = 'flex'; advisorBtn.style.display = 'none'; };
+    closeAdvisor.onclick = () => { advisorChat.style.display = 'none'; advisorBtn.style.display = 'flex'; };
+
+    function renderMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = type === 'user' ? 'msg-user' : 'msg-bot';
+        div.innerText = text;
+        advisorBody.insertBefore(div, typingIndicator);
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = advisorInput.value.trim();
+        if (!text) return;
+        renderMessage(text, 'user');
+        advisorInput.value = '';
+        typingIndicator.style.display = 'block';
+        advisorBody.scrollTop = advisorBody.scrollHeight;
+
+        const currentHistory = [...chatHistory];
+        chatHistory.push({ rol: "usuario", texto: text });
+
+        try {
+            const res = await fetch("https://fastapi-susu.onrender.com/api/chat", {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: text, historial: currentHistory })
+            });
+            if (!res.ok) throw new Error('Error API');
+            const data = await res.json();
+            renderMessage(data.respuesta, 'bot');
+            chatHistory.push({ rol: "modelo", texto: data.respuesta });
+        } catch (err) {
+            renderMessage("Error de conexión con el servidor. Reintente la consulta.", 'bot');
+            chatHistory.pop();
+        } finally {
+            typingIndicator.style.display = 'none';
+        }
+    }
+    sendAdvisor.onclick = handleSend;
+    advisorInput.onkeypress = (e) => { if (e.key === 'Enter') handleSend(); };
+</script>
+</body>
+</html>
